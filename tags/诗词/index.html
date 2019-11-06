@@ -1,10 +1,10 @@
 
- <!DOCTYPE HTML>
+  <!DOCTYPE HTML>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   
-    <title>tags | Sunnie Shine&#39;s Blog</title>
+    <title>标签 : 诗词 | Sunnie Shine&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Sunnie Shine">
@@ -13,12 +13,11 @@
     
     <meta name="description" content="This is my blog...">
 <meta property="og:type" content="website">
-<meta property="og:title" content="tags">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;tags&#x2F;index.html">
+<meta property="og:title" content="Sunnie Shine&#39;s Blog">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;tags&#x2F;%E8%AF%97%E8%AF%8D&#x2F;index.html">
 <meta property="og:site_name" content="Sunnie Shine&#39;s Blog">
 <meta property="og:description" content="This is my blog...">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-06T11:47:28.296Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -75,25 +74,31 @@
 </div>
       </header>
       <div id="container">
-          
+        
+
 <div class="archive-title" >
-<h2 class="tag-icon">标签</h2>
-
-<a data-src="/tags/C/" href="#C#" title="C#">C#<sup>1</sup></a>
-
-<a data-src="/tags/Hexo/" href="#Hexo" title="Hexo">Hexo<sup>1</sup></a>
-
-<a data-src="/tags/编程语法/" href="#编程语法" title="编程语法">编程语法<sup>1</sup></a>
-
-<a data-src="/tags/诗词/" href="#诗词" title="诗词">诗词<sup>1</sup></a>
-
+  <h2 class="tag-icon">诗词</h2>
+  
 </div>
-<div id="main" class="archive-part">
-<div class="all-list-box"></div>
+<div id="main" class="archive-part clearfix">
+  <div id="archive-page">
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2019/11/06/cipais/" title="cipais" itemprop="url">
+  
+
+    <time datetime="2019-11-06T13:07:08.000Z" itemprop="datePublished">2019-11-06</time>
+
+
+    <h1 itemprop="name">cipais</h1>
+
+  </a>
+</section>
+
+
+  </div>
 </div>
-
-
-
 
       </div>
       <footer><div id="footer" >
@@ -196,24 +201,6 @@ $(document).ready(function(){
 
 
 
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var list    = $('.archive-title a'),
-      box     = $('.all-list-box'),
-      first   = $('.archive-title a:first-of-type');
-      box.load(first.attr('data-src').toString()+' #archive-page');
-      first.addClass('current');
-  list.each(function(){
-    $(this).click(function(){
-      var listSrc=$(this).attr('data-src').toString()+' #archive-page';
-      box.load(listSrc);
-      list.removeClass('current');
-      $(this).addClass('current');
-     });  
-    });
-  }); 
-</script>
 
 
 <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
