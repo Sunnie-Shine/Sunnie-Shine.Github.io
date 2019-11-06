@@ -1,10 +1,10 @@
 
-  <!DOCTYPE HTML>
+ <!DOCTYPE HTML>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   
-    <title>归档: 2019 | Sunnie Shine&#39;s Blog</title>
+    <title>tags | Sunnie Shine&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Sunnie Shine">
@@ -13,11 +13,12 @@
     
     <meta name="description" content="This is my blog...">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Sunnie Shine&#39;s Blog">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;archives&#x2F;2019&#x2F;index.html">
+<meta property="og:title" content="tags">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;tags&#x2F;index.html">
 <meta property="og:site_name" content="Sunnie Shine&#39;s Blog">
 <meta property="og:description" content="This is my blog...">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-06T11:47:28.296Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -74,48 +75,21 @@
 </div>
       </header>
       <div id="container">
-        
-
+          
 <div class="archive-title" >
-  <h2 class="archive-icon">2019</h2>
-  
-  <div class="archiveslist archive-float clearfix">
-   <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">2019 年 11 月</a><span class="archive-list-count">2</span></li></ul>
- </div>
-  
+<h2 class="tag-icon">标签</h2>
+
+<a data-src="/tags/C/" href="#C#" title="C#">C#<sup>1</sup></a>
+
+<a data-src="/tags/Hexo/" href="#Hexo" title="Hexo">Hexo<sup>1</sup></a>
+
 </div>
-<div id="main" class="archive-part clearfix">
-  <div id="archive-page">
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2019/11/06/csharplang-01-is-as-operator/" title="C# 语义探究系列（1）：is 和 as 运算符" itemprop="url">
-  
-
-    <time datetime="2019-11-06T09:17:04.000Z" itemprop="datePublished">2019-11-06</time>
-
-
-    <h1 itemprop="name">C# 语义探究系列（1）：is 和 as 运算符</h1>
-
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2019/11/06/hello-world/" title="Hexo 使用教程" itemprop="url">
-  
-
-    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished">2019-11-06</time>
-
-
-    <h1 itemprop="name">Hexo 使用教程</h1>
-
-  </a>
-</section>
-
-
-  </div>
+<div id="main" class="archive-part">
+<div class="all-list-box"></div>
 </div>
+
+
+
 
       </div>
       <footer><div id="footer" >
@@ -218,6 +192,24 @@ $(document).ready(function(){
 
 
 
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var list    = $('.archive-title a'),
+      box     = $('.all-list-box'),
+      first   = $('.archive-title a:first-of-type');
+      box.load(first.attr('data-src').toString()+' #archive-page');
+      first.addClass('current');
+  list.each(function(){
+    $(this).click(function(){
+      var listSrc=$(this).attr('data-src').toString()+' #archive-page';
+      box.load(listSrc);
+      list.removeClass('current');
+      $(this).addClass('current');
+     });  
+    });
+  }); 
+</script>
 
 
 <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
