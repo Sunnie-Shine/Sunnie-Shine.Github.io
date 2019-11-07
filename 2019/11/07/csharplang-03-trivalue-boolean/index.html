@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>三值布尔运算表 | Sunnie Shine&#39;s Blog</title>
+    <title>C# 语义探究系列（3）：三值布尔运算表 | Sunnie Shine&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Sunnie Shine">
@@ -14,12 +14,12 @@
     <meta name="description" content="可空值类型和 bool? 简介我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 int 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 Integer 是可以为 null 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就">
 <meta name="keywords" content="C#,C# 语法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="三值布尔运算表">
+<meta property="og:title" content="C# 语义探究系列（3）：三值布尔运算表">
 <meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;07&#x2F;csharplang-03-trivalue-boolean&#x2F;index.html">
 <meta property="og:site_name" content="Sunnie Shine&#39;s Blog">
 <meta property="og:description" content="可空值类型和 bool? 简介我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 int 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 Integer 是可以为 null 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-07T09:44:38.477Z">
+<meta property="og:updated_time" content="2019-11-07T14:07:09.572Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -80,7 +80,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/07/csharplang-03-trivalue-boolean/" title="三值布尔运算表" itemprop="url">三值布尔运算表</a>
+      <a href="/2019/11/07/csharplang-03-trivalue-boolean/" title="C# 语义探究系列（3）：三值布尔运算表" itemprop="url">C# 语义探究系列（3）：三值布尔运算表</a>
   </h1>
   <p class="article-author">By
        
@@ -127,66 +127,69 @@
 <td>false</td>
 <td>false</td>
 <td>true</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>true</td>
+<td>null</td>
 <td></td>
 <td>true</td>
+<td>false</td>
+<td></td>
 </tr>
 <tr>
+<td>false</td>
 <td>true</td>
+<td>false</td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>false</td>
 <td>null</td>
+<td>false</td>
+<td></td>
+<td>true</td>
+<td></td>
+</tr>
+<tr>
 <td>null</td>
 <td>true</td>
 <td></td>
+<td>true</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td>null</td>
-</tr>
-<tr>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-</tr>
-<tr>
-<td>false</td>
-<td>false</td>
 <td>false</td>
 <td>false</td>
 <td></td>
-<td>false</td>
-</tr>
-<tr>
-<td>false</td>
-<td>null</td>
-<td>false</td>
-<td>null</td>
 <td></td>
-<td>null</td>
-</tr>
-<tr>
-<td>null</td>
-<td>true</td>
-<td>null</td>
-<td>true</td>
-<td>null</td>
-<td>null</td>
-</tr>
-<tr>
-<td>null</td>
-<td>false</td>
-<td>false</td>
-<td>null</td>
 <td></td>
-<td>null</td>
 </tr>
 <tr>
-<td>null</td>
-<td>null</td>
 <td>null</td>
 <td>null</td>
 <td></td>
-<td>null</td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody></table>
+<blockquote>
+<p>为了精简表格，看起来不臃肿，所以所有空格都是 <code>null</code>。</p>
+</blockquote>
 <p>你可以参考如下代码，并执行。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> series = <span class="keyword">new</span> <span class="keyword">bool</span>?[] &#123; <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> a <span class="keyword">in</span> series)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> b <span class="keyword">in</span> series)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;(a?.ToString() ?? <span class="string">"null"</span>)&#125;</span> &amp; <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a &amp; b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> | <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a | b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"!<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(!a)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ^ <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a ^ b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -208,7 +211,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/07/csharplang-03-trivalue-boolean/" data-title="三值布尔运算表 | Sunnie Shine&#39;s Blog" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/07/csharplang-03-trivalue-boolean/" data-title="C# 语义探究系列（3）：三值布尔运算表 | Sunnie Shine&#39;s Blog" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
