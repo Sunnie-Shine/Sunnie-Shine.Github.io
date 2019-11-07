@@ -1,0 +1,471 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>GDI+ 拓展操作 | Sunnie Shine&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Sunnie Shine">
+    
+
+    
+    <meta name="description" content="我相信大家肯定或多或少都用过 GDI+ 图形接口，它方便了我们绘制很多东西，但有时候，我们还是会遇到绘制的问题，比如，如何绘制一个 GDI+ 里没有提供好的图形。下面我们来看看。 画圆角矩形和填充圆角矩形相信小伙伴肯定都遇到过这种问题，下面我们来看，如何绘制这种东西，并完全填充它们。 绘制圆角矩形123456789101112131415161718192021222324252627282930">
+<meta name="keywords" content="C#,GDI+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDI+ 拓展操作">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;07&#x2F;gdip-extension&#x2F;index.html">
+<meta property="og:site_name" content="Sunnie Shine&#39;s Blog">
+<meta property="og:description" content="我相信大家肯定或多或少都用过 GDI+ 图形接口，它方便了我们绘制很多东西，但有时候，我们还是会遇到绘制的问题，比如，如何绘制一个 GDI+ 里没有提供好的图形。下面我们来看看。 画圆角矩形和填充圆角矩形相信小伙伴肯定都遇到过这种问题，下面我们来看，如何绘制这种东西，并完全填充它们。 绘制圆角矩形123456789101112131415161718192021222324252627282930">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-07T07:28:45.816Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Sunnie Shine&#39;s Blog" title="Sunnie Shine&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Sunnie Shine&#39;s Blog">Sunnie Shine&#39;s Blog</a></h1>
+				<h2 class="blog-motto">Happy coding, happy debugging...</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/tags">Tags</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/07/gdip-extension/" title="GDI+ 拓展操作" itemprop="url">GDI+ 拓展操作</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Sunnie Shine" target="_blank" itemprop="author">Sunnie Shine</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-07T07:14:17.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#画圆角矩形和填充圆角矩形"><span class="toc-number">1.</span> <span class="toc-text">画圆角矩形和填充圆角矩形</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#绘制圆角矩形"><span class="toc-number">1.1.</span> <span class="toc-text">绘制圆角矩形</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#填充圆角矩形"><span class="toc-number">1.2.</span> <span class="toc-text">填充圆角矩形</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#绘制一个空心箭头"><span class="toc-number">2.</span> <span class="toc-text">绘制一个空心箭头</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#画胶囊"><span class="toc-number">3.</span> <span class="toc-text">画胶囊</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#绘制胶囊"><span class="toc-number">3.1.</span> <span class="toc-text">绘制胶囊</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#填充胶囊"><span class="toc-number">3.2.</span> <span class="toc-text">填充胶囊</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">4.</span> <span class="toc-text">后记</span></a></li></ol>
+		
+		</div>
+		
+		<p>我相信大家肯定或多或少都用过 GDI+ 图形接口，它方便了我们绘制很多东西，但有时候，我们还是会遇到绘制的问题，比如，如何绘制一个 GDI+ 里没有提供好的图形。下面我们来看看。</p>
+<h2 id="画圆角矩形和填充圆角矩形"><a href="#画圆角矩形和填充圆角矩形" class="headerlink" title="画圆角矩形和填充圆角矩形"></a>画圆角矩形和填充圆角矩形</h2><p>相信小伙伴肯定都遇到过这种问题，下面我们来看，如何绘制这种东西，并完全填充它们。</p>
+<h3 id="绘制圆角矩形"><a href="#绘制圆角矩形" class="headerlink" title="绘制圆角矩形"></a>绘制圆角矩形</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制一个圆角矩形。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层对象。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="pen"&gt;</span>画笔。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>绘制矩形范围（将圆角矩形视作普通矩形下的矩形绘制范围）。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="circleRadius"&gt;</span>边角处的半径。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="ArgumentException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 参数 <span class="doctag">&lt;paramref name="circleRadius"/&gt;</span> 比矩形 <span class="doctag">&lt;paramref name="rectangle"/&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制的区域还大，无法绘制。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DrawRoundedRectangle</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">this</span> Graphics g, Pen pen, Rectangle rectangle, <span class="keyword">int</span> circleRadius</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (circleRadius &gt; Math.Max(rectangle.Width, rectangle.Height))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(circleRadius)&#125;</span>：参数数据比矩形宽度还大，无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Rectangle r1, r2, r3, r4;</span><br><span class="line">    Point p1, p2, p3, p4, p5, p6, p7, p8;</span><br><span class="line">    p8 = p7 = p6 = p5 = p4 = p3 = p2 = p1 = rectangle.Location;</span><br><span class="line">    p1.X += circleRadius;</span><br><span class="line">    p2.X += rectangle.Width - circleRadius;</span><br><span class="line">    p3.Y += circleRadius;</span><br><span class="line">    p4.X += rectangle.Width;</span><br><span class="line">    p4.Y += circleRadius;</span><br><span class="line">    p5.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p6.X += rectangle.Width;</span><br><span class="line">    p6.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p7.X += circleRadius;</span><br><span class="line">    p7.Y += rectangle.Height;</span><br><span class="line">    p8.X += rectangle.Width - circleRadius;</span><br><span class="line">    p8.Y += rectangle.Height;</span><br><span class="line">    r1 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y, circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r2 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius, rectangle.Y,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r3 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r4 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius,</span><br><span class="line">        rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> path = <span class="keyword">new</span> GraphicsPath();</span><br><span class="line">    path.AddLine(p1, p2);</span><br><span class="line">    path.AddArc(r2, <span class="number">270</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p4, p6);</span><br><span class="line">    path.AddArc(r4, <span class="number">0</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p7, p8);</span><br><span class="line">    path.AddArc(r3, <span class="number">90</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p5, p3);</span><br><span class="line">    path.AddArc(r1, <span class="number">180</span>, <span class="number">90</span>);</span><br><span class="line">    path.CloseFigure();</span><br><span class="line"></span><br><span class="line">    g.DrawPath(pen, path);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你完全可以发现，这种绘制方式就是画了矩形的四条边，然后在边角处留白，绘制四个 1 / 4 扇形圆弧。</p>
+<h3 id="填充圆角矩形"><a href="#填充圆角矩形" class="headerlink" title="填充圆角矩形"></a>填充圆角矩形</h3><p>填充圆角矩形的思路和上述方式一样，只是区别在于，填充将会采用填充 1 / 4 扇形的方式来搞定。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 填充一个圆角矩形的图形。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层对象。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="brush"&gt;</span>画刷。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>填充矩形范围（将圆角矩形视作普通矩形下的矩形绘制范围）。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="circleRadius"&gt;</span>边角处的半径。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="ArgumentException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 参数 <span class="doctag">&lt;paramref name="circleRadius"/&gt;</span> 比矩形 <span class="doctag">&lt;paramref name="rectangle"/&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制的区域还大，无法绘制。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FillRoundedRectangle</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">this</span> Graphics g, Brush brush, Rectangle rectangle, <span class="keyword">int</span> circleRadius</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (circleRadius &gt;= Math.Max(rectangle.Width, rectangle.Height))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(circleRadius)&#125;</span>：参数数据比矩形宽度还大，无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Rectangle r1, r2, r3, r4, head, bottom, center;</span><br><span class="line">    Point p1, p2, p3, p4, p5, p6, p7, p8;</span><br><span class="line">    p8 = p7 = p6 = p5 = p4 = p3 = p2 = p1 = rectangle.Location;</span><br><span class="line">    p1.X += circleRadius;</span><br><span class="line">    p2.X += rectangle.Width - circleRadius;</span><br><span class="line">    p3.Y += circleRadius;</span><br><span class="line">    p4.X += rectangle.Width;</span><br><span class="line">    p4.Y += circleRadius;</span><br><span class="line">    p5.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p6.X += rectangle.Width;</span><br><span class="line">    p6.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p7.X += circleRadius;</span><br><span class="line">    p7.Y += rectangle.Height;</span><br><span class="line">    p8.X += rectangle.Width - circleRadius;</span><br><span class="line">    p8.Y += rectangle.Height;</span><br><span class="line">    r1 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y, circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r2 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius, rectangle.Y,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r3 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r4 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius,</span><br><span class="line">        rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    head = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        p1.X, p1.Y, rectangle.Width - <span class="number">2</span> * circleRadius, circleRadius);</span><br><span class="line">    bottom = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        p1.X, p5.Y, rectangle.Width - <span class="number">2</span> * circleRadius, circleRadius);</span><br><span class="line">    center = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        p3.X, p3.Y, rectangle.Width, rectangle.Height - <span class="number">2</span> * circleRadius);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> path = <span class="keyword">new</span> GraphicsPath();</span><br><span class="line">    path.AddLine(p1, p2);</span><br><span class="line">    path.AddArc(r2, <span class="number">270</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p4, p6);</span><br><span class="line">    path.AddArc(r4, <span class="number">0</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p7, p8);</span><br><span class="line">    path.AddArc(r3, <span class="number">90</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p5, p3);</span><br><span class="line">    path.AddArc(r1, <span class="number">180</span>, <span class="number">90</span>);</span><br><span class="line">    path.CloseFigure();</span><br><span class="line"></span><br><span class="line">    g.FillPath(brush, path);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="绘制一个空心箭头"><a href="#绘制一个空心箭头" class="headerlink" title="绘制一个空心箭头"></a>绘制一个空心箭头</h2><p>有时候我们甚至会需要绘制一个空心的箭头符号，这个时候我们可以采用画折线的方式围成一圈，构成箭头，不过这一点需要你打草稿了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制一个空心箭头。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>绘图图面。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="pen"&gt;</span>边框线画笔。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="center"&gt;</span>绘制中心。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="length"&gt;</span>绘制长度。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="width"&gt;</span>绘制箭头帽的宽度。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="height"&gt;</span>绘制箭头帽的高度。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="angle"&gt;</span>箭头的旋转角度。角度以角度制（angle）为单位。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="ArgumentException"&gt;</span><span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DrawHollowArrow</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">this</span> Graphics g, Pen pen, Point center,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> length, <span class="keyword">int</span> width, <span class="keyword">int</span> height, <span class="keyword">float</span> angle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (length &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"参数：<span class="subst">&#123;<span class="keyword">nameof</span>(length)&#125;</span>，数据小于 0，绘制箭头把的长度不应小于 0。无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (width &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"参数：<span class="subst">&#123;<span class="keyword">nameof</span>(width)&#125;</span>，数据小于 0，绘制箭头帽宽度不应小于 0。无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (height &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"参数：<span class="subst">&#123;<span class="keyword">nameof</span>(height)&#125;</span>，数据小于 0，绘制箭头帽高度不应小于 0。无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> halfWidth = width / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> totalHeight = height + length;</span><br><span class="line">    <span class="keyword">int</span> heightHalf = (height + length) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> arrowBarWidth = (width + height) / <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">var</span> points = <span class="keyword">new</span> Point[<span class="number">7</span>]</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> Point(center.X, center.Y - (height + length) / <span class="number">2</span>)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X + halfWidth,</span><br><span class="line">            center.Y - (height + length) / <span class="number">2</span> + height)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X + halfWidth - (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + height)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X + halfWidth - (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + totalHeight)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X - halfWidth + (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + totalHeight)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X - halfWidth + (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + height)),</span><br><span class="line">        <span class="keyword">new</span> Point(center.X - halfWidth, center.Y - heightHalf + height))</span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Rotation.</span></span><br><span class="line">    <span class="keyword">var</span> oldMatrix = g.Transform;</span><br><span class="line">    <span class="keyword">var</span> newMatrix = g.Transform;</span><br><span class="line">    newMatrix.RotateAt(angle, center);</span><br><span class="line">    g.Transform = newMatrix;</span><br><span class="line">    g.DrawPolygon(pen, points);</span><br><span class="line">    g.Transform = oldMatrix;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="画胶囊"><a href="#画胶囊" class="headerlink" title="画胶囊"></a>画胶囊</h2><p>胶囊的形状完全就跟圆角矩形一样，只是特殊的地方在于，它的两端就是一个完整的半圆，所以我们直接把数据调整到极限即可。</p>
+<h3 id="绘制胶囊"><a href="#绘制胶囊" class="headerlink" title="绘制胶囊"></a>绘制胶囊</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制一个胶囊形状。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="pen"&gt;</span>画笔。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>矩形范围。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DrawCapsule</span>(<span class="params"><span class="keyword">this</span> Graphics g, Pen pen, Rectangle rectangle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    g.DrawRoundedRectangle(</span><br><span class="line">        pen, rectangle, Math.Min(rectangle.Width, rectangle.Height) / <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="填充胶囊"><a href="#填充胶囊" class="headerlink" title="填充胶囊"></a>填充胶囊</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 填充一个胶囊形状的图形。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="brush"&gt;</span>画刷。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>矩形。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FillCapsule</span>(<span class="params"><span class="keyword">this</span> Graphics g, Brush brush, Rectangle rectangle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    g.FillRoundedRectangle(</span><br><span class="line">        brush, rectangle, Math.Min(rectangle.Width, rectangle.Height) / <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>可以发现，前面的代码里大量使用了除以 2、4 的操作，为了效率，你可以改写为位运算：<code>n &gt;&gt; 1</code> 和 <code>n &gt;&gt; 2</code> 的模式。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C#</a><a href="/tags/GDI/">GDI+</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/07/gdip-extension/" data-title="GDI+ 拓展操作 | Sunnie Shine&#39;s Blog" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/07/csharplang-02-access-modifiers/"  title="C# 语义探究系列（2）：访问修饰符">
+ <strong>下一篇：</strong><br/> 
+ <span>C# 语义探究系列（2）：访问修饰符
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#画圆角矩形和填充圆角矩形"><span class="toc-number">1.</span> <span class="toc-text">画圆角矩形和填充圆角矩形</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#绘制圆角矩形"><span class="toc-number">1.1.</span> <span class="toc-text">绘制圆角矩形</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#填充圆角矩形"><span class="toc-number">1.2.</span> <span class="toc-text">填充圆角矩形</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#绘制一个空心箭头"><span class="toc-number">2.</span> <span class="toc-text">绘制一个空心箭头</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#画胶囊"><span class="toc-number">3.</span> <span class="toc-text">画胶囊</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#绘制胶囊"><span class="toc-number">3.1.</span> <span class="toc-text">绘制胶囊</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#填充胶囊"><span class="toc-number">3.2.</span> <span class="toc-text">填充胶囊</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">4.</span> <span class="toc-text">后记</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C/" title="C#">C#<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法/" title="C# 语法">C# 语法<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="Sunnie Shine">Sunnie Shine</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
