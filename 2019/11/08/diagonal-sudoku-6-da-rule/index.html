@@ -4,23 +4,27 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Hexo 使用教程 | Sunnie Shine&#39;s Blog</title>
+    <title>6 宫对角线数独的潜规则 | Sunnie Shine&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Sunnie Shine">
     
 
     
-    <meta name="description" content="欢迎使用 Hexo！这是第一篇文章。请查看 该文档链接 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 问题解决列表 查找到对应的问题解决方案，或者是在我的 GitHub 上询问 Hexo 的作者本人哦！ 开始请先使用 bash 命令行切换到指定的本地仓库文件夹下。 1$ cd myblog  然后尝试如下的一些命令（操作集）。 生成你的第一篇文章你可以使用如下命令行">
-<meta name="keywords" content="Hexo">
+    <meta name="description" content="简介六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。 六宫对角线数独一共存在 12 种不等价盘面，如图所示。  它具有如下两个潜规则。 潜规则一：中心对称潜规则中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。  例如这个图上给予了一个六宫对角线数独的">
+<meta name="keywords" content="数独,潜规则">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo 使用教程">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;06&#x2F;hello-world&#x2F;index.html">
+<meta property="og:title" content="6 宫对角线数独的潜规则">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;index.html">
 <meta property="og:site_name" content="Sunnie Shine&#39;s Blog">
-<meta property="og:description" content="欢迎使用 Hexo！这是第一篇文章。请查看 该文档链接 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 问题解决列表 查找到对应的问题解决方案，或者是在我的 GitHub 上询问 Hexo 的作者本人哦！ 开始请先使用 bash 命令行切换到指定的本地仓库文件夹下。 1$ cd myblog  然后尝试如下的一些命令（操作集）。 生成你的第一篇文章你可以使用如下命令行">
+<meta property="og:description" content="简介六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。 六宫对角线数独一共存在 12 种不等价盘面，如图所示。  它具有如下两个潜规则。 潜规则一：中心对称潜规则中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。  例如这个图上给予了一个六宫对角线数独的">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-06T11:55:22.359Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_Global.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_HiddenRule_1.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_HiddenRule_2.png">
+<meta property="og:updated_time" content="2019-11-08T05:34:43.833Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_Global.png">
 
     
     
@@ -80,14 +84,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/06/hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
+      <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Sunnie Shine" target="_blank" itemprop="author">Sunnie Shine</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished"> 发表于 2019-11-06</time>
+    <time datetime="2019-11-08T05:25:13.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
     
   </p>
 </header>
@@ -96,28 +100,23 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开始"><span class="toc-number">1.</span> <span class="toc-text">开始</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#生成你的第一篇文章"><span class="toc-number">1.1.</span> <span class="toc-text">生成你的第一篇文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器上运行"><span class="toc-number">1.2.</span> <span class="toc-text">服务器上运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成静态的页面（写博客文章）"><span class="toc-number">1.3.</span> <span class="toc-text">生成静态的页面（写博客文章）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将本地内容发布到-GitHub-的同步仓库上"><span class="toc-number">1.4.</span> <span class="toc-text">将本地内容发布到 GitHub 的同步仓库上</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li></ol>
 		
 		</div>
 		
-		<p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
-
-<p>然后尝试如下的一些命令（操作集）。</p>
-<h3 id="生成你的第一篇文章"><a href="#生成你的第一篇文章" class="headerlink" title="生成你的第一篇文章"></a>生成你的第一篇文章</h3><p>你可以使用如下命令行来为你的本地仓库添加一篇新文章。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="服务器上运行"><a href="#服务器上运行" class="headerlink" title="服务器上运行"></a>服务器上运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="生成静态的页面（写博客文章）"><a href="#生成静态的页面（写博客文章）" class="headerlink" title="生成静态的页面（写博客文章）"></a>生成静态的页面（写博客文章）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate <span class="string">"My Blog post title"</span></span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="将本地内容发布到-GitHub-的同步仓库上"><a href="#将本地内容发布到-GitHub-的同步仓库上" class="headerlink" title="将本地内容发布到 GitHub 的同步仓库上"></a>将本地内容发布到 GitHub 的同步仓库上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+		<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。</p>
+<p>六宫对角线数独一共存在 12 种不等价盘面，如图所示。</p>
+<p><img src="diagonal-sudoku-6-da-rule/DiagonalSix_Global.png" alt=""></p>
+<p>它具有如下两个潜规则。</p>
+<p>潜规则一：中心对称潜规则<br>中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。</p>
+<p><img src="diagonal-sudoku-6-da-rule/DiagonalSix_HiddenRule_1.png" alt=""></p>
+<p>例如这个图上给予了一个六宫对角线数独的题目盘面的答案，答案体现出，r1c2和r6c5的填数一定不同（实际上是一个2和一个3，确实是不同的）。其他的同理。</p>
+<p>本潜规则可以直接在题目上使用，对于任意一个唯一解的六宫对角线数独题均适用。</p>
+<p>潜规则二：轴对称潜规则<br>轴对称潜规则指的是：盘面上任取的四格，只要满足以下几个条件，则有结论：四格的填数至少有一个数会出现两次（四格填数不能完全不同）：</p>
+<p>1、四格都不在对角线上；<br>2、将四格只存在于一行、一列之中，且一行一列之中各两格；<br>3、同在一行的这两格关于盘面中轴（c34中间的格线）轴对称、且同在一列的这两格关于盘面中轴（r34中间的格线）轴对称；<br>4、四格必须存在于对角线两侧，且两侧各两格；<br>5、两侧的四格必须一一关于对角线对称。<br>什么意思呢？如图所示，以下四格就满足上述给予的所有要求：</p>
+<p><img src="diagonal-sudoku-6-da-rule/DiagonalSix_HiddenRule_2.png" alt=""></p>
+<p>比如r25c6和r6c25四格，都不在对角线上；分属一行一列（r6和c6），而且恰有两格；r25c6确实对于盘面的中轴线轴对称、r6c25也是如此；四格也恰存在于捺对角线两侧，两侧也恰好各两格；并且r2c6和r6c2关于捺对角线对称、r5c6和r6c5关于捺对角线对称。</p>
+<p>由于满足这样一系列要求，所以四格内的填数一定至少有一个数是至少出现两次的（比如这里的3，有两个）。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -126,7 +125,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Hexo/">Hexo</a>
+  <span></span> <a href="/tags/数独/">数独</a><a href="/tags/潜规则/">潜规则</a>
   </div>
 
 </div>
@@ -135,7 +134,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/06/hello-world/" data-title="Hexo 使用教程 | Sunnie Shine&#39;s Blog" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/08/diagonal-sudoku-6-da-rule/" data-title="6 宫对角线数独的潜规则 | Sunnie Shine&#39;s Blog" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -148,14 +147,14 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/06/csharplang-01-is-as-operator/" title="C# 语义探究系列（1）：is 和 as 运算符">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C# 语义探究系列（1）：is 和 as 运算符</span>
+
+<div class="next">
+<a href="/2019/11/08/android-permissions/"  title="安卓权限设置">
+ <strong>下一篇：</strong><br/> 
+ <span>安卓权限设置
+</span>
 </a>
 </div>
-
 
 </nav>
 
@@ -169,7 +168,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开始"><span class="toc-number">1.</span> <span class="toc-text">开始</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#生成你的第一篇文章"><span class="toc-number">1.1.</span> <span class="toc-text">生成你的第一篇文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器上运行"><span class="toc-number">1.2.</span> <span class="toc-text">服务器上运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成静态的页面（写博客文章）"><span class="toc-number">1.3.</span> <span class="toc-text">生成静态的页面（写博客文章）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将本地内容发布到-GitHub-的同步仓库上"><span class="toc-number">1.4.</span> <span class="toc-text">将本地内容发布到 GitHub 的同步仓库上</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li></ol>
  
   </div>
 
