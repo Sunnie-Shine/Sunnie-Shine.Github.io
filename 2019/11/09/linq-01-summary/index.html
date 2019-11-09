@@ -1,0 +1,606 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>LINQ 教程（1）：from 和 select 语句 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add th">
+<meta name="keywords" content="C♯ 语言,LINQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LINQ 教程（1）：from 和 select 语句">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;linq-01-summary&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add th">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-09T14:24:05.222Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/09/linq-01-summary/" title="LINQ 教程（1）：from 和 select 语句" itemprop="url">LINQ 教程（1）：from 和 select 语句</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T13:14:25.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-LINQ？"><span class="toc-number">1.</span> <span class="toc-text">什么是 LINQ？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IEnumerable-lt-T-gt-类型简介"><span class="toc-number">2.</span> <span class="toc-text">IEnumerable&lt;T&gt; 类型简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始愉快学习吧！"><span class="toc-number">3.</span> <span class="toc-text">开始愉快学习吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#from-和-select-从句：取出所有元素"><span class="toc-number">3.1.</span> <span class="toc-text">from 和 select 从句：取出所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#where-从句：筛选出所有大于等于-8-的所有元素"><span class="toc-number">3.2.</span> <span class="toc-text">where 从句：筛选出所有大于等于 8 的所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><span class="toc-number">3.3.</span> <span class="toc-text">嵌套语句：筛选所有偶数序列里大于等于 8 的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">4.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#等价的-foreach-循环模式"><span class="toc-number">4.1.</span> <span class="toc-text">等价的 foreach 循环模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链模式"><span class="toc-number">4.2.</span> <span class="toc-text">方法链模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思考题"><span class="toc-number">4.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="什么是-LINQ？"><a href="#什么是-LINQ？" class="headerlink" title="什么是 LINQ？"></a>什么是 LINQ？</h2><p>LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为<strong>集成语言查询</strong>），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.<span class="keyword">where</span>(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你就会从控制台上获取到 8 和 9 两个数值。</p>
+<p>看起来似乎不太像是 SQL 哈，除了方法名 <code>Where</code> 用的是 SQL 的条件判断的名词。下面我们改写为等价的写法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            <span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                            <span class="keyword">where</span> d &gt;= <span class="number">8</span></span><br><span class="line">                            <span class="keyword">select</span> d;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在，你就会发现，这个查询语句 <code>from-in-where-select</code> 就很像是 SQL 里的 <code>select-from-where</code> 了。由于这个语法格式极其类似，所以我们大体上可以认为，C# 确实在语法层面实现了 SQL 那一套查询语句，而且普遍认为很好用。</p>
+<blockquote>
+<p>当然，查询语句是一个表达式，所以并不受空格字符的约束，你完全可以写成一行：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>这样依旧没有问题。当然了，这样的查询和前文是等价的，所以 <code>var</code> 表示的是 <code>IEnumerable&lt;int&gt;</code> 类型。</p>
+</blockquote>
+<h2 id="IEnumerable-lt-T-gt-类型简介"><a href="#IEnumerable-lt-T-gt-类型简介" class="headerlink" title="IEnumerable&lt;T&gt; 类型简介"></a><code>IEnumerable&lt;T&gt;</code> 类型简介</h2><p>这个类型是一个泛型类型，它表示一个可以使用 <code>foreach</code> 循环的基本列表接口类型。只要你实现了 <code>IEnumerable&lt;T&gt;</code> 里那一套成员，你就可以把这个类型的所有数据都用 <code>foreach</code> 循环遍历一遍。所以这个类型被称为“可枚举类型”、“可迭代类型”、“可列举类型”等等。其中的 <code>T</code> 是泛型参数，表示一个实体化类型，但目前还没有实现。当我们使用这个类型的时候，需要提供这个类型参数，并最终生成一个与该类型配套的完整的类型。比如前文里的 <code>IEnumerable&lt;int&gt;</code> 就是表示为元素为 <code>int</code> 类型的可枚举序列。</p>
+<h2 id="开始愉快学习吧！"><a href="#开始愉快学习吧！" class="headerlink" title="开始愉快学习吧！"></a>开始愉快学习吧！</h2><p>下面我们来学习一些基本的筛选模式。</p>
+<h3 id="from-和-select-从句：取出所有元素"><a href="#from-和-select-从句：取出所有元素" class="headerlink" title="from 和 select 从句：取出所有元素"></a><code>from</code> 和 <code>select</code> 从句：取出所有元素</h3><p>第一个要学习的就是 <code>from-in-select</code> 语句。我们依旧使用前文的数组序列，然后来看看下面标题上的这个问题如何得到。当然，这显然是废话。LINQ 的写法如下。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以了。我们把每一个元素取出来，其中的 <code>d</code> 称为<strong>范围变量</strong>（Range Variable），表示 LINQ 表达式里才奏效的变量，它不需要写出它的类型，而它原本的类型，就是整个序列里的每一个元素的类型，此处即 <code>int</code>，所以完整可以写成这样：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">int</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>当一般的集合数据类型下，我们都可以省略，除了非一维数组，我们不得不写出它的类型，因为非一维数组都仅仅实现了没有类型参数的 <code>IEnumerable</code> 接口，这使得元素在使用 <code>foreach</code> 循环的时候，得到的每一个元素都仅是 <code>object</code> 类型的。于是每一个元素都会被拆箱……</p>
+<h3 id="where-从句：筛选出所有大于等于-8-的所有元素"><a href="#where-从句：筛选出所有大于等于-8-的所有元素" class="headerlink" title="where 从句：筛选出所有大于等于 8 的所有元素"></a><code>where</code> 从句：筛选出所有大于等于 8 的所有元素</h3><p>实际上，这一点在前文已经说得比较清楚了，所以这里给出例子的代码即可。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以了。</p>
+<h3 id="嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><a href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素" class="headerlink" title="嵌套语句：筛选所有偶数序列里大于等于 8 的元素"></a>嵌套语句：筛选所有偶数序列里大于等于 8 的元素</h3><p>这个题目的难点在于，你需要先筛选出偶数，然后还要看大于等于 8。实际上，LINQ 是支持同步筛选的，即利用条件判断的运算符 <code>&amp;&amp;</code>、<code>||</code>、<code>!</code> 和 <code>^</code> 进行筛选。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span> &amp;&amp; d &gt;= <span class="number">8</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>这么写是完美的。当然，你可以拆分为两个部分。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line">                <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="comment">// And then selecting in all evens.</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>那么，此时我还要介绍一种写法。是当筛选出了所有偶数后，然后根据这个只有偶数的序列，再来筛选大于等于 8 的元素。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="function"><span class="keyword">from</span> d <span class="title">in</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">from</span> d <span class="keyword">in</span> array</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span></span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">select</span> d</span></span></span><br><span class="line"><span class="function"><span class="params">                </span>) <span class="keyword">where</span> d &gt;</span>= <span class="number">8</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Also you can write like this:</span></span><br><span class="line"><span class="keyword">var</span> tempSeries = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span> <span class="keyword">select</span> d;</span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> tempSeries <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>那么执行效果就是，先看内层括号，筛选出所有的偶数，然后组成序列后，再从这个序列里得到大于等于 8 的元素。但是这样显然比前两个写法耗时，而且不推荐这样写。但是这里为了讲解语法规则和逻辑，所以我们作为参考列举出来了。另外，LINQ 甚至支持去掉嵌套语句的小括号，所以你这么写，编译器完全是认识的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span></span><br><span class="line">                    <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                    <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line">                    <span class="keyword">select</span> d</span><br><span class="line">                <span class="keyword">where</span> d &gt;= <span class="number">8</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
+
+<p>从这里就可以看出，微软设计 C# 语言做到了非常细节的地方。细节除了这个括号外，还有这个范围变量 <code>d</code>，在这个嵌套查询里，我们使用了完全一样的范围变量名 <code>d</code>，但依旧不会出错。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>LINQ 可以使用查询表达式，也可以使用方法链来书写，这取决于你的风格和思维方式。如果你绝对查询表达式写起来好看，也喜欢写这种的话，就写这种；如果你觉得方法链更利于学习原理的话，你可以使用方法链。这两种写法在运行期间是等价的，也就是说，不论是哪一种写法，最终都会被翻译为完全一样的代码。</p>
+<p>那么，前文提到的所有查询表达式都会被如何转换为方法链呢？</p>
+<h3 id="等价的-foreach-循环模式"><a href="#等价的-foreach-循环模式" class="headerlink" title="等价的 foreach 循环模式"></a>等价的 <code>foreach</code> 循环模式</h3><p>首先，我们前文提到的 <code>d</code>，前文叫范围变量，那么为啥它被称为变量呢？SQL 里不是都是筛选每一个表里的字段吗？是的，LINQ 在提供到语言层面的时候，它被认为是用来提取一个对象的属性的，所以这里 <code>in</code> 后面的东西，就是 <code>foreach</code> 循环的序列，而 <code>d</code> 则是 <code>foreach</code> 循环遍历出来的每一个实体对象（此处指的是这里的 <code>int</code> 数据）。所以，实际上，原本的写法是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">int</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Is equivalent to</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">int</span> d <span class="keyword">in</span> array)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以它实际上就是一个 <code>foreach</code> 循环。接着，我们试着为其插入条件语句。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Is equi to</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> d <span class="keyword">in</span> array)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (d &gt;= <span class="number">8</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Do something...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// And also equi to</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> d <span class="keyword">in</span> selection)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以，可以看到，代码实际上是很简单的。</p>
+<h3 id="方法链模式"><a href="#方法链模式" class="headerlink" title="方法链模式"></a>方法链模式</h3><p>不过，LINQ 还有方法链的写法。我们也来看一下。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Is equi to</span></span><br><span class="line"><span class="keyword">var</span> selection = array</span><br><span class="line">    .Where(d =&gt; d &gt;= <span class="number">8</span>)</span><br><span class="line">    .Select(d =&gt; d);</span><br><span class="line"></span><br><span class="line"><span class="comment">// One line.</span></span><br><span class="line"><span class="keyword">var</span> selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>).Select(d =&gt; d);</span><br><span class="line"></span><br><span class="line"><span class="comment">// When the lambda parameter of Select and Where clause</span></span><br><span class="line"><span class="comment">// is same as `a =&gt; a`, the clause can be deleted.</span></span><br><span class="line"><span class="keyword">var</span> selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
+
+<p>那么，我们来阐述一下，这个方法链到底是怎么起作用的。</p>
+<p>首先，在 LINQ 的内部实现之中，<code>Where</code> 方法计算的表达式会被推后执行，因为执行这样的语句是耗时间的，程序为了避免立马执行，就先考虑到性能的问题，把条件信息和元素的数据信息全部提取出来，放在一旁，产生出一个可执行筛选的对象（实际上称为 <code>WhereEnumerableIterator&lt;T&gt;</code> 对象）。这个对象并没有立马得到执行，它此时只是一个提供了筛选功能的对象而已。而真正需要执行筛选的操作，则直接推后到了 <code>foreach</code> 循环调用的时候，不得不去遍历该集合时，内部的元素才会得到遍历，并执行筛选。</p>
+<p>所以，可以看出来，微软的工程师们还是很厉害的，想到了一个万全之计推后了 <code>foreach</code> 的执行，同时也解决了影响性能的问题。当这个集合一直没有被 <code>foreach</code> 调用到，那么这个语句就只是一个语句，生成的对象也不会得到任何结果。比如，上述的四个变量都是这么去书写的，导致得到的都是这个所谓的 <code>WhereEnumerableIterator&lt;T&gt;</code> 对象，而这个对象在没有得到 <code>foreach</code> 调用的情况下，我们如果此时尝试不执行 <code>foreach</code> 循环的前提下就取出元素，那么这样是否可能呢？是可能的，但这样做只会让程序陷入“危险”的境地，因为元素并没有没迭代，就想要获取里面的元素，这显然是不现实的。</p>
+<p>下面我们再来看 <code>Select</code> 方法。<code>Select</code> 方法实际上开始调用了 <code>foreach</code> 循环。此时，<code>foreach</code> 循环开始执行时，就意味着前文的 <code>WhereEnumerableIterator&lt;T&gt;</code> 开始从此处遍历。这也就是为什么，微软设计 LINQ 的时候，一定要你书写 <code>Select</code> 方法、写 <code>select</code> 语句、或是在没有 <code>Select</code> 方法时一定要在取值的地方加上 <code>foreach</code> 的原因。</p>
+<p>当然，一些内置的 LINQ 方法也自带了循环操作，比如计算数据的总个数 <code>Count</code> 方法。注意，这个是 LINQ 提供的一个扩展方法，所以需要为 <code>Count</code> 后添加一对空的小括号。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Console.WriteLine((<span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d).Count());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Or</span></span><br><span class="line">Console.WriteLine(array.Where(d &gt;= <span class="number">8</span>).Count());</span><br></pre></td></tr></table></figure>
+
+<p>这样，你就会得到结果 2（8 和 9 都大于等于 8）。</p>
+<h3 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h3><p>在前文我们提到了 <code>where</code> 从句的并联和嵌套查询语句，那么你能否根据上面给出的逻辑，思考出这两种情况的执行逻辑呢？</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/Select.cs,d3e6cf8553f8ad92" target="_blank" rel="noopener">Linq.Enumerable.Select 方法</a></li>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/Where.cs,e11d6842eee7c2e6" target="_blank" rel="noopener">Linq.Enumerable.Where 方法</a></li>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/Where.cs,ed14299f42af7eb2,references" target="_blank" rel="noopener">Linq.WhereEnumerableIterator 对象</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/LINQ/">LINQ</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/09/linq-01-summary/" data-title="LINQ 教程（1）：from 和 select 语句 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/09/bayes-rule/"  title="贝叶斯公式解读">
+ <strong>下一篇：</strong><br/> 
+ <span>贝叶斯公式解读
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-LINQ？"><span class="toc-number">1.</span> <span class="toc-text">什么是 LINQ？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IEnumerable-lt-T-gt-类型简介"><span class="toc-number">2.</span> <span class="toc-text">IEnumerable&lt;T&gt; 类型简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始愉快学习吧！"><span class="toc-number">3.</span> <span class="toc-text">开始愉快学习吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#from-和-select-从句：取出所有元素"><span class="toc-number">3.1.</span> <span class="toc-text">from 和 select 从句：取出所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#where-从句：筛选出所有大于等于-8-的所有元素"><span class="toc-number">3.2.</span> <span class="toc-text">where 从句：筛选出所有大于等于 8 的所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><span class="toc-number">3.3.</span> <span class="toc-text">嵌套语句：筛选所有偶数序列里大于等于 8 的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">4.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#等价的-foreach-循环模式"><span class="toc-number">4.1.</span> <span class="toc-text">等价的 foreach 循环模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链模式"><span class="toc-number">4.2.</span> <span class="toc-text">方法链模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思考题"><span class="toc-number">4.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语言/" title="C 语言">C 语言<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'sunnieblog';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
