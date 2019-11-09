@@ -50,9 +50,9 @@
 				<ul>
 					<ul>
 					 
-						<li><a href="/">主页</a></li>
+						<li><a href="/archives">归档</a></li>
 					
-						<li><a href="/archives">文章归档</a></li>
+						<li><a href="/categories">分类</a></li>
 					
 						<li><a href="/tags">标签</a></li>
 					
@@ -73,6 +73,77 @@
     </header>
     <div id="container">
       <div id="main">
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/09/windoku-da-rule/" title="窗口数独的潜规则" itemprop="url">窗口数独的潜规则</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T09:47:50.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="窗口数独的简单介绍"><a href="#窗口数独的简单介绍" class="headerlink" title="窗口数独的简单介绍"></a>窗口数独的简单介绍</h2><p>除了需要满足标准数独的规则外，还需要使得四个涂色粗线的“窗口”内的数字也都要包括数字1到9各一个。</p>
+<p><img src="Windoku.png" alt=""></p>
+<p>它的解答如下。</p>
+<p><img src="WindokuSolution.png" alt=""></p>
+<h2 id="潜规则——窗口-18-宫"><a href="#潜规则——窗口-18-宫" class="headerlink" title="潜规则——窗口 18 宫"></a>潜规则——窗口 18 宫</h2><p>窗口数独题有一个潜规则。</p>
+<p><img src="18Wins.png" alt=""></p>
+<p>如图所示，除了基本的9个宫不重复和4个窗口也满足以外，相同涂色的9个单元格所构成的一个区域内，也不能包括重复。</p>
+<p>数数看，恰好有18个“宫”呢！9个基本宫，外加4个窗口宫，再加5个额外“宫”！</p>
+<p>原因是，任意观察一组非粉红色的涂色区域。找到这些涂色单元格夹住的两个窗口宫，它们一起所处的三行（或三列）应该包含三组数字1到9。比如我们观察红色涂色区域。算上中间夹住的两个窗口宫，它们所处的三列，一定是三组数字1到9。</p>
+<p><img src="18Wins_Detail.png" alt=""></p>
+<p>不过这27个单元格去掉2个窗口宫后，剩下9格就一定也是一组1到9。</p>
+<p>所以，其他的三个非粉红色区域也是这样类似的推导方式。而最终粉红色区域，则是将盘面上所有的涂色区域和4个窗口宫得到的8组数字1到9后，最终剩下来的9格。它们自成一组。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%BD%9C%E8%A7%84%E5%88%99/">潜规则</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/数独/">数独</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/09/windoku-da-rule/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
 
    
     
@@ -179,6 +250,20 @@
 <li><strong>二进制小数</strong>（Binary Decimal）：使用二进制格式表达出来的小数；</li>
 <li><strong>浮点小数</strong>（Floating Point Decimal）：二进制小数存储在电脑里的一种存储机制，类似于科学计数法，不过是表达为 $a \times 2^b$ 的格式；</li>
 <li><strong>精度</strong>（Accuracy）：表示表达出一个完整数据和原始数据比较起来的完全精确的程度，在 C 语言里特指小数转为二进制小数后，在存放为浮点小数时，表达出来的数值和原始数值相差多少个小数位。</li>
+</ul>
+<p>下面我们来说一下精度和二进制小数的东西。</p>
+<h2 id="精度和二进制小数"><a href="#精度和二进制小数" class="headerlink" title="精度和二进制小数"></a>精度和二进制小数</h2><p>一般在学校里，老师都会讲解如何把一个数字利用二进制表达出来。可它们并没有讲解，如何表示一个小数，以及一个负数。不过，我会带领大家认识一下，如何表示一个二进制小数，使用 0 和 1。首先，我们举个例子。</p>
+<h3 id="将-0-15625-转为-0-和-1"><a href="#将-0-15625-转为-0-和-1" class="headerlink" title="将 0.15625 转为 0 和 1"></a>将 0.15625 转为 0 和 1</h3><p>表示小数的方式很简单。既然表示整数利用的是<strong>除2取整</strong>的模式，那么小数自然就是<strong>乘2取余</strong>的模式。<br>$$<br>\begin{matrix}<br>0.15625 &amp; \times &amp; 2 &amp; = &amp; 0.3125 &amp; - &amp; 0 &amp; = &amp; 0.3125\<br>0.3125  &amp; \times &amp; 2 &amp; = &amp; 0.625  &amp; - &amp; 0 &amp; = &amp; 0.625\<br>0.625   &amp; \times &amp; 2 &amp; = &amp; 1.25   &amp; - &amp; 1 &amp; = &amp; 0.25\<br>0.25    &amp; \times &amp; 2 &amp; = &amp; 0.5    &amp; - &amp; 0 &amp; = &amp; 0.5\<br>0.5     &amp; \times &amp; 2 &amp; = &amp; 1      &amp; - &amp; 1 &amp; = &amp; 0 &amp; (\text{结束})\<br>\end{matrix}<br>$$<br>大致说一下。从第一步开始，每一次都把数字乘以 2，得到的结果的整数部分提取出来，然后做减法，使得数字一直要保持小于 0 的状态。将得到的结果再一次迭代到下一轮计算里。</p>
+<p>比如这个示例里，我们把 0.15625 乘以 2，得到 0.3125，整数部分为 0，把它提取出来，做减法得到 0.3125（因为是减去 0，所以数字并没变化），然后把这个数继续乘以 2，得到 0.625，整数部分为 0，继续提取出来，然后用 0.625 乘以 2，得到 1.25，提取整数部分 1，再将 0.25 乘以 2，继续往下做，直到我们得到 0 结束计算。</p>
+<p>最终，我们得到的数字 0、0、1、0、1 即是二进制小数表达的小数部分，由于这个数的整数部分本来就是 0，所以整数部分无需我们作更多的二进制表达的转换，所以这个数的二进制表示就是 $0.00101_2$。</p>
+<h3 id="能遇到十进制表示里的循环小数类似的情况吗？"><a href="#能遇到十进制表示里的循环小数类似的情况吗？" class="headerlink" title="能遇到十进制表示里的循环小数类似的情况吗？"></a>能遇到十进制表示里的循环小数类似的情况吗？</h3><p>如果我们尝试把 0.3 按上述逻辑转换为二进制小数的时候，就会发现异样：<br>$$<br>\begin{matrix}<br>0.3 &amp; \times &amp; 2 &amp; = &amp; 0.6 &amp; - &amp; 0 &amp; = &amp; 0.6\<br>0.6 &amp; \times &amp; 2 &amp; = &amp; 1.2 &amp; - &amp; 1 &amp; = &amp; 0.2\<br>0.2 &amp; \times &amp; 2 &amp; = &amp; 0.4 &amp; - &amp; 0 &amp; = &amp; 0.4\<br>0.4 &amp; \times &amp; 2 &amp; = &amp; 0.8 &amp; - &amp; 0 &amp; = &amp; 0.8\<br>0.8 &amp; \times &amp; 2 &amp; = &amp; 1.6 &amp; - &amp; 1 &amp; = &amp; 0.6 &amp; \text{(回到 0.6 的循环)}\<br>    &amp;        &amp;   &amp;   &amp; \text{…}<br>\end{matrix}<br>$$<br>可以看到，在计算 0.3 的时候，运算总能得到 0.3、0.6、0.2、0.4、0.8、0.6、0.2、0.4、……的序列，后面无穷无尽。所以，0.3 的二进制表示就是 $0.0\dot100\dot1_2$。</p>
+<h3 id="现在再来说精度的问题"><a href="#现在再来说精度的问题" class="headerlink" title="现在再来说精度的问题"></a>现在再来说精度的问题</h3><p>正是因为数字并不能完整转换为准确的二进制表示，比如 0.3，所以表示上一定会存在精度的偏差。比如 0.3 在二进制转换后，由于无穷无尽的关系，我们只能在 <code>float</code>、<code>double</code> 或 <code>long double</code> 类型表示完整的二进制位数后，舍弃掉后面的部分，于是这个数肯定就不等于原始数值了。</p>
+<p>不过，二进制表达是很复杂的，所以这里我不打算展开讲解，有兴趣的小伙伴可以看下网上有关 IEEE 754 的标准规范，这个就是专门规定如何把小数表示为二进制表示，存储到程序里的规范。</p>
+<p>这里告诉大家的是，经过这种精心转换的模式后，我们有了如下的结论：</p>
+<ul>
+<li><code>float</code> 类型的小数，精度是表示为十进制数的情况下的 6 或 7 位有效数字（6 或 7 的其一，详细情况则取决于二进制表示，这里不展开说明）；</li>
+<li><code>double</code> 类型的小数，精度是表示为十进制数的情况下的 14 或 15 位有效数字；</li>
+<li><code>long double</code> 类型取决于系统实现，所以这里无法给出精确的范围，大约精确到 19 位有效数字。</li>
 </ul>
 <h2 id="所占字节大小"><a href="#所占字节大小" class="headerlink" title="所占字节大小"></a>所占字节大小</h2><p>大家都知道，数据存储到电脑里都是以一个叫做“字节”的单位作为衡量依据的，那么这些数据类型都对应了一个固定的、绝对的字节数，它就表示元素存进去时，用这个类型就需要占据多大的内存空间的容量。表格如下：</p>
 <table>
@@ -404,10 +489,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/">C 语言</a>►<a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/%E6%95%99%E7%A8%8B/">教程</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C/">C</a><a href="/tags/C-语法/">C 语法</a><a href="/tags/C-语法系列/">C 语法系列</a>
+  <span></span> <a href="/tags/C-语言/">C 语言</a>
   </div>
 
 </div>
@@ -494,10 +584,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/">C 语言</a>►<a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/%E6%95%99%E7%A8%8B/">教程</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C/">C</a><a href="/tags/C-语法/">C 语法</a><a href="/tags/C-语法系列/">C 语法系列</a>
+  <span></span> <a href="/tags/C-语言/">C 语言</a>
   </div>
 
 </div>
@@ -707,10 +802,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/">C♯ 语言</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/CSharp/">CSharp</a><a href="/tags/CSharp-类型详解系列/">CSharp 类型详解系列</a>
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/C♯-语言语法/">C♯ 语言语法</a>
   </div>
 
 </div>
@@ -781,10 +881,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%BD%9C%E8%A7%84%E5%88%99/">潜规则</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/数独/">数独</a><a href="/tags/数独潜规则/">数独潜规则</a>
+  <span></span> <a href="/tags/数独/">数独</a>
   </div>
 
 </div>
@@ -905,6 +1010,11 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>►<a class="article-category-link" href="/categories/Java/%E5%AE%89%E5%8D%93/">安卓</a>
+</div>
+
 
   <div class="article-tags">
   
@@ -963,10 +1073,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/LINQ/">LINQ</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/CSharp/">CSharp</a><a href="/tags/数独/">数独</a>
+  <span></span> <a href="/tags/数独/">数独</a><a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
   </div>
 
 </div>
@@ -1111,10 +1226,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/">C♯ 语言</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E7%B3%BB%E5%88%97/">查漏补缺系列</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/CSharp/">CSharp</a><a href="/tags/CSharp-语法/">CSharp 语法</a><a href="/tags/CSharp-语法查漏补缺系列/">CSharp 语法查漏补缺系列</a>
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/C♯-语言语法/">C♯ 语言语法</a>
   </div>
 
 </div>
@@ -1188,10 +1308,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/GDI/">GDI+</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/CSharp/">CSharp</a><a href="/tags/GDI/">GDI+</a>
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/GDI/">GDI+</a>
   </div>
 
 </div>
@@ -1358,10 +1483,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/">C♯ 语言</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E7%B3%BB%E5%88%97/">查漏补缺系列</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/CSharp/">CSharp</a><a href="/tags/CSharp-语法/">CSharp 语法</a><a href="/tags/CSharp-语法查漏补缺系列/">CSharp 语法查漏补缺系列</a>
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/C♯-语言语法/">C♯ 语言语法</a>
   </div>
 
 </div>
@@ -1446,6 +1576,11 @@
     </div>
     <footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%96%87%E5%AD%A6/">文学</a>►<a class="article-category-link" href="/categories/%E6%96%87%E5%AD%A6/%E8%AF%97%E8%AF%8D/">诗词</a>
+</div>
 
 
   <div class="article-tags">
@@ -1543,10 +1678,15 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/">C♯ 语言</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF-%E8%AF%AD%E8%A8%80/%E8%AF%AD%E6%B3%95/%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E7%B3%BB%E5%88%97/">查漏补缺系列</a>
+</div>
+
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/CSharp/">CSharp</a><a href="/tags/CSharp-语法/">CSharp 语法</a><a href="/tags/CSharp-语法查漏补缺系列/">CSharp 语法查漏补缺系列</a>
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/C♯-语言语法/">C♯ 语言语法</a>
   </div>
 
 </div>
@@ -1587,7 +1727,7 @@
 </header>
     <div class="article-content">
         
-        <p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
+        <p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇介绍的文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
 <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
 
@@ -1614,6 +1754,11 @@
     </div>
     <footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+</div>
 
 
   <div class="article-tags">
@@ -1658,6 +1803,81 @@
 
 
   
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/C-语言/" title="C 语言">C 语言<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯/" title="C♯">C♯<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯/LINQ/" title="LINQ">LINQ<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯-语言/语法/内置类型详解系列/" title="内置类型详解系列">内置类型详解系列<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C-语言/语法/教程/" title="教程">教程<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数独/" title="数独">数独<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/文学/" title="文学">文学<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯-语言/语法/查漏补缺系列/" title="查漏补缺系列">查漏补缺系列<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数独/潜规则/" title="潜规则">潜规则<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/文学/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C-语言/语法/" title="语法">语法<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C♯-语言/语法/" title="语法">语法<sup>4</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
 
   
 <div class="tagslist">
@@ -1665,31 +1885,23 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/CSharp/" title="CSharp">CSharp<sup>6</sup></a></li>
+				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/CSharp-语法/" title="CSharp 语法">CSharp 语法<sup>3</sup></a></li>
+				<li><a href="/tags/C♯-语言语法/" title="C♯ 语言语法">C♯ 语言语法<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/CSharp-语法查漏补缺系列/" title="CSharp 语法查漏补缺系列">CSharp 语法查漏补缺系列<sup>3</sup></a></li>
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>2</sup></a></li>
+				<li><a href="/tags/C-语言/" title="C 语言">C 语言<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C-语法/" title="C 语法">C 语法<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C-语法系列/" title="C 语法系列">C 语法系列<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/数独/" title="数独">数独<sup>2</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>2</sup></a></li>
 			
 		
 			
@@ -1705,19 +1917,15 @@
 			
 		
 			
-				<li><a href="/tags/CSharp-类型详解系列/" title="CSharp 类型详解系列">CSharp 类型详解系列<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数独潜规则/" title="数独潜规则">数独潜规则<sup>1</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>1</sup></a></li>
 			
 		
 		</ul>
