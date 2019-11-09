@@ -1,0 +1,585 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C 语言语法系列：开篇 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="欢迎跟我一起学习 C 语言。我们会列出一些常见的语法特性，以及对应使用场合，以及它们的基本考点。 你先不要着急，看起来下面的内容都偏难，因为它是超纲的知识点，但在本文里，它们不会被讲解得非常难，所以本应该在后续才会提到的这些东西，在这里也只是做个了解，而且你只需要知道这些东西到底是个什么框架就可以了。 语句C 语言里，以分号结尾的一整段文字叫做一句话。 main 函数整个程序的代码一般长这样： 1">
+<meta name="keywords" content="C,C 语法,C 语法系列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言语法系列：开篇">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;clang-00-beginning&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="欢迎跟我一起学习 C 语言。我们会列出一些常见的语法特性，以及对应使用场合，以及它们的基本考点。 你先不要着急，看起来下面的内容都偏难，因为它是超纲的知识点，但在本文里，它们不会被讲解得非常难，所以本应该在后续才会提到的这些东西，在这里也只是做个了解，而且你只需要知道这些东西到底是个什么框架就可以了。 语句C 语言里，以分号结尾的一整段文字叫做一句话。 main 函数整个程序的代码一般长这样： 1">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-09T03:07:10.685Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/tags">Tags</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/09/clang-00-beginning/" title="C 语言语法系列：开篇" itemprop="url">C 语言语法系列：开篇</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T02:26:28.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#语句"><span class="toc-number">1.</span> <span class="toc-text">语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#main-函数"><span class="toc-number">2.</span> <span class="toc-text">main 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#空行和语义分割"><span class="toc-number">3.</span> <span class="toc-text">空行和语义分割</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#标签"><span class="toc-number">3.1.</span> <span class="toc-text">标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用大括号进行语义分割"><span class="toc-number">3.2.</span> <span class="toc-text">用大括号进行语义分割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#借用-pragma-region-来作语义分割"><span class="toc-number">3.3.</span> <span class="toc-text">借用 #pragma region 来作语义分割</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注释"><span class="toc-number">4.</span> <span class="toc-text">注释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#include-指令"><span class="toc-number">5.</span> <span class="toc-text">#include 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#printf-语句"><span class="toc-number">6.</span> <span class="toc-text">printf 语句</span></a></li></ol>
+		
+		</div>
+		
+		<p>欢迎跟我一起学习 C 语言。我们会列出一些常见的语法特性，以及对应使用场合，以及它们的基本考点。</p>
+<p>你先不要着急，看起来下面的内容都偏难，因为它是超纲的知识点，但在本文里，它们不会被讲解得非常难，所以本应该在后续才会提到的这些东西，在这里也只是做个了解，而且你只需要知道这些东西到底是个什么框架就可以了。</p>
+<h2 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h2><p>C 语言里，以分号结尾的一整段文字叫做一句话。</p>
+<h2 id="main-函数"><a href="#main-函数" class="headerlink" title="main 函数"></a><code>main</code> 函数</h2><p>整个程序的代码一般长这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    </span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中的第 6 行才是我们需要关心的，其它都不用关心。由整个大括号括起来的部分，是 <code>main</code> 函数的主要部分。程序一定从 <code>main</code> 函数进入，并从 <code>return 0;</code> 语句退出。即，整个程序的执行流程一定是从第 4 行开始进去，然后从第 9 行执行完毕后退出。期间一句一句执行，从上到下。</p>
+<p>建议你把整个代码内容的框架写成上面这样的形式，其中的 <strong>May be not exist</strong> 的所在行你可以不写。但第 4 行，建议你这么写，有些书上写的是 <code>void main()</code>、<code>void main(void)</code>、<code>void main(int argc, char *argv[])</code>、<code>int main()</code>，这四种都是不合规矩的写法。原因将在后面阐述。</p>
+<h2 id="空行和语义分割"><a href="#空行和语义分割" class="headerlink" title="空行和语义分割"></a>空行和语义分割</h2><p>第 7 行叫<strong>空行</strong>（Null Line），这一行不写东西，仅仅用于分割代码的上下部分，用于分清楚执行逻辑。比如这个程序里，第 7 行前面是用于输出（稍后会解释 <code>printf</code> 函数），第 7 行后面是用于退出程序。所以程序可以尝试通过这样的方式来分割一个大括号里很多语句之间的执行逻辑。</p>
+<p>分割语义有多种方式，你还可以通过下面的方式。</p>
+<h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">Printing:</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">ExitTheProgram:</span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过牺牲一行代码，写成文字加冒号的方式，来表示一个<strong>标签</strong>（Label）。这样的标签文字可以达到分割语义的效果，但注意的是，标签的文字只能以数字、字母、下划线 <code>_</code> 三种东西进行组合，且第一个文字不能是数字。比如，<code>Hello world</code> 和 <code>2_Hello</code> 都是命名格式不正确的标签。</p>
+<h3 id="用大括号进行语义分割"><a href="#用大括号进行语义分割" class="headerlink" title="用大括号进行语义分割"></a>用大括号进行语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Printing.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Exit the program.</span></span><br><span class="line">    &#123;</span><br><span class="line">        system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样可以达到分割效果。</p>
+<h3 id="借用-pragma-region-来作语义分割"><a href="#借用-pragma-region-来作语义分割" class="headerlink" title="借用 #pragma region 来作语义分割"></a>借用 <code>#pragma region</code> 来作语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Printing</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Exit the program</span></span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样依旧可以进行语义分割，而且 Visual Studio 还能根据你分割的方式，折叠和展开代码。不过请注意的是，这种分割方式仅用于 Visual Studio，在其它的软件里，无法使用这种方式。</p>
+<blockquote>
+<p>注意，所有上面提到的语义分割所牺牲的代码行都是无意义的，它们都不是真正的执行代码，你可以当成注释一般的存在。</p>
+</blockquote>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>在第 2 和第 8 行里，以双斜杠 <code>//</code> 形式书写的内容（包含当前行里，符号后面的所有内容）称为<strong>注释</strong>（Comment），可以写一些任何你觉得想写的东西，不需要是程序才认识的东西。这些文字有助于你看懂代码逻辑。所以这些东西叫注释，就是这个原因。</p>
+<p>还有一种注释，可以跨行书写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">This is multi-line comment,</span></span><br><span class="line"><span class="comment">and you can write anything you want,</span></span><br><span class="line"><span class="comment">even if the comment spans multi lines.</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>这种注释叫多行注释，以 <code>/*</code> 和 <code>*/</code> 作为配对，可以理解为一个特殊的括号。期间的所有内容都会被当作注释内容，即使跨行书写也是如此。但注意，多行注释的开头和结尾符号不能嵌套，即</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    /*</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+
+<p>这种是不允许的。程序会被认定，处于第 1 行的 <code>/*</code> 符号一直到第 7 行结束，而非第 8 行。</p>
+<h2 id="include-指令"><a href="#include-指令" class="headerlink" title="#include 指令"></a><code>#include</code> 指令</h2><p>原代码的第 1、2 行叫做<strong>预处理器指令</strong>（Preprocessor Command），以井号 <code>#</code> 开头，包含 <code>#pragma</code>、<code>#include</code> 等众多指令，这里掌握 <code>#include</code> 指令。这个指令表示，将系统自带的操作引入到程序之中，使得后面我们写代码的时候可以使用写好的代码，不用自己去写。这些提供好的代码，都是以 <code>*.h</code> 的文件形式存放，它们叫<strong>头文件</strong>（Header File），即放在代码头部的文件。其中的 stdio.h 叫做<strong>标准输入输出流头文件</strong>（Standard Input &amp; Output），简称 std i o。</p>
+<p>第 2 行是提供 <code>system</code> 命令（处于代码第 8 行），用于暂停程序。这些程序统称为<strong>命令行程序</strong>（Command-Line Application），或<strong>控制台程序</strong>（Console Application），这些程序没有所谓的退出按钮和最小、最大化按钮，它们仅仅被黑色风格的框约束着。黑色风格的框叫做<strong>控制台</strong>（Console），是只用于输入命令来控制操作系统或程序执行逻辑的代码化窗口。这意味着，这里面只会输入一些奇怪的代码文字，而没有 QQ 这样美丽的界面。</p>
+<h2 id="printf-语句"><a href="#printf-语句" class="headerlink" title="printf 语句"></a><code>printf</code> 语句</h2><p><code>printf</code> 语句是用于把文字显示到控制台上的语句，它可以原封不动把我们书写在 <code>printf</code> 括号里的文字全部显示出来。例如原示例里，最终执行程序会得到的结果是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello, world!</span><br></pre></td></tr></table></figure>
+
+<p>注意，<code>\n</code> 没有输出，是因为 <code>\n</code> 在双引号里被表示为换行，并非是原本的 <code>\</code> 和 <code>n</code> 两个符号。所有这样奇特的符号都以 <code>\</code> 作为开头，系统提供了对应的转换表，在这里我们不多作出说明。另外，写在双引号里的 <code>%%</code> 将表示输出显示一个 <code>%</code> 符号。别问我为什么要两个符号才会输出显示一个。这一点后面再说。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a><a href="/tags/C-语法/">C 语法</a><a href="/tags/C-语法系列/">C 语法系列</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/09/clang-00-beginning/" data-title="C 语言语法系列：开篇 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2019/11/09/clang-01-datatype/" title="C 语法系列（1）：数据类型">
+  <strong>上一篇：</strong><br/>
+  <span>
+  C 语法系列（1）：数据类型</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/11/08/common-01-nullable-types/"  title="C# 内置类型详解系列（1）：可空类型">
+ <strong>下一篇：</strong><br/> 
+ <span>C# 内置类型详解系列（1）：可空类型
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#语句"><span class="toc-number">1.</span> <span class="toc-text">语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#main-函数"><span class="toc-number">2.</span> <span class="toc-text">main 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#空行和语义分割"><span class="toc-number">3.</span> <span class="toc-text">空行和语义分割</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#标签"><span class="toc-number">3.1.</span> <span class="toc-text">标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用大括号进行语义分割"><span class="toc-number">3.2.</span> <span class="toc-text">用大括号进行语义分割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#借用-pragma-region-来作语义分割"><span class="toc-number">3.3.</span> <span class="toc-text">借用 #pragma region 来作语义分割</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注释"><span class="toc-number">4.</span> <span class="toc-text">注释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#include-指令"><span class="toc-number">5.</span> <span class="toc-text">#include 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#printf-语句"><span class="toc-number">6.</span> <span class="toc-text">printf 语句</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C/" title="C#">C#<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法/" title="C# 语法">C# 语法<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法查漏补缺系列/" title="C# 语法查漏补缺系列">C# 语法查漏补缺系列<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法/" title="C 语法">C 语法<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法系列/" title="C 语法系列">C 语法系列<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-类型详解系列/" title="C# 类型详解系列">C# 类型详解系列<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独潜规则/" title="数独潜规则">数独潜规则<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'sunnieblog';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

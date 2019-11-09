@@ -4,22 +4,20 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C# 语法查漏补缺系列（1）：is 和 as 运算符 | 向向的博客</title>
+    <title>向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="开篇各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 is 和 as 运算符。 is 运算符关键字介绍is 就好比 Java 语言里的 instanceof，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 true；而否则返回 false，如下示例。 12345string hello = &quot;Hello&quot;;boo">
-<meta name="keywords" content="C#,C# 语法,C# 语法查漏补缺系列">
-<meta property="og:type" content="article">
-<meta property="og:title" content="C# 语法查漏补缺系列（1）：is 和 as 运算符">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;06&#x2F;csharplang-01-is-as-operator&#x2F;index.html">
+    <meta name="description" content="This is my blog...">
+<meta property="og:type" content="website">
+<meta property="og:title" content="向向的博客">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;page&#x2F;2&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="开篇各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 is 和 as 运算符。 is 运算符关键字介绍is 就好比 Java 语言里的 instanceof，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 true；而否则返回 false，如下示例。 12345string hello = &quot;Hello&quot;;boo">
+<meta property="og:description" content="This is my blog...">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-09T02:32:21.624Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -74,10 +72,12 @@
 </div>
     </header>
     <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-  
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
+      <div id="main">
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
   <h1 itemprop="name">
     
       <a href="/2019/11/06/csharplang-01-is-as-operator/" title="C# 语法查漏补缺系列（1）：is 和 as 运算符" itemprop="url">C# 语法查漏补缺系列（1）：is 和 as 运算符</a>
@@ -91,16 +91,9 @@
     
   </p>
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开篇"><span class="toc-number">1.</span> <span class="toc-text">开篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#is-运算符"><span class="toc-number">2.</span> <span class="toc-text">is 运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关键字介绍"><span class="toc-number">2.1.</span> <span class="toc-text">关键字介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#is-null-和-is-constant-模式"><span class="toc-number">2.2.</span> <span class="toc-text">is null 和 is constant 模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#as-运算符"><span class="toc-number">3.</span> <span class="toc-text">as 运算符</span></a></li></ol>
-		
-		</div>
-		
-		<h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 <code>is</code> 和 <code>as</code> 运算符。</p>
+    <div class="article-content">
+        
+        <h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 <code>is</code> 和 <code>as</code> 运算符。</p>
 <h2 id="is-运算符"><a href="#is-运算符" class="headerlink" title="is 运算符"></a><code>is</code> 运算符</h2><h3 id="关键字介绍"><a href="#关键字介绍" class="headerlink" title="关键字介绍"></a>关键字介绍</h3><p><code>is</code> 就好比 Java 语言里的 <code>instanceof</code>，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 <code>true</code>；而否则返回 <code>false</code>，如下示例。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> hello = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> <span class="keyword">object</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result3 = hello <span class="keyword">is</span> IEnumerable&lt;<span class="keyword">char</span>&gt;; <span class="comment">// also true</span></span><br></pre></td></tr></table></figure>
 
@@ -142,9 +135,14 @@
 
 <p>但请注意，<code>null</code> 包容运算符（有时候也叫 <code>null</code> 禁用运算符，null-suppress operator）作用的内容是转换结果，而不是类型，所以感叹号应加在整体上，故需要打小括号。</p>
 <p>但是，如果你不小心，错把 <code>o</code> 变量认为是“一定为 <code>string</code>”，而为其加上了该符号后，后续的执行语句在报错时会显得很隐蔽。即如果代码报错，显示 <code>NullReferenceException</code> 时，有可能你发现该对象的类型并没有带 <code>?</code> 后缀，而显得非常迷惑。</p>
-  
-	</div>
-		<footer class="article-footer clearfix">
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
 <div class="article-catetags">
 
 
@@ -157,60 +155,100 @@
 
 
 
-	<div class="article-share" id="share">
-	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/06/csharplang-01-is-as-operator/" data-title="C# 语法查漏补缺系列（1）：is 和 as 运算符 | 向向的博客" data-tsina="" class="share clearfix">
-	  </div>
-	
-	</div>
 
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/06/csharplang-01-is-as-operator/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
 
 </footer>
 
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2019/11/06/cipais/" title="词牌和规则">
-  <strong>上一篇：</strong><br/>
-  <span>
-  词牌和规则</span>
-</a>
-</div>
+
+    </article>
 
 
-<div class="next">
-<a href="/2019/11/06/hello-world/"  title="Hexo 使用教程">
- <strong>下一篇：</strong><br/> 
- <span>Hexo 使用教程
-</span>
-</a>
-</div>
 
-</nav>
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/06/hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished"> 发表于 2019-11-06</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
 
-	
+<p>然后尝试如下的一些命令（操作集）。</p>
+<h3 id="生成你的第一篇文章"><a href="#生成你的第一篇文章" class="headerlink" title="生成你的第一篇文章"></a>生成你的第一篇文章</h3><p>你可以使用如下命令行来为你的本地仓库添加一篇新文章。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
 
-<section id="comments" class="comment">
-  <div id="disqus_thread">
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+<p>更多内容请参考：<a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="服务器上运行"><a href="#服务器上运行" class="headerlink" title="服务器上运行"></a>服务器上运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>更多内容请参考：<a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="生成静态的页面（写博客文章）"><a href="#生成静态的页面（写博客文章）" class="headerlink" title="生成静态的页面（写博客文章）"></a>生成静态的页面（写博客文章）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate <span class="string">"My Blog post title"</span></span><br></pre></td></tr></table></figure>
+
+<p>更多内容请参考：<a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="将本地内容发布到-GitHub-的同步仓库上"><a href="#将本地内容发布到-GitHub-的同步仓库上" class="headerlink" title="将本地内容发布到 GitHub 的同步仓库上"></a>将本地内容发布到 GitHub 的同步仓库上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>更多内容请参考：<a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Hexo/">Hexo</a>
   </div>
-</section>
+
+</div>
 
 
 
 
-</div>  
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/06/hello-world/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+  <nav id="page-nav" class="clearfix">
+    <a class="extend prev" rel="prev" href="/">&lt;span&gt;&lt;&#x2F;span&gt;Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+
+</div>
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开篇"><span class="toc-number">1.</span> <span class="toc-text">开篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#is-运算符"><span class="toc-number">2.</span> <span class="toc-text">is 运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关键字介绍"><span class="toc-number">2.1.</span> <span class="toc-text">关键字介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#is-null-和-is-constant-模式"><span class="toc-number">2.2.</span> <span class="toc-text">is null 和 is constant 模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#as-运算符"><span class="toc-number">3.</span> <span class="toc-text">as 运算符</span></a></li></ol>
- 
-  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -394,112 +432,15 @@ $(document).ready(function(){
       m.removeClass('moveMain');
       a.css('display', 'block').removeClass('fadeOut');
       o.css('display', 'none');
-      
-      $('#toc.toc-aside').css('display', 'none');
         
     }
   });
 });
 </script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
 
 
 
-
-<script type="text/javascript">
-
-var disqus_shortname = 'sunnieblog';
-
-(function(){
-  var dsq = document.createElement('script');
-  dsq.type = 'text/javascript';
-  dsq.async = true;
-  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-}());
-(function(){
-  var dsq = document.createElement('script');
-  dsq.type = 'text/javascript';
-  dsq.async = true;
-  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
-  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-}());
-</script>
 
 
 
@@ -588,4 +529,4 @@ $(document).ready(function(){
 <!-- Tiny_search End -->
 
   </body>
-</html>
+ </html>

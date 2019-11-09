@@ -80,7 +80,452 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/08/common-01-nullable-types/" title="C# 内置类型详解（1）：可空类型" itemprop="url">C# 内置类型详解（1）：可空类型</a>
+      <a href="/2019/11/09/clang-01-datatype/" title="C 语法系列（1）：数据类型" itemprop="url">C 语法系列（1）：数据类型</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T03:09:10.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="数据类型概述"><a href="#数据类型概述" class="headerlink" title="数据类型概述"></a>数据类型概述</h2><p>我们先要掌握一个概念：<strong>数据类型</strong>（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。</p>
+<p>在 C 语言里，我们提供了如下一些类型。</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>学名</th>
+<th>表示代号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>范围较窄的整数</td>
+<td>短整数</td>
+<td><code>short int</code> 或 <code>short</code> 或 <code>signed short int</code> 或 <code>signed short</code></td>
+</tr>
+<tr>
+<td>一般的整数</td>
+<td>整数</td>
+<td><code>int</code> 或 <code>signed int</code></td>
+</tr>
+<tr>
+<td>范围较宽的整数</td>
+<td>长整数</td>
+<td><code>long int</code> 或 <code>long</code> 或 <code>signed long int</code> 或 <code>signed long</code></td>
+</tr>
+<tr>
+<td>不表示负数的短整数</td>
+<td>无符号短整数</td>
+<td><code>unsigned short int</code> 或 <code>unsigned short</code></td>
+</tr>
+<tr>
+<td>不表示负数的整数</td>
+<td>无符号整数</td>
+<td><code>unsigned int</code></td>
+</tr>
+<tr>
+<td>不表示负数的长整数</td>
+<td>无符号长整数</td>
+<td><code>unsigned long int</code> 或 <code>unsigned long</code></td>
+</tr>
+<tr>
+<td>单精度二进制小数</td>
+<td>单精度小数</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>双精度二进制小数</td>
+<td>双精度小数</td>
+<td><code>double</code></td>
+</tr>
+<tr>
+<td>长双精度二进制小数</td>
+<td>长双精度小数</td>
+<td><code>long double</code></td>
+</tr>
+<tr>
+<td>字符类型</td>
+<td>字符</td>
+<td><code>char</code> 或 <code>signed char</code></td>
+</tr>
+<tr>
+<td>单字节类型</td>
+<td>无符号字符</td>
+<td><code>unsigned char</code></td>
+</tr>
+<tr>
+<td>只读字符串类型</td>
+<td>字符串</td>
+<td><code>char *</code></td>
+</tr>
+<tr>
+<td>真假逻辑类型</td>
+<td>布尔</td>
+<td><code>bool</code> 或 <code>_Bool</code></td>
+</tr>
+</tbody></table>
+<p>头晕是吧，我们先来说说，什么叫无符号、什么叫带符号（有符号）、什么叫字符、什么叫字符串、什么叫布尔、什么叫二进制小数、什么叫浮点小数、什么又叫精度。</p>
+<ul>
+<li><strong>无符号</strong>（Unsigned）：非负的；</li>
+<li><strong>带符号</strong>（或<strong>有符号</strong>，Signed）：可以表示负数的；</li>
+<li><strong>字符</strong>（Character）：可以表示出一个普通的英文文本信息的最小单元。这样说不好理解，你可以认为是“英文所有大小写字母 + 数字 + 各种英文标点符号”的集合；</li>
+<li><strong>字符串</strong>（简称<strong>串</strong>，String）：一系列字符；</li>
+<li><strong>布尔</strong>（Boolean）：只用来表示真假情况的；</li>
+<li><strong>二进制小数</strong>（Binary Decimal）：使用二进制格式表达出来的小数；</li>
+<li><strong>浮点小数</strong>（Floating Point Decimal）：二进制小数存储在电脑里的一种存储机制，类似于科学计数法，不过是表达为 $a \times 2^b$ 的格式；</li>
+<li><strong>精度</strong>（Accuracy）：表示表达出一个完整数据和原始数据比较起来的完全精确的程度，在 C 语言里特指小数转为二进制小数后，在存放为浮点小数时，表达出来的数值和原始数值相差多少个小数位。</li>
+</ul>
+<h2 id="所占字节大小"><a href="#所占字节大小" class="headerlink" title="所占字节大小"></a>所占字节大小</h2><p>大家都知道，数据存储到电脑里都是以一个叫做“字节”的单位作为衡量依据的，那么这些数据类型都对应了一个固定的、绝对的字节数，它就表示元素存进去时，用这个类型就需要占据多大的内存空间的容量。表格如下：</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>字节数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>短整数</td>
+<td>2</td>
+</tr>
+<tr>
+<td>整数</td>
+<td>2、4 或 8，这取决于电脑系统是多少位的。<br />16位是 2 字节，32 位的占 4 字节，64 位的为 8 字节（一般是 4）。</td>
+</tr>
+<tr>
+<td>长整数</td>
+<td>8</td>
+</tr>
+<tr>
+<td>无符号短整数</td>
+<td>2</td>
+</tr>
+<tr>
+<td>无符号整数</td>
+<td>2、4 或 8（原因同整数型，一般是 4）</td>
+</tr>
+<tr>
+<td>无符号长整数</td>
+<td>6</td>
+</tr>
+<tr>
+<td>单精度小数</td>
+<td>4</td>
+</tr>
+<tr>
+<td>双精度小数</td>
+<td>8</td>
+</tr>
+<tr>
+<td>长双精度小数</td>
+<td>8、10、12、16 等。<br />这个不要求记忆，而且这个类型取决于不同的实现方式，占据不同的大小。</td>
+</tr>
+<tr>
+<td>字符</td>
+<td>1</td>
+</tr>
+<tr>
+<td>无符号字符</td>
+<td>1</td>
+</tr>
+<tr>
+<td>字符串</td>
+<td>由字符构成，所以字符有多少个就多少个字节。<br />但是下方代码里用 <code>char *</code> 测出来的结果一定只是 4 或 8（原因在后面才能说明）。</td>
+</tr>
+<tr>
+<td>布尔</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>如果你有时候记不住它们的大小，可以用代码写成这样来得到结果：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="keyword">sizeof</span>(类型代号));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们把上面提到的类型代号写到这里，就可以输出对应的结果了。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">int</span>));</span><br><span class="line">    <span class="comment">// You can also write code like this at present:</span></span><br><span class="line">    <span class="comment">//printf("%d", sizeof unsigned int);</span></span><br><span class="line">    <span class="comment">// This one is totally equivalent to that in line 5.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>因为这些所占字节数是可以测出来的，所以一般不要求记住它们，但考试会考，所以这些数值还是希望你记住，就好像化学元素的相对原子质量，常见的是需要作出记忆的。</p>
+<p>然后，先不要管这个代码里的 <code>%d</code> 是啥，稍后会作出解释。</p>
+</blockquote>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="变量的定义和声明"><a href="#变量的定义和声明" class="headerlink" title="变量的定义和声明"></a>变量的定义和声明</h3><p>在数学里，表示一个可以变化的数据信息是通过变量来表达的，比如 $f(x) = 3x^2 + 5x + 7$ 这个表达式里，$x$ 就是所谓的自变量，而 $f(x)$ 称为函数，如果写成 $y$ 则又称为因变量。在 C 语言里，我们不区分所谓的自变量和因变量，只要能写成一个数值的表示形式，就称为变量。</p>
+<p>变量的形式一般是这样的：</p>
+<ol>
+<li><code>数据类型 变量名;</code>（简单声明）</li>
+<li><code>数据类型 变量名 = 数值;</code>（赋值数值常量）</li>
+<li><code>数据类型 变量名 = 计算表达式;</code>（赋值表达式）</li>
+<li><code>数据类型 变量1, 变量2, 变量3;</code>（不赋值）</li>
+<li><code>数据类型 变量1, 变量2 = 多少, 变量3;</code>（不全赋值）</li>
+<li><code>数据类型 变量1 = 多少, 变量2 = 多少, 变量3 = 多少;</code>（全赋值）</li>
+</ol>
+<p>比如，一个程序写成这样</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">23</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"I\'m %d years old.\n"</span>, age);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将得到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">I&apos;m 23 years old.</span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>\&#39;</code> 在前文提到过，以 <code>\</code> 开头的、写在双引号里的内容可以表示一个另外意义的表达结果，这里 <code>\&#39;</code> 表示输出一个 <code>&#39;</code> 符号。然后 <code>%d</code> 则在这里表示 <code>printf</code> 语句小括号里第一个逗号后的变量的信息结果。这里就表示 <code>age</code> 这个变量的数值（23），然后把 23 替换到双引号的 <code>m</code> 和 <code>y</code> 之间。</p>
+<p>顺带一说，双引号的内容就称为一个字符串，而每一个字母（包括空格、<code>\&#39;</code> 等等符号，都表示一个字符）。</p>
+<h3 id="变量的自定义输入"><a href="#变量的自定义输入" class="headerlink" title="变量的自定义输入"></a>变量的自定义输入</h3><p>再拿出 <code>int</code> 作为数据类型举例。既然有输出就应该由输入。如果需要我们自己输进去一个数字，然后程序输出这个结果，就需要用到新的写法：<code>scanf</code> 语句。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;age); <span class="comment">// Input a value into the variable `age`.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"I\'m %d years old.\n"</span>, age);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以了。注意 <code>scanf</code> 语句的写法，逗号后跟的 <code>age</code> 变量必须要在前面加前缀符号 <code>&amp;</code>，这一点在后面再说。</p>
+<blockquote>
+<p>可以发现，C 语言是一种比较奇特的语言，它的大多数语法的耦合度较高，即前面的知识点要用超纲的内容做铺垫，而后面的知识点却又依赖于前面的知识点，所以……写教程真的很伤脑筋啊……</p>
+</blockquote>
+<p>当然，<code>scanf</code> 语句也可以同时为多个变量赋值。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d, %d"</span>, &amp;a, &amp;b);</span><br></pre></td></tr></table></figure>
+
+<p>请注意，每一个变量后都得加 <code>&amp;</code> 前缀符号，而且在运行程序的时候，你必须得跟着这个字符串里写的格式写，比如这个字符串 <code>%d, %d</code> 里含有一个数、逗号、空格和一个数，所以你在输入的时候必须格外小心，照着这个格式写内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12, 5</span><br><span class="line">8, 19</span><br><span class="line">-3, 39</span><br><span class="line">0, -1</span><br></pre></td></tr></table></figure>
+
+<p>上述四种格式都是正确的。另外需要注意的是，<code>scanf</code> 语句甚至不以换行作为分割，所以你可以这么输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12</span><br><span class="line">,</span><br><span class="line"></span><br><span class="line"> 5</span><br></pre></td></tr></table></figure>
+
+<p>这样的书写格式里所有的换行都是不被读取的，所以你的所有换行都会被“抹掉”，故这种格式最终还是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">12, 5</span><br></pre></td></tr></table></figure>
+
+<p>但如果没有严格按照格式书写，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12，5（注意这个输入的逗号用的是中文的）</span><br><span class="line">12 5</span><br><span class="line">12 ,5</span><br><span class="line">12 , 5</span><br></pre></td></tr></table></figure>
+
+<p>这些格式都是错的，最终只有 <code>a</code> 会正确得到 12，而 <code>b</code> 依旧是没有数值的。</p>
+<p>当然，你也可以分写两句：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;b);</span><br></pre></td></tr></table></figure>
+
+<p>不过后者写起来怪麻烦的。</p>
+<blockquote>
+<p>切记，字符串里带有空格的 <code>scanf</code> 语句，在运行程序时，你也要在输入完第一个数据时，空一格输入第二个数据。当然，后者这种格式，在输入的时候可以用回车的方式分割两个输入数据。</p>
+</blockquote>
+<h2 id="格式化字符串的定义和使用"><a href="#格式化字符串的定义和使用" class="headerlink" title="格式化字符串的定义和使用"></a>格式化字符串的定义和使用</h2><p>下面还要来看看，什么是<strong>格式化字符串</strong>（Formatting String）。其实，说白了，前文出现的 <code>%d</code> 就是格式化字符串的一种。但请注意，它只是其中一种，如果你把它认为是输出数值结果的话，那就错了。所有的格式化字符串如下。</p>
+<p>要把数据输入到电脑里面去，我们需要用到的是C语言自带的输入功能，写法也有两种不同的类型：</p>
+<p><code>scanf(&quot;%f&quot;, &amp;prize);</code></p>
+<p>这样就表示输入一个小数，然后利用这个叫做格式化字符串的东西给它把输入的“黑框”上面显示的那个数字字符改变为小数的数据，便于放置到prize所在的位置上去，既然是所在位置，所以需要用到<code>&amp;</code>了，这个符号就是专门用来找位置的。</p>
+<p>另需要你记忆一些格式化字符串的写法：</p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%d</td>
+<td>将控制台输入的一长串字符改变为整数（int）的规范存储形式存到电脑之中。</td>
+</tr>
+<tr>
+<td>%ld</td>
+<td>将控制台输入的一长串字符改变为长整数（long）的规范存储形式存放到电脑之中。</td>
+</tr>
+<tr>
+<td>%f</td>
+<td>将控制台输入的一长串字符改变为小数（float）的规范存储方式存放到电脑之中。</td>
+</tr>
+<tr>
+<td>%lf</td>
+<td>将控制台输入的一长串字符改变为小数（double）的规范存储方式存放到电脑之中。</td>
+</tr>
+<tr>
+<td>%e</td>
+<td>将控制台输入的一长串字符改变为科学计数法写法（$a\times 10^b$），不过$10^b$会显示为 <code>eb</code> 的形式，比如 $6.09 \times 10^{23}$ 会显示为 <code>6.09e23</code>，而 $1.7 \times 10^{-2}$ 则显示为 <code>1.7e-2</code>。</td>
+</tr>
+<tr>
+<td>%o</td>
+<td>将控制台输入的东西改变为八进制数。</td>
+</tr>
+<tr>
+<td>%x</td>
+<td>将控制台输入的东西改变为十六进制数。</td>
+</tr>
+<tr>
+<td>%g</td>
+<td>电脑自动给你选取转变形式。</td>
+</tr>
+<tr>
+<td>%c</td>
+<td>转为字符规范。</td>
+</tr>
+<tr>
+<td>%s</td>
+<td>字符串专用输出格式。</td>
+</tr>
+</tbody></table>
+<p>大家只需要记住前面四种和最后两种就可以了。</p>
+<p>如果我又定义了一个变量，是 <code>int</code>，就用 <code>%d</code> 转为整数存放到电脑之中。</p>
+<p>比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br></pre></td></tr></table></figure>
+
+<p>就将整数变量 <code>a</code> 输入到电脑里面用整数规范存储了。如果格式化字符串用成其他的，比如 <code>%f</code>，结果就很怪异。所以一定要配套。</p>
+<p>输入两次的话，可以简写成一次输入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d %d"</span>, &amp;a, &amp;b);</span><br></pre></td></tr></table></figure>
+
+<p>注意，<code>scanf</code> 语句的字符串里中间最好要有字符。说白了就是不要写成 <code>%d%d</code> 挨在一起的写法。如果不给空格虽然程序不会出错，但是这样让容易出现安全漏洞，诸如缓存区溢出等。</p>
+<h3 id="格式化字符串的排版控制"><a href="#格式化字符串的排版控制" class="headerlink" title="格式化字符串的排版控制"></a>格式化字符串的排版控制</h3><p>因为是在控制台界面运行的，所以空格就可以用来排版了，不过有些时候，比如我们想让某个数输出的时候有对齐的效果，就会按情况来计算占据的显示的格数。比如一个两位数一定是占两格的，如果我们强制让所有输出的数值都占三格呢？</p>
+<p>我们可以在 <code>%</code> 和 <code>d</code> 之间添加数值以控制占的格数。比如 <code>%2d</code> 表示占两格，<code>%6d</code> 表示占六格。如果位数不够的，前面会有空格占位。比如说</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%2d %3d"</span>, <span class="number">6</span>, <span class="number">9</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%2d %3d"</span>, <span class="number">27</span>, <span class="number">15</span>); <span class="comment">// "\n"是换行符号。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%2d %3d"</span>, <span class="number">19</span>, <span class="number">265</span>);</span><br></pre></td></tr></table></figure>
+
+<p>输出的样子就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> 6   9</span><br><span class="line">27  15</span><br><span class="line">19 265</span><br></pre></td></tr></table></figure>
+
+<p>就很好看。小数的话，除了可以控制输出的占格数，还可以控制输出的小数位数，如果你不希望小数位后很多零的话，可以这么写：<code>%占格数.小数位格数f</code>，是可以的。占格数是计算这个输入的字符一共有多少个，而不是整数位多少位。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%2.3f"</span>, <span class="number">16.7</span>); <span class="comment">// 占两格，三位小数</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%7.2f"</span>, <span class="number">8.9</span>); <span class="comment">// 占七格，两位小数</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%8.5f"</span>, <span class="number">7.699</span>); <span class="comment">// 占三格，五位小数</span></span><br></pre></td></tr></table></figure>
+
+<p>将输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">16.700（前面没有空格）</span><br><span class="line">   8.90（前面三个空格）</span><br><span class="line"> 7.69900（前面一个空格）</span><br></pre></td></tr></table></figure>
+
+<p>特别要注意前面的空格。</p>
+<p>如果是输入里插入这样的格式化字符串的话，则会严格按照这样的标准执行输入，如果超出范围的部分会被直接舍弃掉，或是拿给下一个部分使用。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%3d%2d"</span>, &amp;a, &amp;b);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"a = %d, b = %d"</span>, a, b);</span><br></pre></td></tr></table></figure>
+
+<p>那么提示输入的时候，如果输入的是 <code>12345</code> 的话，由于前面 <code>%3d</code> 的控制，后面的 45 会被切掉，而 <code>b</code> 恰好要两位数，所以 <code>a</code> 为 123，<code>b</code> 是 45，输出也是一样。</p>
+<p>但如果超出了范围，比如输入了 123456，则依然结果是 123 和 45，6 会被舍弃。</p>
+<p>最后讲一下这些语句的写法规范。</p>
+<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><h3 id="代码格式规范"><a href="#代码格式规范" class="headerlink" title="代码格式规范"></a>代码格式规范</h3><p>其实呢，编译器这位翻译官将你的 C 语言代码给它转变为系统能够识别和操作的语言之前，会给你的代码进行排版，这个时候，分号这些就显得额外重要。</p>
+<p>一句话一定要用分号结尾，表示你这个操作做完了。不过换行不是必须有的，你可以把代码全写在一行，也可以换行写，只要有分号怎么写都无所谓，但是为了代码好看整洁，建议换行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age;<span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;age);<span class="built_in">printf</span>(<span class="string">"%d岁"</span>,age);</span><br></pre></td></tr></table></figure>
+
+<p>这样当然可以了，不过肯定不好看！</p>
+<h3 id="标识符命名规范"><a href="#标识符命名规范" class="headerlink" title="标识符命名规范"></a>标识符命名规范</h3><p>在前文里我们提到了标签和变量，它们都遵循一个命名规则。这个规则保证了程序正确的执行。命名规范其实在前文已经说到了。</p>
+<ol>
+<li>数字、字母、下划线 <code>_</code> 三者的组合；</li>
+<li>第一个字符不能是数字；</li>
+<li>不能是前文用到过的那些 C 语言自带的字符组合，如 <code>int</code> 等（注意，此时 <code>scanf</code> 还不是 C 语言固有的东西，也就是说你可以把 <code>scanf</code>、<code>printf</code>、<code>main</code> 这种东西定义为变量名，但完全不建议这么做）。</li>
+</ol>
+<p>只要满足这 3 点就可以了。比如 <code>hello</code>、<code>age</code>、<code>test_01</code>、<code>T_T</code>、<code>o_O</code> 都是正确的标识符，而 <code>2_4</code>、<code>^_^</code> 则不行。但建议名字取得有意义，因为下文可能会用到它们，取一个有意义的名字对语义理解有帮助。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a><a href="/tags/C-语法/">C 语法</a><a href="/tags/C-语法系列/">C 语法系列</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/09/clang-01-datatype/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/09/clang-00-beginning/" title="C 语言语法系列：开篇" itemprop="url">C 语言语法系列：开篇</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T02:26:28.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>欢迎跟我一起学习 C 语言。我们会列出一些常见的语法特性，以及对应使用场合，以及它们的基本考点。</p>
+<p>你先不要着急，看起来下面的内容都偏难，因为它是超纲的知识点，但在本文里，它们不会被讲解得非常难，所以本应该在后续才会提到的这些东西，在这里也只是做个了解，而且你只需要知道这些东西到底是个什么框架就可以了。</p>
+<h2 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h2><p>C 语言里，以分号结尾的一整段文字叫做一句话。</p>
+<h2 id="main-函数"><a href="#main-函数" class="headerlink" title="main 函数"></a><code>main</code> 函数</h2><p>整个程序的代码一般长这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    </span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中的第 6 行才是我们需要关心的，其它都不用关心。由整个大括号括起来的部分，是 <code>main</code> 函数的主要部分。程序一定从 <code>main</code> 函数进入，并从 <code>return 0;</code> 语句退出。即，整个程序的执行流程一定是从第 4 行开始进去，然后从第 9 行执行完毕后退出。期间一句一句执行，从上到下。</p>
+<p>建议你把整个代码内容的框架写成上面这样的形式，其中的 <strong>May be not exist</strong> 的所在行你可以不写。但第 4 行，建议你这么写，有些书上写的是 <code>void main()</code>、<code>void main(void)</code>、<code>void main(int argc, char *argv[])</code>、<code>int main()</code>，这四种都是不合规矩的写法。原因将在后面阐述。</p>
+<h2 id="空行和语义分割"><a href="#空行和语义分割" class="headerlink" title="空行和语义分割"></a>空行和语义分割</h2><p>第 7 行叫<strong>空行</strong>（Null Line），这一行不写东西，仅仅用于分割代码的上下部分，用于分清楚执行逻辑。比如这个程序里，第 7 行前面是用于输出（稍后会解释 <code>printf</code> 函数），第 7 行后面是用于退出程序。所以程序可以尝试通过这样的方式来分割一个大括号里很多语句之间的执行逻辑。</p>
+<p>分割语义有多种方式，你还可以通过下面的方式。</p>
+<h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">Printing:</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">ExitTheProgram:</span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过牺牲一行代码，写成文字加冒号的方式，来表示一个<strong>标签</strong>（Label）。这样的标签文字可以达到分割语义的效果，但注意的是，标签的文字只能以数字、字母、下划线 <code>_</code> 三种东西进行组合，且第一个文字不能是数字。比如，<code>Hello world</code> 和 <code>2_Hello</code> 都是命名格式不正确的标签。</p>
+<h3 id="用大括号进行语义分割"><a href="#用大括号进行语义分割" class="headerlink" title="用大括号进行语义分割"></a>用大括号进行语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Printing.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Exit the program.</span></span><br><span class="line">    &#123;</span><br><span class="line">        system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样可以达到分割效果。</p>
+<h3 id="借用-pragma-region-来作语义分割"><a href="#借用-pragma-region-来作语义分割" class="headerlink" title="借用 #pragma region 来作语义分割"></a>借用 <code>#pragma region</code> 来作语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Printing</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Exit the program</span></span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样依旧可以进行语义分割，而且 Visual Studio 还能根据你分割的方式，折叠和展开代码。不过请注意的是，这种分割方式仅用于 Visual Studio，在其它的软件里，无法使用这种方式。</p>
+<blockquote>
+<p>注意，所有上面提到的语义分割所牺牲的代码行都是无意义的，它们都不是真正的执行代码，你可以当成注释一般的存在。</p>
+</blockquote>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>在第 2 和第 8 行里，以双斜杠 <code>//</code> 形式书写的内容（包含当前行里，符号后面的所有内容）称为<strong>注释</strong>（Comment），可以写一些任何你觉得想写的东西，不需要是程序才认识的东西。这些文字有助于你看懂代码逻辑。所以这些东西叫注释，就是这个原因。</p>
+<p>还有一种注释，可以跨行书写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">This is multi-line comment,</span></span><br><span class="line"><span class="comment">and you can write anything you want,</span></span><br><span class="line"><span class="comment">even if the comment spans multi lines.</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>这种注释叫多行注释，以 <code>/*</code> 和 <code>*/</code> 作为配对，可以理解为一个特殊的括号。期间的所有内容都会被当作注释内容，即使跨行书写也是如此。但注意，多行注释的开头和结尾符号不能嵌套，即</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    /*</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+
+<p>这种是不允许的。程序会被认定，处于第 1 行的 <code>/*</code> 符号一直到第 7 行结束，而非第 8 行。</p>
+<h2 id="include-指令"><a href="#include-指令" class="headerlink" title="#include 指令"></a><code>#include</code> 指令</h2><p>原代码的第 1、2 行叫做<strong>预处理器指令</strong>（Preprocessor Command），以井号 <code>#</code> 开头，包含 <code>#pragma</code>、<code>#include</code> 等众多指令，这里掌握 <code>#include</code> 指令。这个指令表示，将系统自带的操作引入到程序之中，使得后面我们写代码的时候可以使用写好的代码，不用自己去写。这些提供好的代码，都是以 <code>*.h</code> 的文件形式存放，它们叫<strong>头文件</strong>（Header File），即放在代码头部的文件。其中的 stdio.h 叫做<strong>标准输入输出流头文件</strong>（Standard Input &amp; Output），简称 std i o。</p>
+<p>第 2 行是提供 <code>system</code> 命令（处于代码第 8 行），用于暂停程序。这些程序统称为<strong>命令行程序</strong>（Command-Line Application），或<strong>控制台程序</strong>（Console Application），这些程序没有所谓的退出按钮和最小、最大化按钮，它们仅仅被黑色风格的框约束着。黑色风格的框叫做<strong>控制台</strong>（Console），是只用于输入命令来控制操作系统或程序执行逻辑的代码化窗口。这意味着，这里面只会输入一些奇怪的代码文字，而没有 QQ 这样美丽的界面。</p>
+<h2 id="printf-语句"><a href="#printf-语句" class="headerlink" title="printf 语句"></a><code>printf</code> 语句</h2><p><code>printf</code> 语句是用于把文字显示到控制台上的语句，它可以原封不动把我们书写在 <code>printf</code> 括号里的文字全部显示出来。例如原示例里，最终执行程序会得到的结果是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello, world!</span><br></pre></td></tr></table></figure>
+
+<p>注意，<code>\n</code> 没有输出，是因为 <code>\n</code> 在双引号里被表示为换行，并非是原本的 <code>\</code> 和 <code>n</code> 两个符号。所有这样奇特的符号都以 <code>\</code> 作为开头，系统提供了对应的转换表，在这里我们不多作出说明。另外，写在双引号里的 <code>%%</code> 将表示输出显示一个 <code>%</code> 符号。别问我为什么要两个符号才会输出显示一个。这一点后面再说。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a><a href="/tags/C-语法/">C 语法</a><a href="/tags/C-语法系列/">C 语法系列</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/09/clang-00-beginning/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/08/common-01-nullable-types/" title="C# 内置类型详解系列（1）：可空类型" itemprop="url">C# 内置类型详解系列（1）：可空类型</a>
   </h1>
   <p class="article-author">By
        
@@ -549,7 +994,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/07/csharplang-03-trivalue-boolean/" title="C# 语法探究系列（3）：三值布尔运算表" itemprop="url">C# 语法探究系列（3）：三值布尔运算表</a>
+      <a href="/2019/11/07/csharplang-03-trivalue-boolean/" title="C# 语法查漏补缺系列（3）：三值布尔运算表" itemprop="url">C# 语法查漏补缺系列（3）：三值布尔运算表</a>
   </h1>
   <p class="article-author">By
        
@@ -669,7 +1114,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C/">C#</a><a href="/tags/C-语法/">C# 语法</a>
+  <span></span> <a href="/tags/C/">C#</a><a href="/tags/C-语法/">C# 语法</a><a href="/tags/C-语法查漏补缺系列/">C# 语法查漏补缺系列</a>
   </div>
 
 </div>
@@ -774,7 +1219,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/07/csharplang-02-access-modifiers/" title="C# 语法探究系列（2）：访问修饰符" itemprop="url">C# 语法探究系列（2）：访问修饰符</a>
+      <a href="/2019/11/07/csharplang-02-access-modifiers/" title="C# 语法查漏补缺系列（2）：访问修饰符" itemprop="url">C# 语法查漏补缺系列（2）：访问修饰符</a>
   </h1>
   <p class="article-author">By
        
@@ -916,7 +1361,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C/">C#</a><a href="/tags/C-语法/">C# 语法</a>
+  <span></span> <a href="/tags/C/">C#</a><a href="/tags/C-语法/">C# 语法</a><a href="/tags/C-语法查漏补缺系列/">C# 语法查漏补缺系列</a>
   </div>
 
 </div>
@@ -1027,174 +1472,10 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/csharplang-01-is-as-operator/" title="C# 语法探究系列（1）：is 和 as 运算符" itemprop="url">C# 语法探究系列（1）：is 和 as 运算符</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T09:17:04.000Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 <code>is</code> 和 <code>as</code> 运算符。</p>
-<h2 id="is-运算符"><a href="#is-运算符" class="headerlink" title="is 运算符"></a><code>is</code> 运算符</h2><h3 id="关键字介绍"><a href="#关键字介绍" class="headerlink" title="关键字介绍"></a>关键字介绍</h3><p><code>is</code> 就好比 Java 语言里的 <code>instanceof</code>，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 <code>true</code>；而否则返回 <code>false</code>，如下示例。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> hello = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> <span class="keyword">object</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result3 = hello <span class="keyword">is</span> IEnumerable&lt;<span class="keyword">char</span>&gt;; <span class="comment">// also true</span></span><br></pre></td></tr></table></figure>
 
-<p>可以看到的是，只要兼容的类型，它都能测试出来。例如，字符串实现了 <code>IEnumerable&lt;char&gt;</code> 接口，那么它就完全可以转换为这个类型。在 OOP 的世界里，一个类型就好比是一个角色。你实现（或继承）了什么类型，就拥有了什么角色，你就可以转换过去。</p>
-<p>一切皆对象（object），那么我们所有人，所有事都可以被转换为 <code>object</code> 类型。包括值类型，它会迂回地转换，先隐式转换（派生自）<code>ValueType</code> 类类型，而这个类型又是派生自 <code>object</code> 的；而指针，则隐式继承自 <code>IntPtr</code> 结构类型，而这个类型依然派生自 <code>object</code>。</p>
-<p>不过，哪怕你的数据数值为 <code>null</code>，也不会报错：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? hello = <span class="literal">null</span>; <span class="comment">// C# 8 uses `T?` to tell us the referenced type may be null.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> IDisposable; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-
-<p>它并不会抛出异常。</p>
-<p>当我们转换到指定类型时，可以使用强制转换语法：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> s = <span class="string">"hello"</span>; <span class="comment">// Define a variable.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (s <span class="keyword">is</span> <span class="keyword">string</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">string</span> p = (<span class="keyword">string</span>)s;</span><br><span class="line">    <span class="comment">// And then do what you want to do...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"Oh no, I don't know what the type of <span class="subst">&#123;<span class="keyword">nameof</span>(s)&#125;</span> is."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="is-null-和-is-constant-模式"><a href="#is-null-和-is-constant-模式" class="headerlink" title="is null 和 is constant 模式"></a><code>is null</code> 和 <code>is constant</code> 模式</h3><p>现如今，C# 语法支持 <code>is null</code> 模式来指定判断对象是否为 <code>null</code>，来避免操作符重载没有判断 <code>null</code> 的情况时尴尬报错的情况。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = (<span class="keyword">object</span>?)obj == <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-
-<p>即相当于先隐式转换回最终类 <code>object</code>，并在可空情况下，判断它是否为 <code>null</code>。当然，如果你不是高版本的话，<code>object?</code> 里的问号就可以不写了。</p>
-<p>C# 还支持 <code>is constant</code> 模式来判断对象是否是指定常量数值，写法是这样的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="string">"Hello"</span></span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">string</span> comparer &amp;&amp; comparer == <span class="string">"Hello"</span></span><br></pre></td></tr></table></figure>
-
-<p>即，<code>obj</code> 是字符串类型，且它在转换后，要是跟 <code>Hello</code> 的写法一样的字符串。当然，值类型也可以用。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i &amp;&amp; i == <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>当然，注意此时是可能拆箱的，因为从引用类型转为值类型是必须拆箱的。当然，<code>obj</code> 如果被你假设为不是引用类型，就另当别论了。</p>
-</blockquote>
-<p>可见，<code>is</code> 的进化是非常明显的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> r1 = obj <span class="keyword">is</span> <span class="keyword">int</span>;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r3 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="as-运算符"><a href="#as-运算符" class="headerlink" title="as 运算符"></a><code>as</code> 运算符</h2><p><code>as</code> 运算符是 <code>is</code> 的转换模式升级版，当我们需要转换的时候，能够安全转换，并不报错的话，请采用 <code>as</code>，它的写法是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> s1 = (<span class="keyword">string</span>)o; <span class="comment">// Elder style.</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// New style (in C# 7 or lower)</span></span><br></pre></td></tr></table></figure>
-
-<p>可以看到，代码直接用类似于 <code>is</code> 的写法，就转换了，但是需要注意的是，使用 <code>as</code> 和强制转换可能转换失败。当强制转换失败时，将会直接报错，因为它会提示“无法转换”；而 <code>as</code> 在无法转换时，对象的数值将为 <code>null</code>，即等价于如下写法</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">is</span> <span class="keyword">string</span> result ? result : <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-
-<p>不过请注意，不论何时，<code>as</code> 运算符都能带来 <code>null</code> 数值。当你使用 C# 8 的时候，它将提示警告。如果你能保证该写法是合法转换的话，就在转换语句的末尾加上后缀 <code>!</code>，让编译器去掉对该所谓的“错误”进行报错处理。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// var is string?</span></span><br><span class="line"><span class="keyword">var</span> s2 = (o <span class="keyword">as</span> <span class="keyword">string</span>)!; <span class="comment">// var is string</span></span><br></pre></td></tr></table></figure>
-
-<p>但请注意，<code>null</code> 包容运算符（有时候也叫 <code>null</code> 禁用运算符，null-suppress operator）作用的内容是转换结果，而不是类型，所以感叹号应加在整体上，故需要打小括号。</p>
-<p>但是，如果你不小心，错把 <code>o</code> 变量认为是“一定为 <code>string</code>”，而为其加上了该符号后，后续的执行语句在报错时会显得很隐蔽。即如果代码报错，显示 <code>NullReferenceException</code> 时，有可能你发现该对象的类型并没有带 <code>?</code> 后缀，而显得非常迷惑。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C#</a><a href="/tags/C-语法/">C# 语法</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/06/csharplang-01-is-as-operator/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
-
-<p>然后尝试如下的一些命令（操作集）。</p>
-<h3 id="生成你的第一篇文章"><a href="#生成你的第一篇文章" class="headerlink" title="生成你的第一篇文章"></a>生成你的第一篇文章</h3><p>你可以使用如下命令行来为你的本地仓库添加一篇新文章。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="服务器上运行"><a href="#服务器上运行" class="headerlink" title="服务器上运行"></a>服务器上运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="生成静态的页面（写博客文章）"><a href="#生成静态的页面（写博客文章）" class="headerlink" title="生成静态的页面（写博客文章）"></a>生成静态的页面（写博客文章）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate <span class="string">"My Blog post title"</span></span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="将本地内容发布到-GitHub-的同步仓库上"><a href="#将本地内容发布到-GitHub-的同步仓库上" class="headerlink" title="将本地内容发布到 GitHub 的同步仓库上"></a>将本地内容发布到 GitHub 的同步仓库上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/Hexo/">Hexo</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/06/hello-world/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
+  <nav id="page-nav" class="clearfix">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next&lt;span&gt;&lt;&#x2F;span&gt;</a>
+  </nav>
 
 </div>
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
@@ -1228,7 +1509,27 @@
 			
 		
 			
+				<li><a href="/tags/C-语法查漏补缺系列/" title="C# 语法查漏补缺系列">C# 语法查漏补缺系列<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法/" title="C 语法">C 语法<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-语法系列/" title="C 语法系列">C 语法系列<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-类型详解系列/" title="C# 类型详解系列">C# 类型详解系列<sup>1</sup></a></li>
 			
 		
 			
@@ -1240,15 +1541,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C-类型详解系列/" title="C# 类型详解系列">C# 类型详解系列<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/数独潜规则/" title="数独潜规则">数独潜规则<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
