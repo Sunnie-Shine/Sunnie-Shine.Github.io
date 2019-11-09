@@ -80,6 +80,108 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/09/bayes-rule/" title="贝叶斯公式解读" itemprop="url">贝叶斯公式解读</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T12:05:53.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="先来看看贝叶斯公式"><a href="#先来看看贝叶斯公式" class="headerlink" title="先来看看贝叶斯公式"></a>先来看看贝叶斯公式</h2><p><strong>贝叶斯公式</strong>（Bayes Formula）是用于解决概率问题的公式，长成这样。<br>$$<br>P(A|B) = \frac{P(B|A)P(A)}{P(B)}<br>$$<br>其中的 $A$ 和 $B$ 指的是两个不同的事件，并且此时 $P(B)$，即事件 $B$ 的概率不能为 0（即 $P(B) \neq 0$），另外：</p>
+<ul>
+<li>$P(A|B)$ 表示一个条件概率，即当事件 $B$ 一定成立的前提下，事件 $A$ 发生的可能性。</li>
+<li>$P(B|A)$ 则是反过来的，事件 $A$ 一定成立的前提下，事件 $B$ 发生的可能性。</li>
+<li>$P(A)$ 和 $P(B)$ 都是针对于 $A$ 和 $B$ 两个事件的概率，但它们是互相独立的。</li>
+</ul>
+<p>不过有趣的地方在于，公式里带有的两个信息 $P(A|B)$ 和 $P(B|A)$ 刚好是反过来的，却得到了关联性，是不是很有意思呢？</p>
+<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>我们来看一个表格，清晰可见，还好懂。</p>
+<table>
+<thead>
+<tr>
+<th>事件发生数量</th>
+<th>$B$</th>
+<th>$\bar B$</th>
+<th>总和</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$A$</td>
+<td>💗💗</td>
+<td>🧡🧡🧡</td>
+<td>5</td>
+</tr>
+<tr>
+<td>$\bar A$</td>
+<td>💛💛<br />💛💛<br />💛💛</td>
+<td>💜💜💜<br />💜💜💜<br />💜💜💜</td>
+<td>15</td>
+</tr>
+<tr>
+<td>总和</td>
+<td>8</td>
+<td>12</td>
+<td>20</td>
+</tr>
+</tbody></table>
+<p>那么<br>$$<br>\begin{align}<br>P(B, \text{已知}A) \cdot P(A) &amp;= P(B|A) \cdot P(A)\<br>\frac{<br>    \textcolor[rgb]{1,0,0}{2}<br>}{<br>    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}<br>}\cdot \frac{<br>    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}<br>}{<br>    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +<br>    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}<br>}&amp;= \frac{<br>    \textcolor[rgb]{1,0,0}{2}<br>}{<br>    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +<br>    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}<br>}\<br>\<br>P(A, \text{已知}B) \cdot P(B) &amp;= P(A|B) \cdot P(B)\<br>\frac{<br>    \textcolor[rgb]{1,0,0}{2}<br>}{<br>    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}<br>}\cdot \frac{<br>    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}<br>}{<br>    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +<br>    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}<br>}&amp;= \frac{<br>    \textcolor[rgb]{1,0,0}{2}<br>}{<br>    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +<br>    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}<br>}\<br>\<br>\because P(A|B) \cdot P(B) &amp;= P(B|A) \cdot P(A)\<br>\therefore P(A|B) &amp;= \frac{P(B|A) \cdot P(A)}{P(B)}<br>\end{align}<br>$$</p>
+<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>先来看个例子。某城市发生了一起汽车撞人逃跑事件，该城市只有两种颜色的车，蓝色15%，绿色85%，事发时有一个人在现场看见了，他指证是蓝车。但是根据专家在现场分析,当时那种条件能看正确的可能性是80%。那么,肇事的车是蓝车的概率到底是多少？ </p>
+<p>令 $B$ 是城市里车为蓝色的事件，$G$ 为车子是绿色的事件，$E$ 为观察到车子为蓝色的事件。则由已知条件可以得出$P(B) = 0.15$，$P(G) = P(\bar B) = 0.85$，至于 $P(E)$ 我们一会儿再说。</p>
+<p>好了。如果现在没有证人看到肇事者车的话，那么我们只能盲猜，因此肇事者的车子为蓝色的概率只能是整个城市里面车为蓝色的概率，也就是先验概率 $P(B) = 0.15$，因为这时我们还没有其他证据介入，只能做个粗略的估算。</p>
+<p>接下来，当当当当，有证人了。证人说他看到了车子，并且说是蓝色的，注意，这分两种情况，…………重要的事情说两遍：<strong>贝叶斯里面现象(新的证据)部分总是分两种情况出现的</strong>：一是车子的确是蓝色的，并且证人也正确的分辨出车是蓝色的来了，概率为<br>$$<br>\begin{align}<br>P(E, B) &amp;= P(B) \cdot P(E|B)\<br>&amp;= 0.15 \times 0.8\<br>&amp;= 0.12<br>\end{align}<br>$$<br>二是车子根本就是绿色的，只是证人看成蓝色的了，概率为<br>$$<br>\begin{align}<br>P(E, \bar B) &amp;= P(\bar B) \cdot P(E|\bar B)\<br>&amp;= P(\bar B) \times (1 -  P(\bar E|\bar B))\<br>&amp;= 0.85 \times (1 - 0.8)\<br>&amp;= 0.17<br>\end{align}<br>$$<br>所以<br>$$<br>\begin{align}<br>P(E) &amp;= P(E, B) + P(E, \bar B)\<br>&amp;= 0.12 + 0.17\<br>&amp;= 0.29<br>\end{align}<br>$$</p>
+<p>然后，我们要求解的其实是在有证人的条件下车子为蓝色的概率，也就是<br>$$<br>\begin{align}<br>P(B|E) &amp;= \frac{P(E, B)}{P(E)}\<br>&amp;= \frac{0.12}{0.29}\<br>&amp;\approx 0.41<br>\end{align}<br>$$<br>你看，<strong>$P(B|E)$ 根本就是 $P(B)$ 的加强版本</strong>，条件概率跟先验概率描述的根本就是同一件事。</p>
+<p>那么当当当当，又一个结论来了：当有新的证据出现时，$P(B|E)$ 会替代原来 $P(B)$ 的角色。换句话说，现在警察找到了一个新的证人，他也觉得这辆肇事车是蓝色的，这时在新一轮的贝叶斯概率计算中，基础概率$P(B)=0.41$，而不是原先的 $0.15$，大家可以算一下，新的 $P(B|E)=0.73$，换句话说，当有两个人看见肇事车辆为蓝色的时候，对比只有一个人看到肇事车辆为蓝色的时候，该车实际为蓝色的概率大大增加。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/数学/">数学</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/09/bayes-rule/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/09/windoku-da-rule/" title="窗口数独的潜规则" itemprop="url">窗口数独的潜规则</a>
   </h1>
   <p class="article-author">By
@@ -1820,6 +1922,10 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -1832,11 +1938,11 @@
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
