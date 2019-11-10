@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C# 语法查漏补缺系列（3）：三值布尔运算表 | 向向的博客</title>
+    <title>C# 内置类型详解系列（2）：IDisposable 接口 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="可空值类型和 bool? 简介我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 int 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 Integer 是可以为 null 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就">
+    <meta name="description" content="IDisposable 接口简述在 C# 里，我们是允许使用不安全代码（指针）来操作非托管内存的，于是便产生了非托管内存如何规范释放的问题。IDisposable 接口的产生，正是为了这种需求。 当我们需要手动释放一些比较大的资源的时候（比如 GC 没有回收垃圾资源，或是由于 GC 回收机制体系的 bug 导致无法回收的时候，我们就需要这个接口了。 接口实现一般来说，这个接口的实现不容易，我们来看">
 <meta name="keywords" content="C♯ 语言">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C# 语法查漏补缺系列（3）：三值布尔运算表">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;07&#x2F;csharplang-03-trivalue-boolean&#x2F;index.html">
+<meta property="og:title" content="C# 内置类型详解系列（2）：IDisposable 接口">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;common-02-idisposable&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="可空值类型和 bool? 简介我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 int 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 Integer 是可以为 null 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就">
+<meta property="og:description" content="IDisposable 接口简述在 C# 里，我们是允许使用不安全代码（指针）来操作非托管内存的，于是便产生了非托管内存如何规范释放的问题。IDisposable 接口的产生，正是为了这种需求。 当我们需要手动释放一些比较大的资源的时候（比如 GC 没有回收垃圾资源，或是由于 GC 回收机制体系的 bug 导致无法回收的时候，我们就需要这个接口了。 接口实现一般来说，这个接口的实现不容易，我们来看">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-09T10:00:43.011Z">
+<meta property="og:updated_time" content="2019-11-10T03:37:36.665Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -80,14 +80,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/07/csharplang-03-trivalue-boolean/" title="C# 语法查漏补缺系列（3）：三值布尔运算表" itemprop="url">C# 语法查漏补缺系列（3）：三值布尔运算表</a>
+      <a href="/2019/11/10/common-02-idisposable/" title="C# 内置类型详解系列（2）：IDisposable 接口" itemprop="url">C# 内置类型详解系列（2）：IDisposable 接口</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-07T09:01:43.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
+    <time datetime="2019-11-10T03:08:50.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
     
   </p>
 </header>
@@ -96,104 +96,27 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#可空值类型和-bool-简介"><span class="toc-number">1.</span> <span class="toc-text">可空值类型和 bool? 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bool-类型计算表"><span class="toc-number">2.</span> <span class="toc-text">bool? 类型计算表</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IDisposable-接口简述"><span class="toc-number">1.</span> <span class="toc-text">IDisposable 接口简述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#接口实现"><span class="toc-number">2.</span> <span class="toc-text">接口实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="可空值类型和-bool-简介"><a href="#可空值类型和-bool-简介" class="headerlink" title="可空值类型和 bool? 简介"></a>可空值类型和 <code>bool?</code> 简介</h2><p>我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 <code>int</code> 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 <code>Integer</code> 是可以为 <code>null</code> 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就是，这种类型基本上就是一个数据整体，一般迫不得已不拆开它们的内部数据，例如一个点对 <code>Point</code>，显然横纵坐标被拆解后完全显得无意义了，所以 <code>Point</code> 被作为一种值类型来看待。但 Java 受到语法的制约，我们只能写成引用类型。</p>
-<p>那么，在 C# 里，我们可以为其声明含有空值的值类型数据，这种类型提供的 <code>null</code> 可是真的 <code>null</code> 哦！这种类型叫做 <code>Nullable&lt;T&gt;</code>，即可空值类型，其中的 <code>T</code> 必须是一个值类型。那么，<code>Nullable&lt;bool&gt;</code> 便是里面特殊的一种类型（可空值类型都可以简写为类型名加问号，即此处可以简写为 <code>bool?</code>）。由于布尔型数据的特殊性，这个类型只有两个数值，而加上可空类型的空值 <code>null</code>，这种类型就有了三个值：<code>true</code>、<code>false</code> 和 <code>null</code>。既然有值，就肯定有计算公式和方式，下面我们来看看它们的结果。</p>
-<h2 id="bool-类型计算表"><a href="#bool-类型计算表" class="headerlink" title="bool? 类型计算表"></a><code>bool?</code> 类型计算表</h2><p>下面陈列出 <code>bool?</code> 类型的计算结果表。</p>
-<table>
-<thead>
-<tr>
-<th>x</th>
-<th>y</th>
-<th>x&amp;y</th>
-<th>x|y</th>
-<th>!x</th>
-<th>x^y</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td>false</td>
-<td>false</td>
-</tr>
-<tr>
-<td>true</td>
-<td>false</td>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-</tr>
-<tr>
-<td>true</td>
-<td>null</td>
-<td></td>
-<td>true</td>
-<td>false</td>
-<td></td>
-</tr>
-<tr>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-</tr>
-<tr>
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-</tr>
-<tr>
-<td>false</td>
-<td>null</td>
-<td>false</td>
-<td></td>
-<td>true</td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>true</td>
-<td></td>
-<td>true</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>false</td>
-<td>false</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>null</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>为了精简表格，看起来不臃肿，所以所有空格都是 <code>null</code>。</p>
-</blockquote>
-<p>你可以参考如下代码，并执行。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> series = <span class="keyword">new</span> <span class="keyword">bool</span>?[] &#123; <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> a <span class="keyword">in</span> series)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> b <span class="keyword">in</span> series)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;(a?.ToString() ?? <span class="string">"null"</span>)&#125;</span> &amp; <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a &amp; b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> | <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a | b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"!<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(!a)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ^ <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a ^ b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+		<h2 id="IDisposable-接口简述"><a href="#IDisposable-接口简述" class="headerlink" title="IDisposable 接口简述"></a><code>IDisposable</code> 接口简述</h2><p>在 C# 里，我们是允许使用不安全代码（指针）来操作非托管内存的，于是便产生了非托管内存如何规范释放的问题。<code>IDisposable</code> 接口的产生，正是为了这种需求。</p>
+<p>当我们需要手动释放一些比较大的资源的时候（比如 GC 没有回收垃圾资源，或是由于 GC 回收机制体系的 bug 导致无法回收的时候，我们就需要这个接口了。</p>
+<h2 id="接口实现"><a href="#接口实现" class="headerlink" title="接口实现"></a>接口实现</h2><p>一般来说，这个接口的实现不容易，我们来看看实现的整体代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DisposableObject</span> : <span class="title">IDisposable</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">bool</span> _disposed;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Dispose(<span class="literal">true</span>);</span><br><span class="line">        GC.SuppressFinalize(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Close</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Dispose();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~DisposableObject()</span><br><span class="line">    &#123;</span><br><span class="line">        Dispose(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"><span class="keyword">bool</span> disposing</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_disposed)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (disposing)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清理托管资源</span></span><br><span class="line">            <span class="comment">// if (managedResource != null)</span></span><br><span class="line">            <span class="comment">// &#123;</span></span><br><span class="line">            <span class="comment">//     managedResource.Dispose();</span></span><br><span class="line">            <span class="comment">//     managedResource = null;</span></span><br><span class="line">            <span class="comment">// &#125;</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 清理非托管资源</span></span><br><span class="line">        <span class="comment">// if (nativeResource != IntPtr.Zero)</span></span><br><span class="line">        <span class="comment">// &#123;</span></span><br><span class="line">        <span class="comment">//     Marshal.FreeHGlobal(nativeResource);</span></span><br><span class="line">        <span class="comment">//     nativeResource = IntPtr.Zero;</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 标记已经被释放。</span></span><br><span class="line">        _disposed = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>一定要注意的是，执行语句里一定要对字符串使用 <code>?.ToString()</code> 方式调用，否则由于 <code>null</code> 值的原因，什么都不输出。</p>
+<p>大致来看看，这个执行流程。首先是调用 <code>Dispose</code> 和 <code>Close</code> 方法的时候，系统会自动调用这个内部的虚方法 <code>Dispose(bool)</code>，调用这个方法的目的是进行分流。当参数为 <code>true</code> 的时候，表示需要清理托管资源，它就会进入到 <code>if</code> 条件里面去执行，然后清理内部用到的所有资源。注意，第 33 行的内容，即把对象置为 <code>null</code> 这一点，一直饱受争议，因为 GC 的回收机制的关系，有人认为是通过计数引用的方式，所以我们置为 <code>null</code> 就好比脱离了对象，计数就会减去 1。当计数为 0 的时候，就表示对象没有被用到了，此时就可以回收掉了。但有人认为这种做法是多余的，因为 GC 本身的实现并不是计数引用的算法，而是分代算法，它利用了一种叫做 Generation 的东西，将对象分为 0、1、2 三代，如果在第 0 代执行回收，而没有被销毁的对象都将被丢到第 1 代里；第 1 代的没有回收就进入第 2 代。注意，只有三种情况，所以到第 2 代就没往后了，于是这些所谓的第 2 代的东西就变得更加稳定，比较难回收。</p>
+<blockquote>
+<p> 总之，实现算法层面可以参考最后一部分的链接。</p>
+</blockquote>
+<p>继续看代码。可以看出，我们这里不论是否清理了托管资源，非托管资源都会被得到释放，因为它并不受到 <code>if</code> 条件的约束。然后在释放后，将当前对象的 <code>_disposed</code> 字段置为 <code>true</code> 表示这个对象不要被反复释放了，因为里面的资源目前已经全部指向 <code>null</code> 了，如果你再次释放，就会引发 <code>ObjectDisposedException</code> 或 <code>NullReferenceException</code> 异常，这分别表示你的对象已经释放，对象被重复释放时抛出的异常，以及调用 <code>null</code> 内存块的异常。</p>
+<p>最后请注意，在那个非虚方法 <code>Dispose</code> 里，还调用了 <code>GC.SuppressFinalize</code> 方法，这个方法表示禁用 GC 回收这个资源。如果不禁用的话，我们正在回收的资源被 GC 突然拿走了，岂不是会报错。</p>
+<blockquote>
+<p>是的，实际上报错就是前文说到的 <code>ObjectDisposedException</code>。</p>
+</blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://www.cnblogs.com/nele/p/5673215.html" target="_blank" rel="noopener">GC 实现算法</a></li>
+</ol>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -201,7 +124,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E7%B3%BB%E5%88%97/">查漏补缺系列</a>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
 </div>
 
 
@@ -216,7 +139,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/07/csharplang-03-trivalue-boolean/" data-title="C# 语法查漏补缺系列（3）：三值布尔运算表 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/10/common-02-idisposable/" data-title="C# 内置类型详解系列（2）：IDisposable 接口 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -229,19 +152,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/08/solving-sudoku-using-linq/" title="使用 LINQ 解数独题">
-  <strong>上一篇：</strong><br/>
-  <span>
-  使用 LINQ 解数独题</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/07/gdip-extension/"  title="GDI+ 拓展操作">
+<a href="/2019/11/09/linq-01-from-and-select-clause/"  title="LINQ 教程（1）：from 和 select 语句">
  <strong>下一篇：</strong><br/> 
- <span>GDI+ 拓展操作
+ <span>LINQ 教程（1）：from 和 select 语句
 </span>
 </a>
 </div>
@@ -265,7 +180,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#可空值类型和-bool-简介"><span class="toc-number">1.</span> <span class="toc-text">可空值类型和 bool? 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bool-类型计算表"><span class="toc-number">2.</span> <span class="toc-text">bool? 类型计算表</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IDisposable-接口简述"><span class="toc-number">1.</span> <span class="toc-text">IDisposable 接口简述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#接口实现"><span class="toc-number">2.</span> <span class="toc-text">接口实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
  
   </div>
 

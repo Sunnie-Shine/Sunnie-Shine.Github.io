@@ -80,7 +80,83 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/09/linq-01-summary/" title="LINQ 教程（1）：from 和 select 语句" itemprop="url">LINQ 教程（1）：from 和 select 语句</a>
+      <a href="/2019/11/10/common-02-idisposable/" title="C# 内置类型详解系列（2）：IDisposable 接口" itemprop="url">C# 内置类型详解系列（2）：IDisposable 接口</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T03:08:50.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="IDisposable-接口简述"><a href="#IDisposable-接口简述" class="headerlink" title="IDisposable 接口简述"></a><code>IDisposable</code> 接口简述</h2><p>在 C# 里，我们是允许使用不安全代码（指针）来操作非托管内存的，于是便产生了非托管内存如何规范释放的问题。<code>IDisposable</code> 接口的产生，正是为了这种需求。</p>
+<p>当我们需要手动释放一些比较大的资源的时候（比如 GC 没有回收垃圾资源，或是由于 GC 回收机制体系的 bug 导致无法回收的时候，我们就需要这个接口了。</p>
+<h2 id="接口实现"><a href="#接口实现" class="headerlink" title="接口实现"></a>接口实现</h2><p>一般来说，这个接口的实现不容易，我们来看看实现的整体代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DisposableObject</span> : <span class="title">IDisposable</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">bool</span> _disposed;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Dispose(<span class="literal">true</span>);</span><br><span class="line">        GC.SuppressFinalize(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Close</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Dispose();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~DisposableObject()</span><br><span class="line">    &#123;</span><br><span class="line">        Dispose(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"><span class="keyword">bool</span> disposing</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_disposed)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (disposing)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清理托管资源</span></span><br><span class="line">            <span class="comment">// if (managedResource != null)</span></span><br><span class="line">            <span class="comment">// &#123;</span></span><br><span class="line">            <span class="comment">//     managedResource.Dispose();</span></span><br><span class="line">            <span class="comment">//     managedResource = null;</span></span><br><span class="line">            <span class="comment">// &#125;</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 清理非托管资源</span></span><br><span class="line">        <span class="comment">// if (nativeResource != IntPtr.Zero)</span></span><br><span class="line">        <span class="comment">// &#123;</span></span><br><span class="line">        <span class="comment">//     Marshal.FreeHGlobal(nativeResource);</span></span><br><span class="line">        <span class="comment">//     nativeResource = IntPtr.Zero;</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 标记已经被释放。</span></span><br><span class="line">        _disposed = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大致来看看，这个执行流程。首先是调用 <code>Dispose</code> 和 <code>Close</code> 方法的时候，系统会自动调用这个内部的虚方法 <code>Dispose(bool)</code>，调用这个方法的目的是进行分流。当参数为 <code>true</code> 的时候，表示需要清理托管资源，它就会进入到 <code>if</code> 条件里面去执行，然后清理内部用到的所有资源。注意，第 33 行的内容，即把对象置为 <code>null</code> 这一点，一直饱受争议，因为 GC 的回收机制的关系，有人认为是通过计数引用的方式，所以我们置为 <code>null</code> 就好比脱离了对象，计数就会减去 1。当计数为 0 的时候，就表示对象没有被用到了，此时就可以回收掉了。但有人认为这种做法是多余的，因为 GC 本身的实现并不是计数引用的算法，而是分代算法，它利用了一种叫做 Generation 的东西，将对象分为 0、1、2 三代，如果在第 0 代执行回收，而没有被销毁的对象都将被丢到第 1 代里；第 1 代的没有回收就进入第 2 代。注意，只有三种情况，所以到第 2 代就没往后了，于是这些所谓的第 2 代的东西就变得更加稳定，比较难回收。</p>
+<blockquote>
+<p> 总之，实现算法层面可以参考最后一部分的链接。</p>
+</blockquote>
+<p>继续看代码。可以看出，我们这里不论是否清理了托管资源，非托管资源都会被得到释放，因为它并不受到 <code>if</code> 条件的约束。然后在释放后，将当前对象的 <code>_disposed</code> 字段置为 <code>true</code> 表示这个对象不要被反复释放了，因为里面的资源目前已经全部指向 <code>null</code> 了，如果你再次释放，就会引发 <code>ObjectDisposedException</code> 或 <code>NullReferenceException</code> 异常，这分别表示你的对象已经释放，对象被重复释放时抛出的异常，以及调用 <code>null</code> 内存块的异常。</p>
+<p>最后请注意，在那个非虚方法 <code>Dispose</code> 里，还调用了 <code>GC.SuppressFinalize</code> 方法，这个方法表示禁用 GC 回收这个资源。如果不禁用的话，我们正在回收的资源被 GC 突然拿走了，岂不是会报错。</p>
+<blockquote>
+<p>是的，实际上报错就是前文说到的 <code>ObjectDisposedException</code>。</p>
+</blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://www.cnblogs.com/nele/p/5673215.html" target="_blank" rel="noopener">GC 实现算法</a></li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/10/common-02-idisposable/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/09/linq-01-from-and-select-clause/" title="LINQ 教程（1）：from 和 select 语句" itemprop="url">LINQ 教程（1）：from 和 select 语句</a>
   </h1>
   <p class="article-author">By
        
@@ -94,7 +170,7 @@
     <div class="article-content">
         
         <h2 id="什么是-LINQ？"><a href="#什么是-LINQ？" class="headerlink" title="什么是 LINQ？"></a>什么是 LINQ？</h2><p>LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为<strong>集成语言查询</strong>），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.<span class="keyword">where</span>(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>你就会从控制台上获取到 8 和 9 两个数值。</p>
 <p>看起来似乎不太像是 SQL 哈，除了方法名 <code>Where</code> 用的是 SQL 的条件判断的名词。下面我们改写为等价的写法：</p>
@@ -108,6 +184,35 @@
 <p>这样依旧没有问题。当然了，这样的查询和前文是等价的，所以 <code>var</code> 表示的是 <code>IEnumerable&lt;int&gt;</code> 类型。</p>
 </blockquote>
 <h2 id="IEnumerable-lt-T-gt-类型简介"><a href="#IEnumerable-lt-T-gt-类型简介" class="headerlink" title="IEnumerable&lt;T&gt; 类型简介"></a><code>IEnumerable&lt;T&gt;</code> 类型简介</h2><p>这个类型是一个泛型类型，它表示一个可以使用 <code>foreach</code> 循环的基本列表接口类型。只要你实现了 <code>IEnumerable&lt;T&gt;</code> 里那一套成员，你就可以把这个类型的所有数据都用 <code>foreach</code> 循环遍历一遍。所以这个类型被称为“可枚举类型”、“可迭代类型”、“可列举类型”等等。其中的 <code>T</code> 是泛型参数，表示一个实体化类型，但目前还没有实现。当我们使用这个类型的时候，需要提供这个类型参数，并最终生成一个与该类型配套的完整的类型。比如前文里的 <code>IEnumerable&lt;int&gt;</code> 就是表示为元素为 <code>int</code> 类型的可枚举序列。</p>
+<h2 id="Lambda-表达式简介"><a href="#Lambda-表达式简介" class="headerlink" title="Lambda 表达式简介"></a>Lambda 表达式简介</h2><p>由于这份教程考虑到初级学习的小伙伴，所以这里将为你展示的所有内容都不会超纲。Lambda 表达式实际上是超纲范畴，但这里让大家能明白这个东西，我们简单说一下。</p>
+<p>Lambda 表达式是一种函数的简化书写方法，它允许执行逻辑直接写到参数上，而不用再单独写一个函数在外面。至于为什么叫 Lambda 表达式，是因为它起源于数学里的 Lambda 演算（Lambda 就是希腊字母 λ 的英语写法），并在现在的函数式编程（FP）和面向对象编程（OOP）里经常使用到。</p>
+<p>我们使用 Lambda 算符 <code>=&gt;</code>（即一个等号和一个大于号）来表达一个函数的执行逻辑，符号左边写函数需要的“虚拟执行的”参数名，符号右边写执行逻辑，如果有返回值的函数，则省略 <code>return</code> 一词。 </p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">IsOdd</span>(<span class="params"><span class="keyword">int</span> val</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> val % <span class="number">2</span> == <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其等价写法是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>又如</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Output</span>(<span class="params"><span class="keyword">int</span> number</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.WriteLine(number);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Lambda 表达式写法为</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> number) =&gt; Console.WriteLine(number)</span><br></pre></td></tr></table></figure>
+
+<p>再如</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GreetingFor</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它不是一句话构成，所以 Lambda 表达式是这样的</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">string</span> name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外，一般来说参数的类型都是可以省略不写的。即上述的所有 Lambda 表达式就变为</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">(val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">(number) =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">(name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>甚至当参数只有一个且类型没有写出来的时候，还可以不写参数外围的小括号。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">val =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">number =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">name =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么，为什么可以不写呢？这是因为 Lambda 表达式的发明出来就是为了把小型函数“参数化”，即利用一种简单的语法机制，把一个不是那么大型的函数直接写到参数上，就免得我们每一次仅仅为了某个特定的操作去单独书写一个函数出来。发明了这样的机制后，我们就可以直接把这种东西写到参数上面去。</p>
+<p>比如排序操作，我们经常会遇到升序和降序排序的形式，所以开发人员在写开发应有的 API 的时候，为了你方便使用，它不会提前单独实现两个函数，一个升序一个降序，而是留给你，把排序的中间行为写出来，然后自己执行对应操作，达到排序的效果。这种时候就可以用上参数化了的 Lambda 表达式了。</p>
+<p>比如，前文的 <code>Where</code> 方法里传入了一个 <code>d =&gt; d &gt;= 8</code> 的 Lambda 表达式，它表示，提供筛选的条件是 <code>d &gt;= 8</code>，其中的 <code>d</code> 变量就是需要逐个遍历的时候的临时变量，你目前可以理解为参与 <code>foreach</code> 循环的循环变量。</p>
 <h2 id="开始愉快学习吧！"><a href="#开始愉快学习吧！" class="headerlink" title="开始愉快学习吧！"></a>开始愉快学习吧！</h2><p>下面我们来学习一些基本的筛选模式。</p>
 <h3 id="from-和-select-从句：取出所有元素"><a href="#from-和-select-从句：取出所有元素" class="headerlink" title="from 和 select 从句：取出所有元素"></a><code>from</code> 和 <code>select</code> 从句：取出所有元素</h3><p>第一个要学习的就是 <code>from-in-select</code> 语句。我们依旧使用前文的数组序列，然后来看看下面标题上的这个问题如何得到。当然，这显然是废话。LINQ 的写法如下。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
@@ -188,7 +293,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2019/11/09/linq-01-summary/#disqus_thread" class="comments-count-link">Comments</a>
+		<a href="/2019/11/09/linq-01-from-and-select-clause/#disqus_thread" class="comments-count-link">Comments</a>
 	
 </div>
 
@@ -1016,7 +1121,7 @@
 <p>对于一个泛型类型和泛型方法的 null 的状态的正确处理是我们肯定会关心的地方。这个“梗”的诞生源于值类型和引用类型处理的方式完全不同。一个 <code>int?</code> 类型被翻译转为 <code>Nullable&lt;int&gt;</code>，但 <code>string?</code> 在编译器层面仅仅是添加了一个特性标记来标注它是个可空的 <code>string</code> 类型而已，因此类型并没发生变化。所以，编译器根本不可能在它本身并不知道 <code>T</code> 是一个值类型还是引用类型之前，就生成完全正确的代码。</p>
 <p>但这并不意味着，我们不能在一个闭合的泛型类型参数上使用可空类型了（这里的可空类型指的是值类型或引用类型的两种可空情况的其一）。换句话说，<code>List&lt;string?&gt;</code> 和 <code>List&lt;int?&gt;</code> 在初始化 <code>List&lt;T&gt;</code> 集合的时候，都是完全被允许的。</p>
 <p>但是，我们也确实无法在没有任何泛型约束的状态下指定一个泛型类或泛型方法的泛型参数 <code>T</code> 上随意指定它可空（即 <code>T?</code>）。比如，<a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.firstordefault#System_Linq_Enumerable_FirstOrDefault__1_System_Collections_Generic_IEnumerable___0__" target="_blank" rel="noopener">Enumerable.FirstOrDefault(IEnumerable)</a>（上文里我们才看过的那个代码）就不可能允许直接返回一个 <code>T?</code>。但你完全可以克服这一点限制，通过为泛型参数添加一个值类型或引用类型的约束（写法是 <code>where T : struct</code> 或 <code>where T : class</code>），这样的话，编译器就肯定知道，接下来泛型类型 <code>T</code> 应如何去处理这个可空情况，即 <code>T?</code> 了。</p>
-<p>你可能会想去限制某处的泛型参数不要为可空的类型，而且值类型和引用类型都可能。现在我们提供了一个泛型约束关键字 <code>nonnull</code> 来表示这种特殊情况，只要我们为其设置 <code>where T : nonnull</code> 泛型约束，那么此时的 <code>T</code> 就一定是一个不可以为空的类型了，而且值类型或引用类型均是允许的，只要它们不可空。</p>
+<p>你可能会想去限制某处的泛型参数不要为可空的类型，而且值类型和引用类型都可能。现在我们提供了一个泛型约束关键字 <code>notnull</code> 来表示这种特殊情况，只要我们为其设置 <code>where T : notnull</code> 泛型约束，那么此时的 <code>T</code> 就一定是一个不可以为空的类型了，而且值类型或引用类型均是允许的，只要它们不可空。</p>
 </blockquote>
 <h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>很抱歉，这篇文章太长了。但我希望你能明白，可空值类型和可空引用类型的真正使用方式和操作，我可不希望你用错了。</p>
 
@@ -1031,7 +1136,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
 </div>
 
 
@@ -1308,7 +1413,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/数独/">数独</a><a href="/tags/LINQ/">LINQ</a>
+  <span></span> <a href="/tags/C♯-语言/">C♯ 语言</a><a href="/tags/LINQ/">LINQ</a><a href="/tags/数独/">数独</a>
   </div>
 
 </div>
@@ -1935,83 +2040,10 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇介绍的文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
 
-<p>然后尝试如下的一些命令（操作集）。</p>
-<h3 id="生成你的第一篇文章"><a href="#生成你的第一篇文章" class="headerlink" title="生成你的第一篇文章"></a>生成你的第一篇文章</h3><p>你可以使用如下命令行来为你的本地仓库添加一篇新文章。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="服务器上运行"><a href="#服务器上运行" class="headerlink" title="服务器上运行"></a>服务器上运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="生成静态的页面（写博客文章）"><a href="#生成静态的页面（写博客文章）" class="headerlink" title="生成静态的页面（写博客文章）"></a>生成静态的页面（写博客文章）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate <span class="string">"My Blog post title"</span></span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="将本地内容发布到-GitHub-的同步仓库上"><a href="#将本地内容发布到-GitHub-的同步仓库上" class="headerlink" title="将本地内容发布到 GitHub 的同步仓库上"></a>将本地内容发布到 GitHub 的同步仓库上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>更多内容请参考：<a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/Hexo/">Hexo</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/06/hello-world/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
+  <nav id="page-nav" class="clearfix">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
+  </nav>
 
 </div>
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
@@ -2035,7 +2067,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>7</sup></a></li>
+				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>8</sup></a></li>
 			
 		
 			
@@ -2051,10 +2083,6 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -2063,7 +2091,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
@@ -2071,7 +2103,7 @@
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 		</ul>

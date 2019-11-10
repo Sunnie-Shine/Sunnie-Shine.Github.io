@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="从本文开始，我们将探究 C# 里常见的一些内置类型，并详细分析这些类型的使用方式和原理（当然，如果有的话）。 可空类型是什么？在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：byte、int、short、long、float、double、char、boolean，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都是">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-09T10:01:04.113Z">
+<meta property="og:updated_time" content="2019-11-10T03:10:43.463Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -256,7 +256,7 @@
 <p>对于一个泛型类型和泛型方法的 null 的状态的正确处理是我们肯定会关心的地方。这个“梗”的诞生源于值类型和引用类型处理的方式完全不同。一个 <code>int?</code> 类型被翻译转为 <code>Nullable&lt;int&gt;</code>，但 <code>string?</code> 在编译器层面仅仅是添加了一个特性标记来标注它是个可空的 <code>string</code> 类型而已，因此类型并没发生变化。所以，编译器根本不可能在它本身并不知道 <code>T</code> 是一个值类型还是引用类型之前，就生成完全正确的代码。</p>
 <p>但这并不意味着，我们不能在一个闭合的泛型类型参数上使用可空类型了（这里的可空类型指的是值类型或引用类型的两种可空情况的其一）。换句话说，<code>List&lt;string?&gt;</code> 和 <code>List&lt;int?&gt;</code> 在初始化 <code>List&lt;T&gt;</code> 集合的时候，都是完全被允许的。</p>
 <p>但是，我们也确实无法在没有任何泛型约束的状态下指定一个泛型类或泛型方法的泛型参数 <code>T</code> 上随意指定它可空（即 <code>T?</code>）。比如，<a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.firstordefault#System_Linq_Enumerable_FirstOrDefault__1_System_Collections_Generic_IEnumerable___0__" target="_blank" rel="noopener">Enumerable.FirstOrDefault(IEnumerable)</a>（上文里我们才看过的那个代码）就不可能允许直接返回一个 <code>T?</code>。但你完全可以克服这一点限制，通过为泛型参数添加一个值类型或引用类型的约束（写法是 <code>where T : struct</code> 或 <code>where T : class</code>），这样的话，编译器就肯定知道，接下来泛型类型 <code>T</code> 应如何去处理这个可空情况，即 <code>T?</code> 了。</p>
-<p>你可能会想去限制某处的泛型参数不要为可空的类型，而且值类型和引用类型都可能。现在我们提供了一个泛型约束关键字 <code>nonnull</code> 来表示这种特殊情况，只要我们为其设置 <code>where T : nonnull</code> 泛型约束，那么此时的 <code>T</code> 就一定是一个不可以为空的类型了，而且值类型或引用类型均是允许的，只要它们不可空。</p>
+<p>你可能会想去限制某处的泛型参数不要为可空的类型，而且值类型和引用类型都可能。现在我们提供了一个泛型约束关键字 <code>notnull</code> 来表示这种特殊情况，只要我们为其设置 <code>where T : notnull</code> 泛型约束，那么此时的 <code>T</code> 就一定是一个不可以为空的类型了，而且值类型或引用类型均是允许的，只要它们不可空。</p>
 </blockquote>
 <h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>很抱歉，这篇文章太长了。但我希望你能明白，可空值类型和可空引用类型的真正使用方式和操作，我可不希望你用错了。</p>
   
@@ -266,7 +266,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97/">内置类型详解系列</a>
 </div>
 
 
@@ -353,7 +353,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>7</sup></a></li>
+				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>8</sup></a></li>
 			
 		
 			
@@ -369,10 +369,6 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -381,7 +377,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
@@ -389,7 +389,7 @@
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 		</ul>

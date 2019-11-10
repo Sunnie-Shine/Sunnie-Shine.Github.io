@@ -15,11 +15,11 @@
 <meta name="keywords" content="C♯ 语言,LINQ">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LINQ 教程（1）：from 和 select 语句">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;linq-01-summary&#x2F;index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;linq-01-from-and-select-clause&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add th">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-09T14:24:05.222Z">
+<meta property="og:updated_time" content="2019-11-10T03:01:22.613Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -80,7 +80,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/09/linq-01-summary/" title="LINQ 教程（1）：from 和 select 语句" itemprop="url">LINQ 教程（1）：from 和 select 语句</a>
+      <a href="/2019/11/09/linq-01-from-and-select-clause/" title="LINQ 教程（1）：from 和 select 语句" itemprop="url">LINQ 教程（1）：from 和 select 语句</a>
   </h1>
   <p class="article-author">By
        
@@ -96,12 +96,12 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-LINQ？"><span class="toc-number">1.</span> <span class="toc-text">什么是 LINQ？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IEnumerable-lt-T-gt-类型简介"><span class="toc-number">2.</span> <span class="toc-text">IEnumerable&lt;T&gt; 类型简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始愉快学习吧！"><span class="toc-number">3.</span> <span class="toc-text">开始愉快学习吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#from-和-select-从句：取出所有元素"><span class="toc-number">3.1.</span> <span class="toc-text">from 和 select 从句：取出所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#where-从句：筛选出所有大于等于-8-的所有元素"><span class="toc-number">3.2.</span> <span class="toc-text">where 从句：筛选出所有大于等于 8 的所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><span class="toc-number">3.3.</span> <span class="toc-text">嵌套语句：筛选所有偶数序列里大于等于 8 的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">4.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#等价的-foreach-循环模式"><span class="toc-number">4.1.</span> <span class="toc-text">等价的 foreach 循环模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链模式"><span class="toc-number">4.2.</span> <span class="toc-text">方法链模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思考题"><span class="toc-number">4.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-LINQ？"><span class="toc-number">1.</span> <span class="toc-text">什么是 LINQ？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IEnumerable-lt-T-gt-类型简介"><span class="toc-number">2.</span> <span class="toc-text">IEnumerable&lt;T&gt; 类型简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lambda-表达式简介"><span class="toc-number">3.</span> <span class="toc-text">Lambda 表达式简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始愉快学习吧！"><span class="toc-number">4.</span> <span class="toc-text">开始愉快学习吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#from-和-select-从句：取出所有元素"><span class="toc-number">4.1.</span> <span class="toc-text">from 和 select 从句：取出所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#where-从句：筛选出所有大于等于-8-的所有元素"><span class="toc-number">4.2.</span> <span class="toc-text">where 从句：筛选出所有大于等于 8 的所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><span class="toc-number">4.3.</span> <span class="toc-text">嵌套语句：筛选所有偶数序列里大于等于 8 的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">5.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#等价的-foreach-循环模式"><span class="toc-number">5.1.</span> <span class="toc-text">等价的 foreach 循环模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链模式"><span class="toc-number">5.2.</span> <span class="toc-text">方法链模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思考题"><span class="toc-number">5.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
 		
 		</div>
 		
 		<h2 id="什么是-LINQ？"><a href="#什么是-LINQ？" class="headerlink" title="什么是 LINQ？"></a>什么是 LINQ？</h2><p>LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为<strong>集成语言查询</strong>），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.<span class="keyword">where</span>(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>你就会从控制台上获取到 8 和 9 两个数值。</p>
 <p>看起来似乎不太像是 SQL 哈，除了方法名 <code>Where</code> 用的是 SQL 的条件判断的名词。下面我们改写为等价的写法：</p>
@@ -115,6 +115,35 @@
 <p>这样依旧没有问题。当然了，这样的查询和前文是等价的，所以 <code>var</code> 表示的是 <code>IEnumerable&lt;int&gt;</code> 类型。</p>
 </blockquote>
 <h2 id="IEnumerable-lt-T-gt-类型简介"><a href="#IEnumerable-lt-T-gt-类型简介" class="headerlink" title="IEnumerable&lt;T&gt; 类型简介"></a><code>IEnumerable&lt;T&gt;</code> 类型简介</h2><p>这个类型是一个泛型类型，它表示一个可以使用 <code>foreach</code> 循环的基本列表接口类型。只要你实现了 <code>IEnumerable&lt;T&gt;</code> 里那一套成员，你就可以把这个类型的所有数据都用 <code>foreach</code> 循环遍历一遍。所以这个类型被称为“可枚举类型”、“可迭代类型”、“可列举类型”等等。其中的 <code>T</code> 是泛型参数，表示一个实体化类型，但目前还没有实现。当我们使用这个类型的时候，需要提供这个类型参数，并最终生成一个与该类型配套的完整的类型。比如前文里的 <code>IEnumerable&lt;int&gt;</code> 就是表示为元素为 <code>int</code> 类型的可枚举序列。</p>
+<h2 id="Lambda-表达式简介"><a href="#Lambda-表达式简介" class="headerlink" title="Lambda 表达式简介"></a>Lambda 表达式简介</h2><p>由于这份教程考虑到初级学习的小伙伴，所以这里将为你展示的所有内容都不会超纲。Lambda 表达式实际上是超纲范畴，但这里让大家能明白这个东西，我们简单说一下。</p>
+<p>Lambda 表达式是一种函数的简化书写方法，它允许执行逻辑直接写到参数上，而不用再单独写一个函数在外面。至于为什么叫 Lambda 表达式，是因为它起源于数学里的 Lambda 演算（Lambda 就是希腊字母 λ 的英语写法），并在现在的函数式编程（FP）和面向对象编程（OOP）里经常使用到。</p>
+<p>我们使用 Lambda 算符 <code>=&gt;</code>（即一个等号和一个大于号）来表达一个函数的执行逻辑，符号左边写函数需要的“虚拟执行的”参数名，符号右边写执行逻辑，如果有返回值的函数，则省略 <code>return</code> 一词。 </p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">IsOdd</span>(<span class="params"><span class="keyword">int</span> val</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> val % <span class="number">2</span> == <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其等价写法是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>又如</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Output</span>(<span class="params"><span class="keyword">int</span> number</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.WriteLine(number);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Lambda 表达式写法为</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> number) =&gt; Console.WriteLine(number)</span><br></pre></td></tr></table></figure>
+
+<p>再如</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GreetingFor</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它不是一句话构成，所以 Lambda 表达式是这样的</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">string</span> name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外，一般来说参数的类型都是可以省略不写的。即上述的所有 Lambda 表达式就变为</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">(val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">(number) =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">(name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>甚至当参数只有一个且类型没有写出来的时候，还可以不写参数外围的小括号。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">val =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">number =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">name =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么，为什么可以不写呢？这是因为 Lambda 表达式的发明出来就是为了把小型函数“参数化”，即利用一种简单的语法机制，把一个不是那么大型的函数直接写到参数上，就免得我们每一次仅仅为了某个特定的操作去单独书写一个函数出来。发明了这样的机制后，我们就可以直接把这种东西写到参数上面去。</p>
+<p>比如排序操作，我们经常会遇到升序和降序排序的形式，所以开发人员在写开发应有的 API 的时候，为了你方便使用，它不会提前单独实现两个函数，一个升序一个降序，而是留给你，把排序的中间行为写出来，然后自己执行对应操作，达到排序的效果。这种时候就可以用上参数化了的 Lambda 表达式了。</p>
+<p>比如，前文的 <code>Where</code> 方法里传入了一个 <code>d =&gt; d &gt;= 8</code> 的 Lambda 表达式，它表示，提供筛选的条件是 <code>d &gt;= 8</code>，其中的 <code>d</code> 变量就是需要逐个遍历的时候的临时变量，你目前可以理解为参与 <code>foreach</code> 循环的循环变量。</p>
 <h2 id="开始愉快学习吧！"><a href="#开始愉快学习吧！" class="headerlink" title="开始愉快学习吧！"></a>开始愉快学习吧！</h2><p>下面我们来学习一些基本的筛选模式。</p>
 <h3 id="from-和-select-从句：取出所有元素"><a href="#from-和-select-从句：取出所有元素" class="headerlink" title="from 和 select 从句：取出所有元素"></a><code>from</code> 和 <code>select</code> 从句：取出所有元素</h3><p>第一个要学习的就是 <code>from-in-select</code> 语句。我们依旧使用前文的数组序列，然后来看看下面标题上的这个问题如何得到。当然，这显然是废话。LINQ 的写法如下。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
@@ -188,7 +217,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/09/linq-01-summary/" data-title="LINQ 教程（1）：from 和 select 语句 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/09/linq-01-from-and-select-clause/" data-title="LINQ 教程（1）：from 和 select 语句 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -201,6 +230,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2019/11/10/common-02-idisposable/" title="C# 内置类型详解系列（2）：IDisposable 接口">
+  <strong>上一篇：</strong><br/>
+  <span>
+  C# 内置类型详解系列（2）：IDisposable 接口</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2019/11/09/bayes-rule/"  title="贝叶斯公式解读">
@@ -229,7 +266,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-LINQ？"><span class="toc-number">1.</span> <span class="toc-text">什么是 LINQ？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IEnumerable-lt-T-gt-类型简介"><span class="toc-number">2.</span> <span class="toc-text">IEnumerable&lt;T&gt; 类型简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始愉快学习吧！"><span class="toc-number">3.</span> <span class="toc-text">开始愉快学习吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#from-和-select-从句：取出所有元素"><span class="toc-number">3.1.</span> <span class="toc-text">from 和 select 从句：取出所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#where-从句：筛选出所有大于等于-8-的所有元素"><span class="toc-number">3.2.</span> <span class="toc-text">where 从句：筛选出所有大于等于 8 的所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><span class="toc-number">3.3.</span> <span class="toc-text">嵌套语句：筛选所有偶数序列里大于等于 8 的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">4.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#等价的-foreach-循环模式"><span class="toc-number">4.1.</span> <span class="toc-text">等价的 foreach 循环模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链模式"><span class="toc-number">4.2.</span> <span class="toc-text">方法链模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思考题"><span class="toc-number">4.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-LINQ？"><span class="toc-number">1.</span> <span class="toc-text">什么是 LINQ？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IEnumerable-lt-T-gt-类型简介"><span class="toc-number">2.</span> <span class="toc-text">IEnumerable&lt;T&gt; 类型简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lambda-表达式简介"><span class="toc-number">3.</span> <span class="toc-text">Lambda 表达式简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始愉快学习吧！"><span class="toc-number">4.</span> <span class="toc-text">开始愉快学习吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#from-和-select-从句：取出所有元素"><span class="toc-number">4.1.</span> <span class="toc-text">from 和 select 从句：取出所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#where-从句：筛选出所有大于等于-8-的所有元素"><span class="toc-number">4.2.</span> <span class="toc-text">where 从句：筛选出所有大于等于 8 的所有元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><span class="toc-number">4.3.</span> <span class="toc-text">嵌套语句：筛选所有偶数序列里大于等于 8 的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">5.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#等价的-foreach-循环模式"><span class="toc-number">5.1.</span> <span class="toc-text">等价的 foreach 循环模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链模式"><span class="toc-number">5.2.</span> <span class="toc-text">方法链模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思考题"><span class="toc-number">5.3.</span> <span class="toc-text">思考题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol>
  
   </div>
 
@@ -252,7 +289,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>7</sup></a></li>
+				<li><a href="/tags/C♯-语言/" title="C♯ 语言">C♯ 语言<sup>8</sup></a></li>
 			
 		
 			
@@ -268,10 +305,6 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -280,7 +313,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
@@ -288,7 +325,7 @@
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 		</ul>
