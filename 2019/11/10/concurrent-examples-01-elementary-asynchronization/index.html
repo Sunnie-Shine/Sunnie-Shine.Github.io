@@ -1,0 +1,585 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C# 并发编程实例系列（1）：异步编程基础 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="简介从现在开始，我们将使用 C# 语言为大家介绍并发编程期间遇到了大量可能会遇到的经典实例。本部分内容完全参照自《C# 并发编程经典实例》（Concurrency in C# Cookbook）。 本部分介绍异步操作之中使用 async 和 await 的基础知识。本部分只会涉及本质上适合异步的操作，例如 HTTP 请求、数据库指令、Web 服务调用等。  当然，有些代码会尝试用 C# 8 的描述">
+<meta name="keywords" content="C♯,并发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C# 并发编程实例系列（1）：异步编程基础">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;concurrent-examples-01-elementary-asynchronization&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="简介从现在开始，我们将使用 C# 语言为大家介绍并发编程期间遇到了大量可能会遇到的经典实例。本部分内容完全参照自《C# 并发编程经典实例》（Concurrency in C# Cookbook）。 本部分介绍异步操作之中使用 async 和 await 的基础知识。本部分只会涉及本质上适合异步的操作，例如 HTTP 请求、数据库指令、Web 服务调用等。  当然，有些代码会尝试用 C# 8 的描述">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-10T14:18:34.417Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/10/concurrent-examples-01-elementary-asynchronization/" title="C# 并发编程实例系列（1）：异步编程基础" itemprop="url">C# 并发编程实例系列（1）：异步编程基础</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T13:30:29.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#暂停一段时间"><span class="toc-number">1.1.</span> <span class="toc-text">暂停一段时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#问题"><span class="toc-number">1.1.1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-number">1.1.2.</span> <span class="toc-text">解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#讨论"><span class="toc-number">1.1.3.</span> <span class="toc-text">讨论</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回完成的任务"><span class="toc-number">1.2.</span> <span class="toc-text">返回完成的任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#问题-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#讨论-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">讨论</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>从现在开始，我们将使用 C# 语言为大家介绍并发编程期间遇到了大量可能会遇到的经典实例。本部分内容完全参照自《C# 并发编程经典实例》（<em>Concurrency in C# Cookbook</em>）。</p>
+<p>本部分介绍异步操作之中使用 <code>async</code> 和 <code>await</code> 的基础知识。本部分只会涉及本质上适合异步的操作，例如 HTTP 请求、数据库指令、Web 服务调用等。</p>
+<blockquote>
+<p>当然，有些代码会尝试用 C# 8 的描述模式进行描述，比如变量模式的 <code>using</code> 声明、可空引用类型等，原本的书里是用的较老的语法，所以在此会被重写翻译为较新的代码。</p>
+</blockquote>
+<h3 id="暂停一段时间"><a href="#暂停一段时间" class="headerlink" title="暂停一段时间"></a>暂停一段时间</h3><h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>需要让程序以异步方式等待一段时间。这在进行单元测试或者实现重试延迟时非常有用。本解决方案也能用于实现简单的超时。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>Task</code> 类里有一个返回 <code>Task</code> 对象的静态函数 <code>Task.Delay</code>，这个 <code>Task</code> 对象会在指定的时间后完成。</p>
+<p>下面的这个例子用于单元测试，定义了一个异步完成的任务。在模拟一个异步操作时，至少要测试“同步成功”、“异步成功”和“异步失败”三种情况，这一点很重要。下面的例子返回一个 <code>Task</code> 对象，用于“异步成功”测试。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;T&gt; DelayResult&lt;T&gt;(T result, TimeSpan delay)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Delay(delay);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下一个例子实现了一个简单的指数退避。指数退避是一种重试策略，重试的延迟时间会逐次增加。在访问 Web 服务时，最好的方式就是采用指数退避，它可以防止服务器呗太多的重试阻塞。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt; DownloadStringWithRetries(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> nextDelay = TimeSpan.FromSeconds(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i != <span class="number">3</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> &#123; &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">await</span> Task.Delay(nextDelay);</span><br><span class="line">        nextDelay += nextDelay;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> client.GetStriingAsync(uri);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后的例子用 <code>Task.Delay</code> 实现一个简单的超时功能。本例子中代码的目的是，如果服务在 3 秒内没有相应，就返回 <code>null</code>。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt;? DownloadStringWithTimeout(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> downloadTask = client.GetStringAsync(uri);</span><br><span class="line">    <span class="keyword">var</span> timeoutTask = Task.Delay(<span class="number">3000</span>); <span class="comment">// Delay 3s.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> Task.WhenAny(downloadTask, timeoutTask) == timeoutTask</span><br><span class="line">        ? <span class="literal">null</span></span><br><span class="line">        : <span class="keyword">await</span> downloadTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h4><p><code>Task.Delay</code> 适合用于对异步代码进行单元测试或实现重试逻辑。如果要实现超时功能的话，最好还是使用取消令牌对象（<code>CancellationToken</code>），这一点将在后续内容说明。</p>
+<p>另外，前文用到的 <code>Task.WhenAny</code> 方法可以传入一系列 <code>Task</code> 对象，当其中任意一个完成，就会返回一个 <code>Task</code>，表示该完成的任务对象。</p>
+<h3 id="返回完成的任务"><a href="#返回完成的任务" class="headerlink" title="返回完成的任务"></a>返回完成的任务</h3><h4 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h4><p>如何实现一个具有异步签名的同步方法。如果从异步接口或基类继承代码，但希望用同步的方法来实现它，就会出现这种情况。对异步代码做单元测试，以及用简单的生成方法存根（stub）或者模拟对象（mock）来产生异步接口，这两种情况下都可使用这种技术。</p>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>可以使用 <code>Task.FromResult</code> 方法创建并返回一个新的 <code>Task&lt;T&gt;</code> 对象，这个 <code>Task</code> 对象是已经完成的，并由具体的值。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">MySyncImplementation</span> : <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span> =&gt; Task.FromResult(<span class="number">13</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果你使用了 <code>Microsoft.Bcl.Async</code>，那么 <code>FromResult</code> 方法就在 <code>TaskEx</code> 类之中。</p>
+</blockquote>
+<h4 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h4><p>在用同步代码实现异步接口的时候，要避免使用任何形式的阻塞操作。在异步方法之中进行阻塞操作，然后返回一个完成的 <code>Task</code> 对象，这种方法并不可取。作为一个反例，我们来看一下 .NET Framework 4.5 之中 <code>Console</code> 类的文本读取器。<code>Console.In.ReadLineAsync</code> 一定会阻塞调用它的线程，直到它读取完一行文字，然后回返回一个已经完成的 <code>Task</code> 对象。这种实现并不直观，很多开发人员也觉得很奇怪。一旦异步方法阻塞，调用它的线程就无法启动其它任务，这会干扰程序的并发性，甚至可能产生死锁。</p>
+<p><code>Task.FromResult</code> 只能提供结果正确的同步 <code>Task</code> 对象。如果要让返回的 <code>Task</code> 对象有一个其它类型的结果（例如以 <code>NotImplementedException</code> 结束的 <code>Task</code> 对象），就得自行创建使用 <code>TaskCompletionSource</code> 的辅助方法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Task&lt;T&gt; NotImplementedAsync&lt;T&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> tcs = <span class="keyword">new</span> TaskCompletionSource&lt;T&gt;();</span><br><span class="line">    tcs.SetException(<span class="keyword">new</span> NotImplementedException());</span><br><span class="line">    <span class="keyword">return</span> tcs.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从概念上讲，<code>Task.FromResult</code> 只不过是 <code>TaskCompletionSource</code> 的一个简化版本，它与上面的代码非常类似。</p>
+<p>如果用 <code>Task.FromResult</code> 反复调用同一个参数，则可考虑用一个实际的 <code>task</code> 变量。例如，可以一次性建立一个结果为 0 的 <code>Task&lt;int&gt;</code> 对象，在以后的调用之中就不需要创建额外的实例了，这样可减少垃圾回收的次数。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Task&lt;<span class="keyword">int</span>&gt; zeroTask = Task.FromResult(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">static</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zeroTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E4%BE%8B%E7%B3%BB%E5%88%97/">并发编程实例系列</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/并发/">并发</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/10/concurrent-examples-01-elementary-asynchronization/" data-title="C# 并发编程实例系列（1）：异步编程基础 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2019/11/10/complier-generating-of-field-like-event/" title="字段长相的事件的编译器代码生成">
+  <strong>上一篇：</strong><br/>
+  <span>
+  字段长相的事件的编译器代码生成</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/11/10/clang-02-operator/"  title="C 语言语法系列（2）：运算符和表达式">
+ <strong>下一篇：</strong><br/> 
+ <span>C 语言语法系列（2）：运算符和表达式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#暂停一段时间"><span class="toc-number">1.1.</span> <span class="toc-text">暂停一段时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#问题"><span class="toc-number">1.1.1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-number">1.1.2.</span> <span class="toc-text">解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#讨论"><span class="toc-number">1.1.3.</span> <span class="toc-text">讨论</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回完成的任务"><span class="toc-number">1.2.</span> <span class="toc-text">返回完成的任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#问题-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#讨论-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">讨论</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>10</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'sunnieblog';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

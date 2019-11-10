@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C# 语法查漏补缺系列（3）：三值布尔运算表 | 向向的博客</title>
+    <title>字段长相的事件的编译器代码生成 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="可空值类型和 bool? 简介我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 int 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 Integer 是可以为 null 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就">
+    <meta name="description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event;  它便会自动生成对应的 adder 和 remove">
 <meta name="keywords" content="C♯">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C# 语法查漏补缺系列（3）：三值布尔运算表">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;07&#x2F;csharplang-03-trivalue-boolean&#x2F;index.html">
+<meta property="og:title" content="字段长相的事件的编译器代码生成">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;complier-generating-of-field-like-event&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="可空值类型和 bool? 简介我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 int 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 Integer 是可以为 null 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就">
+<meta property="og:description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event;  它便会自动生成对应的 adder 和 remove">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-10T06:30:08.389Z">
+<meta property="og:updated_time" content="2019-11-10T14:29:54.885Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -80,14 +80,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/07/csharplang-03-trivalue-boolean/" title="C# 语法查漏补缺系列（3）：三值布尔运算表" itemprop="url">C# 语法查漏补缺系列（3）：三值布尔运算表</a>
+      <a href="/2019/11/10/complier-generating-of-field-like-event/" title="字段长相的事件的编译器代码生成" itemprop="url">字段长相的事件的编译器代码生成</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-07T09:01:43.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
+    <time datetime="2019-11-10T14:17:35.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
     
   </p>
 </header>
@@ -96,104 +96,26 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#可空值类型和-bool-简介"><span class="toc-number">1.</span> <span class="toc-text">可空值类型和 bool? 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bool-类型计算表"><span class="toc-number">2.</span> <span class="toc-text">bool? 类型计算表</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是字段长相的事件声明？"><span class="toc-number">1.</span> <span class="toc-text">什么是字段长相的事件声明？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#来看对照吧！"><span class="toc-number">2.</span> <span class="toc-text">来看对照吧！</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#adder-分析"><span class="toc-number">3.</span> <span class="toc-text">adder 分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#remover-分析"><span class="toc-number">4.</span> <span class="toc-text">remover 分析</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="可空值类型和-bool-简介"><a href="#可空值类型和-bool-简介" class="headerlink" title="可空值类型和 bool? 简介"></a>可空值类型和 <code>bool?</code> 简介</h2><p>我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 <code>int</code> 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 <code>Integer</code> 是可以为 <code>null</code> 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就是，这种类型基本上就是一个数据整体，一般迫不得已不拆开它们的内部数据，例如一个点对 <code>Point</code>，显然横纵坐标被拆解后完全显得无意义了，所以 <code>Point</code> 被作为一种值类型来看待。但 Java 受到语法的制约，我们只能写成引用类型。</p>
-<p>那么，在 C# 里，我们可以为其声明含有空值的值类型数据，这种类型提供的 <code>null</code> 可是真的 <code>null</code> 哦！这种类型叫做 <code>Nullable&lt;T&gt;</code>，即可空值类型，其中的 <code>T</code> 必须是一个值类型。那么，<code>Nullable&lt;bool&gt;</code> 便是里面特殊的一种类型（可空值类型都可以简写为类型名加问号，即此处可以简写为 <code>bool?</code>）。由于布尔型数据的特殊性，这个类型只有两个数值，而加上可空类型的空值 <code>null</code>，这种类型就有了三个值：<code>true</code>、<code>false</code> 和 <code>null</code>。既然有值，就肯定有计算公式和方式，下面我们来看看它们的结果。</p>
-<h2 id="bool-类型计算表"><a href="#bool-类型计算表" class="headerlink" title="bool? 类型计算表"></a><code>bool?</code> 类型计算表</h2><p>下面陈列出 <code>bool?</code> 类型的计算结果表。</p>
-<table>
-<thead>
-<tr>
-<th>x</th>
-<th>y</th>
-<th>x&amp;y</th>
-<th>x|y</th>
-<th>!x</th>
-<th>x^y</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td>false</td>
-<td>false</td>
-</tr>
-<tr>
-<td>true</td>
-<td>false</td>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-</tr>
-<tr>
-<td>true</td>
-<td>null</td>
-<td></td>
-<td>true</td>
-<td>false</td>
-<td></td>
-</tr>
-<tr>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-</tr>
-<tr>
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-</tr>
-<tr>
-<td>false</td>
-<td>null</td>
-<td>false</td>
-<td></td>
-<td>true</td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>true</td>
-<td></td>
-<td>true</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>false</td>
-<td>false</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>null</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>为了精简表格，看起来不臃肿，所以所有空格都是 <code>null</code>。</p>
-</blockquote>
-<p>你可以参考如下代码，并执行。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> series = <span class="keyword">new</span> <span class="keyword">bool</span>?[] &#123; <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> a <span class="keyword">in</span> series)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> b <span class="keyword">in</span> series)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;(a?.ToString() ?? <span class="string">"null"</span>)&#125;</span> &amp; <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a &amp; b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> | <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a | b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"!<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(!a)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ^ <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a ^ b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+		<h2 id="什么是字段长相的事件声明？"><a href="#什么是字段长相的事件声明？" class="headerlink" title="什么是字段长相的事件声明？"></a>什么是字段长相的事件声明？</h2><p>所谓<strong>字段长相的事件</strong>（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br></pre></td></tr></table></figure>
 
-<p>一定要注意的是，执行语句里一定要对字符串使用 <code>?.ToString()</code> 方式调用，否则由于 <code>null</code> 值的原因，什么都不输出。</p>
+<p>它便会自动生成对应的 adder 和 remover。实际上，它会生成什么东西呢？</p>
+<h2 id="来看对照吧！"><a href="#来看对照吧！" class="headerlink" title="来看对照吧！"></a>来看对照吧！</h2><p>我在 SharpLab 上测试了一个事件的声明，它是这样的。</p>
+<p>源代码：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而在编译后，生成的代码是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> EventHandler m_Event;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event</span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">add</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Combine(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">remove</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Remove(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>[ComplierGenerated]</code> 暗示代码块是由编译器自动生成，而类上面那一大堆东西，我们这里暂时不用去关心，因为这些内容不是本文需要涉及到的内容。</p>
+<p>仔细观察内部代码，可以看到代码里写的模式基本上就是通过一个生成的委托字段 <code>m_Event</code> 来执行操作。</p>
+<h2 id="adder-分析"><a href="#adder-分析" class="headerlink" title="adder 分析"></a>adder 分析</h2><p>下面来看添加器 <code>add</code> 块里的内容。实际上可以看到它的操作仅仅就是在线程上执行赋值。首先给了一个尚未赋值的对象 <code>eventHandler2</code> 作为临时变量，然后尝试为其赋值。当赋值完成后，将其使用 <code>Delegate.Combine</code> 方法进行委托合并。合并后，在使用提供线程操作的静态类 <code>Interlocked</code> 的线程上交换模式，进行变量的交换，这样就达到了赋值效果。</p>
+<p>但请注意，在外层，是有一个 <code>do-while</code> 循环的。如果检测到执行后的操作并不是同一个引用时，将会重新执行循环体。实际上，它就是为了保证交换和委托结合的成功。</p>
+<h2 id="remover-分析"><a href="#remover-分析" class="headerlink" title="remover 分析"></a>remover 分析</h2><p>再来看看移除器 <code>remove</code> 块里的内容。和刚才一样的逻辑，就不重复了，主要就是换掉 <code>Delegate.Combine</code>，改为 <code>Delegate.Remove</code> 而已。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -201,7 +123,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E7%B3%BB%E5%88%97/">查漏补缺系列</a>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
 </div>
 
 
@@ -216,7 +138,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/07/csharplang-03-trivalue-boolean/" data-title="C# 语法查漏补缺系列（3）：三值布尔运算表 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/10/complier-generating-of-field-like-event/" data-title="字段长相的事件的编译器代码生成 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -229,19 +151,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/08/solving-sudoku-using-linq/" title="使用 LINQ 解数独题">
-  <strong>上一篇：</strong><br/>
-  <span>
-  使用 LINQ 解数独题</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/07/gdip-extension/"  title="GDI+ 拓展操作">
+<a href="/2019/11/10/concurrent-examples-01-elementary-asynchronization/"  title="C# 并发编程实例系列（1）：异步编程基础">
  <strong>下一篇：</strong><br/> 
- <span>GDI+ 拓展操作
+ <span>C# 并发编程实例系列（1）：异步编程基础
 </span>
 </a>
 </div>
@@ -265,7 +179,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#可空值类型和-bool-简介"><span class="toc-number">1.</span> <span class="toc-text">可空值类型和 bool? 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bool-类型计算表"><span class="toc-number">2.</span> <span class="toc-text">bool? 类型计算表</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是字段长相的事件声明？"><span class="toc-number">1.</span> <span class="toc-text">什么是字段长相的事件声明？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#来看对照吧！"><span class="toc-number">2.</span> <span class="toc-text">来看对照吧！</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#adder-分析"><span class="toc-number">3.</span> <span class="toc-text">adder 分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#remover-分析"><span class="toc-number">4.</span> <span class="toc-text">remover 分析</span></a></li></ol>
  
   </div>
 

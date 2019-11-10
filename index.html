@@ -80,6 +80,173 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/10/complier-generating-of-field-like-event/" title="字段长相的事件的编译器代码生成" itemprop="url">字段长相的事件的编译器代码生成</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T14:17:35.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="什么是字段长相的事件声明？"><a href="#什么是字段长相的事件声明？" class="headerlink" title="什么是字段长相的事件声明？"></a>什么是字段长相的事件声明？</h2><p>所谓<strong>字段长相的事件</strong>（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br></pre></td></tr></table></figure>
+
+<p>它便会自动生成对应的 adder 和 remover。实际上，它会生成什么东西呢？</p>
+<h2 id="来看对照吧！"><a href="#来看对照吧！" class="headerlink" title="来看对照吧！"></a>来看对照吧！</h2><p>我在 SharpLab 上测试了一个事件的声明，它是这样的。</p>
+<p>源代码：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而在编译后，生成的代码是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> EventHandler m_Event;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event</span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">add</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Combine(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">remove</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Remove(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>[ComplierGenerated]</code> 暗示代码块是由编译器自动生成，而类上面那一大堆东西，我们这里暂时不用去关心，因为这些内容不是本文需要涉及到的内容。</p>
+<p>仔细观察内部代码，可以看到代码里写的模式基本上就是通过一个生成的委托字段 <code>m_Event</code> 来执行操作。</p>
+<h2 id="adder-分析"><a href="#adder-分析" class="headerlink" title="adder 分析"></a>adder 分析</h2><p>下面来看添加器 <code>add</code> 块里的内容。实际上可以看到它的操作仅仅就是在线程上执行赋值。首先给了一个尚未赋值的对象 <code>eventHandler2</code> 作为临时变量，然后尝试为其赋值。当赋值完成后，将其使用 <code>Delegate.Combine</code> 方法进行委托合并。合并后，在使用提供线程操作的静态类 <code>Interlocked</code> 的线程上交换模式，进行变量的交换，这样就达到了赋值效果。</p>
+<p>但请注意，在外层，是有一个 <code>do-while</code> 循环的。如果检测到执行后的操作并不是同一个引用时，将会重新执行循环体。实际上，它就是为了保证交换和委托结合的成功。</p>
+<h2 id="remover-分析"><a href="#remover-分析" class="headerlink" title="remover 分析"></a>remover 分析</h2><p>再来看看移除器 <code>remove</code> 块里的内容。和刚才一样的逻辑，就不重复了，主要就是换掉 <code>Delegate.Combine</code>，改为 <code>Delegate.Remove</code> 而已。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/10/complier-generating-of-field-like-event/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/10/concurrent-examples-01-elementary-asynchronization/" title="C# 并发编程实例系列（1）：异步编程基础" itemprop="url">C# 并发编程实例系列（1）：异步编程基础</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T13:30:29.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>从现在开始，我们将使用 C# 语言为大家介绍并发编程期间遇到了大量可能会遇到的经典实例。本部分内容完全参照自《C# 并发编程经典实例》（<em>Concurrency in C# Cookbook</em>）。</p>
+<p>本部分介绍异步操作之中使用 <code>async</code> 和 <code>await</code> 的基础知识。本部分只会涉及本质上适合异步的操作，例如 HTTP 请求、数据库指令、Web 服务调用等。</p>
+<blockquote>
+<p>当然，有些代码会尝试用 C# 8 的描述模式进行描述，比如变量模式的 <code>using</code> 声明、可空引用类型等，原本的书里是用的较老的语法，所以在此会被重写翻译为较新的代码。</p>
+</blockquote>
+<h3 id="暂停一段时间"><a href="#暂停一段时间" class="headerlink" title="暂停一段时间"></a>暂停一段时间</h3><h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>需要让程序以异步方式等待一段时间。这在进行单元测试或者实现重试延迟时非常有用。本解决方案也能用于实现简单的超时。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>Task</code> 类里有一个返回 <code>Task</code> 对象的静态函数 <code>Task.Delay</code>，这个 <code>Task</code> 对象会在指定的时间后完成。</p>
+<p>下面的这个例子用于单元测试，定义了一个异步完成的任务。在模拟一个异步操作时，至少要测试“同步成功”、“异步成功”和“异步失败”三种情况，这一点很重要。下面的例子返回一个 <code>Task</code> 对象，用于“异步成功”测试。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;T&gt; DelayResult&lt;T&gt;(T result, TimeSpan delay)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Delay(delay);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下一个例子实现了一个简单的指数退避。指数退避是一种重试策略，重试的延迟时间会逐次增加。在访问 Web 服务时，最好的方式就是采用指数退避，它可以防止服务器呗太多的重试阻塞。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt; DownloadStringWithRetries(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> nextDelay = TimeSpan.FromSeconds(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i != <span class="number">3</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> &#123; &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">await</span> Task.Delay(nextDelay);</span><br><span class="line">        nextDelay += nextDelay;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> client.GetStriingAsync(uri);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后的例子用 <code>Task.Delay</code> 实现一个简单的超时功能。本例子中代码的目的是，如果服务在 3 秒内没有相应，就返回 <code>null</code>。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt;? DownloadStringWithTimeout(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> downloadTask = client.GetStringAsync(uri);</span><br><span class="line">    <span class="keyword">var</span> timeoutTask = Task.Delay(<span class="number">3000</span>); <span class="comment">// Delay 3s.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> Task.WhenAny(downloadTask, timeoutTask) == timeoutTask</span><br><span class="line">        ? <span class="literal">null</span></span><br><span class="line">        : <span class="keyword">await</span> downloadTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h4><p><code>Task.Delay</code> 适合用于对异步代码进行单元测试或实现重试逻辑。如果要实现超时功能的话，最好还是使用取消令牌对象（<code>CancellationToken</code>），这一点将在后续内容说明。</p>
+<p>另外，前文用到的 <code>Task.WhenAny</code> 方法可以传入一系列 <code>Task</code> 对象，当其中任意一个完成，就会返回一个 <code>Task</code>，表示该完成的任务对象。</p>
+<h3 id="返回完成的任务"><a href="#返回完成的任务" class="headerlink" title="返回完成的任务"></a>返回完成的任务</h3><h4 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h4><p>如何实现一个具有异步签名的同步方法。如果从异步接口或基类继承代码，但希望用同步的方法来实现它，就会出现这种情况。对异步代码做单元测试，以及用简单的生成方法存根（stub）或者模拟对象（mock）来产生异步接口，这两种情况下都可使用这种技术。</p>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>可以使用 <code>Task.FromResult</code> 方法创建并返回一个新的 <code>Task&lt;T&gt;</code> 对象，这个 <code>Task</code> 对象是已经完成的，并由具体的值。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">MySyncImplementation</span> : <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span> =&gt; Task.FromResult(<span class="number">13</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果你使用了 <code>Microsoft.Bcl.Async</code>，那么 <code>FromResult</code> 方法就在 <code>TaskEx</code> 类之中。</p>
+</blockquote>
+<h4 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h4><p>在用同步代码实现异步接口的时候，要避免使用任何形式的阻塞操作。在异步方法之中进行阻塞操作，然后返回一个完成的 <code>Task</code> 对象，这种方法并不可取。作为一个反例，我们来看一下 .NET Framework 4.5 之中 <code>Console</code> 类的文本读取器。<code>Console.In.ReadLineAsync</code> 一定会阻塞调用它的线程，直到它读取完一行文字，然后回返回一个已经完成的 <code>Task</code> 对象。这种实现并不直观，很多开发人员也觉得很奇怪。一旦异步方法阻塞，调用它的线程就无法启动其它任务，这会干扰程序的并发性，甚至可能产生死锁。</p>
+<p><code>Task.FromResult</code> 只能提供结果正确的同步 <code>Task</code> 对象。如果要让返回的 <code>Task</code> 对象有一个其它类型的结果（例如以 <code>NotImplementedException</code> 结束的 <code>Task</code> 对象），就得自行创建使用 <code>TaskCompletionSource</code> 的辅助方法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Task&lt;T&gt; NotImplementedAsync&lt;T&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> tcs = <span class="keyword">new</span> TaskCompletionSource&lt;T&gt;();</span><br><span class="line">    tcs.SetException(<span class="keyword">new</span> NotImplementedException());</span><br><span class="line">    <span class="keyword">return</span> tcs.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从概念上讲，<code>Task.FromResult</code> 只不过是 <code>TaskCompletionSource</code> 的一个简化版本，它与上面的代码非常类似。</p>
+<p>如果用 <code>Task.FromResult</code> 反复调用同一个参数，则可考虑用一个实际的 <code>task</code> 变量。例如，可以一次性建立一个结果为 0 的 <code>Task&lt;int&gt;</code> 对象，在以后的调用之中就不需要创建额外的实例了，这样可减少垃圾回收的次数。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Task&lt;<span class="keyword">int</span>&gt; zeroTask = Task.FromResult(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">static</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zeroTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E4%BE%8B%E7%B3%BB%E5%88%97/">并发编程实例系列</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/并发/">并发</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/10/concurrent-examples-01-elementary-asynchronization/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/10/clang-02-operator/" title="C 语言语法系列（2）：运算符和表达式" itemprop="url">C 语言语法系列（2）：运算符和表达式</a>
   </h1>
   <p class="article-author">By
@@ -1887,275 +2054,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/07/csharplang-02-access-modifiers/" title="C# 语法查漏补缺系列（2）：访问修饰符" itemprop="url">C# 语法查漏补缺系列（2）：访问修饰符</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-07T05:57:59.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>你知道 C# 里一共拥有多少个关键字吗？说 4 个的，肯定是从 Java 那边过来的。访问修饰符一共有 6 个哦！我们都来看看，它们都怎么用。</p>
-<h2 id="public-关键字"><a href="#public-关键字" class="headerlink" title="public 关键字"></a><code>public</code> 关键字</h2><p><code>public</code> 关键字就好比万能的东西，它在任何时间任何地点都可以看到。就好比一个公司里的员工，<code>public</code> 的员工就可以被任何时间、任何地点被其他人挖走。它们是永远可以暴露出去的，所以我们完全可以随意看到它们。</p>
-<h2 id="internal-关键字"><a href="#internal-关键字" class="headerlink" title="internal 关键字"></a><code>internal</code> 关键字</h2><p><code>internal</code> 关键字仅仅在同一个项目里的任何位置可以被访问到。依然拿员工举例，这个公司里的员工如果用 <code>internal</code> 修饰，那么这个员工就只能在整个公司里才能看到，其它公司的人是不可能发现这些人的。</p>
-<blockquote>
-<p>Java 的 <strong>package-private</strong> 模式类似于 <code>internal</code>，但区别比较大。Java 在类名前面不声明任何访问修饰符的时候，这个类类型将被当作是在整个包里可以看到，而其它包都看不到它。这是安全的，但显得范围比较窄。因为 Java 的包类似于文件夹，而 C# 里，一个项目内是可以含有很多文件夹的，不论你在哪个文件夹下，按照规则，它们都是可以被访问的，但 Java 的访问修饰符的设计模型就显得范围非常小了：出了文件夹就看不到了，这使得我们“迫不得已”去使用 <code>public</code> 关键字，但显然这样做并不保证安全性。</p>
-</blockquote>
-<h2 id="protected-关键字"><a href="#protected-关键字" class="headerlink" title="protected 关键字"></a><code>protected</code> 关键字</h2><p>标记了 <code>protected</code> 关键字的对象表示仅仅在一条继承链上向下可以被看到。试想一下，我有这么一个代码：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> digit = <span class="number">12</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Here will not introduce the variable `digit`,</span></span><br><span class="line">    <span class="comment">// because the variable `digit` will be found in</span></span><br><span class="line">    <span class="comment">// this class because of B inherited class.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们声明了两个类，其中 <code>B</code> 类派生自 <code>A</code> 类，那么 <code>B</code> 类是不可以重新创建和 <code>A</code> 类名称完全一样的变量 <code>digit</code> 的，因为它被继承下来，也就是说，你如果在 <code>B</code> 类调用该变量，我们完全可以得到 12 这个结果，而且不会在编译器层面报错，说“找不到符号”。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Output</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="keyword">this</span>.digit); <span class="comment">// 12</span></span><br><span class="line">        Console.WriteLine(<span class="keyword">base</span>.digit); <span class="comment">// 12 still</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此时，加不加 <code>digit</code> 前面的 <code>this</code> 和 <code>base</code> 都没有区别。</p>
-<p>当然，如果你非得要在派生类 <code>B</code> 类里加上 <code>digit</code> 同名的变量，也不是不可以，只是在变量前面加上 <code>new</code> 关键字即可，即</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> digit = <span class="number">12</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">new</span> <span class="keyword">double</span> digit = <span class="number">34</span>d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这样，派生类里就有了新的自己的变量，而且名字也叫 <code>digit</code>。此时的 <code>new</code> 表示的对象仅仅表示这个类里含有和基类完全一样的名字的对象，但它们毫无关系。</p>
-<p>另外，这个继承关系倒过来不行。比如我们在 <code>B</code> 类里有一个变量 <code>digit</code>，那么 <code>A</code> 类反过来可不可以看到这个变量呢？</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Can we see the variable `digit`?</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> digit = <span class="number">12</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案是不可以。因为 <code>protected</code> 仅支持向下继承，这也是符合 OOP 的基本规则和设计原则的。</p>
-<h2 id="private-关键字"><a href="#private-关键字" class="headerlink" title="private 关键字"></a><code>private</code> 关键字</h2><p><code>private</code> 关键字当且仅当整个类体和结构体里才能看到，只要出了这个类或结构，任何地方都看不到。考虑如下例子：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Hello</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Happy!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// This calling may be wrong because</span></span><br><span class="line">        <span class="comment">// the method `Hello` is private.</span></span><br><span class="line">        <span class="comment">//A.Hello();</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>另外，希望你明白一个问题。有时候 <code>Main</code> 方法（类似于 C 语言和 Java 语言的 <code>main</code> 函数）被声明为 <code>private</code> 的，这是合理的，也是合法的吗？答案是肯定的，首先，这是允许的，也是合理的。因为 <code>Main</code> 方法一般不会被其它任何地方调用，除非是作为程序的主入口点来讲，我们为了安全性，一般都会设置为 <code>private</code>。</p>
-<h2 id="protected-internal-关键字"><a href="#protected-internal-关键字" class="headerlink" title="protected internal 关键字"></a><code>protected internal</code> 关键字</h2><p>下面来看两个不一样的修饰符。首先是 <code>protected internal</code> 关键字。这个关键字来修饰一个数据，表示这个数据要么处于继承链上且向下可以访问，要么是整个项目里可以访问。换句话说，这个关键字组合就完全等同于 <code>protected</code> 或 <code>internal</code>。</p>
-<h2 id="private-protected-关键字"><a href="#private-protected-关键字" class="headerlink" title="private protected 关键字"></a><code>private protected</code> 关键字</h2><p>最后来看一个比较特殊的关键字：<code>private protected</code> 关键字。这个关键字表示 <code>protected</code> 且 <code>internal</code>，即私有化继承。当你的继承链不希望被外界所继承到，我们可以使用 <code>private protected</code> 关键字来修饰类，来保证这个类在整个项目里的继承链上可以被向下继承访问到。</p>
-<blockquote>
-<p>可以看到，这个访问行为应该使用 <code>protected internal</code> 来表示，好像更好更贴切一些，但因为这个关键字出现在 C# 7 之后，而 <code>protected internal</code> 在最初就已经出现了，所以我们不得不使用“私有继承”的这个说法来表示这种继承行为，即私有（<code>private</code>）的继承（<code>protected</code>）。</p>
-</blockquote>
-<h2 id="成员的默认访问修饰符"><a href="#成员的默认访问修饰符" class="headerlink" title="成员的默认访问修饰符"></a>成员的默认访问修饰符</h2><p>最后说一下成员的默认访问修饰符，还记得一个类体或一个结构体里可以包含哪些成员吗？下面罗列它们，并给出它们的默认访问修饰符。在默认情况下，我们是不用书写这些访问修饰符的，即“不写 = 缺省 = 默认”。</p>
-<table>
-<thead>
-<tr>
-<th>成员类型</th>
-<th>默认的访问修饰符</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>类（class）</td>
-<td>internal</td>
-</tr>
-<tr>
-<td>结构（struct）</td>
-<td>internal</td>
-</tr>
-<tr>
-<td>接口（interface）</td>
-<td>internal</td>
-</tr>
-<tr>
-<td>委托（delegate）</td>
-<td>internal</td>
-</tr>
-<tr>
-<td>字段（field）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>构造器（constructor）</td>
-<td>private，有个默认不写的无参构造器是 public 的</td>
-</tr>
-<tr>
-<td>析构器（finalizer）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>属性（property）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>事件（event）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>方法（method）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>操作符重载（operator overloading）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>隐式转换（implicit operator）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>显式转换（explicit operator）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>嵌套类（nested class）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>嵌套结构（nested struct）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>嵌套委托（nested delegate）</td>
-<td>private</td>
-</tr>
-<tr>
-<td>接口里的属性（property in interface）</td>
-<td>public</td>
-</tr>
-<tr>
-<td>接口里的事件（event in interface）</td>
-<td>public</td>
-</tr>
-<tr>
-<td>接口里的方法（method in interface）</td>
-<td>public</td>
-</tr>
-</tbody></table>
-<p>由此可见，只要写在类体和结构体里的成员，默认都是 <code>private</code>；而处于整个命名空间，或全局范围内的成员，默认都是程序集里可用，即 <code>internal</code>；而接口体里的任何成员，则默认都是 <code>public</code>。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/">语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/%E8%AF%AD%E6%B3%95/%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA%E7%B3%BB%E5%88%97/">查漏补缺系列</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/07/csharplang-02-access-modifiers/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/cipais/" title="词牌和规则" itemprop="url">词牌和规则</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T13:07:08.000Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="词牌和规则"><a href="#词牌和规则" class="headerlink" title="词牌和规则"></a>词牌和规则</h2><p>抽空列举一些我之前收集到的词牌名和一些规则。</p>
-<h3 id="忆王孙"><a href="#忆王孙" class="headerlink" title="忆王孙"></a>忆王孙</h3><p>单调三十一字，五平韵，句句用韵，亦有将单片重复做双调者。<br>词牌格式：<br>(平)平(仄)仄仄平平，(仄)仄平平(仄)仄平。<br>(仄)仄平平(仄)仄平。仄平平。(仄)仄平平(仄)仄平。<br>李重元：<br>萋萋芳草忆王孙，柳外楼高空断魂。<br>杜宇声声不忍闻。欲黄昏。雨打梨花深闭门。</p>
-<h3 id="如梦令"><a href="#如梦令" class="headerlink" title="如梦令"></a>如梦令</h3><p>单调三十三字，五仄韵，一叠韵，上去通押。<br>词牌格式：<br>(仄)仄(仄)平平仄，(仄)仄(仄)平平仄。<br>(仄)仄仄平平，(仄)仄(仄)平平仄。平仄，平仄(叠句)，(仄)仄(仄)平平仄。<br>李清照：<br>常记溪亭日暮，沉醉不知归路。兴尽晚回舟，误入藕花深处。争渡，争渡，惊起一滩鸥鹭。</p>
-<h3 id="乌夜啼"><a href="#乌夜啼" class="headerlink" title="乌夜啼"></a>乌夜啼</h3><p>双调三十六字，前阕三平韵，后阕两仄韵、两平韵。<br>词牌格式：<br>(平)平(平)仄平平，仄平平。(仄)仄(平)平平仄、仄平平。<br>(仄)(平)仄，(仄)(平)仄，仄平平。(仄)仄(平)平平仄、仄平平。<br>李煜：<br>无言独上西楼，月如钩。寂寞梧桐深院锁清秋。<br>剪不断，理还乱，是离愁。别是一般滋味、在心头。</p>
-<h3 id="长相思"><a href="#长相思" class="headerlink" title="长相思"></a>长相思</h3><p>双调三十六字，前后阕格式相同，各三平韵，一叠韵，一韵到底。<br>词牌格式：<br>仄(仄)平，仄(仄)平(叠后二字)，(仄)仄平平(仄)仄平。(平)平(仄)仄平。<br>仄(仄)平，仄(仄)平(叠后二字)，(仄)仄平平(仄)仄平。(平)平(仄)仄平。<br>白居易：<br>汴水流，泗水流，流到瓜洲古渡头。吴山点点愁。<br>思悠悠，恨悠悠，恨到归时方始休。明月人倚楼。</p>
-<h3 id="生查子"><a href="#生查子" class="headerlink" title="生查子"></a>生查子</h3><p>亦称《楚云深》，双调四十字，前后阕格式相同，各两仄韵，上去通押。<br>词牌格式：<br>(平)平(仄)仄平，(仄)仄平平仄。(仄)仄仄平平，(仄)仄平平仄。<br>(平)平(仄)仄平，(仄)仄平平仄。(仄)仄仄平平，(仄)仄平平仄。<br>欧阳修：<br>去年元夜时，花市灯如昼，月上柳梢头，人约黄昏后。<br>今年元夜时，月与灯依旧。不见去年人，泪满春衫袖！</p>
-<h3 id="点绛唇"><a href="#点绛唇" class="headerlink" title="点绛唇"></a>点绛唇</h3><p>双调，上片四句，押三仄韵，二十字，下片五句，押四仄韵，二十一字，用仙吕调，共四十一字。<br>词牌格式：<br>(仄)仄平平，(仄)平(平)仄平平仄。(仄)平(平)仄，(平)仄平平仄。<br>(仄)仄平平，(仄)仄平平仄。平平仄，(仄)平(平)仄，(平)仄平平仄。<br>曾允元：<br>一夜东风，枕边吹散愁多少 数声啼鸟，梦转纱窗晓。<br>来是春初，去是春将老。长亭道，一般芳草，只有归时好。</p>
-<h3 id="浣溪沙"><a href="#浣溪沙" class="headerlink" title="浣溪沙"></a>浣溪沙</h3><p>双调四十二字，前阕三平韵，后阕两平韵，一韵到底。后阕开始两句一般要求对仗。<br>词牌格式：<br>(仄)仄平平仄仄平，(平)平(仄)仄仄平平。(平)平(仄)仄仄平平。<br>(仄)仄(平)平平仄仄，(平)平(仄)仄仄平平。(平)平(仄)仄仄平平。<br>晏殊：<br>一曲新词酒一杯，去年天气旧亭台。夕阳西下几时回？<br>无可奈何花落去，似曾相识燕归来。小园香径独徘徊。</p>
-<h3 id="菩萨蛮"><a href="#菩萨蛮" class="headerlink" title="菩萨蛮"></a>菩萨蛮</h3><p>四十四字，共享四个韵。前阕后二句与后阕后二句字数平仄相同。前后阕末句都可改用律句平平仄仄平。<br>词牌格式：<br>(平)平(平)仄平平仄，(平)平(仄)仄平平仄。(平)仄仄平平，(仄)平平仄平。<br>(仄)平平仄仄，(仄)仄平平仄。(平)仄仄平平，(仄)平平仄平。<br>辛弃疾：<br>郁孤台下清江水，中间多少行人泪。西北望长安，可怜无数山。<br>青山遮不住，毕竟东流去。江晚正愁余，山深闻鹧鸪。</p>
-<h3 id="卜算子"><a href="#卜算子" class="headerlink" title="卜算子"></a>卜算子</h3><p>双调，四十四字，前后阕各两仄韵，上去通押。也有一体单押入声韵。<br>词牌格式：<br>(仄)仄仄平平，(仄)仄平平仄。(仄)仄平平仄仄平，(仄)仄平平仄。<br>(仄)仄仄平平，(仄)仄平平仄。(仄)仄平平仄仄平，(仄)仄平平仄。<br>陆游：<br>驿外断桥边，寂寞开无主。已是黄昏独自愁，更著风和雨。<br>无意苦争春，一任群芳妒。零落成泥辗作尘，只有香如故。</p>
-<h3 id="采桑子"><a href="#采桑子" class="headerlink" title="采桑子"></a>采桑子</h3><p>双调四十四字，前后阕各两平韵，一韵到底。前后阕第三句也常用叠韵。<br>词牌格式：<br>(平)平(仄)仄平平仄，(仄)仄平平。(仄)仄平平，(仄)仄平平(仄)仄平。<br>(平)平(仄)仄平平仄，(仄)仄平平。(仄)仄平平，(仄)仄平平(仄)仄平。<br>辛弃疾：<br>少年不识愁滋味，爱上层楼。爱上层楼，为赋新词强说愁。<br>而今识尽愁滋味，欲说还休。欲说还休，却道天凉好个秋！</p>
-<h3 id="减字木兰花"><a href="#减字木兰花" class="headerlink" title="减字木兰花"></a>减字木兰花</h3><p>双调四十四字，前后阕各两仄韵，两平韵，每句不同韵，换韵方式“甲乙丙丁”。<br>词牌格式：<br>(平)平(仄)仄，(仄)仄(平)平平仄仄。(仄)仄平平，(仄)仄平平(仄)仄平。<br>(平)平(仄)仄，(仄)仄(平)平平仄仄。(仄)仄平平，(仄)仄平平(仄)仄平。<br>王安国：<br>画桥流水。雨湿落红飞不起。月破黄昏。帘里馀香马上闻。<br>徘徊不语。今夜梦魂何处去。不似垂杨。犹解飞花入洞房。</p>
-<h3 id="谒金门"><a href="#谒金门" class="headerlink" title="谒金门"></a>谒金门</h3><p>上下阕共三十五字。一韵到底。<br>词牌格式：<br>平仄仄，仄仄平平平仄。仄仄平平平仄仄，平平平仄仄。<br>仄仄平平平仄，仄仄平平平仄。仄仄平平平仄仄，仄平平仄仄。<br>朱淑真：<br>春已半，触目此情无限。十二阑干闲倚遍，愁来天不管。<br>好是风和日暖，输与莺莺燕燕。满院落花帘不卷，断肠芳草远。</p>
-<h3 id="诉衷情"><a href="#诉衷情" class="headerlink" title="诉衷情"></a>诉衷情</h3><p>双调四十五字，前后阕各三平韵，一韵到底。<br>又一体四十四字，将前阕四五句变为“(平)仄仄平平”。<br>词牌格式：<br>1、<br>(平)平(仄)仄仄平平。(仄)仄仄平平。(平)平仄平仄，(仄)仄仄、仄平平。<br>平仄仄，仄平平，仄平平。仄平平仄，(仄)仄平平，仄仄平平。<br>2、<br>(平)平(仄)仄仄平平。(仄)仄仄平平。(平)平仄仄平仄，(仄)仄仄平平。<br>平仄仄，仄平平，仄平平。仄平平仄，(仄)仄平平，仄仄平平。<br>晏殊：<br>芙蓉金菊斗馨香，天气欲重阳。　远村秋色如画，红树间疏黄。<br>流水淡，碧天长，路茫茫。凭高目断，鸿雁来时，无限思量。</p>
-<h3 id="忆秦娥"><a href="#忆秦娥" class="headerlink" title="忆秦娥"></a>忆秦娥</h3><p>双调四十六字，前后阕各三仄韵，一叠韵，均须押入声字，一韵到底。<br>词牌格式：<br>平(平)仄，(平)平(仄)仄平平仄。平平仄(叠三字)，(仄)平(平)仄，仄平平仄。<br>(平)平(仄)仄平平仄，(平)平(仄)仄平平仄。平平仄[叠三字]，(仄)平(平)仄，仄平平仄。<br>李白：<br>箫声咽，秦娥梦断秦楼月。秦楼月，年年柳色，灞陵伤别。<br>乐游原上清秋节，咸阳古道音尘绝。音尘绝，西风残照，汉家陵阙。</p>
-<h3 id="清平乐"><a href="#清平乐" class="headerlink" title="清平乐"></a>清平乐</h3><p>双调四十六字，前阕四仄韵，后阕三平韵，平仄换韵。<br>词牌格式：<br>(平)平(仄)仄，(仄)仄平平仄。(仄)仄(平)平平仄仄，(仄)仄(平)平(仄)仄。<br>(平)平(仄)仄平平，(平)平(仄)仄平平。(仄)仄(平)平(仄)仄，(平)平(仄)仄平平。<br>晏殊：<br>红笺小字，说尽平生意。鸿雁在云鱼在水，惆怅此情难寄。<br>斜阳独倚西楼，遥山恰对帘钩。人面不知何处，绿波依旧东流。</p>
-<h3 id="更漏子"><a href="#更漏子" class="headerlink" title="更漏子"></a>更漏子</h3><p>双调四十六字，前阕两仄韵、两平韵，后阕三仄韵，两平韵，换韵方式“甲乙丙丁”。前后阕一二句、四五句要用对仗。<br>词牌格式：<br>仄平平，平仄仄，(仄)仄(平)平(仄)仄。平仄仄，仄平平，仄平平仄平。<br>平仄仄，平平仄，(仄)仄(平)平(仄)仄。平仄仄，仄平平，仄平平仄平。<br>温庭筠：<br>玉炉香，红蜡泪，偏照画堂秋思。眉翠薄，鬓云残，夜长衾枕寒。<br>梧桐树，三更雨，不道离情正苦。一叶叶，一声声，空阶滴到明。</p>
-<h3 id="南歌子"><a href="#南歌子" class="headerlink" title="南歌子"></a>南歌子</h3><p>本调五十二字，前后阕相同。两阕末句均九字，句法上二下七，与《相见欢》末句相同。<br>词牌格式：<br>仄仄平平仄，平平仄仄平。平平仄仄仄平平，仄仄平平平仄仄平平。<br>仄仄平平仄，平平仄仄平。平平仄仄仄平平，仄仄平平平仄仄平平。<br>秦观：<br>香墨弯弯画，燕脂淡淡匀。揉蓝衫子杏黄裙，独倚玉阑无语点檀唇。<br>人去空流水，花飞半掩门。乱山何处觅行云，又是一钩新月照黄昏。</p>
-<h3 id="醉花阴"><a href="#醉花阴" class="headerlink" title="醉花阴"></a>醉花阴</h3><p>双调五十二字，前后阕各三仄韵，一韵到底。<br>词牌格式：<br>(仄)仄(平)平平仄仄，(仄)仄平平仄。(仄)仄仄平平，(仄)仄平平、(仄)仄平平仄。<br>(仄)仄(平)平平仄仄，(仄)仄平平仄。(仄)仄仄平平，(仄)仄平平、(仄)仄平平仄。<br>李清照：<br>薄雾浓云愁永昼，瑞脑销金兽。佳节又重阳，玉枕纱厨，半夜凉初透。<br>东篱把酒黄昏后，有暗香盈袖。莫道不销魂，帘卷西风，人比黄花瘦。</p>
-<h3 id="浪淘沙"><a href="#浪淘沙" class="headerlink" title="浪淘沙"></a>浪淘沙</h3><p>双调五十四字，前后阕各四平浪淘沙，一韵到底。<br>词牌格式：<br>(仄)仄仄平平，(仄)仄平平。(平)平(仄)仄仄平平。(仄)仄(平)平平仄仄，(仄)仄平平。<br>(仄)仄仄平平，(仄)仄平平。(平)平(仄)仄仄平平。(仄)仄(平)平平仄仄，(仄)仄平平。<br>欧阳修：<br>把酒祝东风。且共从容。垂杨紫陌洛城东。总是当时携手处，游遍芳丛。<br>聚散苦匆匆，此恨无穷。今年花胜去年红。可惜明年花更好，知与谁同。</p>
-<h3 id="鹧鸪天"><a href="#鹧鸪天" class="headerlink" title="鹧鸪天"></a>鹧鸪天</h3><p>双调五十五字，前后阕各三平韵，一韵到底。上阕第三四句、下阕第一二句一般要求对仗。<br>词牌格式：<br>(仄)仄平平(仄)仄平，(平)平(仄)仄仄平平。(平)平(仄)仄平平仄，(仄)仄平平(仄)仄平。<br>平仄仄，仄平平。(平)平(仄)仄仄平平。(平)平(仄)仄平平仄，(仄)仄平平(仄)仄平。<br>晏几道：<br>十里楼台倚翠微，百花深处杜鹃啼。殷勤自与行人语，不似流莺取次飞。<br>惊梦觉，弄晴时。声声只道不如归。天涯岂是无归意，争奈归期未可期。</p>
-<h3 id="鹊桥仙"><a href="#鹊桥仙" class="headerlink" title="鹊桥仙"></a>鹊桥仙</h3><p>双调五十六字，前后阕各两仄韵，一韵到底。前后句首两句要求对仗。<br>词牌格式：<br>(平)平(仄)仄，(平)平(仄)仄，(仄)仄(平)平(仄)仄。(平)平(仄)仄仄平平，仄(仄)仄、平平(仄)仄。<br>(平)平(仄)仄，(平)平(仄)仄，(仄)仄(平)平(仄)仄。(平)平(仄)仄仄平平，仄(仄)仄、平平(仄)仄。<br>秦观：<br>纤云弄巧，飞星传恨，银汉迢迢暗度。金风玉露一相逢，便胜却人间无数。<br>柔情似水，佳期如梦，忍顾鹊桥归路。两情若是久长时，又岂在朝朝暮暮。</p>
-<h3 id="虞美人"><a href="#虞美人" class="headerlink" title="虞美人"></a>虞美人</h3><p>双调五十六字，前后阕各两仄韵、两平韵，平仄换韵，每句不同韵，方式是“甲乙丙丁”。<br>词牌格式：<br>(平)平(仄)仄平平仄，(仄)仄平平仄。(平)平(仄)仄仄平平，(仄)仄(平)平(仄)仄仄平平。<br>(平)平(仄)仄平平仄，(仄)仄平平仄。(平)平(仄)仄仄平平，(仄)仄(平)平(仄)仄仄平平。<br>李煜：<br>春花秋月何时了，往事知多少。<br>小楼昨夜又东风，故国不堪回首月明中。<br>雕栏玉砌应犹在，只是朱颜改。<br>问君能有几多愁，恰似一江春水向东流。<br>蒋捷：<br>少年听雨歌楼上。红烛昏罗帐。<br>壮年听雨客舟中。江阔云低、断雁叫西风。<br>而今听雨僧庐下。鬓已星星也。<br>悲欢离合总无情。一任阶前、点滴到天明。</p>
-<h3 id="南乡子"><a href="#南乡子" class="headerlink" title="南乡子"></a>南乡子</h3><p>双调五十六字，前后阕各四平韵，一韵到底。<br>词牌格式：<br>(仄)仄仄平平，(仄)仄平平仄仄平。(仄)仄(平)平平仄仄，平平。(仄)仄平平仄仄平。<br>(仄)仄仄平平，(仄)仄平平仄仄平。(仄)仄(平)平平仄仄，平平。(仄)仄平平仄仄平。<br>辛弃疾：<br>何处望神州，满眼风光北固楼。千古兴亡多少事，悠悠。不尽长江滚滚流。<br>年少万兜鍪，坐断东南战未休。天下英雄谁敌手 曹刘。生子当如孙仲谋。</p>
-<h3 id="玉楼春"><a href="#玉楼春" class="headerlink" title="玉楼春"></a>玉楼春</h3><p>双调五十六字，前后阕格式相同，各三仄韵，一韵到底。<br>词牌格式：<br>(平)平(仄)仄平平仄，(仄)仄(平)平平仄仄。(平)平(仄)仄仄平平，(仄)仄(平)平平仄仄。<br>(平)平(仄)仄平平仄，(仄)仄(平)平平仄仄。(平)平(仄)仄仄平平，(仄)仄(平)平平仄仄。<br>欧阳修：<br>樽前拟把归期说，未语春容先惨咽，人生自是有情痴，此恨不关风与月。<br>离歌且莫翻新阕，一曲能教肠寸结。直须看尽洛城花，始共春风容易别。</p>
-<h3 id="踏莎行"><a href="#踏莎行" class="headerlink" title="踏莎行"></a>踏莎行</h3><p>双调五十八字，前后阕各三仄韵，前后阕开始两句例用对仗。<br>词牌格式：<br>(仄)仄平平，(平)平(仄)仄，(平)平(仄)仄平平仄。(平)平(仄)仄仄平平，(平)平(仄)仄平平仄。<br>(仄)仄平平，(平)平(仄)仄，(平)平(仄)仄平平仄。(平)平(仄)仄仄平平，(平)平(仄)仄平平仄。<br>张孝祥：<br>古屋丛祠，孤舟野渡。长年与客分携处。漠漠愁阴岭上云，萧萧别意溪边树。<br>我已北归，君方南去。天涯客里多歧路。须君早出瘴烟来，江南山色青无数。</p>
-<h3 id="蝶恋花"><a href="#蝶恋花" class="headerlink" title="蝶恋花"></a>蝶恋花</h3><p>双调六十字，前后阕各四仄韵，一韵到底。<br>词牌格式：<br>(仄)仄(平)平平仄仄。(仄)仄平平，(仄)仄平平仄。(仄)仄(平)平平仄仄(或仄平仄)，(平)平(仄)仄平平仄。<br>(仄)仄(平)平平仄仄。(仄)仄平平，(仄)仄平平仄。(仄)仄(平)平平仄仄(或仄平仄)，(平)平(仄)仄平平仄。<br>欧阳修：<br>庭院深深深几许 杨柳堆烟，帘幕无重数。玉勒雕鞍游冶处，楼高不见章台路。<br>雨横风狂三月暮，门掩黄昏，无计留春住。泪眼问花花不语，乱红飞过秋千去。</p>
-<h3 id="一剪梅"><a href="#一剪梅" class="headerlink" title="一剪梅"></a>一剪梅</h3><p>双调六十字，前后阕句句用平韵，一韵到底。八个四字句一般都用对仗。有一体只须前后阕的一、三、六句用韵。<br>词牌格式：<br>(仄)仄平平仄仄平，(仄)仄平平，(仄)仄平平，(平)平(仄)仄仄平平。(仄)仄平平，(仄)仄平平。<br>(仄)仄平平仄平平。(仄)仄平平，(仄)仄平平，(平)平(平)仄仄平平。(仄)仄平平，(仄)仄平平。<br>李清照：<br>红藕香残玉簟秋。轻解罗裳，独上兰舟。云中谁寄锦书来，雁字回时，月满西楼。<br>花自飘零水自流，一种相思，两处闲愁。此情无计可消除，才下眉头，却上心头。</p>
-<h3 id="临江仙"><a href="#临江仙" class="headerlink" title="临江仙"></a>临江仙</h3><p>双调六十字，前后阕各三平韵，一韵到底。<br>词牌格式：<br>(仄)仄(平)平平仄仄，(平)平(仄)仄平平。(平)平(仄)仄仄平平。(平)平平仄仄，(仄)仄仄平平。<br>(仄)仄(平)平平仄仄，(平)平(仄)仄平平。(平)平(仄)仄仄平平。(平)平平仄仄，(仄)仄仄平平。<br>杨慎：<br>滚滚长江东逝水，浪花淘尽英雄。是非成败转头空，青山依旧在，几度夕阳红。<br>白发渔樵江渚上，惯看秋月春风。一壶浊酒喜相逢，古今多少事，都付笑谈中。</p>
-<h3 id="渔家傲"><a href="#渔家傲" class="headerlink" title="渔家傲"></a>渔家傲</h3><p>双调六十二字，前后阕各五仄韵，句句用韵，一韵到底。<br>词牌格式：<br>(仄)仄(平)平平仄仄，(平)平(仄)仄平平仄。(仄)仄(平)平平仄仄。平(仄)仄，(平)平(仄)仄平平仄。<br>(仄)仄(平)平平仄仄，(平)平(仄)仄平平仄。(仄)仄(平)平平仄仄。平(仄)仄，(平)平(仄)仄平平仄。<br>范仲淹：<br>塞下秋来风景异，衡阳雁去无留意。四面边声连角起。千嶂里，长烟落日孤城闭。<br>浊酒一杯家万里，燕然未勒归无计。羌管悠悠霜满地。人不寐，将军白发征夫泪。</p>
-<h3 id="苏幕遮"><a href="#苏幕遮" class="headerlink" title="苏幕遮"></a>苏幕遮</h3><p>前后阕无异。<br>词牌格式：<br>仄平平，平仄仄，仄仄平平、仄仄平平仄。仄仄平平平仄仄，仄仄平平、仄仄平平仄。<br>仄平平，平仄仄，仄仄平平、仄仄平平仄。仄仄平平平仄仄，仄仄平平、仄仄平平仄。<br>范仲淹：<br>碧云天，黄叶地，秋色连波，波上寒烟翠。<br>山映斜阳天接水，芳草无情，更在斜阳外。<br>黯乡魂，追旅思，夜夜除非，好梦留人睡。<br>明月楼高休独倚，酒入愁肠，化作相思泪。</p>
-<h3 id="定风波"><a href="#定风波" class="headerlink" title="定风波"></a>定风波</h3><p>双调六十二字，前阕三平韵；两仄韵，后阕四仄韵，两平韵。平仄换韵方式为“甲乙甲丙甲丁甲”。以平声韵为主，间以仄声韵。<br>词牌格式：<br>(仄)仄(平)平仄仄平，(平)平(仄)仄仄平平。(仄)仄(平)平平仄仄，平仄，(平)平(平)仄仄平平。<br>(仄)仄(平)平平仄仄，平仄，(平)平(仄)仄仄平平。(仄)仄(平)平平仄仄，平仄，(平)平(仄)仄仄平平。<br>苏轼：<br>莫听穿林打叶声，何妨吟啸且徐行。竹杖芒鞋轻胜马，谁怕 一蓑烟雨任平生。<br>料峭春风吹酒醒，微冷，山头斜照却相迎。回首向来萧瑟处，归去，也无风雨也无晴。</p>
-<h3 id="青玉案"><a href="#青玉案" class="headerlink" title="青玉案"></a>青玉案</h3><p>双调六十七字，前后阕各五仄韵，上去通押。<br>词牌格式：<br>(平)平(仄)仄平平仄，仄(仄)仄平平仄(上三下三)。(仄)仄(平)平平仄仄。(仄)平平仄，(仄)平平仄，(仄)仄平平仄。<br>(平)平(仄)仄平平仄，(仄)仄(平)平仄平仄。(仄)仄(平)平平仄仄。(仄)平平仄，(仄)平平仄，(仄)仄平平仄。<br>辛弃疾：<br>东风夜放花千树，更吹落、星如雨。宝马雕车香满路。凤箫声动，玉壶光转，一夜鱼龙舞。<br>蛾儿雪柳黄金缕，笑语盈盈暗香去。众里寻他千百度。蓦然回首，那人却在，灯火阑珊处。</p>
-<h3 id="天仙子"><a href="#天仙子" class="headerlink" title="天仙子"></a>天仙子</h3><p>双调六十八字，前后阕各五仄韵，上去通押。第四、第五两句，平仄多不定，但是第二句第二字必用去声。<br>词牌格式：<br>仄仄(平)平平仄(仄)，(仄)仄平平仄仄。(平)平(仄)仄仄平平，平(平)仄，平(平)仄，(仄)仄(仄)平平仄仄。<br>(仄)仄(平)平平仄平，(仄)仄(平)平平仄仄。(平)平(仄)仄仄平平，平(平)仄，平(平)仄，(仄)仄(平)平平仄仄。<br>张先：<br>水调数声持酒听，午醉醒来愁未醒。送春春去几时回 临晚镜，伤流景，往事后期空记省。<br>沙上并禽池上瞑，云破月来花弄影。重重帘幕密遮灯，风不定，人初静，明日落红应满径。</p>
-<h3 id="江城子"><a href="#江城子" class="headerlink" title="江城子"></a>江城子</h3><p>双调七十字，前后阕格式相同，各五平韵，一韵到底。<br>词牌格式：<br>(平)平(仄)仄仄平平。仄平平，仄平平，(仄)仄平平，仄仄仄平平。(仄)仄(平)平平仄仄，平仄仄，仄平平。<br>(平)平(仄)仄仄平平。仄平平，仄平平。(仄)仄平平，仄仄仄平平。(仄)仄(平)平平仄仄，平仄仄，仄平平。<br>苏轼：<br>老夫聊发少年狂，左牵黄，右擎苍，锦帽貂裘，千骑卷平岗。为报倾城随太守，亲射虎，看孙郎。<br>酒酣胸胆尚开张；鬓微霜，又何妨。持节云中，何日遣冯唐 会挽雕弓如满月，西北望，射天狼。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%96%87%E5%AD%A6/">文学</a>►<a class="article-category-link" href="/categories/%E6%96%87%E5%AD%A6/%E8%AF%97%E8%AF%8D/">诗词</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/诗词/">诗词</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/06/cipais/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -2183,7 +2081,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>8</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>10</sup></a></li>
 			
 		
 			
@@ -2199,10 +2097,6 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -2211,7 +2105,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
