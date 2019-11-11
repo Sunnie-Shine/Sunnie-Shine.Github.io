@@ -1,0 +1,601 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>LINQ 教程（3）：orderby 从句 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="orderby 从句下面我们继续来看一个新的从句：orderby 从句。需要注意的是，这里的 orderby 是连体的，也就意味着两个单词不能拆开书写，中间没有任何空白字符。 我们依旧使用上一节的关键字实例给大家讲解。今天我们来讲的从句是用来排序的。虽说原来给出的关键字已经以字母顺序排序了，但如果想要实现我们自己定义的排序行为，就需要这个从句了。 比如，我们假设前文给出的序列是乱序的，我们尝试进行">
+<meta name="keywords" content="C♯,LINQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LINQ 教程（3）：orderby 从句">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;11&#x2F;linq-03-orderby-clause&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="orderby 从句下面我们继续来看一个新的从句：orderby 从句。需要注意的是，这里的 orderby 是连体的，也就意味着两个单词不能拆开书写，中间没有任何空白字符。 我们依旧使用上一节的关键字实例给大家讲解。今天我们来讲的从句是用来排序的。虽说原来给出的关键字已经以字母顺序排序了，但如果想要实现我们自己定义的排序行为，就需要这个从句了。 比如，我们假设前文给出的序列是乱序的，我们尝试进行">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-11T05:30:25.634Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/11/linq-03-orderby-clause/" title="LINQ 教程（3）：orderby 从句" itemprop="url">LINQ 教程（3）：orderby 从句</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-11T03:04:11.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#orderby-从句"><span class="toc-number">1.</span> <span class="toc-text">orderby 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理和方法链调用模式"><span class="toc-number">2.</span> <span class="toc-text">原理和方法链调用模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#单条件排序"><span class="toc-number">2.1.</span> <span class="toc-text">单条件排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多条件排序"><span class="toc-number">2.2.</span> <span class="toc-text">多条件排序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="orderby-从句"><a href="#orderby-从句" class="headerlink" title="orderby 从句"></a><code>orderby</code> 从句</h2><p>下面我们继续来看一个新的从句：<code>orderby</code> 从句。需要注意的是，这里的 <code>orderby</code> 是连体的，也就意味着两个单词不能拆开书写，中间没有任何空白字符。</p>
+<p>我们依旧使用上一节的关键字实例给大家讲解。今天我们来讲的从句是用来排序的。虽说原来给出的关键字已经以字母顺序排序了，但如果想要实现我们自己定义的排序行为，就需要这个从句了。</p>
+<p>比如，我们假设前文给出的序列是乱序的，我们尝试进行单词的升序排序。那么代码可以这么写。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+
+<p>可以从代码看到，它实际上就是先对 <code>words</code> 进行遍历，对每一个单词进行升序排序，然后按排序后的结果进行按序摆放，构成一个集合。</p>
+<p>注意，<code>orderby</code> 从句的写法有三种：</p>
+<ul>
+<li><code>orderby xxx ascending</code></li>
+<li><code>orderby xxx</code></li>
+<li><code>orderby xxx descending</code></li>
+</ul>
+<p>三种写法都是合适的写法，但都必须位于 <code>select</code> 从句之前。和 SQL 不同，<code>orderby</code> 从句并不能作为语句的结束。其中第一种和第二种是等价写法，即省略 <code>ascending</code> 关键字，将会按照给定的键值进行升序排序，而如果给定 <code>descending</code> 关键字，则进行降序排序。另外请注意，当一次排序的思路完成后，还可以继续执行排序操作。比如给出一个新的问题：我们想要按照单词长度进行升序排序后，再按照每一个单词的字母表顺序进行排序。那么，我们可以这么写：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">orderby</span> word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+
+<p>或不写 <code>ascending</code> 关键字。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length</span><br><span class="line">                <span class="keyword">orderby</span> word</span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+
+<p>或写成一行。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length <span class="keyword">ascending</span>, word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+
+<p>甚至写成一行后也可以不要 <code>ascending</code> 关键字。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length, word</span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+
+<p>那么，现在肯定会留下一个问题。两次 <code>orderby</code> 进行排序，是否表示着如此操作会执行两次 <code>foreach</code> 遍历集合，进而会影响性能呢？下面我们就来分析它的原理和方法链的写法。</p>
+<h2 id="原理和方法链调用模式"><a href="#原理和方法链调用模式" class="headerlink" title="原理和方法链调用模式"></a>原理和方法链调用模式</h2><h3 id="单条件排序"><a href="#单条件排序" class="headerlink" title="单条件排序"></a>单条件排序</h3><p>在前文里，我们尝试着使用了多个排序操作，不过我们从入门角度开始，先从排一次序来看它的方法链的写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.OrderBy(w =&gt; w)</span><br><span class="line">                     .Select(w =&gt; w);</span><br></pre></td></tr></table></figure>
+
+<p>简单的一句话。我们先不去关心 <code>Select</code> 的部分，因为它仅仅是用于强制执行排序，所以我们暂时先只关心前面的部分。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.OrderBy(w =&gt; w);</span><br></pre></td></tr></table></figure>
+
+<p>排序的过程非常简单，直接把每一个单词作为键值进行排序。而由于每一个键值本身就是一个 <code>string</code> 类型，它是实现了 <code>IComparable&lt;T&gt;</code> 接口的，所以在排序的时候，我们完全可以不用关心内部是如何实现排序的；反之，如果你给出的对象没有实现可比较接口 <code>IComparable&lt;T&gt;</code> 或 <code>IComparable</code> 的话，对象就不可能排序了，除非你在外部定义一个排序过程，自定义这种类型的排序模式是如何的，不过这一点我们将后面再来说明。</p>
+<p>我们先关心内部的实现。我们来看下官网给出的源代码实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IOrderedEnumerable&lt;TSource&gt; OrderBy&lt;TSource, TKey&gt;</span><br><span class="line">    (<span class="keyword">this</span> IEnumerable&lt;TSource&gt; source, Func&lt;TSource, TKey&gt; keySelector)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> OrderedEnumerable&lt;TSource, TKey&gt;(</span><br><span class="line">        source, keySelector, <span class="literal">null</span>, <span class="literal">false</span>, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>看起来名字挺长的，这里就把代码重新该写成一行能看完的样式。</p>
+</blockquote>
+<p>看下代码，它压根没有给我们实现排序的功能，而是转去创建了一个新的数据集合类型 <code>OrderedEnumerable&lt;T&gt;</code>。这是在搞什么飞机呢？实际上，这样也就是为了能够实现推迟执行的效果而搞的，就是为了保证，万一后续要执行很多的排序，那岂不是每一次排序都得立马执行，就相当于多执行了很多次无用功，所以它尽量快捷一些，于是创建了一个可排序的可迭代对象。</p>
+<p>具体的代码就不扒出来了，因为太长了，挨个理解非常耗时，我们提一下最终的结论。首先，它的排序操作是推后执行的，而且执行排序的算法使用的是快速排序。</p>
+<p>如果这个需要排序的对象执行 <code>IComparable</code> 或 <code>IComparable&lt;T&gt;</code> 的实现的话，你必须提供比较接口 <code>IComparer&lt;T&gt;</code>。这个接口更类似于静态比较操作，它好比是 Java 里的匿名内部类。比如，我们可能会对一个自己设计的 <code>Person</code> 类实现比较操作，那么我们可以实现 <code>IComparer&lt;Person&gt;</code> 接口，写在这个对象里作为嵌套类类型（当然，嵌套的内部结构类型也可以，不过会产生装箱操作）。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Person</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> PersonComparer : IComparer&lt;Person&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Explicit implementation of `IComparer&lt;T&gt;`.</span></span><br><span class="line">        <span class="keyword">int</span> IComparer&lt;Person&gt;.Compare(Person x, Person y)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> result = x.Age.CompareTo(y.Age);</span><br><span class="line">            <span class="keyword">return</span> result != <span class="number">0</span> ? result : x.Name.CompareTo(y.Name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后创建出这个类型的对象出来：<code>var comparer = new Person.PersonComparer();</code>，这样的比较器就可以传入到排序方法 <code>OrderBy</code> 里的第二个参数了，所以完整的写法是：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> comparer = <span class="keyword">new</span> Person.PersonComparer();</span><br><span class="line"><span class="keyword">var</span> selection = persons.OrderBy(person =&gt; person, comparer)</span><br><span class="line">                       .Select(person =&gt; person);</span><br></pre></td></tr></table></figure>
+
+<p>这样，就可以在没有实现比较接口的情况下，自己实现出一个排序操作了。</p>
+<p>另外，如果是降序排序，调用的方法则是 <code>OrderByDescending</code>，参数的传递模式是一样的，所以就不多赘述了。</p>
+<h3 id="多条件排序"><a href="#多条件排序" class="headerlink" title="多条件排序"></a>多条件排序</h3><p>那么，两个排序项，怎么办呢？实际上，两个排序项的行为也会被逐个拆分，其中第一个排序项将作为 <code>OrderedEnumerable&lt;T&gt;</code> 对象创建出来，然后后续的排序项，都会调用另外一个方法，即 <code>ThenBy</code> 和 <code>ThenByDescending</code>，而不是刚才学到的 <code>OrderBy</code> 和 <code>OrderByDescending</code> 了。</p>
+<p>仔细思考一下，后续的操作是不是就直接往创建好的 <code>OrderedEnumerable&lt;T&gt;</code> 对象里加比较条件就行了啊？实际上就是如此，所以 <code>ThenBy</code> 和 <code>ThenByDescending</code> 的执行操作也很简单：为前文创建好的对象继续“挂”新的比较条件上去，然后返回原对象，这样就可以串联起来了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IOrderedEnumerable&lt;TSource&gt; ThenBy&lt;TSource, TKey&gt;(</span><br><span class="line">    <span class="keyword">this</span> IOrderedEnumerable&lt;TSource&gt; source, Func&lt;TSource, TKey&gt; keySelector)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (source == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> source.CreateOrderedEnumerable(keySelector, <span class="literal">null</span>, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上可以看出，它的判断方式确实就是如此简单的。直接往原本的对象上挂条件即可。当然，它也没忘记判断对象是否为 <code>null</code>。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/OrderBy.cs,e449fbc07f49dc52" target="_blank" rel="noopener">Enumerable.OrderBy 方法</a></li>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/OrderBy.cs,5fc6f26f82dec7e7" target="_blank" rel="noopener">Enumerable.ThenBy 方法</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/LINQ/">LINQ</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/11/linq-03-orderby-clause/" data-title="LINQ 教程（3）：orderby 从句 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/11/linq-02-let-clause/"  title="LINQ 教程（2）：let 从句">
+ <strong>下一篇：</strong><br/> 
+ <span>LINQ 教程（2）：let 从句
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#orderby-从句"><span class="toc-number">1.</span> <span class="toc-text">orderby 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理和方法链调用模式"><span class="toc-number">2.</span> <span class="toc-text">原理和方法链调用模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#单条件排序"><span class="toc-number">2.1.</span> <span class="toc-text">单条件排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多条件排序"><span class="toc-number">2.2.</span> <span class="toc-text">多条件排序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'sunnieblog';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
