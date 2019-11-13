@@ -1,0 +1,615 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Linq 教程（5）：join 从句 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="join 从句的前文：让我们先用以前学过的知识来实现接着，我们继续讲解 LINQ 的新的一种从句类型：join 从句。这种从句的格式比较复杂，因为它比较像 SQL 里的连接表操作。 不过今天有点不同的是，由于前文叙述的实例（关键字实例）只有一个表，而且不太好讲述今天的内容，所以今天我们换一个例子：宠物和主人。我们预先创建好了如下的一些类。 12345678910111213141516171819">
+<meta name="keywords" content="C♯,LINQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linq 教程（5）：join 从句">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;13&#x2F;linq-05-join-clause&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="join 从句的前文：让我们先用以前学过的知识来实现接着，我们继续讲解 LINQ 的新的一种从句类型：join 从句。这种从句的格式比较复杂，因为它比较像 SQL 里的连接表操作。 不过今天有点不同的是，由于前文叙述的实例（关键字实例）只有一个表，而且不太好讲述今天的内容，所以今天我们换一个例子：宠物和主人。我们预先创建好了如下的一些类。 12345678910111213141516171819">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-13T14:57:47.486Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/13/linq-05-join-clause/" title="Linq 教程（5）：join 从句" itemprop="url">Linq 教程（5）：join 从句</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-13T11:55:14.000Z" itemprop="datePublished"> 发表于 2019-11-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#join-从句的前文：让我们先用以前学过的知识来实现"><span class="toc-number">1.</span> <span class="toc-text">join 从句的前文：让我们先用以前学过的知识来实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#笛卡尔积"><span class="toc-number">2.</span> <span class="toc-text">笛卡尔积</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.1.</span> <span class="toc-text">方法链写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#join-从句"><span class="toc-number">3.</span> <span class="toc-text">join 从句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#笛卡尔积筛选模型"><span class="toc-number">3.1.</span> <span class="toc-text">笛卡尔积筛选模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Coming-soon…"><span class="toc-number">4.</span> <span class="toc-text">Coming soon…</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="join-从句的前文：让我们先用以前学过的知识来实现"><a href="#join-从句的前文：让我们先用以前学过的知识来实现" class="headerlink" title="join 从句的前文：让我们先用以前学过的知识来实现"></a><code>join</code> 从句的前文：让我们先用以前学过的知识来实现</h2><p>接着，我们继续讲解 LINQ 的新的一种从句类型：<code>join</code> 从句。这种从句的格式比较复杂，因为它比较像 SQL 里的连接表操作。</p>
+<p>不过今天有点不同的是，由于前文叙述的实例（关键字实例）只有一个表，而且不太好讲述今天的内容，所以今天我们换一个例子：宠物和主人。我们预先创建好了如下的一些类。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">class Person : IEquatable&lt;Person&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> FirstName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> LastName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params">Person other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> FirstName == other.FirstName &amp;&amp; LastName == other.LastName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params"><span class="keyword">object</span> other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> other <span class="keyword">is</span> Person comparer &amp;&amp; Equals(comparer);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">GetHashCode</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> FirstName.GetHashCode() ^ LastName.GetHashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span> =&gt; <span class="string">$"<span class="subst">&#123;FirstName&#125;</span> <span class="subst">&#123;LastName&#125;</span>"</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> ==(Person left, Person right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> left.Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> !=(Person left, Person right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> !left.Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Pet</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> Person Owner &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span> =&gt; Name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>Person</code> 类是人的信息（名和姓），而 <code>Pet</code> 类是宠物的信息（宠物名和主人）。当然，为了下文比较信息方便，我们尝试让 <code>Person</code> 类实现 <code>IEquatable&lt;Person&gt;</code> 接口，并重载它的等号和不等号运算符，以便后续使用运算符比较相等性。</p>
+<p>并且提供如下的一些预先提供好，用来查找的信息：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Persons.</span></span><br><span class="line"><span class="keyword">var</span> magnus = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Magnus"</span>, LastName = <span class="string">"Hedlund"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> terry = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Terry"</span>, LastName = <span class="string">"Adams"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> charlotte = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Charlotte"</span>, LastName = <span class="string">"Weiss"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> arlene = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Arlene"</span>, LastName = <span class="string">"Huff"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> rui = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Rui"</span>, LastName = <span class="string">"Raposo"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Pets.</span></span><br><span class="line"><span class="keyword">var</span> barley = <span class="keyword">new</span> Pet &#123; Name = <span class="string">"Barley"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> boots = <span class="keyword">new</span> Pet &#123; Name = <span class="string">"Boots"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> whiskers = <span class="keyword">new</span> Pet &#123; Name = <span class="string">"Whiskers"</span>, Owner = charlotte &#125;;</span><br><span class="line"><span class="keyword">var</span> bluemoon = <span class="keyword">new</span> Pet &#123; Name = <span class="string">"Blue Moon"</span>, Owner = rui &#125;;</span><br><span class="line"><span class="keyword">var</span> daisy = <span class="keyword">new</span> Pet &#123; Name = <span class="string">"Daisy"</span>, Owner = magnus &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Lists.</span></span><br><span class="line"><span class="keyword">var</span> people = <span class="keyword">new</span> List&lt;Person&gt; &#123; magnus, terry, charlotte, arlene, rui &#125;;</span><br><span class="line"><span class="keyword">var</span> pets = <span class="keyword">new</span> List&lt;Pet&gt; &#123; barley, boots, whiskers, bluemoon, daisy &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为了方便，我们在最后也创建了两个列表，专门存放这些数据。</p>
+<p>现在我们来尝试取出关联信息：输出所有宠物，以及它们对应主人的信息。这应该如何做到呢？我们最开始想到的写法是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> pet <span class="keyword">in</span> pets</span><br><span class="line">                <span class="keyword">select</span> (</span><br><span class="line">                    name:  pet.Name,</span><br><span class="line">                    owner: pet.Owner</span><br><span class="line">                );</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>select</code> 从句使用了一个三元组，把宠物以及它们自己的主人的姓和名全部组织起来了。</p>
+</blockquote>
+<p>这样就可以取出这些信息，然后输出它们：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> info <span class="keyword">in</span> petsInfos)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;name&#125;</span> is owned by <span class="subst">&#123;owner&#125;</span>"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>于是，这样执行下来，确实可以得到结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Daisy is owned by Magnus</span><br><span class="line">Barley is owned by Terry</span><br><span class="line">Boots is owned by Terry</span><br><span class="line">Whiskers is owned by Charlotte</span><br><span class="line">Blue Moon is owned by Rui</span><br></pre></td></tr></table></figure>
+
+<p>听起来不错？我们来看看，另外一个思维如何。</p>
+<p>我们这么思考这个问题。我们把两个数据列表关联起来。怎么关联呢？笛卡尔积就好。</p>
+<h2 id="笛卡尔积"><a href="#笛卡尔积" class="headerlink" title="笛卡尔积"></a>笛卡尔积</h2><p>什么是笛卡尔积呢？在数据表里，我们常常会把所有字段挨个组合拼接起来。比如第一个列表有 3 个信息，而第二个表有 5 个信息。笛卡尔积就好比是把第一个表的每一个信息和第二个表的每一个信息挨个拼接起来，组合成一个具有 15 个信息的大表。这种组合方式有一个好处就是方便查询，而不需要每次把不同表的内容分开执行查询，然后再通过一些难受的操作组织整合起来。哪怕这样拼接起来是没有意义的。只要后续我们筛选掉这些无意义的数据就可以了。</p>
+<p>比如，这里的两个表，我们做笛卡尔积，把每一个主人和每一个宠物都匹配一遍。只要找到主人的姓名信息和宠物的主人给出的信息一样，那我们就选出来。于是，我们的写法是这样的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> person <span class="keyword">in</span> people</span><br><span class="line">                <span class="keyword">from</span> pet <span class="keyword">in</span> pets</span><br><span class="line">                <span class="keyword">let</span> owner = pet.Owner</span><br><span class="line">                <span class="keyword">where</span> person == owner</span><br><span class="line">                <span class="keyword">select</span> (</span><br><span class="line">                    name:  pet.Name,</span><br><span class="line">                    owner: owner,</span><br><span class="line">                );</span><br></pre></td></tr></table></figure>
+
+<p>注意书写格式和模式。这里在 <code>from</code> 从句下面还有一个新的 <code>from</code> 从句。这个写法是我们之前没有见过的。正是因为没有见过，所以我们作为新东西介绍给大家。这个写法就是在做笛卡尔积。它尝试在遍历每一个人的信息的时候，把每一个人都和每一个宠物作匹配。当目前计算到的这个人和宠物所属主人的信息是一样的时候，就选取出来。这样依然可以达到效果。</p>
+<h3 id="方法链写法"><a href="#方法链写法" class="headerlink" title="方法链写法"></a>方法链写法</h3><p>可以发现，它实际上在做两层 <code>foreach</code> 循环，外层就是这里的 <code>people</code>，而内层则是 <code>pets</code>。这是可以理解的。但 LINQ 不是这么去实现的，它为了能够完成对这个操作的迭代，它采用了一种“一对多”的机制，把每一个元素都匹配上所有的宠物。</p>
+<p>当然，我相信这里的内容是目前内容里掌握起来最难的地方。不过我相信你能够多看几次就可以明白它们。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> seletion = people.SelectMany(person =&gt; pets.Where(pet =&gt; person == pet.Owner).Select(pet =&gt; (pet.Name, person)));</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个写法有点长，我们尝试改写一下，Lambda 表达式是可以写成语句块的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> seletion = people.SelectMany(person =&gt;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> pets.Where(pet =&gt; person == pet.Owner)</span><br><span class="line">               .Select(pet =&gt; (name: pet.Name, owner: person));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这样看起来似乎比刚才那种写法要清爽一些，那么我们尝试去理解一下这种写法。</p>
+<p>点开 <code>SelectMany</code> 方法，你可以立马发现，这个方法的函数声明是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;TResult&gt; SelectMany&lt;TSource, TResult&gt;(</span><br><span class="line">    <span class="keyword">this</span> IEnumerable&lt;TSource&gt;,</span><br><span class="line">    Func&lt;TSource, IEnumerable&lt;TResult&gt;&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>首先第一个参数就是遍历的列表集合，显然这个就是扩展方法给出的对象类型实例，这个可以放一边。第二个参数则是 <code>Func&lt;TSource, IEnumerable&lt;TResult&gt;&gt;</code> 的类型，它表示你给出的一个 Lambda 表达式，传入一个 <code>TSource</code> 泛型类型，然后得到 <code>IEnumerable&lt;TResult&gt;</code> 类型，即一个 <code>TResult</code> 类型的可遍历集合。</p>
+<p>可以看到，它想要告诉的是，你需要给出一个一对多的映射模型，即当我们的集合里的每一个元素，都必须按照后面给出的 Lambda 表达式，来一一对应，一个元素对应一个集合、一个元素对应一个集合……。这样来看，在后续执行的思路里，只要我们在内层筛选掉“一个集合”里这个集合的一部分不正确的部分。</p>
+<p>例如这个例子里，它在内条件里用了 <code>Where</code> 方法，筛选掉了其中一部分，然后通过 <code>Select</code> 映射，来映射出一个宠物，对应的主人名字和宠物自己的名字。然后，外部调用了 <code>SelectMany</code> 方法，来让每一个人，都对应一组宠物信息（主人名和宠物名），然后它将会自动整合，形成一个自动整合好了的普通的序列，而不是多个一对多关系的序列。</p>
+<p>那么，返回值是 <code>IEnumerable&lt;TResult&gt;</code> 类型的 <code>SelectMany</code>，这里对应的是什么方法呢？当然就是这里给的 <code>IEnumerable&lt;(string, Person)&gt;</code>。这便是印证了刚才说的整合序列的逻辑。</p>
+<p>再来对比原本给出的查询表达式写法，可以发现，它的实现就完全不一样了。但仔细思考一下，实际上它想要表示的意思是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> person <span class="keyword">in</span> people)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> pet <span class="keyword">in</span> pets)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> owner = pet.Owner;</span><br><span class="line">        <span class="keyword">if</span> (person == owner)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Get the info pair.</span></span><br><span class="line">            <span class="function"><span class="keyword">yield</span> <span class="title">return</span> (<span class="params">name: pet.Name, owner: owner</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，一个 <code>from</code> 从句就翻译为一层循环，所以第二层循环已经在内部了，所以转译的方法链写法，显然筛选的操作应该写在 Lambda 表达式的内部，即内层，而不是方法链平行的外部。</p>
+<h2 id="join-从句"><a href="#join-从句" class="headerlink" title="join 从句"></a><code>join</code> 从句</h2><p>现在，我们终于可以学习新从句类型——<code>join</code> 从句了！不过，这个从句类型是目前学到的类型里最难的一种从句，所以它的类型也是丰富多样，我们得分很多类型分情况讲解。</p>
+<h3 id="笛卡尔积筛选模型"><a href="#笛卡尔积筛选模型" class="headerlink" title="笛卡尔积筛选模型"></a>笛卡尔积筛选模型</h3><p>第一种类型，我喜欢称为“笛卡尔积筛选模型”，因为它是从“笛卡尔积+筛选”的方式变过去的。这种写法需要用到的方式是这样的写法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> person <span class="keyword">in</span> people</span><br><span class="line">                <span class="keyword">let</span> owner = pet.Owner</span><br><span class="line">                <span class="keyword">join</span> pet <span class="keyword">in</span> pets <span class="keyword">on</span> person <span class="keyword">equals</span> owner</span><br><span class="line">                <span class="keyword">select</span> (name: pet.Name, owner: owner);</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h2 id="Coming-soon…"><a href="#Coming-soon…" class="headerlink" title="Coming soon…"></a>Coming soon…</h2><p>使用连接：</p>
+<ol>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/linq/perform-inner-joins#example---simple-key-join" target="_blank" rel="noopener">Join-in-on-equals</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/keywords/join-clause#inner-join" target="_blank" rel="noopener">Join 关键字</a></li>
+<li><a href="https://www.cnblogs.com/cncc/p/9873144.html" target="_blank" rel="noopener">非官方解释 Join 从句</a></li>
+</ol>
+<hr>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/13/linq-05-join-clause/" data-title="Linq 教程（5）：join 从句 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/13/linq-04-group-by-clause/"  title="LINQ 教程（4）：group by 从句">
+ <strong>下一篇：</strong><br/> 
+ <span>LINQ 教程（4）：group by 从句
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#join-从句的前文：让我们先用以前学过的知识来实现"><span class="toc-number">1.</span> <span class="toc-text">join 从句的前文：让我们先用以前学过的知识来实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#笛卡尔积"><span class="toc-number">2.</span> <span class="toc-text">笛卡尔积</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.1.</span> <span class="toc-text">方法链写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#join-从句"><span class="toc-number">3.</span> <span class="toc-text">join 从句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#笛卡尔积筛选模型"><span class="toc-number">3.1.</span> <span class="toc-text">笛卡尔积筛选模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Coming-soon…"><span class="toc-number">4.</span> <span class="toc-text">Coming soon…</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>15</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'sunnieblog';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

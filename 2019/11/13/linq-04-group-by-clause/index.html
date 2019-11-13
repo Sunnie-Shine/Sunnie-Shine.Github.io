@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="group-by 从句今天我们来看一个类似于 orderby 但写法不太一样、并且执行原理也不太一样的从句类型：group-by 从句。它的用法有一点麻烦，写法倒是很简单，但使用起来不如前文用的结果那样，一层 foreach 就可以遍历，而需要两层。 比如，我们尝试拿出之前的关键词实例给大家举例。假设我们今天要把所有的关键字，按第一个字符分组显示，那么显示模式是如何的呢？ 123456789101">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-13T11:35:12.249Z">
+<meta property="og:updated_time" content="2019-11-13T12:05:43.748Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -98,7 +98,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-从句"><span class="toc-number">1.</span> <span class="toc-text">group-by 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IGrouping-lt-TKey-TElement-gt-接口"><span class="toc-number">2.1.</span> <span class="toc-text">IGrouping&lt;TKey, TElement&gt; 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.2.</span> <span class="toc-text">方法链写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#愉快地看下输出结果吧！"><span class="toc-number">3.</span> <span class="toc-text">愉快地看下输出结果吧！</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-从句"><span class="toc-number">1.</span> <span class="toc-text">group-by 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IGrouping-lt-TKey-TElement-gt-接口"><span class="toc-number">2.1.</span> <span class="toc-text">IGrouping&lt;TKey, TElement&gt; 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.2.</span> <span class="toc-text">方法链写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#愉快地看下输出结果吧！"><span class="toc-number">2.3.</span> <span class="toc-text">愉快地看下输出结果吧！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-into-从句"><span class="toc-number">3.</span> <span class="toc-text">group-by-into 从句</span></a></li></ol>
 		
 		</div>
 		
@@ -126,10 +126,18 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.GroupBy(word =&gt; word[<span class="number">0</span>]);</span><br><span class="line">                   <span class="comment">//.Select(word =&gt; word); // This is a redundant way to call.</span></span><br></pre></td></tr></table></figure>
 
 <p>可以看到，这个方法的调用非常简单：LINQ 提供了一个非常好用的 <code>GroupBy</code> 方法，只要我们依葫芦画瓢，照着 <code>OrderBy</code> 的调用方式书写这里的 Lambda 表达式即可。请注意，这里调用 <code>GroupBy</code> 方法一定是生成好的 <code>IEnumerable&lt;IGrouping&lt;TKey, TElement&gt;&gt;</code> 类型了，所以你完全不需要多此一举在后面加上 <code>Select</code> 方法不然就相当于多做了一次完全没有意义的工作。</p>
-<h2 id="愉快地看下输出结果吧！"><a href="#愉快地看下输出结果吧！" class="headerlink" title="愉快地看下输出结果吧！"></a>愉快地看下输出结果吧！</h2><p>下面我们来看看，上述调用的输出结果。</p>
+<h3 id="愉快地看下输出结果吧！"><a href="#愉快地看下输出结果吧！" class="headerlink" title="愉快地看下输出结果吧！"></a>愉快地看下输出结果吧！</h3><p>下面我们来看看，上述调用的输出结果。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line">a:</span><br><span class="line">    abstract</span><br><span class="line">    as</span><br><span class="line"></span><br><span class="line">b:</span><br><span class="line">    base</span><br><span class="line">    bool</span><br><span class="line">    break</span><br><span class="line">    byte</span><br><span class="line"></span><br><span class="line">c:</span><br><span class="line">    case</span><br><span class="line">    catch</span><br><span class="line">    char</span><br><span class="line">    checked</span><br><span class="line">    class</span><br><span class="line">    const</span><br><span class="line">    continue</span><br><span class="line"></span><br><span class="line">d:</span><br><span class="line">    decimal</span><br><span class="line">    default</span><br><span class="line">    delegate</span><br><span class="line">    do</span><br><span class="line">    double</span><br><span class="line"></span><br><span class="line">e:</span><br><span class="line">    else</span><br><span class="line">    enum</span><br><span class="line">    event</span><br><span class="line">    explicit</span><br><span class="line">    extern</span><br><span class="line"></span><br><span class="line">f:</span><br><span class="line">    false</span><br><span class="line">    finally</span><br><span class="line">    fixed</span><br><span class="line">    float</span><br><span class="line">    for</span><br><span class="line">    foreach</span><br><span class="line"></span><br><span class="line">g:</span><br><span class="line">    goto</span><br><span class="line"></span><br><span class="line">i:</span><br><span class="line">    if</span><br><span class="line">    implicit</span><br><span class="line">    in (foreach)</span><br><span class="line">    int</span><br><span class="line">    interface</span><br><span class="line">    internal</span><br><span class="line">    is</span><br><span class="line"></span><br><span class="line">l:</span><br><span class="line">    lock</span><br><span class="line">    long</span><br><span class="line"></span><br><span class="line">n:</span><br><span class="line">    namespace</span><br><span class="line">    new</span><br><span class="line">    null</span><br><span class="line"></span><br><span class="line">o:</span><br><span class="line">    object</span><br><span class="line">    operator</span><br><span class="line">    out (generic modifier)</span><br><span class="line">    out (parameter)</span><br><span class="line">    override</span><br><span class="line"></span><br><span class="line">p:</span><br><span class="line">    params</span><br><span class="line">    private</span><br><span class="line">    protected</span><br><span class="line">    public</span><br><span class="line"></span><br><span class="line">r:</span><br><span class="line">    readonly</span><br><span class="line">    ref</span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">s:</span><br><span class="line">    sbyte</span><br><span class="line">    sealed</span><br><span class="line">    short</span><br><span class="line">    sizeof</span><br><span class="line">    stackalloc</span><br><span class="line">    static</span><br><span class="line">    string</span><br><span class="line">    struct</span><br><span class="line">    switch</span><br><span class="line"></span><br><span class="line">t:</span><br><span class="line">    this</span><br><span class="line">    throw</span><br><span class="line">    true</span><br><span class="line">    try</span><br><span class="line">    typeof</span><br><span class="line"></span><br><span class="line">u:</span><br><span class="line">    uint</span><br><span class="line">    ulong</span><br><span class="line">    unchecked</span><br><span class="line">    unsafe</span><br><span class="line">    ushort</span><br><span class="line">    using</span><br><span class="line"></span><br><span class="line">v:</span><br><span class="line">    virtual</span><br><span class="line">    void</span><br><span class="line">    volatile</span><br><span class="line"></span><br><span class="line">w:</span><br><span class="line">    while</span><br><span class="line"></span><br><span class="line">*:</span><br><span class="line">    *add</span><br><span class="line">    *alias</span><br><span class="line">    *ascending</span><br><span class="line">    *async</span><br><span class="line">    *await</span><br><span class="line">    *by</span><br><span class="line">    *descending</span><br><span class="line">    *dynamic</span><br><span class="line">    *equals</span><br><span class="line">    *from</span><br><span class="line">    *get</span><br><span class="line">    *global</span><br><span class="line">    *group</span><br><span class="line">    *in (generic modifier)</span><br><span class="line">    *in (parameter)</span><br><span class="line">    *in (query)</span><br><span class="line">    *into</span><br><span class="line">    *join</span><br><span class="line">    *let</span><br><span class="line">    *nameof</span><br><span class="line">    *notnull</span><br><span class="line">    *on</span><br><span class="line">    *orderby</span><br><span class="line">    *partial (method)</span><br><span class="line">    *partial (type)</span><br><span class="line">    *remove</span><br><span class="line">    *select</span><br><span class="line">    *set</span><br><span class="line">    *switch (expression)</span><br><span class="line">    *unmanaged</span><br><span class="line">    *using static</span><br><span class="line">    *value</span><br><span class="line">    *var</span><br><span class="line">    *when</span><br><span class="line">    *where (generic constraint)</span><br><span class="line">    *where (query)</span><br><span class="line">    *yield</span><br><span class="line"></span><br><span class="line">#:</span><br><span class="line">    #annotations</span><br><span class="line">    #checksum</span><br><span class="line">    #disable</span><br><span class="line">    #enable</span><br><span class="line">    #nullable</span><br><span class="line">    #restore</span><br><span class="line">    #warning</span><br><span class="line">    #warnings</span><br><span class="line"></span><br><span class="line">!:</span><br><span class="line">    !#safeonly</span><br></pre></td></tr></table></figure>
 
 <p>emmm……可能有点长。</p>
+<h2 id="group-by-into-从句"><a href="#group-by-into-从句" class="headerlink" title="group-by-into 从句"></a><code>group-by-into</code> 从句</h2><p>在 <code>group-by</code> 从句里，LINQ 还提供了一个辅助语句：<code>into</code> 从句。<code>into</code> 从句作为临时存储的方式而存在，把 <code>into</code> 后写上自己取的临时名，那么前面取出来的这些数据就都会存到这个变量里，留着后面用。如果写了 <code>into</code> 从句，那么查询表达式就可以继续写下去了。</p>
+<p>举个例子。我们觉得上文太长了，我们尝试只把所有的分组依据取出来。那么接下来怎么办呢？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">group</span> word <span class="keyword">by</span> word[<span class="number">0</span>] <span class="keyword">into</span> grp</span><br><span class="line">                <span class="keyword">select</span> grp.Key;</span><br></pre></td></tr></table></figure>
+
+<p>这样的话，我们就可以尝试把每一个组都取出来，然后取出其中的 <code>Key</code> 属性了。那么此时，<code>selection</code> 变量就是 <code>IEnumerable&lt;char&gt;</code> 类型的了。方法链写法是：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.GroupBy(word =&gt; word[<span class="number">0</span>])</span><br><span class="line">                     .Select(grp =&gt; grp.Key);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，实际上在方法链模式下，书写格式是完全允许继续往下写的，因为在 <code>GroupBy</code> 方法的层面来说，它的返回值类型虽然是 <code>IEnumerable&lt;IGrouping&lt;TKey, TElement&gt;&gt;</code> 这么长的类型，但依旧是 <code>IEnumerable&lt;T&gt;</code> 的，所以依旧可以继续进行枚举和使用 <code>Select</code> 方法继续往下写。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -165,6 +173,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2019/11/13/linq-05-join-clause/" title="Linq 教程（5）：join 从句">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Linq 教程（5）：join 从句</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2019/11/11/sql-helper/"  title="ASP.NET SQL 查询类辅助操作的实现">
@@ -193,7 +209,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-从句"><span class="toc-number">1.</span> <span class="toc-text">group-by 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IGrouping-lt-TKey-TElement-gt-接口"><span class="toc-number">2.1.</span> <span class="toc-text">IGrouping&lt;TKey, TElement&gt; 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.2.</span> <span class="toc-text">方法链写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#愉快地看下输出结果吧！"><span class="toc-number">3.</span> <span class="toc-text">愉快地看下输出结果吧！</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-从句"><span class="toc-number">1.</span> <span class="toc-text">group-by 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IGrouping-lt-TKey-TElement-gt-接口"><span class="toc-number">2.1.</span> <span class="toc-text">IGrouping&lt;TKey, TElement&gt; 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.2.</span> <span class="toc-text">方法链写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#愉快地看下输出结果吧！"><span class="toc-number">2.3.</span> <span class="toc-text">愉快地看下输出结果吧！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-into-从句"><span class="toc-number">3.</span> <span class="toc-text">group-by-into 从句</span></a></li></ol>
  
   </div>
 
@@ -216,11 +232,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>14</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>15</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>5</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>6</sup></a></li>
 			
 		
 			
@@ -232,10 +248,6 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -244,11 +256,23 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
@@ -257,14 +281,6 @@
 		
 			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 		</ul>
