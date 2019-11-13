@@ -1,0 +1,582 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>LINQ 教程（4）：group by 从句 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="group-by 从句今天我们来看一个类似于 orderby 但写法不太一样、并且执行原理也不太一样的从句类型：group-by 从句。它的用法有一点麻烦，写法倒是很简单，但使用起来不如前文用的结果那样，一层 foreach 就可以遍历，而需要两层。 比如，我们尝试拿出之前的关键词实例给大家举例。假设我们今天要把所有的关键字，按第一个字符分组显示，那么显示模式是如何的呢？ 123456789101">
+<meta name="keywords" content="C♯,LINQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LINQ 教程（4）：group by 从句">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;13&#x2F;linq-04-group-by-clause&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="group-by 从句今天我们来看一个类似于 orderby 但写法不太一样、并且执行原理也不太一样的从句类型：group-by 从句。它的用法有一点麻烦，写法倒是很简单，但使用起来不如前文用的结果那样，一层 foreach 就可以遍历，而需要两层。 比如，我们尝试拿出之前的关键词实例给大家举例。假设我们今天要把所有的关键字，按第一个字符分组显示，那么显示模式是如何的呢？ 123456789101">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-13T11:35:12.249Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/13/linq-04-group-by-clause/" title="LINQ 教程（4）：group by 从句" itemprop="url">LINQ 教程（4）：group by 从句</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-13T10:47:55.000Z" itemprop="datePublished"> 发表于 2019-11-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-从句"><span class="toc-number">1.</span> <span class="toc-text">group-by 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IGrouping-lt-TKey-TElement-gt-接口"><span class="toc-number">2.1.</span> <span class="toc-text">IGrouping&lt;TKey, TElement&gt; 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.2.</span> <span class="toc-text">方法链写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#愉快地看下输出结果吧！"><span class="toc-number">3.</span> <span class="toc-text">愉快地看下输出结果吧！</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="group-by-从句"><a href="#group-by-从句" class="headerlink" title="group-by 从句"></a><code>group-by</code> 从句</h2><p>今天我们来看一个类似于 <code>orderby</code> 但写法不太一样、并且执行原理也不太一样的从句类型：<code>group-by</code> 从句。它的用法有一点麻烦，写法倒是很简单，但使用起来不如前文用的结果那样，一层 <code>foreach</code> 就可以遍历，而需要两层。</p>
+<p>比如，我们尝试拿出之前的关键词实例给大家举例。假设我们今天要把所有的关键字，按第一个字符分组显示，那么显示模式是如何的呢？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Uses group-by clause.</span></span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">group</span> word <span class="keyword">by</span> word[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// Uses `selection` to get all different groups.</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> wordGroup <span class="keyword">in</span> selection)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Output the grouping basis.</span></span><br><span class="line">    Console.WriteLine(<span class="string">$"<span class="subst">&#123;wordGroup.Key&#125;</span>:"</span>);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> word <span class="keyword">in</span> wordGroup)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// All words in the same group.</span></span><br><span class="line">        Console.WriteLine(<span class="string">$"    <span class="subst">&#123;word&#125;</span>"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Console.WriteLine();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们先来看上面的使用 <code>group-by</code> 从句的方法：使用 <code>group</code> 和 <code>by</code> 关键字，把需要排序的成员写在之间，然后在 <code>by</code> 后写上排序的依据（按首字母排序，当然，有些单词含有符号，比如以 <code>#</code> 和 <code>!</code> 开头的关键字）。</p>
+<p>然后在使用的时候，需要两层循环，在外层写上的是按字母分组的那个一组元素，然后在内层，在继续执行循环，遍历这一组元素的每一个关键字。然后我们尝试使用 <code>wordGroup.Key</code> 属性来获取这一组元素的排序依据的值。比如按第一个字符把所有关键字分组的话，自然每一组的分组依据的值就是 <code>a</code>、<code>b</code>、<code>c</code>、……、<code>*</code>、<code>#</code> 这些了。</p>
+<blockquote>
+<p>注意，它和 <code>orderby</code> 从句的写法不同的是，它的 <code>by</code> 是被拆分出来的，而不像是 <code>order</code> 和 <code>by</code>，没有拆分开来，是一个整体；而且，<code>group-by</code> 从句后不要再写 <code>select</code> 从句了，即 <code>group-by</code> 从句应作为整个 LINQ 查询表达式的结尾。</p>
+</blockquote>
+<p>用起来其实也不算比较难的地方，但掌握它的调用模式和原理是非常难的。前面我们说到了这个使用方式，而下面我们就来说一下它的原理，和它的方法链写法。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="IGrouping-lt-TKey-TElement-gt-接口"><a href="#IGrouping-lt-TKey-TElement-gt-接口" class="headerlink" title="IGrouping&lt;TKey, TElement&gt; 接口"></a><code>IGrouping&lt;TKey, TElement&gt;</code> 接口</h3><p>接下来我们来说一个接口：<code>IGrouping&lt;TKey, TElement&gt;</code> 接口。这个接口是什么呢？这个接口就是上文提到的 <code>group-by</code> 从句使用后得到的这个返回的元素类型，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">group</span> word <span class="keyword">by</span> word[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+<p>这个语句的返回值就是 <code>IEnumerable&lt;IGrouping&lt;char, string&gt;&gt;</code> 接口类型（即 <code>var</code> 关键字代替的就是这个类型）。其中的第一个泛型参数 <code>char</code> 表示分组依据的类型，而第二个泛型参数 <code>string</code> 表示这个分组里的元素的元素类型。由此可见，这个类型是一个一对多的模型。当我们查看这个接口的实现代码的时候，就可以发现，它里面提供了轻松的 <code>Key</code> 属性来获取分组依据，而且它直接实现了 <code>IEnumerable&lt;TElement&gt;</code> 接口，这样我们就可以轻松使用 <code>foreach</code> 循环来获取每一个元素了。</p>
+<p>现在我们来进行解惑。为啥这个返回值这么复杂。<code>IEnumerable&lt;IGrouping&lt;char, string&gt;&gt;</code> 初学起来肯定会觉得很不好理解。现在我们来看，为什么这个 <code>group-by</code> 从句使用过后，返回值的类型会长成这样奇怪。</p>
+<p>首先，发明 <code>IGrouping&lt;TKey, TElement&gt;&gt;</code> 接口，目的非常简单，就是为了推迟执行。还记得前文提到的推迟执行吗？推迟执行便是让执行推后到 <code>foreach</code> 调用的时候才会使用的一种执行机制。这里发明这个接口，为的就是让程序在调用 <code>foreach</code> 遍历的时候，这个接口的成员才会被全部迭代出来，这是这个接口存在的第一个意义。</p>
+<p>第二个意义是，这个接口类型如果我们不发明出来的话，那么这里的 <code>group-by</code> 从句执行的结果应该用什么表示呢？显然，既然是分组的模式，必然需要一个可以表示分组意义的类型来表示，于是微软 C# 语言设计师就想到了，使用一个一对多的模型，来表示这个构型。然后，外层这个 <code>IEnumerable&lt;T&gt;</code> 表示的是这个外层循环迭代出来的每一个组，而内层的元素类型，就是这个所谓的 <code>IGrouping&lt;TKey, TElement&gt;</code> 了，这样就变得非常清晰：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">                                               ↓ IEnumerable&lt;IGrouping&lt;char, string&gt;&gt;</span><br><span class="line">foreach (IGrouping&lt;char, string&gt; group in everyGroups)</span><br><span class="line">&#123;</span><br><span class="line">                              ↓ IGrouping&lt;char, string&gt;</span><br><span class="line">    foreach (string word in group)</span><br><span class="line">    &#123;</span><br><span class="line">        // Use them...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个设计模式是非常正确的。</p>
+<h3 id="方法链写法"><a href="#方法链写法" class="headerlink" title="方法链写法"></a>方法链写法</h3><p>下面我们来看看这个关键字的实现原理：方法链写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.GroupBy(word =&gt; word[<span class="number">0</span>]);</span><br><span class="line">                   <span class="comment">//.Select(word =&gt; word); // This is a redundant way to call.</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，这个方法的调用非常简单：LINQ 提供了一个非常好用的 <code>GroupBy</code> 方法，只要我们依葫芦画瓢，照着 <code>OrderBy</code> 的调用方式书写这里的 Lambda 表达式即可。请注意，这里调用 <code>GroupBy</code> 方法一定是生成好的 <code>IEnumerable&lt;IGrouping&lt;TKey, TElement&gt;&gt;</code> 类型了，所以你完全不需要多此一举在后面加上 <code>Select</code> 方法不然就相当于多做了一次完全没有意义的工作。</p>
+<h2 id="愉快地看下输出结果吧！"><a href="#愉快地看下输出结果吧！" class="headerlink" title="愉快地看下输出结果吧！"></a>愉快地看下输出结果吧！</h2><p>下面我们来看看，上述调用的输出结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line">a:</span><br><span class="line">    abstract</span><br><span class="line">    as</span><br><span class="line"></span><br><span class="line">b:</span><br><span class="line">    base</span><br><span class="line">    bool</span><br><span class="line">    break</span><br><span class="line">    byte</span><br><span class="line"></span><br><span class="line">c:</span><br><span class="line">    case</span><br><span class="line">    catch</span><br><span class="line">    char</span><br><span class="line">    checked</span><br><span class="line">    class</span><br><span class="line">    const</span><br><span class="line">    continue</span><br><span class="line"></span><br><span class="line">d:</span><br><span class="line">    decimal</span><br><span class="line">    default</span><br><span class="line">    delegate</span><br><span class="line">    do</span><br><span class="line">    double</span><br><span class="line"></span><br><span class="line">e:</span><br><span class="line">    else</span><br><span class="line">    enum</span><br><span class="line">    event</span><br><span class="line">    explicit</span><br><span class="line">    extern</span><br><span class="line"></span><br><span class="line">f:</span><br><span class="line">    false</span><br><span class="line">    finally</span><br><span class="line">    fixed</span><br><span class="line">    float</span><br><span class="line">    for</span><br><span class="line">    foreach</span><br><span class="line"></span><br><span class="line">g:</span><br><span class="line">    goto</span><br><span class="line"></span><br><span class="line">i:</span><br><span class="line">    if</span><br><span class="line">    implicit</span><br><span class="line">    in (foreach)</span><br><span class="line">    int</span><br><span class="line">    interface</span><br><span class="line">    internal</span><br><span class="line">    is</span><br><span class="line"></span><br><span class="line">l:</span><br><span class="line">    lock</span><br><span class="line">    long</span><br><span class="line"></span><br><span class="line">n:</span><br><span class="line">    namespace</span><br><span class="line">    new</span><br><span class="line">    null</span><br><span class="line"></span><br><span class="line">o:</span><br><span class="line">    object</span><br><span class="line">    operator</span><br><span class="line">    out (generic modifier)</span><br><span class="line">    out (parameter)</span><br><span class="line">    override</span><br><span class="line"></span><br><span class="line">p:</span><br><span class="line">    params</span><br><span class="line">    private</span><br><span class="line">    protected</span><br><span class="line">    public</span><br><span class="line"></span><br><span class="line">r:</span><br><span class="line">    readonly</span><br><span class="line">    ref</span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">s:</span><br><span class="line">    sbyte</span><br><span class="line">    sealed</span><br><span class="line">    short</span><br><span class="line">    sizeof</span><br><span class="line">    stackalloc</span><br><span class="line">    static</span><br><span class="line">    string</span><br><span class="line">    struct</span><br><span class="line">    switch</span><br><span class="line"></span><br><span class="line">t:</span><br><span class="line">    this</span><br><span class="line">    throw</span><br><span class="line">    true</span><br><span class="line">    try</span><br><span class="line">    typeof</span><br><span class="line"></span><br><span class="line">u:</span><br><span class="line">    uint</span><br><span class="line">    ulong</span><br><span class="line">    unchecked</span><br><span class="line">    unsafe</span><br><span class="line">    ushort</span><br><span class="line">    using</span><br><span class="line"></span><br><span class="line">v:</span><br><span class="line">    virtual</span><br><span class="line">    void</span><br><span class="line">    volatile</span><br><span class="line"></span><br><span class="line">w:</span><br><span class="line">    while</span><br><span class="line"></span><br><span class="line">*:</span><br><span class="line">    *add</span><br><span class="line">    *alias</span><br><span class="line">    *ascending</span><br><span class="line">    *async</span><br><span class="line">    *await</span><br><span class="line">    *by</span><br><span class="line">    *descending</span><br><span class="line">    *dynamic</span><br><span class="line">    *equals</span><br><span class="line">    *from</span><br><span class="line">    *get</span><br><span class="line">    *global</span><br><span class="line">    *group</span><br><span class="line">    *in (generic modifier)</span><br><span class="line">    *in (parameter)</span><br><span class="line">    *in (query)</span><br><span class="line">    *into</span><br><span class="line">    *join</span><br><span class="line">    *let</span><br><span class="line">    *nameof</span><br><span class="line">    *notnull</span><br><span class="line">    *on</span><br><span class="line">    *orderby</span><br><span class="line">    *partial (method)</span><br><span class="line">    *partial (type)</span><br><span class="line">    *remove</span><br><span class="line">    *select</span><br><span class="line">    *set</span><br><span class="line">    *switch (expression)</span><br><span class="line">    *unmanaged</span><br><span class="line">    *using static</span><br><span class="line">    *value</span><br><span class="line">    *var</span><br><span class="line">    *when</span><br><span class="line">    *where (generic constraint)</span><br><span class="line">    *where (query)</span><br><span class="line">    *yield</span><br><span class="line"></span><br><span class="line">#:</span><br><span class="line">    #annotations</span><br><span class="line">    #checksum</span><br><span class="line">    #disable</span><br><span class="line">    #enable</span><br><span class="line">    #nullable</span><br><span class="line">    #restore</span><br><span class="line">    #warning</span><br><span class="line">    #warnings</span><br><span class="line"></span><br><span class="line">!:</span><br><span class="line">    !#safeonly</span><br></pre></td></tr></table></figure>
+
+<p>emmm……可能有点长。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/13/linq-04-group-by-clause/" data-title="LINQ 教程（4）：group by 从句 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/11/sql-helper/"  title="ASP.NET SQL 查询类辅助操作的实现">
+ <strong>下一篇：</strong><br/> 
+ <span>ASP.NET SQL 查询类辅助操作的实现
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">Commenting system is powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#group-by-从句"><span class="toc-number">1.</span> <span class="toc-text">group-by 从句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IGrouping-lt-TKey-TElement-gt-接口"><span class="toc-number">2.1.</span> <span class="toc-text">IGrouping&lt;TKey, TElement&gt; 接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法链写法"><span class="toc-number">2.2.</span> <span class="toc-text">方法链写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#愉快地看下输出结果吧！"><span class="toc-number">3.</span> <span class="toc-text">愉快地看下输出结果吧！</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>14</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'sunnieblog';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
