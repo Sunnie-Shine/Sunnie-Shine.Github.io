@@ -20,7 +20,7 @@
 <meta property="og:description" content="先让我们用以前的知识来实现接着，我们继续讲解 LINQ 的新的一种从句类型：join 从句。这种从句的格式比较复杂，因为它比较像 SQL 里的连接表操作。  下文里，我们会把原本应该用的“联接”这种写法改为“连接”，这并不是打错，因为我们不必去区分两个词语的区别，它们都表示把两个事物拼接起来。  不过今天有点不同的是，由于前文叙述的实例（关键字实例）只有一个表，而且不太好讲述今天的内容，所以今天我">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;13&#x2F;linq-05-join-clause&#x2F;Multiple-join.png">
-<meta property="og:updated_time" content="2019-11-14T10:12:34.984Z">
+<meta property="og:updated_time" content="2019-11-14T10:18:52.499Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;13&#x2F;linq-05-join-clause&#x2F;Multiple-join.png">
 
@@ -140,7 +140,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> seletion = people.SelectMany(person =&gt; pets.Where(pet =&gt; person == pet.Owner).Select(pet =&gt; (pet.Name, person)));</span><br></pre></td></tr></table></figure>
 
 <p>显然，这个写法有点长，我们尝试改写一下，Lambda 表达式是可以写成语句块的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> seletion = people.SelectMany(person =&gt;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> pets.Where(pet =&gt; person == pet.Owner)</span><br><span class="line">               .Select(pet =&gt; (name: pet.Name, owner: person));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> seletion = people.SelectMany(person =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> pets.Where(pet =&gt; person == pet.Owner)</span><br><span class="line">               .Select(pet =&gt; (name: pet.Name, owner: person));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p>这样看起来似乎比刚才那种写法要清爽一些，那么我们尝试去理解一下这种写法。</p>
 <p>点开 <code>SelectMany</code> 方法，你可以立马发现，这个方法的函数声明是这样的：</p>
@@ -387,11 +387,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>16</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>17</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>7</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>8</sup></a></li>
 			
 		
 			
@@ -419,6 +419,10 @@
 			
 		
 			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
@@ -427,15 +431,11 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 		</ul>

@@ -82,6 +82,224 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/08/common-01-nullable-types/" title="C# 内置类型详解系列（1）：可空类型" itemprop="url">C# 内置类型详解系列（1）：可空类型</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-08T07:25:57.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>从本文开始，我们将探究 C# 里常见的一些内置类型，并详细分析这些类型的使用方式和原理（当然，如果有的话）。</p>
+<h2 id="可空类型是什么？"><a href="#可空类型是什么？" class="headerlink" title="可空类型是什么？"></a>可空类型是什么？</h2><p>在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：<code>byte</code>、<code>int</code>、<code>short</code>、<code>long</code>、<code>float</code>、<code>double</code>、<code>char</code>、<code>boolean</code>，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都是我们 Java 里提供好的一些特殊的类型，它们分别都是 <code>Byte</code>、<code>Integer</code>、<code>Short</code>、<code>Long</code>、<code>Float</code>、<code>Double</code>、<code>Character</code> 和 <code>Boolean</code> 类型的一个特殊实例。之所以这么说，是因为在泛型语法里，我们无法把那些以关键字作为类型的所谓的类型，作为泛型参数，即我们无法使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">int</span>&gt; l = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">// Wrong.</span></span><br></pre></td></tr></table></figure>
+
+<p>这种写法。但是，对应的这些类类型，由于都是类，所以它们反而可以被赋值为 <code>null</code> 值，即我们完全可以租到下面的操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="keyword">null</span>;   <span class="comment">// Allow.</span></span><br><span class="line">Character c = <span class="keyword">null</span>; <span class="comment">// Allow.</span></span><br><span class="line"><span class="comment">//int i = null;     // Disallow.</span></span><br></pre></td></tr></table></figure>
+
+<p>所以，Java 里拥有这种特殊的机制。那么，今天探讨的 C# 里，跟这个有什么关系呢？</p>
+<p>在 C# 的世界里，所有的内置类型关键字 <code>int</code>、<code>short</code>、<code>long</code>、<code>uint</code>、<code>ulong</code>、<code>ushort</code>、<code>byte</code>、<code>sbyte</code>、<code>char</code>、<code>string</code>、<code>float</code>、<code>double</code>、<code>decimal</code> 和 <code>bool</code> 等类型都是 BCL 体系规定的那些名称的别名。所谓的 BCL，就是规定的体系，比如 <code>int</code> 和 <code>System.Int32</code> 等价，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Omitted the namespace, class statements...</span></span><br><span class="line"><span class="keyword">int</span> i;   <span class="comment">// Allow.</span></span><br><span class="line">Int32 j; <span class="comment">// Also allow.</span></span><br></pre></td></tr></table></figure>
+
+<p>甚至为其初始化。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Omitted the namespace, class statements...</span></span><br><span class="line"><span class="keyword">int</span> i = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">3</span>);     <span class="comment">// Allow.</span></span><br><span class="line">Int32 j = <span class="keyword">new</span> Int32(<span class="number">3</span>); <span class="comment">// Also allow.</span></span><br><span class="line">Int32 k = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">3</span>);   <span class="comment">// Allow still.</span></span><br></pre></td></tr></table></figure>
+
+<p>或是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="keyword">new</span> System.Int32(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<p>等等。由于是别名，所以我们完全可以尝试着把它用作泛型的参数上：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IList&lt;<span class="keyword">int</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>所以，这一点和 Java 不同。</p>
+<p>当然，开篇内容说得太多了。我们现在看看，今天要说的内容：<strong>可空类型</strong>（Nullable Types）。可空类型是一种类型，这种类型允许为 <code>null</code> 值。在 C# 的机制里，<code>null</code> 无法赋值给一个值类型变量，因为所有的值类型，都是通过直接创建对象，然后在栈内分配空间并直接赋值的，而引用类型，则在堆里分配。由于在单独的内存块里，所以引用类型往往在分配好后，会得到一个引用，这个引用便是一个地址的信息，即一个指针信息。而指针，是可以为 <code>null</code> 的，所以引用类型才允许为 <code>null</code>。C# 不能让值类型为 <code>null</code>，但这种机制会为我们带来诸多不便，比如我们迫不得已需要一个特殊数值来表示一些特有信息时，就显得很不好搞定。</p>
+<p>举个例子，假如我们需要表示一个数据库里可为空值的数据信息，这怎么办呢？最早的方式是，通过“牺牲”一个特殊数值来表示空值，比如我们拿出 <code>0x3f3f3f3f</code> 来表达这里存储的数值为空。但这带来一个不便是，如果真有一个数据非得等于 <code>0x3f3f3f3f</code>，这怎么办呢？所以就不方便解决了。于是，在 C# 2 里，我们带来了一个新的数据类型，可空值类型（Nullable Value Types），一般被简称为 NVT。</p>
+<blockquote>
+<p>上述内容里提到了泛型，我们在此处不作过多阐述，因为这里的重点并非泛型。</p>
+</blockquote>
+<h2 id="可空值类型"><a href="#可空值类型" class="headerlink" title="可空值类型"></a>可空值类型</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>可空值类型的用法是，在类型后加上一个后缀符号“?”来表示这个类型可以赋 <code>null</code> 值，如</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>它在内存之中的写法是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable&lt;<span class="keyword">int</span>&gt; ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>意思就是，这两种写法是等价的，唯一的区别是，后者需要引用 <code>System</code> 命名空间，就像 <code>Int32</code> 和 <code>int</code> 的唯一区别就是引用命名空间一样。</p>
+<p>显然，我们这样写是非常简单的，所以语法层面基本上就说完了。不过！</p>
+<h3 id="可空值类型的转换"><a href="#可空值类型的转换" class="headerlink" title="可空值类型的转换"></a>可空值类型的转换</h3><p>有些时候，我们会使用条件运算符 <code>?:</code> 来表达赋值行为，但如果带有可空类型，比如下面这样</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : p;</span><br></pre></td></tr></table></figure>
+
+<p>乍一看，这个写法是没啥毛病的，因为我们当 <code>p</code> 为空的时候，赋值为默认数值 0，而当它不为空的时候，赋值则是 <code>p</code> 的原始数值。所以看起来好像没有问题，但你写成代码后，就会得到一个语法错误，大概说“你的条件表达式的两边的返回值类型不一样”。可以看到，0 显然是 <code>int</code> 类型的，而 <code>p</code> 呢？这里的 <code>p</code> 可是 <code>int?</code> 类型的啊，条件运算符的两侧返回的必须得是完全一样的类型的结果，但这里一个是 <code>int</code>，而另外一个则是 <code>int?</code>。这显然是不对的。所以，我们只能这么做：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : (<span class="keyword">int</span>)p;</span><br></pre></td></tr></table></figure>
+
+<p>即为 <code>p</code> 做一次强制转换，把它改为 <code>int</code> 类型。可能你会问了。那么这种转换的行为是合理的，但为什么可以这么写呢？在 C# 2 里，可空值类型提供了这样一个语法：允许可空值类型强制转换为不可空的值类型，即取出它的值。但如果当这个类型此时为 <code>null</code> 值的时候，它将抛出一个 <code>InvalidOperationException</code> 异常。一般来说，提示信息都是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable object must have a value.</span><br></pre></td></tr></table></figure>
+
+<p>即“可空对象必须拥有数值（才能进行转换）”。所以，请万分注意。比如下面这个代码，就会产生一个错误。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">int</span> q = (<span class="keyword">int</span>)p + <span class="number">3</span>;</span><br><span class="line">Console.WriteLine(q);</span><br></pre></td></tr></table></figure>
+
+<p>这是显然的。我哦们尝试直接把 <code>null</code> 值的对象加上 3，这显然是不合适的。</p>
+<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型。</p>
+<h2 id="可空引用类型"><a href="#可空引用类型" class="headerlink" title="可空引用类型"></a>可空引用类型</h2><p>是的，你没有看错，从 C# 8 开始，引用类型也开始支持可空了。但是，引用类型不是一直都可以为 <code>null</code> 吗？它默认数值不就是为 <code>null</code> 吗？是的，但 C# 8 “暴力地”破坏了这一个要求，为了防止尽可能少出现 <code>NullReferenceException</code> 这种可怕的异常，我们产生了一个新的语法规则：强制引用类型不可空。然后如果非得让引用类型为空的话，请采用 <code>T?</code> 的写法，和值类型可空的写法一样，比如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>但需要你注意的是，这种写法需要基于可空引用类型的环境。你需要先打开你的项目配置文件 <code>.csproj</code>，然后添加一项：<code>&lt;Nullable&gt;Enable&lt;/Nullable&gt;</code> 即可使用这个特性。</p>
+<blockquote>
+<p>类似地，<strong>可空引用类型</strong>（Nullable Reference Type）一般被简称为 NRT。</p>
+</blockquote>
+<h3 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h3><p>我们通过和可空值类型完全一样的语法 <code>T?</code> 来声明一个类型可空：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>; <span class="comment">// A string can be null.</span></span><br><span class="line">s = <span class="string">"Hello"</span>; <span class="comment">// Okay.</span></span><br><span class="line">s = <span class="literal">null</span>; <span class="comment">// Okay.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> t = <span class="literal">null</span>; <span class="comment">// Will get a complier warning.</span></span><br></pre></td></tr></table></figure>
+
+<p>但请注意，可空引用类型仅仅是语法上看起来和可空值类型一样，但实际上，可空引用类型并没有类似于 <code>Nullable&lt;T&gt;</code> 的类型，它在运行时是和原本的类型完全一样的，只是从编译器层面约束和限制了我们无法赋 <code>null</code> 值的要求。说白了，<code>string?</code> 和 <code>string</code> 依旧用的是同一个数据类型，只是编译器在看到你的类型后带 <code>?</code> 后会被判定为“可空”，于是这个类型你就可以放 <code>null</code> 进去；但没有这个符号，你就没办法赋 <code>null</code> 值，否则将会产生 <code>CS86</code> 和 <code>CS87</code> 系列警告。</p>
+<p>那么，对应的一些语法，我们就得注意了：</p>
+<h3 id="后缀运算符"><a href="#后缀运算符" class="headerlink" title="! 后缀运算符"></a><code>!</code> 后缀运算符</h3><p>为了保证一些特定情况下，我们需要赋值不为空，但编译器依然认为你赋的是 <code>null</code> 值时，我们可以采用 <code>!</code> 后缀运算符来强制编译器取消告警。</p>
+<p>举一个例子，例如我们写了一个字符串转结构体的 <code>Parse</code> 方法，其中返回值是一个可空的类型，</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">Point</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Point</span>(<span class="params"><span class="keyword">int</span> x, <span class="keyword">int</span> y</span>)</span> =&gt; (X, Y) = (x, y);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> X &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Y &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Point? Parse(<span class="keyword">string</span> str)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// `(a, b)` form is correct,</span></span><br><span class="line">        <span class="comment">// so we use regular expression to get `a` and `b`.</span></span><br><span class="line">        <span class="keyword">var</span> regex = <span class="keyword">new</span> Regex(<span class="string">@"\(\d+,\s*\d+\)"</span>);</span><br><span class="line">        <span class="keyword">var</span> match = regex.Match(str);</span><br><span class="line">        <span class="keyword">if</span> (match.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Parse successfully.</span></span><br><span class="line">            <span class="keyword">var</span> valRegex = <span class="keyword">new</span> Regex(<span class="string">@"\d+"</span>);</span><br><span class="line">            <span class="keyword">var</span> matches = regex.Matches(match.Value);</span><br><span class="line">            <span class="keyword">var</span> s1 = matches[<span class="number">0</span>].Value;</span><br><span class="line">            <span class="keyword">var</span> s2 = matches[<span class="number">1</span>].Value;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Return the correct answer.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Point(<span class="keyword">int</span>.Parse(s1), <span class="keyword">int</span>.Parse(s2));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Parse failed, it will return null value</span></span><br><span class="line">            <span class="comment">// to tell user the parsing operation has failed.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，我在调用期间使用了这个方法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Point p = Point.Parse(<span class="string">"(1, 3)"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>此时，将会产生一个编译器警告，提示你转换后的结果可能是 <code>null</code>。客观来讲，这确实是对的，因为返回值是可空类型的，而我们用一个不可为空的类型接受这个可空类型时，显然范围变小了，确实需要报错。</p>
+<p>但是，我们完全可以发现，这个转换是有效且正确的，因为我们的正则表达式转换出来的结果一定可以得到 <code>X = 1</code> 和 <code>Y = 3</code> 的结果，这是令人烦躁的，所以我们只需要在转换结果后添加一个感叹号 <code>!</code> 来告诉编译器，这里的非空结果是预料之中的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Point p = Point.Parse(<span class="string">"(1, 3)"</span>)!;</span><br></pre></td></tr></table></figure>
+
+<p>但需要你注意的是，如果在此时我们使用 <code>var</code> 类型来表示 <code>p</code> 的话，这两个语句都会得到什么结果呢？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p = Point.Parse(<span class="string">"(1, 3)"</span>);  <span class="comment">// `p` is Point? type.</span></span><br><span class="line"><span class="keyword">var</span> q = Point.Parse(<span class="string">"(1, 3)"</span>)!; <span class="comment">// `q` is Point type.</span></span><br></pre></td></tr></table></figure>
+
+<p>你答对了吗？</p>
+<blockquote>
+<p><code>!</code> 后缀运算符在 <a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/operators/null-forgiving" target="_blank" rel="noopener">MSDN</a> 里称为<strong>null 包容运算符</strong>（Null-forgiving Operator），而在 Visual Studio 2019 下，这个运算符称为<strong>null 警告禁用运算符</strong>（Null-suppress Operator）。</p>
+</blockquote>
+<h3 id="as-的默认值"><a href="#as-的默认值" class="headerlink" title="as 的默认值"></a><code>as</code> 的默认值</h3><p>在 <a href="https://sunnie-shine.github.io/2019/11/06/csharplang-01-is-as-operator/">is 和 as</a> 一文中，我们提到了 <code>as</code> 的默认值。当引用类型时，转换无效时会返回 <code>null</code>。考虑如下情况。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line"><span class="keyword">string</span> i = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// Hmmm</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，第二句话里，我们尝试将我们认为的 <code>o</code> 转为 <code>string</code> 类型。但这是不可能的，因为 <code>o</code> 装的是一个 <code>Point</code>，所以 <code>as</code> 转换失败后会返回 <code>null</code>。但显然，<code>string</code> 后没有问号，所以并不可空。那么这里一定会出现编译器的警告。那么，这下怎么办呢？</p>
+<p>如果我们能保证这个转换是成立的，我们应当使用 <code>!</code> 后缀运算符来修饰结果，表示这个结果此时肯定不可空，是在我们预料之中的。但我们随时随地都可以加这个符号来取消警告。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line"><span class="keyword">string</span> i = (o <span class="keyword">as</span> <span class="keyword">string</span>)!; <span class="comment">// What the hell?</span></span><br></pre></td></tr></table></figure>
+
+<p>显然，这个转换是错误的，但我们确实取消了编译器的警告，那么，我们此时如果随意地使用这个 <code>i</code>，就会出现问题。比如我们取字符串的第 3 个字符：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> c = i[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
+
+<p>显然，这是会错的。所以，这产生了语义层面的 bug。我们应当尽量少使用 <code>!</code> 符号，而更多用在正确的地方。而且，哪怕原本类型就是 <code>string</code>，编译器依然会报错。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"><span class="keyword">string</span> s = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// Complier warning...</span></span><br></pre></td></tr></table></figure>
+
+<p>这是因为编译器仅检查类型，它发现 <code>o</code> 是 <code>object</code> 时，就不会再往下查看具体 <code>o</code> 装的是什么类型的数据了，于是在使用 <code>as</code> 转换时，完全可能产生 <code>null</code> 结果，所以报错。此时我们不得不使用 <code>!</code> 后缀运算符：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"><span class="keyword">string</span> s = (o <span class="keyword">as</span> <span class="keyword">string</span>)!;</span><br></pre></td></tr></table></figure>
+
+<p>但请注意，刚才说过，如果这里使用 <code>var</code> 来表示类型的话，如果不加 <code>!</code> 后缀运算符，将会被识别为 <code>string?</code> 而不是 <code>string</code>。</p>
+<h3 id="使用特性来减少-后缀运算符的使用"><a href="#使用特性来减少-后缀运算符的使用" class="headerlink" title="使用特性来减少 ! 后缀运算符的使用"></a>使用特性来减少 <code>!</code> 后缀运算符的使用</h3><p>前文说过，<code>!</code> 的用法是认为决定的，所以这完全取决于人的使用方式，故我们无法做到编译器层面的完全禁止。而有一些情况，我们完全可以不去使用它们，以此让编译器为我们产生错误信息，来更好地约束我们的代码思维。此时，我们需要用到如下的一些特性。</p>
+<h4 id="NotNullWhenAttribute"><a href="#NotNullWhenAttribute" class="headerlink" title="NotNullWhenAttribute"></a><code>NotNullWhenAttribute</code></h4><p>考虑如下 API。我们把刚才的 <code>Point</code> 类的 <code>Parse</code> 方法转换为 <code>TryParse</code> 方法，让它返回 <code>bool</code> 数值，而结果从参数返回。那么</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Parse</span>(<span class="params"><span class="keyword">string</span> str, <span class="keyword">out</span> Point? result</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// `(a, b)` form is correct,</span></span><br><span class="line">    <span class="comment">// so we use regular expression to get `a` and `b`.</span></span><br><span class="line">    <span class="keyword">var</span> regex = <span class="keyword">new</span> Regex(<span class="string">@"\(\d+,\s*\d+\)"</span>);</span><br><span class="line">    <span class="keyword">var</span> match = regex.Match(str);</span><br><span class="line">    <span class="keyword">if</span> (match.Success)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Parse successfully.</span></span><br><span class="line">        <span class="keyword">var</span> valRegex = <span class="keyword">new</span> Regex(<span class="string">@"\d+"</span>);</span><br><span class="line">        <span class="keyword">var</span> matches = regex.Matches(match.Value);</span><br><span class="line">        <span class="keyword">var</span> s1 = matches[<span class="number">0</span>].Value;</span><br><span class="line">        <span class="keyword">var</span> s2 = matches[<span class="number">1</span>].Value;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Return the correct answer.</span></span><br><span class="line">        result = <span class="keyword">new</span> Point(<span class="keyword">int</span>.Parse(s1), <span class="keyword">int</span>.Parse(s2));</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Parse failed, it will return null value</span></span><br><span class="line">        <span class="comment">// to tell user the parsing operation has failed.</span></span><br><span class="line">        result = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们只需要变化一点点内容即可。</p>
+<p>现在，新的问题来了。我们调用的方式是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这样显然是不会有问题的，首先，返回为 <code>true</code> 时，意味着 <code>result</code> 此时肯定不为 <code>null</code>，所以可以安全赋值过去，但编译器由于发现 <code>result</code> 是 <code>Point?</code> 的，所以会报错。于是此时我们不得不使用 <code>!</code>。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result!;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这样是没有错误的。但我们发现，这种写法是受到返回值的约束。当返回值为 <code>true</code>，这个 <code>out</code> 参数肯定是不为空的。所以我们可以把 API 改变一下。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Parse</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">string</span> str, [NotNullWhen(returnValue: <span class="literal">true</span></span>)] <span class="keyword">out</span> Point? result)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Same as before.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们在第二个参数前面加上特性：<code>[NotNullWhen(returnValue: true)]</code>，那么这个 <code>result</code> 在编译器层面就会认为，当返回值为 <code>true</code> 时，这个参数值一定不会为空。所以，我们一旦用了这个模式书写代码，那么调用方就不用写 <code>!</code> 了：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result; <span class="comment">// Correct now.</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="AllowNullAttribute-和-DisallowNullAttribute"><a href="#AllowNullAttribute-和-DisallowNullAttribute" class="headerlink" title="AllowNullAttribute 和 DisallowNullAttribute"></a><code>AllowNullAttribute</code> 和 <code>DisallowNullAttribute</code></h4><p>下面我们来看另外一个特性。这个特性表示我们给的数值是允许为 <code>null</code> 的。它一般用在属性的 setter，或参数上。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">string</span> Name</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">get</span> &#123; <span class="keyword">return</span> name; &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">AllowNull</span>]</span><br><span class="line">    <span class="keyword">set</span> &#123; name = Name ?? <span class="string">"DefaultName"</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的话，这个 setter 原本应该赋值为 <code>string</code> 的，但编译器此时允许你为其赋 <code>null</code> 进去。</p>
+<p>当然了，<code>DisallowNull</code> 就是反过来的，不为 <code>null</code>。</p>
+<h4 id="MaybeNullAttribute"><a href="#MaybeNullAttribute" class="headerlink" title="MaybeNullAttribute"></a><code>MaybeNullAttribute</code></h4><p>思考一下，当我们使用一个泛型是很普通的类型时，如果它为 <code>null</code> 了怎么办？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> T FirstOrDefault&lt;T&gt;(<span class="keyword">this</span> IEnumerable&lt;T&gt; source, Precicate&lt;T&gt; predicate)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比如这个例子，它是 <a href="https://source.dot.net/#System.Linq/System/Linq/First.cs,8087366974af11d2,references" target="_blank" rel="noopener">Linq</a> 代码里的一个部分。这个方法是用于查找一个类型为 <code>T</code> 的集合 <code>source</code> 里，第一个满足 <code>predicate</code> 给定条件的项。当找到结果后，返回值为这个值；但没有找到结果的时候，返回值将为这个类型的默认值：值类型则是对应的默认结果，而引用类型则默认为 <code>null</code>。</p>
+<p>按道理来讲，这里返回值就应当为可空的类型，所以我们应该设为 <code>T?</code> 类似的写法，来强制规定返回值可空。但很遗憾的是，这么做编译器会报错。这个编译器报错的大概意思是：“由于值类型和引用类型的行为不同，我们无法设置这一要求，请设置约束来规定这个泛型参数 <code>T</code> 是值类型还是引用类型”。</p>
+<p>编译器的说法是有道理的。因为我们的值类型和引用类型的行为不同，值类型的可空，是将其翻译为另外一个类型 <code>Nullable&lt;T&gt;</code>，而引用类型则完全没有变化类型，只是告诉编译器它可空而已。如果我们“妄自”添加问号在类型上面的话，值类型和引用类型的处理方式都不同，那么后续交给程序，它并不知道这个类型此时是值类型还是引用类型，那后续有应该该怎么做呢？这是很复杂的一个问题。所以，我们临时给出的解决方案是，为这个返回值添加一个特性：<code>MaybeNullAttribute</code> 来表示这个返回值是可空的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: MaybeNull</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> T FirstOrDefault&lt;T&gt;(<span class="keyword">this</span> IEnumerable&lt;T&gt; source, Precicate&lt;T&gt; predicate)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的话，编译器就能明白，此处的这个泛型返回值对应的类型，会依据值类型和引用类型分情况处理。引用类型下，就会产生警告。实际上，这个方法调用的是另外一个方法：<code>TryGetFirst</code>。它的源代码我也复制出来。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: MaybeNull</span>]</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> TSource TryGetFirst&lt;T&gt;(</span><br><span class="line">    <span class="keyword">this</span> IEnumerable&lt;T&gt;? source, Predicate&lt;T&gt;? predicate, <span class="keyword">out</span> <span class="keyword">bool</span> found)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">is</span> <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (predicate <span class="keyword">is</span> <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.predicate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">is</span> OrderedEnumerable&lt;T&gt; ordered)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Check the type is OrderedEnumerable&lt;T&gt; or not.</span></span><br><span class="line">        <span class="comment">// If so, the code will be simplified a bit.</span></span><br><span class="line">        <span class="keyword">return</span> ordered.TryGetFirst(predicate, <span class="keyword">out</span> found);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Iterate on source.</span></span><br><span class="line">    <span class="keyword">foreach</span> (T element <span class="keyword">in</span> source)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// If satisfying the predicate...</span></span><br><span class="line">        <span class="keyword">if</span> (predicate(element))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Return the result.</span></span><br><span class="line">            found = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">return</span> element;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Failed to find.</span></span><br><span class="line">    found = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">default</span>!; <span class="comment">// The value may be null when the value is a reference type.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>希望你能感受一下，这个特性在代码里起到的作用。</p>
+<h4 id="NotNullAttribute"><a href="#NotNullAttribute" class="headerlink" title="NotNullAttribute"></a><code>NotNullAttribute</code></h4><p>下面来介绍一个用法和刚才这个差不多的特性。这个特性一般用在 <code>ref</code> 参数上，表示参数在传参时不可以赋值为 <code>null</code>，虽然它此时是可以为 <code>null</code> 的类型。</p>
+<p>在 .NET 提供的数据结构的代码里，某个数据结构需要进行扩容，此时为了保证容量，会调用下面这样的代码：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Messages has the default value (null) when EnsureCapacity is called:</span></span><br><span class="line">EnsureCapacity&lt;<span class="keyword">string</span>&gt;(<span class="keyword">ref</span> storage, <span class="number">10</span>);</span><br><span class="line"><span class="comment">// Messages is not null.</span></span><br><span class="line">EnsureCapacity&lt;<span class="keyword">string</span>&gt;(storage, <span class="number">50</span>);</span><br></pre></td></tr></table></figure>
+
+<p>如果原本是一个数组的话，我们可以为 API 设计为这样：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> EnsureCapacity&lt;T&gt;([NotNull] <span class="keyword">ref</span> T[]? storage, <span class="keyword">int</span> size)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时来告诉编译器，在传参时，是不允许为 <code>null</code> 赋值过去的，但最后 <code>storage</code> 可以为 <code>null</code>，并是否为 <code>null</code> 将在 API 设计的代码里决定，而不是外界。</p>
+<h4 id="NotNullIfNotNullAttribute"><a href="#NotNullIfNotNullAttribute" class="headerlink" title="NotNullIfNotNullAttribute"></a><code>NotNullIfNotNullAttribute</code></h4><p>最后一个特性是最鬼畜的特性。这个特性其实和 <code>NotNullWhenAttribute</code> 的用法非常相似，只是有一点区别：<code>NotNullWhenAttribute</code> 依赖于返回值来决定是否为空，而这里说的这个特性，依赖于其它参数。其中参数是什么，那么它的可空性和返回值的可空性是一样的。</p>
+<p>考虑如下代码。我们假设要写一个 DNS 解析的服务。我们需要返回一个根域名服务器的地址，用字符串表示，而参数表示当前主机的地址。但如果参数为空，显然返回值就应为空，因为主机都没有，那么对应的根域名服务器肯定也就为空了，返回值此时的可空行为是和参数 <code>url</code> 是一样的，所以我们为返回值设定 <code>NotNullIfNotNullAttribute</code> 特性，来告诉编译器，返回值在参数 <code>url</code> 不为空的时候不为空。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: NotNullIfNotNull(<span class="meta-string">"url"</span>)</span>]</span><br><span class="line"><span class="keyword">string</span>? GetTopLevelDomainFromFullUrl(<span class="keyword">string</span>? url);</span><br></pre></td></tr></table></figure>
+
+<p>虽然有点绕，但意思应该是清晰的。</p>
+<h3 id="关于泛型的可空性"><a href="#关于泛型的可空性" class="headerlink" title="关于泛型的可空性"></a>关于泛型的可空性</h3><p>在前文我们提到了泛型的可空性。由于值类型和引用类型的可空行为不同，所以我们恐怕无法单纯添加一个问号就解决这一点。在 <a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/nullable-attributes#generic-definitions-and-nullability" target="_blank" rel="noopener">MSDN</a> 的原文里，原文是这么说的：</p>
+<blockquote>
+<p>Correctly communicating the null state of generic types and generic methods requires special care. This stems from the fact that a nullable value type and a nullable reference type are fundamentally different. An <code>int?</code> is a synonym for <code>Nullable&lt;int&gt;</code>, whereas <code>string?</code> is <code>string</code> with an attribute added by the compiler. The result is that the compiler can’t generate correct code for <code>T?</code> without knowing if <code>T</code> is a <code>class</code> or a <code>struct</code>.</p>
+<p>This doesn’t mean you can’t use a nullable type (either value type or reference type) as the type argument for a closed generic type. Both <code>List</code> and <code>List</code> are valid instantiations of <code>List</code>.</p>
+<p>What it does mean is that you can’t use <code>T?</code> in a generic class or method declaration without constraints. For example, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.firstordefault#System_Linq_Enumerable_FirstOrDefault__1_System_Collections_Generic_IEnumerable___0__" target="_blank" rel="noopener">Enumerable.FirstOrDefault(IEnumerable)</a> won’t be changed to return <code>T?</code>. You can overcome this limitation by adding either the <code>struct</code> or <code>class</code> constraint. With either of those constraints, the compiler knows how to generate code for both <code>T</code> and <code>T?</code>.</p>
+<p>You may want to restrict the types used for a generic type argument to be non-nullable types. You can do that by adding the <code>notnull</code> constraint on that type argument. When that constraint is applied, the type argument must not be a nullable type.</p>
+</blockquote>
+<p>我把这段话大致翻译了一下，我希望你能看懂中文。:P</p>
+<blockquote>
+<p>对于一个泛型类型和泛型方法的 null 的状态的正确处理是我们肯定会关心的地方。这个“梗”的诞生源于值类型和引用类型处理的方式完全不同。一个 <code>int?</code> 类型被翻译转为 <code>Nullable&lt;int&gt;</code>，但 <code>string?</code> 在编译器层面仅仅是添加了一个特性标记来标注它是个可空的 <code>string</code> 类型而已，因此类型并没发生变化。所以，编译器根本不可能在它本身并不知道 <code>T</code> 是一个值类型还是引用类型之前，就生成完全正确的代码。</p>
+<p>但这并不意味着，我们不能在一个闭合的泛型类型参数上使用可空类型了（这里的可空类型指的是值类型或引用类型的两种可空情况的其一）。换句话说，<code>List&lt;string?&gt;</code> 和 <code>List&lt;int?&gt;</code> 在初始化 <code>List&lt;T&gt;</code> 集合的时候，都是完全被允许的。</p>
+<p>但是，我们也确实无法在没有任何泛型约束的状态下指定一个泛型类或泛型方法的泛型参数 <code>T</code> 上随意指定它可空（即 <code>T?</code>）。比如，<a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.firstordefault#System_Linq_Enumerable_FirstOrDefault__1_System_Collections_Generic_IEnumerable___0__" target="_blank" rel="noopener">Enumerable.FirstOrDefault(IEnumerable)</a>（上文里我们才看过的那个代码）就不可能允许直接返回一个 <code>T?</code>。但你完全可以克服这一点限制，通过为泛型参数添加一个值类型或引用类型的约束（写法是 <code>where T : struct</code> 或 <code>where T : class</code>），这样的话，编译器就肯定知道，接下来泛型类型 <code>T</code> 应如何去处理这个可空情况，即 <code>T?</code> 了。</p>
+<p>你可能会想去限制某处的泛型参数不要为可空的类型，而且值类型和引用类型都可能。现在我们提供了一个泛型约束关键字 <code>notnull</code> 来表示这种特殊情况，只要我们为其设置 <code>where T : notnull</code> 泛型约束，那么此时的 <code>T</code> 就一定是一个不可以为空的类型了，而且值类型或引用类型均是允许的，只要它们不可空。</p>
+</blockquote>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>很抱歉，这篇文章太长了。但我希望你能明白，可空值类型和可空引用类型的真正使用方式和操作，我可不希望你用错了。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B/">C♯.内置类型</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/08/common-01-nullable-types/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
   </h1>
   <p class="article-author">By
@@ -851,107 +1069,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/csharplang-complement-01-is-as-operator/" title="C# 语法查漏补缺系列（1）：is 和 as 运算符" itemprop="url">C# 语法查漏补缺系列（1）：is 和 as 运算符</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T09:17:04.000Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 <code>is</code> 和 <code>as</code> 运算符。</p>
-<h2 id="is-运算符"><a href="#is-运算符" class="headerlink" title="is 运算符"></a><code>is</code> 运算符</h2><h3 id="关键字介绍"><a href="#关键字介绍" class="headerlink" title="关键字介绍"></a>关键字介绍</h3><p><code>is</code> 就好比 Java 语言里的 <code>instanceof</code>，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 <code>true</code>；而否则返回 <code>false</code>，如下示例。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> hello = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> <span class="keyword">object</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result3 = hello <span class="keyword">is</span> IEnumerable&lt;<span class="keyword">char</span>&gt;; <span class="comment">// also true</span></span><br></pre></td></tr></table></figure>
-
-<p>可以看到的是，只要兼容的类型，它都能测试出来。例如，字符串实现了 <code>IEnumerable&lt;char&gt;</code> 接口，那么它就完全可以转换为这个类型。在 OOP 的世界里，一个类型就好比是一个角色。你实现（或继承）了什么类型，就拥有了什么角色，你就可以转换过去。</p>
-<p>一切皆对象（object），那么我们所有人，所有事都可以被转换为 <code>object</code> 类型。包括值类型，它会迂回地转换，先隐式转换（派生自）<code>ValueType</code> 类类型，而这个类型又是派生自 <code>object</code> 的；而指针，则隐式继承自 <code>IntPtr</code> 结构类型，而这个类型依然派生自 <code>object</code>。</p>
-<p>不过，哪怕你的数据数值为 <code>null</code>，也不会报错：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? hello = <span class="literal">null</span>; <span class="comment">// C# 8 uses `T?` to tell us the referenced type may be null.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> IDisposable; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-
-<p>它并不会抛出异常。</p>
-<p>当我们转换到指定类型时，可以使用强制转换语法：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> s = <span class="string">"hello"</span>; <span class="comment">// Define a variable.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (s <span class="keyword">is</span> <span class="keyword">string</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">string</span> p = (<span class="keyword">string</span>)s;</span><br><span class="line">    <span class="comment">// And then do what you want to do...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"Oh no, I don't know what the type of <span class="subst">&#123;<span class="keyword">nameof</span>(s)&#125;</span> is."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="is-null-和-is-constant-模式"><a href="#is-null-和-is-constant-模式" class="headerlink" title="is null 和 is constant 模式"></a><code>is null</code> 和 <code>is constant</code> 模式</h3><p>现如今，C# 语法支持 <code>is null</code> 模式来指定判断对象是否为 <code>null</code>，来避免操作符重载没有判断 <code>null</code> 的情况时尴尬报错的情况。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = (<span class="keyword">object</span>?)obj == <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-
-<p>即相当于先隐式转换回最终类 <code>object</code>，并在可空情况下，判断它是否为 <code>null</code>。当然，如果你不是高版本的话，<code>object?</code> 里的问号就可以不写了。</p>
-<p>C# 还支持 <code>is constant</code> 模式来判断对象是否是指定常量数值，写法是这样的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="string">"Hello"</span></span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">string</span> comparer &amp;&amp; comparer == <span class="string">"Hello"</span></span><br></pre></td></tr></table></figure>
-
-<p>即，<code>obj</code> 是字符串类型，且它在转换后，要是跟 <code>Hello</code> 的写法一样的字符串。当然，值类型也可以用。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i &amp;&amp; i == <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>当然，注意此时是可能拆箱的，因为从引用类型转为值类型是必须拆箱的。当然，<code>obj</code> 如果被你假设为不是引用类型，就另当别论了。</p>
-</blockquote>
-<p>可见，<code>is</code> 的进化是非常明显的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> r1 = obj <span class="keyword">is</span> <span class="keyword">int</span>;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r3 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="as-运算符"><a href="#as-运算符" class="headerlink" title="as 运算符"></a><code>as</code> 运算符</h2><p><code>as</code> 运算符是 <code>is</code> 的转换模式升级版，当我们需要转换的时候，能够安全转换，并不报错的话，请采用 <code>as</code>，它的写法是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> s1 = (<span class="keyword">string</span>)o; <span class="comment">// Elder style.</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// New style (in C# 7 or lower)</span></span><br></pre></td></tr></table></figure>
-
-<p>可以看到，代码直接用类似于 <code>is</code> 的写法，就转换了，但是需要注意的是，使用 <code>as</code> 和强制转换可能转换失败。当强制转换失败时，将会直接报错，因为它会提示“无法转换”；而 <code>as</code> 在无法转换时，对象的数值将为 <code>null</code>，即等价于如下写法</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">is</span> <span class="keyword">string</span> result ? result : <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-
-<p>不过请注意，不论何时，<code>as</code> 运算符都能带来 <code>null</code> 数值。当你使用 C# 8 的时候，它将提示警告。如果你能保证该写法是合法转换的话，就在转换语句的末尾加上后缀 <code>!</code>，让编译器去掉对该所谓的“错误”进行报错处理。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// var is string?</span></span><br><span class="line"><span class="keyword">var</span> s2 = (o <span class="keyword">as</span> <span class="keyword">string</span>)!; <span class="comment">// var is string</span></span><br></pre></td></tr></table></figure>
-
-<p>但请注意，<code>null</code> 包容运算符（有时候也叫 <code>null</code> 禁用运算符，null-suppress operator）作用的内容是转换结果，而不是类型，所以感叹号应加在整体上，故需要打小括号。</p>
-<p>但是，如果你不小心，错把 <code>o</code> 变量认为是“一定为 <code>string</code>”，而为其加上了该符号后，后续的执行语句在报错时会显得很隐蔽。即如果代码报错，显示 <code>NullReferenceException</code> 时，有可能你发现该对象的类型并没有带 <code>?</code> 后缀，而显得非常迷惑。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/C%E2%99%AF-%E8%AF%AD%E6%B3%95-%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">C♯.语法.查漏补缺</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/06/csharplang-complement-01-is-as-operator/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/2/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">下一页 ↓</a>
@@ -979,11 +1096,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>16</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>17</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>7</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>8</sup></a></li>
 			
 		
 			
@@ -1011,6 +1128,10 @@
 			
 		
 			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
@@ -1019,15 +1140,11 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 		</ul>
