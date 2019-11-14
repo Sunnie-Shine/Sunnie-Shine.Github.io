@@ -82,6 +82,223 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/10/clang-02-operator/" title="C 语言语法系列（2）：运算符和表达式" itemprop="url">C 语言语法系列（2）：运算符和表达式</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T06:28:10.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="运算符是什么？"><a href="#运算符是什么？" class="headerlink" title="运算符是什么？"></a>运算符是什么？</h2><p>运算符是程序执行操作期间，为了避免复杂的函数调用和书写格式，通过一些简单的、类似于数学表达式的模式书写的语言规范。在 C 语言里，我们可以尝试使用加号来拼接两个数字，得到两个数字的和。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">2</span> + <span class="number">3</span>; <span class="comment">// i = 5</span></span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>=</code> 叫做赋值运算符，它被称为一个广义的运算符，因为它实际上并不称为一种运算，而是一种行为：从微观角度来看，它是把符号右侧的数据结果，放到变量 <code>i</code> 存放的位置上；从宏观来看，其实就是使得 <code>i</code> 得到 5 的这个结果的行为，就称为<strong>赋值</strong>（Assignment）。</p>
+<p>实际上，不仅是加号，在 C 语言里，我们提供了很多执行操作，稍后我们将挨个写出来。</p>
+<h2 id="表达式是什么？"><a href="#表达式是什么？" class="headerlink" title="表达式是什么？"></a>表达式是什么？</h2><p><strong>表达式</strong>（Expression），就是一个计算式子，这个式子拥有一个结果。从目前来看，它可以和 <code>printf</code>、<code>scanf</code> 等语句来讲独立开来。表达式最终有一个数值结果，并且这个结果可以被其它地方所利用（当然你也可以不用它）。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">2</span> + <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p>里，<code>2 + 3</code> 就是一个表达式，而表达式的结果就是 5，我们利用了这个结果，赋值给了 <code>i</code>，这便是我们刚才说到的“利用表达式的值”。如果你写作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span> + <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p>实际上没有任何问题，表达式是可以单独成句的，但是这样一来，得到的 5 也没有任何意义。</p>
+<p>学习了前置内容后，我们来看看下面我们会学习到的运算符有哪些。</p>
+<h2 id="运算符一览"><a href="#运算符一览" class="headerlink" title="运算符一览"></a>运算符一览</h2><h3 id="数学运算符"><a href="#数学运算符" class="headerlink" title="数学运算符"></a>数学运算符</h3><p>第一个种类的运算符称为<strong>数学运算符</strong>（Math Operator），它用来表达一些数学运算期间产生的运算符号。我们暂且先不说 <code>sin</code> 等函数符号，我们在 C 语言里先暂时不当成运算符，而只关注于那些用非字母构成的符号，比如 <code>+</code>、<code>-</code> 等等。</p>
+<p>数学运算符在 C 语言里提供了如下一些：</p>
+<ul>
+<li>正号（<code>+</code>）</li>
+<li>负号（<code>-</code>）</li>
+<li>加号（<code>+</code>）</li>
+<li>减号（<code>-</code>）</li>
+<li>乘号（<code>*</code>）</li>
+<li>除号（<code>/</code>）</li>
+<li>取模运算（<code>%</code>）</li>
+</ul>
+<p>首先是正负号。正负号都只需要在符号右侧添加一个变量名称，或一个数值常量，表示这个数的本身，或这个数的相反数。例如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">-3</span>; <span class="comment">// a = -3</span></span><br><span class="line"><span class="keyword">int</span> b = -a; <span class="comment">// b = 3</span></span><br><span class="line"><span class="keyword">int</span> c = +a; <span class="comment">// c = -3</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>顺便提一下，这里的正负号都只需要为其旁边添加一个数字作为计算即可，所以这样的运算符称为<strong>一元运算符</strong>或<strong>单目运算符</strong>（Unary Operator）。</p>
+</blockquote>
+<p>下面来说一下，需要两个数字参与计算的这五个基础的计算符号了：加减乘除模。这些符号称为<strong>二元运算符</strong>或<strong>双目运算符</strong>（Binary Operator），因为需要两个数字才能起作用。</p>
+<p>加减乘三个运算符直接用就可以了。比如下面的例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a + b); <span class="comment">// 5</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a - b); <span class="comment">// -1</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a * b); <span class="comment">// 6</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">float</span> c = <span class="number">2.0</span>, d = <span class="number">6.0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f\n"</span>, c + d); <span class="comment">// 8.000000</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f\n"</span>, c - d); <span class="comment">// -4.000000</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f\n"</span>, c * d); <span class="comment">// 12.000000</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>那么这里就需要提及一点了。不同的数据类型运算是具有不同的精度的，比如小数就有精度一说，而整数没有。在 C 语言里，如果你运行好了程序，系统将会为你默认显示 6 个小数，所以输出的结果就是注释里给出的那个样子；当然，<code>double</code> 类型还能为你显示 12 位小数，于是你就会看到一大堆的 0。如果你要控制小数位数的显示的话，请使用前文介绍的显示小数位数的格式化字符串来处理。比如 <code>%.2f</code> 就表示小数点后只会两位。</p>
+</blockquote>
+<p>当然，数据类型进行混用也是可以的。比如一个整数加一个小数，在 C 语言里是允许的，不过从微观来看，执行起来没有那么简单。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">float</span> b = <span class="number">2.5</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> result1 = a + b;</span><br><span class="line"><span class="keyword">float</span> result2 = a + b;</span><br></pre></td></tr></table></figure>
+
+<p>那么请你思考这个问题，<code>result1</code> 和 <code>result2</code> 分别都是多少呢？这里给出答案，<code>result1</code> 是 3，而 <code>result2</code> 是 3.5。实际上是很好理解的：由于计算的限制，一个整数和一个小数计算的时候，肯定会往“范围更大”的方向去处理。比如 <code>int</code> 类型显然不可能让它无限制的大，这样就使得数字一定有一个取值范围，而不是像人脑那样无限制的大。实际上，<code>float</code> 的范围比 <code>int</code> 的更大，所以为了保证计算结果能够放得下，结果一定是 <code>float</code> 类型来存储的，否则 <code>int</code> 类型就可能会出现存不下，进而出错的问题。</p>
+<p>现在考虑到这个的时候，<code>a</code> 和 <code>b</code> 的求和结果肯定就是 <code>float</code> 类型所表示的 3.5 了。但你仔细观察代码，就可以发现，<code>result1</code> 可是 <code>int</code> 类型的，这意味着这个它想把 <code>float</code> 的结果用 <code>int</code> 表示出来，所以最终 3.5 被程序截断（注意，并不是四舍五入），于是这个数就变为了 3；同理，第二个则完全不需要转换，所以 <code>result2</code> 一定是 3.5 这个结果。</p>
+<blockquote>
+<p>那么，这里就学习到了一个知识点，叫做<strong>类型转换</strong>（Type Conversion）。类型转换分两种，一种是人为强制定义这个结果转换为另一种类型的模式，叫做<strong>强制类型转换</strong>或<strong>显式转换</strong>（Explicit Conversion）；而另外一种，就是上面这样，通过系统自己的机制进行的类型转换，叫做<strong>隐式转换</strong>（Implicit Conversion）。</p>
+<p>但是，可以发现，不论类型较小转较大，还是较大转较小，C 语言貌似都给出了隐式转换的模式和手段。比如 <code>float</code> 转 <code>int</code> 就是典型的大转小，而它采用的手段是<strong>截断</strong>（Truncate），而不是<strong>四舍五入</strong>（Round），所以在使用这种转换的时候应小心数据类型不同时引发的一些潜在的问题。</p>
+</blockquote>
+<p>接下来是除法和求模运算。除法需要大量使用类型转换的知识点，所以需要你注意和小心每一步的执行逻辑了。除法和数学上有些不同，因为 C 语言有整数和小数的区分制度，所以除下来的结果不总是和数学相同的。</p>
+<p><strong>如果除号两边的数都是整数（<code>int</code>、<code>long</code>等），结果一定是整数；如果两边的数不都是整数的话（至少有一个是小数），结果都应为小数。</strong></p>
+<p>这句话什么意思呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">10</span>, j = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">long</span> l = <span class="number">10L</span>, m = <span class="number">3L</span>; <span class="comment">// 赋值 long 数据类型时，需要加后缀 L 或小写 l 表示 10 是 long 而不是 int。</span></span><br><span class="line"><span class="keyword">short</span> s = <span class="number">10</span>, t = <span class="number">3</span>; <span class="comment">// 没有后缀。</span></span><br><span class="line"><span class="keyword">float</span> f = <span class="number">10.0</span>, g = <span class="number">3.0</span>; <span class="comment">// Java 语言有后缀 F 或小写 f 表示 float 小数。</span></span><br><span class="line"><span class="keyword">double</span> d = <span class="number">10.0</span>, e = <span class="number">3.0</span>; <span class="comment">// 不需要后缀。</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, i / j); <span class="comment">// 10 / 3 = 3，因为除号两边都为整数，所以值应为整数。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%ld\n"</span>, l / m); <span class="comment">// 10L / 3L = 3L，原因同上。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, s / t); <span class="comment">// 10 / 3 = 3。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%f\n"</span>, f / g); <span class="comment">// 10.0 / 3.0 = 3.333333，因为至少有一个小数。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%lf\n"</span>, d / e); <span class="comment">// 10.0 / 3.0 = 3.333333，因为至少有一个小数。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%f\n"</span>, i / e); <span class="comment">// 10 / 3.0 = 3.333333，因为有一个是小数。</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，这里举出的例子都是一些比较奇特的使用方式，它展示出了所有除法需要注意的地方。</p>
+<p>最后我们来看下求模运算。</p>
+<p>取模运算即带余除法下的余数数值。但和数学不同的是，<strong>C 语言的取模运算的两边的数字，都必须是整数才可以进行计算</strong>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">20</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> c = a % b; <span class="comment">// 20 % 3 = 2</span></span><br><span class="line"><span class="keyword">int</span> d = <span class="number">9</span>, e = <span class="number">7</span>;</span><br><span class="line"><span class="keyword">int</span> f = d % e; <span class="comment">// 9 % 7 = 2</span></span><br></pre></td></tr></table></figure>
+
+<p>第二个要注意的是，<strong>如果除法下有一个负数值的话（注意负数也是整数），结果取决于被除数的符号</strong>。如果被除数是负数，取模后的结果也是负数，跟除数无关。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">7</span>, b = <span class="number">3</span>, c = a % b; <span class="comment">// 7 % 3 = 1</span></span><br><span class="line"><span class="keyword">int</span> d = <span class="number">-7</span>, e = <span class="number">3</span>, f = d % e; <span class="comment">// -7 % 3 = -1</span></span><br><span class="line"><span class="keyword">int</span> g = <span class="number">7</span>, h = <span class="number">-3</span>, i = g % h; <span class="comment">// 7 % -3 = 1</span></span><br></pre></td></tr></table></figure>
+
+<p>哦对了，C 语言是可以识别负号 <code>-</code> 和减法 <code>-</code> 的区别，所以写代码的时候，数学上应有的对负号的括号也可以省略不写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">7</span> % (<span class="number">-3</span>);</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">7</span> % <span class="number">-3</span>;</span><br><span class="line"><span class="keyword">int</span> c = <span class="number">7</span>%<span class="number">-3</span>;</span><br></pre></td></tr></table></figure>
+
+<p>都是一样的。包括前面的运算符也是一样。</p>
+<h2 id="赋值运算符"><a href="#赋值运算符" class="headerlink" title="赋值运算符"></a>赋值运算符</h2><p>接下来我们来看一些赋值运算符。</p>
+<ul>
+<li>普通赋值（<code>=</code>）</li>
+<li>自增自减运算符（<code>++</code> 和 <code>--</code>）</li>
+<li>复合赋值运算符（<code>op=</code>）</li>
+</ul>
+<p>普通的赋值运算符在前文里其实已经说了，所以这里大可不必去讲。不过这里还需要说一种情况。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line">a = a + <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，这个等号在这里和数学意义就完全不同了。在编程里，<code>=</code> 表示把右侧的结果赋值给左边，即 <code>a</code> 变量的内存区域存放的是原始的数值再加 5 的新结果。所以从宏观来看，这样的写法就好比让变量自己增大 5 个单位。</p>
+<p>当自增为 1 或自减为 1 的时候，我们可以使用自增自减的单目运算符，来操控变量增大或减少一个单位。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>;</span><br><span class="line">a++; <span class="comment">// Changes a into 5.</span></span><br></pre></td></tr></table></figure>
+
+<p>不过请注意，<code>++</code> 运算符和变量拼接起来的话，它则是一个表达式，它可以嵌入到别的赋值语句里使用，于是就产生了如下的写法。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>, b;</span><br><span class="line">b = a++;</span><br></pre></td></tr></table></figure>
+
+<p>那么，此时 <code>b</code> 应该是多少呢？这就牵扯到了自增自减运算符的前缀和后缀写法的不同了。</p>
+<p>自增自减运算符是为了将变量自身的数值增大或减小一个单位而特别定义出来的。因为大多数计算操作之中都会使用到这一点，所以C语言单独提供了这样的一种东西。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line">a++; <span class="comment">// `a` itself has changed into 2</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">6</span>;</span><br><span class="line">b--; <span class="comment">// `b` itself has changed into 5</span></span><br></pre></td></tr></table></figure>
+
+<p>另外，自增自减运算符也可以写到变量前面。不过意义不同。现在来阐述一下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a++); <span class="comment">// 符号在后表示先使用变量后自增</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, --a); <span class="comment">// 符号在前表示先自减后再使用变量</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a--); <span class="comment">// 符号在后</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, ++a); <span class="comment">// 符号在前</span></span><br></pre></td></tr></table></figure>
+
+<p>所以这个题的结果为 <code>4444</code> 才对。你做对了吗？</p>
+<p>我们知道，编程之中的等号和数学上的等号的意义不同，编程的等号实际是一个操作，将右侧的数据的数值结果拿到左侧变量的位置上存放。所以C语言之中，<code>a = a + 1</code> 这种写法才得以存在（将 <code>a</code> 原来的数值加 1，得到的新数值再重新放到 <code>a</code> 变量的存储位置上存放）。不过，这样的写法有些丑陋，因为确实等号两侧又有相同的变量名字，写法也太长，所以才出现了复合赋值运算符一说。</p>
+<p>复合赋值运算符是说，省略右侧相同的变量名，并把右侧的运算符号放到等号左侧拼在一起写的特殊规范。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> p = <span class="number">4</span>;</span><br><span class="line">p = p + <span class="number">3</span>; <span class="comment">// is equi to `p += 3;`</span></span><br><span class="line"><span class="keyword">int</span> q = <span class="number">25</span>;</span><br><span class="line">q = q % <span class="number">2</span>; <span class="comment">// is equi to `q %= 2;`</span></span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">int</span> sum = sum + i; i++; <span class="comment">// is equi to `sum += i++;`</span></span><br></pre></td></tr></table></figure>
+
+<p>前文的 <code>op=</code> 的 <code>op</code> 表示的是运算符的符号，这里可以替换为任何运算符，包括稍后讲到的其他一些运算符。</p>
+<h2 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h2><p>比较运算符是用作数值比较之用的，每一个表达式都会产生一个特定的数值结果表征判断结果。基本的比较运算符一共有以下一些：</p>
+<p><code>&gt;</code>（大于）、<code>&lt;</code>（小于）、<code>&gt;=</code>（大于等于）、<code>&lt;=</code>（小于等于）、<code>==</code>（等于）、<code>!=</code>（不等于）。</p>
+<p>前两个就不用说了，表示大于和小于；中间两个分别是大于等于和小于等于，只是因为数学的符号无法直接在代码里面打出来，所以才用两个符号拼在一起表示的这样的含义。第5个是等号，判断两个数是否相同；最后一个则是不等号，注意不等号的写法是感叹号和等号拼接的意思。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c, d, e, a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">c = a &gt; b; <span class="comment">// 0</span></span><br><span class="line">d = a &lt;= b; <span class="comment">// 1</span></span><br><span class="line">e = a != a; <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
+
+<p>这样赋值是没有问题的，刚才说过，右侧会得到一个特定的数值来表征判断结果。首先2是不大于3的，所以<code>a &gt; b</code>是错误的，在C语言之中，错误的结果会被转为数字0进行数据处理；正确的则会被转为1，所以<code>c</code>的值为0，而<code>d</code>的值为1。而后面的<code>a != a</code>肯定也不对，所以<code>e</code>的值为0。</p>
+<h2 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h2><p>逻辑运算用于处理高中学到的命题和逻辑那样的东西，它提供了三种逻辑表达：</p>
+<p><code>&amp;&amp;</code>（且）、<code>||</code>（或）、<code>!</code>（非）</p>
+<p>数学上的且、或、非的符号写法在代码里面不好输入，所以只能用上面的三种写法代替。它最后也是一个表达式，也会产生一个数值，表征最终的判断结果。和上面一样，对的则会为转为 1，错的则会转为 0。不过，如果是人为定下的数字来直接表示判断结果的话，非 0 的数值都会化为“正确的”，而 0 则会化为“错误的”。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c, d, e, a = <span class="number">6</span>, b = <span class="number">0</span>;</span><br><span class="line">c = a &amp;&amp; b; <span class="comment">// 6 &amp;&amp; 0 = 0</span></span><br><span class="line">d = a || b; <span class="comment">// 6 || 0 = 1</span></span><br><span class="line">e = !a; <span class="comment">// !6 = 0</span></span><br></pre></td></tr></table></figure>
+
+<p>首先，因为 6 直接作为逻辑判断的一边来充当条件的话，因为是非 0 数值，所以会被转化为 1 处理（6 表示“正确的”，作为数值处理后为 1），而 <code>b</code> 是 0，作为判断的另一边的话，所以应当表示“错误的”，作为数值处理即 0，所以且的关系是<strong>同真才真，有假必假</strong>。所以最终<code>a &amp;&amp; b</code>表达式应当是“错误的”，最后的值是 0，所以 <code>c</code> 为 0。</p>
+<p><code>d</code> 用的是或，<strong>同假才假，有真必真</strong>。所以 6 是“正确的”数值，所以整体表达式为真。故赋值时，表达式用 1 表示正确的。所以 <code>d</code> 为 1。</p>
+<p><code>e</code> 是非 a，而 a 表示正确的，所以非 a 是错误的，故 <code>e</code> = 0。</p>
+<h3 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h3><p>逻辑运算符有一个特征，比如且的关系，如果有假就假，所以表达式符号 <code>&amp;&amp;</code> 的两边，如果左侧已经为假，意味着整个表达式一定为假，那么右侧的结果是不会测算的。如果带有计算式子，右侧结果不会被处理和计算。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c, a = <span class="number">1</span>, b = <span class="number">0</span>;</span><br><span class="line">c = b &amp;&amp; (++a); <span class="comment">// c = 0 &amp;&amp; 1 = 0</span></span><br></pre></td></tr></table></figure>
+
+<p>注意，<code>++a</code> 此时不会运算，即 <code>a</code> 不会自增1，原因是 <code>b</code> 为 0，已经意味着整个表达式错误，后者不会被计算。</p>
+<p>同理，或 <code>||</code> 也是一样。</p>
+<p>最后这里作出一个总结：</p>
+<table>
+<thead>
+<tr>
+<th align="left">数据值充当条件时</th>
+<th align="left">处理结果</th>
+<th align="left">系统运算的数据</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">非0整数值</td>
+<td align="left">正确的</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">0</td>
+<td align="left">错误的</td>
+<td align="left">0</td>
+</tr>
+</tbody></table>
+<h2 id="位运算符"><a href="#位运算符" class="headerlink" title="位运算符"></a>位运算符</h2><h3 id="计算位运算符"><a href="#计算位运算符" class="headerlink" title="计算位运算符"></a>计算位运算符</h3><p>位运算是将数据值变为 0 和 1 的二进制数处理的方式。一共提供了四种操作：</p>
+<p><code>&amp;</code>（且）、<code>|</code>（或）、<code>~</code>（非）、<code>^</code>（异或）</p>
+<p>它具有和逻辑运算差不多的性质，不过是对于二进制数位操作处理的。处理时，是对位处理。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> c, d, e, f;</span><br><span class="line">c = a &amp; b; <span class="comment">// 3 &amp; 5 = 00000011 &amp; 00000101 = 00000001 = 1</span></span><br><span class="line">d = a | b; <span class="comment">// 3 | 5 = 00000011 | 00000101 = 00000111 = 7</span></span><br><span class="line">e = ~a; <span class="comment">// ~3 = ~(00000000 00000000 00000000 00000011) = -4（0 变 1，1 变 0，注意首位变负号表示负数）</span></span><br><span class="line">f = a ^ b; <span class="comment">// 3 ^ 5 = 00000011 ^ 00000101 = 00000110 = 6</span></span><br></pre></td></tr></table></figure>
+
+<p>另外，这里的异或需要提一下，异或表示“要么……要么……”，选其中任意一个才可以，都选和都不选都不行，换句话说，都选或都不选（1 ^ 1 = 0 ^ 0 = 0），任选其一都即可（0 ^ 1 = 1 ^ 0 = 1）。</p>
+<h3 id="移位运算符"><a href="#移位运算符" class="headerlink" title="移位运算符"></a>移位运算符</h3><p>移位运算符是将数值用二进制处理后，所有数值结果全往左或往右移动的结果。写法有这两种：</p>
+<p><code>&gt;&gt;</code>（右移）、<code>&lt;&lt;</code>（左移）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = a &gt;&gt; <span class="number">2</span>; <span class="comment">// 00000001 &gt;&gt; 2 = 00000000 = 0</span></span><br><span class="line"><span class="keyword">int</span> c = a &lt;&lt; <span class="number">3</span>; <span class="comment">// 00000001 &lt;&lt; 3 = 00001000 = 8</span></span><br></pre></td></tr></table></figure>
+
+<p>结论：右移多少位表示将数据缩小 $\lfloor{2^n}\rfloor$ 倍，左移多少位表示将数据扩大 $\lfloor{2^n}\rfloor$ 倍。其中的 $\lfloor{x}\rfloor$ 表示取整操作，舍弃小数部分。</p>
+<p>最后，所有的位运算符号也具有复合赋值运算符。比如实际运用之中，有这样的用途：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a ^= b ^= a ^= b;</span><br></pre></td></tr></table></figure>
+
+<p>语句表示不借助其他变量交换变量存储的数据值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">2</span>;</span><br><span class="line">a ^= b ^= a ^= b;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"a = %d, b = %d"</span>, a, b);</span><br></pre></td></tr></table></figure>
+
+<p>输出结果是<code>a = 2, b = 3</code>。另，复合赋值运算符下，可以被拆解为多句话：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a ^= b;</span><br><span class="line">b ^= a;</span><br><span class="line">a ^= b;</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = a ^ b;</span><br><span class="line">b = b ^ a;</span><br><span class="line">a = a ^ b;</span><br></pre></td></tr></table></figure>
+
+<p>另外还有一种交换变量的方式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = a + b;</span><br><span class="line">b = a - b;</span><br><span class="line">a = a - b;</span><br></pre></td></tr></table></figure>
+
+<p>也可以。甚至缩写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a += b;</span><br><span class="line">b = a - b;</span><br><span class="line">a -= b;</span><br></pre></td></tr></table></figure>
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/11/10/clang-02-operator/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/10/common-02-idisposable/" title="C# 内置类型详解系列（2）：IDisposable 接口" itemprop="url">C# 内置类型详解系列（2）：IDisposable 接口</a>
   </h1>
   <p class="article-author">By
@@ -284,7 +501,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
 </div>
 
 
@@ -1172,88 +1389,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-08T05:25:13.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。</p>
-<p>六宫对角线数独一共存在 12 种不等价盘面，如图所示。</p>
-<p><img src="DiagonalSix_Global.png" alt=""></p>
-<p>它具有如下两个潜规则。</p>
-<h2 id="潜规则一：中心对称潜规则"><a href="#潜规则一：中心对称潜规则" class="headerlink" title="潜规则一：中心对称潜规则"></a>潜规则一：中心对称潜规则</h2><p>中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。</p>
-<p><img src="DiagonalSix_HiddenRule_1.png" alt=""></p>
-<p>例如这个图上给予了一个六宫对角线数独的题目盘面的答案，答案体现出，r1c2和r6c5的填数一定不同（实际上是一个2和一个3，确实是不同的）。其他的同理。</p>
-<p>本潜规则可以直接在题目上使用，对于任意一个唯一解的六宫对角线数独题均适用。</p>
-<h2 id="潜规则二：轴对称潜规则"><a href="#潜规则二：轴对称潜规则" class="headerlink" title="潜规则二：轴对称潜规则"></a>潜规则二：轴对称潜规则</h2><p>轴对称潜规则指的是：盘面上任取的四格，只要满足以下几个条件，则有结论：四格的填数至少有一个数会出现两次（四格填数不能完全不同）：</p>
-<ol>
-<li>四格都不在对角线上；</li>
-<li>将四格只存在于一行、一列之中，且一行一列之中各两格；</li>
-<li>同在一行的这两格关于盘面中轴（c34中间的格线）轴对称、且同在一列的这两格关于盘面中轴（r34中间的格线）轴对称；</li>
-<li>四格必须存在于对角线两侧，且两侧各两格；</li>
-<li>两侧的四格必须一一关于对角线对称。</li>
-</ol>
-<p>什么意思呢？如图所示，以下四格就满足上述给予的所有要求：</p>
-<p><img src="DiagonalSix_HiddenRule_2.png" alt=""></p>
-<p>比如r25c6和r6c25四格，都不在对角线上；分属一行一列（r6和c6），而且恰有两格；r25c6确实对于盘面的中轴线轴对称、r6c25也是如此；四格也恰存在于捺对角线两侧，两侧也恰好各两格；并且r2c6和r6c2关于捺对角线对称、r5c6和r6c5关于捺对角线对称。</p>
-<p>由于满足这样一系列要求，所以四格内的填数一定至少有一个数是至少出现两次的（比如这里的3，有两个）。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数独/">数独</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2019/11/08/diagonal-sudoku-6-da-rule/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
+    <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
   </nav>
 
 </div>
@@ -1278,11 +1416,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>15</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>16</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>6</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>7</sup></a></li>
 			
 		
 			
@@ -1302,23 +1440,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
@@ -1327,6 +1453,18 @@
 		
 			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 		</ul>
