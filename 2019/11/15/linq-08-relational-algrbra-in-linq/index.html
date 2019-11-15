@@ -28,7 +28,7 @@
 <meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;15&#x2F;linq-08-relational-algrbra-in-linq&#x2F;division-eg2.png">
 <meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;15&#x2F;linq-08-relational-algrbra-in-linq&#x2F;division-eg3.png">
 <meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;15&#x2F;linq-08-relational-algrbra-in-linq&#x2F;division-eg4.png">
-<meta property="og:updated_time" content="2019-11-15T03:02:34.481Z">
+<meta property="og:updated_time" content="2019-11-15T06:05:02.497Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;15&#x2F;linq-08-relational-algrbra-in-linq&#x2F;union.png">
 
@@ -126,7 +126,7 @@
 
 <p>那么，如果 <code>list1</code> 里有 1、2、3，而 <code>list2</code> 里有 2、 3、 5 的话，那么 <code>result</code> 里就是 1。</p>
 <p>可见，减法操作是要区分被减集合和减集合的。</p>
-<h3 id="对称差集"><a href="#对称差集" class="headerlink" title="对称差集"></a>对称差集</h3><p>对称差集表示 $A - B \cup B - A$，即取两种差集的并集。</p>
+<h3 id="对称差集"><a href="#对称差集" class="headerlink" title="对称差集"></a>对称差集</h3><p>对称差集又表示为 $A - B \cup B - A$，即取两种差集的并集。</p>
 <p><img src="symmetrical-difference.png" alt=""></p>
 <p>我们可以使用 <code>SymmetricalExcept</code> 方法获取对称差集。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = list1.SymmetricalExcept(list2);</span><br></pre></td></tr></table></figure>
@@ -135,7 +135,7 @@
 <h3 id="点乘法（交集）"><a href="#点乘法（交集）" class="headerlink" title="点乘法（交集）"></a>点乘法（交集）</h3><blockquote>
 <p>为了区分这里的乘法和笛卡尔积的区别，我们把这里的乘法叫做点乘，而笛卡尔积我们表示为叉乘。</p>
 </blockquote>
-<p>点乘两个表相当于为两个表作交集处理，取出都有的部分。</p>
+<p>点乘两个表（$A \cap B$）相当于为两个表作交集处理，取出都有的部分。</p>
 <p><img src="intersection.png" alt=""></p>
 <p>它使用的是 LINQ 里的 <code>Intersect</code> 方法。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = list1.Intersect(list2);</span><br></pre></td></tr></table></figure>
@@ -171,7 +171,7 @@
 <p>第三个例子和第二个例子类似，发现 A 表里甲乙字段记录为 1 和 5 的信息的所有的丙字段分别为 3、6、7、8、9，完整包含了 3、6、7、8，所以甲乙字段 1 和 5 是这个结果的一个记录。不过这个例子里，只有这一个结果满足要求，所以只有它。</p>
 <p><img src="division-eg4.png" alt=""></p>
 <p>最后一个例子里，B 表是两个记录，所以我们只能去筛选 A 表里甲字段的信息。发现，能够完整包含 B 表信息的所有数据的，只有甲字段为 1 和 4 的时候，它们的记录分别为 1、2、3 和 4、2、3，完整包含了 B 表乙丙字段的 2 和 3，所以 1 和 4 是这个除法的结果。</p>
-<p>不过遗憾的是，LINQ 并不能够很好地实现除法运算，因为它需要保证两个表的信息能够被正确投影，而在 LINQ 里，投影出来的结果一般用匿名类型或元组表示，但匿名类型和元组我们没有基类可以使用，所以我们不能够简单地表达出这些字段或属性的信息，所以即使是想要使用反射，也是非常困难的。而在 SQL 里，<code>R(X, Y)÷S(Y, Z)</code>的运算用结构化语言 SQL 语句可表达为下列形式：</p>
+<p>不过遗憾的是，LINQ 并不能够很好地实现除法运算，因为它需要保证两个表的信息能够被正确投影，而在 LINQ 里，投影出来的结果一般用匿名类型或元组表示，但匿名类型和元组我们没有基类可以使用，所以我们不能够简单地表达出这些字段或属性的信息，所以即使是想要使用反射，也是非常困难的。而在 SQL 里，例如 <code>R(X, Y)÷S(Y, Z)</code> 的运算用结构化语言 SQL 语句可表达为下列形式：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> R.X <span class="keyword">from</span> R R1</span><br><span class="line"><span class="keyword">where</span> <span class="keyword">not</span> <span class="keyword">exists</span></span><br><span class="line">( </span><br><span class="line">    <span class="keyword">select</span> S.Y <span class="keyword">from</span> S</span><br><span class="line">    <span class="keyword">where</span> <span class="keyword">not</span> <span class="keyword">exists</span></span><br><span class="line">    ( </span><br><span class="line">        <span class="keyword">select</span> * <span class="keyword">from</span> R R2</span><br><span class="line">        <span class="keyword">where</span> R2.X=R1.X <span class="keyword">and</span> R2.Y=S.Y </span><br><span class="line">    ) </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
 <p>即利用的是双重否定表肯定的语义逻辑。</p>
@@ -210,6 +210,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2019/11/15/clang-03-if-statement/" title="clang-03-if-statement">
+  <strong>上一篇：</strong><br/>
+  <span>
+  clang-03-if-statement</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2019/11/14/linq-07-aggregate-functions/"  title="LINQ 教程（7）：聚合函数">
@@ -269,7 +277,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>3</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>4</sup></a></li>
 			
 		
 			
@@ -277,19 +285,7 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
 			
 		
 			
@@ -301,11 +297,23 @@
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 			
