@@ -82,7 +82,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/15/linear-algebra-operations/" title="linear-algebra-operations" itemprop="url">linear-algebra-operations</a>
+      <a href="/2019/11/15/linear-algebra-operations/" title="矩阵操作" itemprop="url">矩阵操作</a>
   </h1>
   <p class="article-author">By
        
@@ -95,7 +95,8 @@
 </header>
     <div class="article-content">
         
-        <h2 id="线性代数基本操作"><a href="#线性代数基本操作" class="headerlink" title="线性代数基本操作"></a>线性代数基本操作</h2><h3 id="矩阵的加法"><a href="#矩阵的加法" class="headerlink" title="矩阵的加法"></a>矩阵的加法</h3><p>加法就是把两个矩阵直接对应位置求和即可。<br>$$<br>\left(<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3\<br>    4 &amp; 5 &amp; 6<br>    \end{matrix}<br>\right) + \left(<br>    \begin{matrix}<br>    2 &amp; 3 &amp; -1\<br>    0 &amp; -1 &amp; 5<br>    \end{matrix}<br>\right) = \left(<br>    \begin{matrix}<br>    3 &amp; 5 &amp; 2\<br>    4 &amp; 4 &amp; 11<br>    \end{matrix}<br>\right)<br>$$</p>
+        <p>回顾一下矩阵都有哪些基本操作吧！</p>
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="矩阵的加法"><a href="#矩阵的加法" class="headerlink" title="矩阵的加法"></a>矩阵的加法</h3><p>加法就是把两个矩阵直接对应位置求和即可。<br>$$<br>\left(<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3\<br>    4 &amp; 5 &amp; 6<br>    \end{matrix}<br>\right) + \left(<br>    \begin{matrix}<br>    2 &amp; 3 &amp; -1\<br>    0 &amp; -1 &amp; 5<br>    \end{matrix}<br>\right) = \left(<br>    \begin{matrix}<br>    3 &amp; 5 &amp; 2\<br>    4 &amp; 4 &amp; 11<br>    \end{matrix}<br>\right)<br>$$</p>
 <h3 id="矩阵的减法"><a href="#矩阵的减法" class="headerlink" title="矩阵的减法"></a>矩阵的减法</h3><p>减法类似于加法，只是对应位置用减法罢了。<br>$$<br>\left(<br>    \begin{matrix}<br>    1 &amp; 2 &amp; 3\<br>    4 &amp; 5 &amp; 6<br>    \end{matrix}<br>\right) - \left(<br>    \begin{matrix}<br>    2 &amp; 3 &amp; -1\<br>    0 &amp; -1 &amp; 5<br>    \end{matrix}<br>\right) = \left(<br>    \begin{matrix}<br>    -1 &amp; -1 &amp; 4\<br>    4 &amp; 6 &amp; 1<br>    \end{matrix}<br>\right)<br>$$</p>
 <h3 id="矩阵的点乘法（内乘法）"><a href="#矩阵的点乘法（内乘法）" class="headerlink" title="矩阵的点乘法（内乘法）"></a>矩阵的点乘法（内乘法）</h3><p>矩阵乘法必须要求两个矩阵 $A_{m \times n}$ 和 $B_{n \times p}$ 的矩阵规格，第一个矩阵的列数必须等于第二个矩阵的行数。这是因为求值的过程是按整行和整列的内乘积（对应位相乘，再相加）。<br>$$<br>\begin{align}<br>    \left(<br>        \begin{matrix}<br>        1 &amp; 2 &amp; 3\<br>        4 &amp; 5 &amp; 6<br>        \end{matrix}<br>    \right) \cdot \left(<br>        \begin{matrix}<br>        1 &amp; 2\<br>        3 &amp; 4\<br>        5 &amp; 6<br>        \end{matrix}<br>    \right) &amp;= \left(<br>        \begin{matrix}<br>        1 \times 1 + 2 \times 3 + 3 \times 5 &amp; 1 \times 2 + 2 \times 4 + 3 \times 6\<br>        4 \times 1 + 5 \times 3 + 3 \times 6 &amp; 4 \times 2 + 5 \times 4 + 6 \times 6<br>        \end{matrix}<br>    \right)\<br>    &amp;= \left(<br>        \begin{matrix}<br>        22 &amp; 28\<br>        37 &amp; 64<br>        \end{matrix}<br>    \right)<br>\end{align}<br>$$</p>
 <h3 id="方阵的行列式"><a href="#方阵的行列式" class="headerlink" title="方阵的行列式"></a>方阵的行列式</h3><p>获取方阵的行列式，是采用降阶实现的。<br>$$<br>\begin{align}<br>    \left|<br>        \begin{matrix}<br>        1 &amp; 3\<br>        2 &amp; 4<br>        \end{matrix}<br>    \right|<br>    &amp;= 1 \times 4 - 2 \times 3\<br>    &amp;= -2<br>\end{align}<br>$$<br>三阶：<br>$$<br>\begin{align}<br>    \left|<br>        \begin{matrix}<br>        1 &amp; 2 &amp; 3\<br>        4 &amp; 5 &amp; 6\<br>        7 &amp; 8 &amp; 9<br>        \end{matrix}<br>    \right| &amp;= 1 \times (-1) ^ {1 + 1} \cdot \left|<br>        \begin{matrix}<br>        5 &amp; 6\<br>        8 &amp; 9<br>        \end{matrix}<br>    \right| + 2 \times (-1) ^ {1 + 2} \cdot \left|<br>        \begin{matrix}<br>        4 &amp; 6\<br>        7 &amp; 9<br>        \end{matrix}<br>    \right| + 3 \times (-1) ^ {1 + 3} \cdot \left|<br>        \begin{matrix}<br>        4 &amp; 5\<br>        7 &amp; 8<br>        \end{matrix}<br>    \right|\<br>    &amp;= 1 \times 1 \times (-3) + 2 \times (-1) \times (-6) +3 \times 1 \times (-3)\<br>    &amp;= -3 + 12 - 9\<br>    &amp;=0<br>\end{align}<br>$$</p>
@@ -1078,6 +1079,14 @@
 			
 		
 			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
@@ -1086,19 +1095,11 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 		</ul>
