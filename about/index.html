@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="你猜猜我是谁呢？ 废话，当然是向日葵啦！">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-14T10:21:32.344Z">
+<meta property="og:updated_time" content="2019-11-16T06:34:39.496Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -97,8 +97,8 @@
 		
 		<p>你猜猜我是谁呢？</p>
 <p>废话，当然是向日葵啦！</p>
-<hr>
-<!-- 向向，数独圈内被称为“小向”，数独贴吧小吧主，出生于 1996 年，来自四川成都，目前是一名大学生，就读于四川邮电职业技术学院（专科）和四川师范大学（本科），从 2008 年开始，主攻数独难题系列和发布数独视频、图片、文本资料或其他数独相关技术文档。
+<!-- 数独成就：
+向向，数独圈内被称为“小向”，数独贴吧小吧主，出生于 1996 年，来自四川成都，目前是一名大学生，就读于四川邮电职业技术学院（专科）和四川师范大学（本科），从 2008 年开始，主攻数独难题系列和发布数独视频、图片、文本资料或其他数独相关技术文档。
 曾参加过 2015 年全国大学生数独锦标赛，所在团队获得全国第 6 的成绩，个人获得个人优胜奖的成绩，也是全国数独网络锦标赛（CSOC）命题组成员，曾经参与出题第 12、19、32 等期题目，全国大学生数独周赛第 6、10 期出题人、负责管理独·数之道、大学生数独俱乐部等官方群，同时也是一些数独资料页面的编辑和创建者（维基百科、百度百科等）、B站、贴吧、知乎等多个媒介上数独版块资料的发布人。 -->  
 	</div>
 		<footer class="article-footer clearfix">
@@ -127,30 +127,37 @@
 
 
 
-{% if theme.valine.enable and theme.valine.appid and theme.valine.appkey %}
+
+
+<section id="comments" class="comment">
+  <hr />
+  <h2>文章评论</h2>
+  <h3>ヾノ≧∀≦)o来啊，快活啊!</h3>
+  <div id="valine"></div>
   <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
   <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
-
   <script type="text/javascript">
+    window.AV = require('leancloud-storage');
+    import Valine from 'valine';
+
     var GUEST = ['nick','mail','link'];
-    var guest = '{{ theme.valine.guest_info }}';
-    guest = guest.split(',').filter(item=>{
-      return GUEST.indexOf(item)>-1;
+    var guest = theme.valine.guest_info;
+    guest = guest.split(',').filter(item => {
+      return GUEST.indexOf(item) > -1;
     });
     new Valine({
-        el: '#comments' ,
-        verify: {{ theme.valine.verify }},
-        notify: {{ theme.valine.notify }},
-        appId: '{{ theme.valine.appid }}',
-        appKey: '{{ theme.valine.appkey }}',
-        placeholder: '{{ theme.valine.placeholder }}',
-        avatar:'{{ theme.valine.avatar }}',
-        guest_info:guest,
-        pageSize:'{{ theme.valine.pageSize }}' || 10,
-        avatar_cdn:'{{ theme.valine.avatar_cdn }}',
-});
+      el: '#valine',
+      verify: false,
+      notify: false,
+      appId: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      appKey: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: 'ヾノ≧∀≦)o来啊，快活啊!',
+      guest_info: guest,
+      pageSize: 10 || 10
+    });
   </script>
-{% endif %}
+</section>
+
 </div>  
         </div>
         <footer><div id="footer" >

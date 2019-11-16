@@ -194,30 +194,37 @@
 
 
 
-{% if theme.valine.enable and theme.valine.appid and theme.valine.appkey %}
+
+
+<section id="comments" class="comment">
+  <hr />
+  <h2>文章评论</h2>
+  <h3>ヾノ≧∀≦)o来啊，快活啊!</h3>
+  <div id="valine"></div>
   <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
   <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
-
   <script type="text/javascript">
+    window.AV = require('leancloud-storage');
+    import Valine from 'valine';
+
     var GUEST = ['nick','mail','link'];
-    var guest = '{{ theme.valine.guest_info }}';
-    guest = guest.split(',').filter(item=>{
-      return GUEST.indexOf(item)>-1;
+    var guest = theme.valine.guest_info;
+    guest = guest.split(',').filter(item => {
+      return GUEST.indexOf(item) > -1;
     });
     new Valine({
-        el: '#comments' ,
-        verify: {{ theme.valine.verify }},
-        notify: {{ theme.valine.notify }},
-        appId: '{{ theme.valine.appid }}',
-        appKey: '{{ theme.valine.appkey }}',
-        placeholder: '{{ theme.valine.placeholder }}',
-        avatar:'{{ theme.valine.avatar }}',
-        guest_info:guest,
-        pageSize:'{{ theme.valine.pageSize }}' || 10,
-        avatar_cdn:'{{ theme.valine.avatar_cdn }}',
-});
+      el: '#valine',
+      verify: false,
+      notify: false,
+      appId: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      appKey: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: 'ヾノ≧∀≦)o来啊，快活啊!',
+      guest_info: guest,
+      pageSize: 10 || 10
+    });
   </script>
-{% endif %}
+</section>
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
