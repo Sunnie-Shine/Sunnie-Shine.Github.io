@@ -111,30 +111,24 @@
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>Task</code> 类里有一个返回 <code>Task</code> 对象的静态函数 <code>Task.Delay</code>，这个 <code>Task</code> 对象会在指定的时间后完成。</p>
 <p>下面的这个例子用于单元测试，定义了一个异步完成的任务。在模拟一个异步操作时，至少要测试“同步成功”、“异步成功”和“异步失败”三种情况，这一点很重要。下面的例子返回一个 <code>Task</code> 对象，用于“异步成功”测试。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;T&gt; DelayResult&lt;T&gt;(T result, TimeSpan delay)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Delay(delay);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>下一个例子实现了一个简单的指数退避。指数退避是一种重试策略，重试的延迟时间会逐次增加。在访问 Web 服务时，最好的方式就是采用指数退避，它可以防止服务器呗太多的重试阻塞。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt; DownloadStringWithRetries(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> nextDelay = TimeSpan.FromSeconds(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i != <span class="number">3</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> &#123; &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">await</span> Task.Delay(nextDelay);</span><br><span class="line">        nextDelay += nextDelay;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> client.GetStriingAsync(uri);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>最后的例子用 <code>Task.Delay</code> 实现一个简单的超时功能。本例子中代码的目的是，如果服务在 3 秒内没有相应，就返回 <code>null</code>。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt;? DownloadStringWithTimeout(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> downloadTask = client.GetStringAsync(uri);</span><br><span class="line">    <span class="keyword">var</span> timeoutTask = Task.Delay(<span class="number">3000</span>); <span class="comment">// Delay 3s.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> Task.WhenAny(downloadTask, timeoutTask) == timeoutTask</span><br><span class="line">        ? <span class="literal">null</span></span><br><span class="line">        : <span class="keyword">await</span> downloadTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h4 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h4><p><code>Task.Delay</code> 适合用于对异步代码进行单元测试或实现重试逻辑。如果要实现超时功能的话，最好还是使用取消令牌对象（<code>CancellationToken</code>），这一点将在后续内容说明。</p>
 <p>另外，前文用到的 <code>Task.WhenAny</code> 方法可以传入一系列 <code>Task</code> 对象，当其中任意一个完成，就会返回一个 <code>Task</code>，表示该完成的任务对象。</p>
 <h3 id="返回完成的任务"><a href="#返回完成的任务" class="headerlink" title="返回完成的任务"></a>返回完成的任务</h3><h4 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h4><p>如何实现一个具有异步签名的同步方法。如果从异步接口或基类继承代码，但希望用同步的方法来实现它，就会出现这种情况。对异步代码做单元测试，以及用简单的生成方法存根（stub）或者模拟对象（mock）来产生异步接口，这两种情况下都可使用这种技术。</p>
 <h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>可以使用 <code>Task.FromResult</code> 方法创建并返回一个新的 <code>Task&lt;T&gt;</code> 对象，这个 <code>Task</code> 对象是已经完成的，并由具体的值。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">MySyncImplementation</span> : <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span> =&gt; Task.FromResult(<span class="number">13</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>如果你使用了 <code>Microsoft.Bcl.Async</code>，那么 <code>FromResult</code> 方法就在 <code>TaskEx</code> 类之中。</p>
 </blockquote>
 <h4 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h4><p>在用同步代码实现异步接口的时候，要避免使用任何形式的阻塞操作。在异步方法之中进行阻塞操作，然后返回一个完成的 <code>Task</code> 对象，这种方法并不可取。作为一个反例，我们来看一下 .NET Framework 4.5 之中 <code>Console</code> 类的文本读取器。<code>Console.In.ReadLineAsync</code> 一定会阻塞调用它的线程，直到它读取完一行文字，然后回返回一个已经完成的 <code>Task</code> 对象。这种实现并不直观，很多开发人员也觉得很奇怪。一旦异步方法阻塞，调用它的线程就无法启动其它任务，这会干扰程序的并发性，甚至可能产生死锁。</p>
 <p><code>Task.FromResult</code> 只能提供结果正确的同步 <code>Task</code> 对象。如果要让返回的 <code>Task</code> 对象有一个其它类型的结果（例如以 <code>NotImplementedException</code> 结束的 <code>Task</code> 对象），就得自行创建使用 <code>TaskCompletionSource</code> 的辅助方法。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Task&lt;T&gt; NotImplementedAsync&lt;T&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> tcs = <span class="keyword">new</span> TaskCompletionSource&lt;T&gt;();</span><br><span class="line">    tcs.SetException(<span class="keyword">new</span> NotImplementedException());</span><br><span class="line">    <span class="keyword">return</span> tcs.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>从概念上讲，<code>Task.FromResult</code> 只不过是 <code>TaskCompletionSource</code> 的一个简化版本，它与上面的代码非常类似。</p>
 <p>如果用 <code>Task.FromResult</code> 反复调用同一个参数，则可考虑用一个实际的 <code>task</code> 变量。例如，可以一次性建立一个结果为 0 的 <code>Task&lt;int&gt;</code> 对象，在以后的调用之中就不需要创建额外的实例了，这样可减少垃圾回收的次数。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Task&lt;<span class="keyword">int</span>&gt; zeroTask = Task.FromResult(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">static</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zeroTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -195,24 +189,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -254,11 +255,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -287,10 +292,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

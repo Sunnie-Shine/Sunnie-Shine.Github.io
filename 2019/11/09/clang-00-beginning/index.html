@@ -107,19 +107,15 @@
 <h2 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h2><p>C 语言里，以分号结尾的一整段文字叫做一句话。</p>
 <h2 id="main-函数"><a href="#main-函数" class="headerlink" title="main 函数"></a><code>main</code> 函数</h2><p>整个程序的代码一般长这样：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    </span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>其中的第 6 行才是我们需要关心的，其它都不用关心。由整个大括号括起来的部分，是 <code>main</code> 函数的主要部分。程序一定从 <code>main</code> 函数进入，并从 <code>return 0;</code> 语句退出。即，整个程序的执行流程一定是从第 4 行开始进去，然后从第 9 行执行完毕后退出。期间一句一句执行，从上到下。</p>
 <p>建议你把整个代码内容的框架写成上面这样的形式，其中的 <strong>May be not exist</strong> 的所在行你可以不写。但第 4 行，建议你这么写，有些书上写的是 <code>void main()</code>、<code>void main(void)</code>、<code>void main(int argc, char *argv[])</code>、<code>int main()</code>，这四种都是不合规矩的写法。原因将在后面阐述。</p>
 <h2 id="空行和语义分割"><a href="#空行和语义分割" class="headerlink" title="空行和语义分割"></a>空行和语义分割</h2><p>第 7 行叫<strong>空行</strong>（Null Line），这一行不写东西，仅仅用于分割代码的上下部分，用于分清楚执行逻辑。比如这个程序里，第 7 行前面是用于输出（稍后会解释 <code>printf</code> 函数），第 7 行后面是用于退出程序。所以程序可以尝试通过这样的方式来分割一个大括号里很多语句之间的执行逻辑。</p>
 <p>分割语义有多种方式，你还可以通过下面的方式。</p>
 <h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">Printing:</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">ExitTheProgram:</span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们可以通过牺牲一行代码，写成文字加冒号的方式，来表示一个<strong>标签</strong>（Label）。这样的标签文字可以达到分割语义的效果，但注意的是，标签的文字只能以数字、字母、下划线 <code>_</code> 三种东西进行组合，且第一个文字不能是数字。比如，<code>Hello world</code> 和 <code>2_Hello</code> 都是命名格式不正确的标签。</p>
 <h3 id="用大括号进行语义分割"><a href="#用大括号进行语义分割" class="headerlink" title="用大括号进行语义分割"></a>用大括号进行语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Printing.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Exit the program.</span></span><br><span class="line">    &#123;</span><br><span class="line">        system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这样可以达到分割效果。</p>
 <h3 id="借用-pragma-region-来作语义分割"><a href="#借用-pragma-region-来作语义分割" class="headerlink" title="借用 #pragma region 来作语义分割"></a>借用 <code>#pragma region</code> 来作语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Printing</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Exit the program</span></span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这样依旧可以进行语义分割，而且 Visual Studio 还能根据你分割的方式，折叠和展开代码。不过请注意的是，这种分割方式仅用于 Visual Studio，在其它的软件里，无法使用这种方式。</p>
 <blockquote>
 <p>注意，所有上面提到的语义分割所牺牲的代码行都是无意义的，它们都不是真正的执行代码，你可以当成注释一般的存在。</p>
@@ -127,16 +123,13 @@
 <h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>在第 2 和第 8 行里，以双斜杠 <code>//</code> 形式书写的内容（包含当前行里，符号后面的所有内容）称为<strong>注释</strong>（Comment），可以写一些任何你觉得想写的东西，不需要是程序才认识的东西。这些文字有助于你看懂代码逻辑。所以这些东西叫注释，就是这个原因。</p>
 <p>还有一种注释，可以跨行书写：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">This is multi-line comment,</span></span><br><span class="line"><span class="comment">and you can write anything you want,</span></span><br><span class="line"><span class="comment">even if the comment spans multi lines.</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
-
 <p>这种注释叫多行注释，以 <code>/*</code> 和 <code>*/</code> 作为配对，可以理解为一个特殊的括号。期间的所有内容都会被当作注释内容，即使跨行书写也是如此。但注意，多行注释的开头和结尾符号不能嵌套，即</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    /*</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
-
 <p>这种是不允许的。程序会被认定，处于第 1 行的 <code>/*</code> 符号一直到第 7 行结束，而非第 8 行。</p>
 <h2 id="include-指令"><a href="#include-指令" class="headerlink" title="#include 指令"></a><code>#include</code> 指令</h2><p>原代码的第 1、2 行叫做<strong>预处理器指令</strong>（Preprocessor Command），以井号 <code>#</code> 开头，包含 <code>#pragma</code>、<code>#include</code> 等众多指令，这里掌握 <code>#include</code> 指令。这个指令表示，将系统自带的操作引入到程序之中，使得后面我们写代码的时候可以使用写好的代码，不用自己去写。这些提供好的代码，都是以 <code>*.h</code> 的文件形式存放，它们叫<strong>头文件</strong>（Header File），即放在代码头部的文件。其中的 stdio.h 叫做<strong>标准输入输出流头文件</strong>（Standard Input &amp; Output），简称 std i o。</p>
 <p>第 2 行是提供 <code>system</code> 命令（处于代码第 8 行），用于暂停程序。这些程序统称为<strong>命令行程序</strong>（Command-Line Application），或<strong>控制台程序</strong>（Console Application），这些程序没有所谓的退出按钮和最小、最大化按钮，它们仅仅被黑色风格的框约束着。黑色风格的框叫做<strong>控制台</strong>（Console），是只用于输入命令来控制操作系统或程序执行逻辑的代码化窗口。这意味着，这里面只会输入一些奇怪的代码文字，而没有 QQ 这样美丽的界面。</p>
 <h2 id="printf-语句"><a href="#printf-语句" class="headerlink" title="printf 语句"></a><code>printf</code> 语句</h2><p><code>printf</code> 语句是用于把文字显示到控制台上的语句，它可以原封不动把我们书写在 <code>printf</code> 括号里的文字全部显示出来。例如原示例里，最终执行程序会得到的结果是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello, world!</span><br></pre></td></tr></table></figure>
-
 <p>注意，<code>\n</code> 没有输出，是因为 <code>\n</code> 在双引号里被表示为换行，并非是原本的 <code>\</code> 和 <code>n</code> 两个符号。所有这样奇特的符号都以 <code>\</code> 作为开头，系统提供了对应的转换表，在这里我们不多作出说明。另外，写在双引号里的 <code>%%</code> 将表示输出显示一个 <code>%</code> 符号。别问我为什么要两个符号才会输出显示一个。这一点后面再说。</p>
   
 	</div>
@@ -198,24 +191,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -257,11 +257,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -290,10 +294,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

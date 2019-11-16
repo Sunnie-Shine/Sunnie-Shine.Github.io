@@ -110,22 +110,17 @@
 </blockquote>
 <h2 id="protected-关键字"><a href="#protected-关键字" class="headerlink" title="protected 关键字"></a><code>protected</code> 关键字</h2><p>标记了 <code>protected</code> 关键字的对象表示仅仅在一条继承链上向下可以被看到。试想一下，我有这么一个代码：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> digit = <span class="number">12</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Here will not introduce the variable `digit`,</span></span><br><span class="line">    <span class="comment">// because the variable `digit` will be found in</span></span><br><span class="line">    <span class="comment">// this class because of B inherited class.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们声明了两个类，其中 <code>B</code> 类派生自 <code>A</code> 类，那么 <code>B</code> 类是不可以重新创建和 <code>A</code> 类名称完全一样的变量 <code>digit</code> 的，因为它被继承下来，也就是说，你如果在 <code>B</code> 类调用该变量，我们完全可以得到 12 这个结果，而且不会在编译器层面报错，说“找不到符号”。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Output</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="keyword">this</span>.digit); <span class="comment">// 12</span></span><br><span class="line">        Console.WriteLine(<span class="keyword">base</span>.digit); <span class="comment">// 12 still</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>此时，加不加 <code>digit</code> 前面的 <code>this</code> 和 <code>base</code> 都没有区别。</p>
 <p>当然，如果你非得要在派生类 <code>B</code> 类里加上 <code>digit</code> 同名的变量，也不是不可以，只是在变量前面加上 <code>new</code> 关键字即可，即</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> digit = <span class="number">12</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">new</span> <span class="keyword">double</span> digit = <span class="number">34</span>d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这样，派生类里就有了新的自己的变量，而且名字也叫 <code>digit</code>。此时的 <code>new</code> 表示的对象仅仅表示这个类里含有和基类完全一样的名字的对象，但它们毫无关系。</p>
 <p>另外，这个继承关系倒过来不行。比如我们在 <code>B</code> 类里有一个变量 <code>digit</code>，那么 <code>A</code> 类反过来可不可以看到这个变量呢？</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Can we see the variable `digit`?</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> digit = <span class="number">12</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>答案是不可以。因为 <code>protected</code> 仅支持向下继承，这也是符合 OOP 的基本规则和设计原则的。</p>
 <h2 id="private-关键字"><a href="#private-关键字" class="headerlink" title="private 关键字"></a><code>private</code> 关键字</h2><p><code>private</code> 关键字当且仅当整个类体和结构体里才能看到，只要出了这个类或结构，任何地方都看不到。考虑如下例子：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Hello</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Happy!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// This calling may be wrong because</span></span><br><span class="line">        <span class="comment">// the method `Hello` is private.</span></span><br><span class="line">        <span class="comment">//A.Hello();</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>另外，希望你明白一个问题。有时候 <code>Main</code> 方法（类似于 C 语言和 Java 语言的 <code>main</code> 函数）被声明为 <code>private</code> 的，这是合理的，也是合法的吗？答案是肯定的，首先，这是允许的，也是合理的。因为 <code>Main</code> 方法一般不会被其它任何地方调用，除非是作为程序的主入口点来讲，我们为了安全性，一般都会设置为 <code>private</code>。</p>
 <h2 id="protected-internal-关键字"><a href="#protected-internal-关键字" class="headerlink" title="protected internal 关键字"></a><code>protected internal</code> 关键字</h2><p>下面来看两个不一样的修饰符。首先是 <code>protected internal</code> 关键字。这个关键字来修饰一个数据，表示这个数据要么处于继承链上且向下可以访问，要么是整个项目里可以访问。换句话说，这个关键字组合就完全等同于 <code>protected</code> 或 <code>internal</code>。</p>
 <h2 id="private-protected-关键字"><a href="#private-protected-关键字" class="headerlink" title="private protected 关键字"></a><code>private protected</code> 关键字</h2><p>最后来看一个比较特殊的关键字：<code>private protected</code> 关键字。这个关键字表示 <code>protected</code> 且 <code>internal</code>，即私有化继承。当你的继承链不希望被外界所继承到，我们可以使用 <code>private protected</code> 关键字来修饰类，来保证这个类在整个项目里的继承链上可以被向下继承访问到。</p>
@@ -133,6 +128,7 @@
 <p>可以看到，这个访问行为应该使用 <code>protected internal</code> 来表示，好像更好更贴切一些，但因为这个关键字出现在 C# 7 之后，而 <code>protected internal</code> 在最初就已经出现了，所以我们不得不使用“私有继承”的这个说法来表示这种继承行为，即私有（<code>private</code>）的继承（<code>protected</code>）。</p>
 </blockquote>
 <h2 id="成员的默认访问修饰符"><a href="#成员的默认访问修饰符" class="headerlink" title="成员的默认访问修饰符"></a>成员的默认访问修饰符</h2><p>最后说一下成员的默认访问修饰符，还记得一个类体或一个结构体里可以包含哪些成员吗？下面罗列它们，并给出它们的默认访问修饰符。在默认情况下，我们是不用书写这些访问修饰符的，即“不写 = 缺省 = 默认”。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -140,7 +136,8 @@
 <th>默认的访问修饰符</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>类（class）</td>
 <td>internal</td>
 </tr>
@@ -216,7 +213,9 @@
 <td>接口里的方法（method in interface）</td>
 <td>public</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>由此可见，只要写在类体和结构体里的成员，默认都是 <code>private</code>；而处于整个命名空间，或全局范围内的成员，默认都是程序集里可用，即 <code>internal</code>；而接口体里的任何成员，则默认都是 <code>public</code>。</p>
   
 	</div>
@@ -278,24 +277,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -337,11 +343,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -370,10 +380,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

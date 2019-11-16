@@ -11,13 +11,13 @@
     
 
     
-    <meta name="description" content="数据类型概述我们先要掌握一个概念：数据类型（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。 在 C 语言里，我们提供了如下一些类型。    数">
+    <meta name="description" content="数据类型概述我们先要掌握一个概念：数据类型（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。 在 C 语言里，我们提供了如下一些类型。">
 <meta name="keywords" content="C">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C 语言语法系列（1）：数据类型">
 <meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;clang-01-datatype&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="数据类型概述我们先要掌握一个概念：数据类型（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。 在 C 语言里，我们提供了如下一些类型。    数">
+<meta property="og:description" content="数据类型概述我们先要掌握一个概念：数据类型（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。 在 C 语言里，我们提供了如下一些类型。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2019-11-11T05:34:44.630Z">
 <meta name="twitter:card" content="summary">
@@ -104,6 +104,7 @@
 		
 		<h2 id="数据类型概述"><a href="#数据类型概述" class="headerlink" title="数据类型概述"></a>数据类型概述</h2><p>我们先要掌握一个概念：<strong>数据类型</strong>（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。</p>
 <p>在 C 语言里，我们提供了如下一些类型。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -112,7 +113,8 @@
 <th>表示代号</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>范围较窄的整数</td>
 <td>短整数</td>
 <td><code>short int</code> 或 <code>short</code> 或 <code>signed short int</code> 或 <code>signed short</code></td>
@@ -177,7 +179,9 @@
 <td>布尔</td>
 <td><code>bool</code> 或 <code>_Bool</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>头晕是吧，我们先来说说，什么叫无符号、什么叫带符号（有符号）、什么叫字符、什么叫字符串、什么叫布尔、什么叫二进制小数、什么叫浮点小数、什么又叫精度。</p>
 <ul>
 <li><strong>无符号</strong>（Unsigned）：非负的；</li>
@@ -191,10 +195,27 @@
 </ul>
 <p>下面我们来说一下精度和二进制小数的东西。</p>
 <h2 id="精度和二进制小数"><a href="#精度和二进制小数" class="headerlink" title="精度和二进制小数"></a>精度和二进制小数</h2><p>一般在学校里，老师都会讲解如何把一个数字利用二进制表达出来。可它们并没有讲解，如何表示一个小数，以及一个负数。不过，我会带领大家认识一下，如何表示一个二进制小数，使用 0 和 1。首先，我们举个例子。</p>
-<h3 id="将-0-15625-转为-0-和-1"><a href="#将-0-15625-转为-0-和-1" class="headerlink" title="将 0.15625 转为 0 和 1"></a>将 0.15625 转为 0 和 1</h3><p>表示小数的方式很简单。既然表示整数利用的是<strong>除2取整</strong>的模式，那么小数自然就是<strong>乘2取余</strong>的模式。<br>$$<br>\begin{matrix}<br>0.15625 &amp; \times &amp; 2 &amp; = &amp; 0.3125 &amp; - &amp; 0 &amp; = &amp; 0.3125\<br>0.3125  &amp; \times &amp; 2 &amp; = &amp; 0.625  &amp; - &amp; 0 &amp; = &amp; 0.625\<br>0.625   &amp; \times &amp; 2 &amp; = &amp; 1.25   &amp; - &amp; 1 &amp; = &amp; 0.25\<br>0.25    &amp; \times &amp; 2 &amp; = &amp; 0.5    &amp; - &amp; 0 &amp; = &amp; 0.5\<br>0.5     &amp; \times &amp; 2 &amp; = &amp; 1      &amp; - &amp; 1 &amp; = &amp; 0 &amp; (\text{结束})\<br>\end{matrix}<br>$$<br>大致说一下。从第一步开始，每一次都把数字乘以 2，得到的结果的整数部分提取出来，然后做减法，使得数字一直要保持小于 0 的状态。将得到的结果再一次迭代到下一轮计算里。</p>
+<h3 id="将-0-15625-转为-0-和-1"><a href="#将-0-15625-转为-0-和-1" class="headerlink" title="将 0.15625 转为 0 和 1"></a>将 0.15625 转为 0 和 1</h3><p>表示小数的方式很简单。既然表示整数利用的是<strong>除2取整</strong>的模式，那么小数自然就是<strong>乘2取余</strong>的模式。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+0.15625 & \times & 2 & = & 0.3125 & - & 0 & = & 0.3125\\
+0.3125  & \times & 2 & = & 0.625  & - & 0 & = & 0.625\\
+0.625   & \times & 2 & = & 1.25   & - & 1 & = & 0.25\\
+0.25    & \times & 2 & = & 0.5    & - & 0 & = & 0.5\\
+0.5     & \times & 2 & = & 1      & - & 1 & = & 0 & (\text{结束})\\
+\end{matrix}</script><p>大致说一下。从第一步开始，每一次都把数字乘以 2，得到的结果的整数部分提取出来，然后做减法，使得数字一直要保持小于 0 的状态。将得到的结果再一次迭代到下一轮计算里。</p>
 <p>比如这个示例里，我们把 0.15625 乘以 2，得到 0.3125，整数部分为 0，把它提取出来，做减法得到 0.3125（因为是减去 0，所以数字并没变化），然后把这个数继续乘以 2，得到 0.625，整数部分为 0，继续提取出来，然后用 0.625 乘以 2，得到 1.25，提取整数部分 1，再将 0.25 乘以 2，继续往下做，直到我们得到 0 结束计算。</p>
 <p>最终，我们得到的数字 0、0、1、0、1 即是二进制小数表达的小数部分，由于这个数的整数部分本来就是 0，所以整数部分无需我们作更多的二进制表达的转换，所以这个数的二进制表示就是 $0.00101_2$。</p>
-<h3 id="能遇到十进制表示里的循环小数类似的情况吗？"><a href="#能遇到十进制表示里的循环小数类似的情况吗？" class="headerlink" title="能遇到十进制表示里的循环小数类似的情况吗？"></a>能遇到十进制表示里的循环小数类似的情况吗？</h3><p>如果我们尝试把 0.3 按上述逻辑转换为二进制小数的时候，就会发现异样：<br>$$<br>\begin{matrix}<br>0.3 &amp; \times &amp; 2 &amp; = &amp; 0.6 &amp; - &amp; 0 &amp; = &amp; 0.6\<br>0.6 &amp; \times &amp; 2 &amp; = &amp; 1.2 &amp; - &amp; 1 &amp; = &amp; 0.2\<br>0.2 &amp; \times &amp; 2 &amp; = &amp; 0.4 &amp; - &amp; 0 &amp; = &amp; 0.4\<br>0.4 &amp; \times &amp; 2 &amp; = &amp; 0.8 &amp; - &amp; 0 &amp; = &amp; 0.8\<br>0.8 &amp; \times &amp; 2 &amp; = &amp; 1.6 &amp; - &amp; 1 &amp; = &amp; 0.6 &amp; \text{(回到 0.6 的循环)}\<br>    &amp;        &amp;   &amp;   &amp; \text{…}<br>\end{matrix}<br>$$<br>可以看到，在计算 0.3 的时候，运算总能得到 0.3、0.6、0.2、0.4、0.8、0.6、0.2、0.4、……的序列，后面无穷无尽。所以，0.3 的二进制表示就是 $0.0\dot100\dot1_2$。</p>
+<h3 id="能遇到十进制表示里的循环小数类似的情况吗？"><a href="#能遇到十进制表示里的循环小数类似的情况吗？" class="headerlink" title="能遇到十进制表示里的循环小数类似的情况吗？"></a>能遇到十进制表示里的循环小数类似的情况吗？</h3><p>如果我们尝试把 0.3 按上述逻辑转换为二进制小数的时候，就会发现异样：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+0.3 & \times & 2 & = & 0.6 & - & 0 & = & 0.6\\
+0.6 & \times & 2 & = & 1.2 & - & 1 & = & 0.2\\
+0.2 & \times & 2 & = & 0.4 & - & 0 & = & 0.4\\
+0.4 & \times & 2 & = & 0.8 & - & 0 & = & 0.8\\
+0.8 & \times & 2 & = & 1.6 & - & 1 & = & 0.6 & \text{(回到 0.6 的循环)}\\
+    &        &   &   & \text{...}
+\end{matrix}</script><p>可以看到，在计算 0.3 的时候，运算总能得到 0.3、0.6、0.2、0.4、0.8、0.6、0.2、0.4、……的序列，后面无穷无尽。所以，0.3 的二进制表示就是 $0.0\dot100\dot1_2$。</p>
 <h3 id="现在再来说精度的问题"><a href="#现在再来说精度的问题" class="headerlink" title="现在再来说精度的问题"></a>现在再来说精度的问题</h3><p>正是因为数字并不能完整转换为准确的二进制表示，比如 0.3，所以表示上一定会存在精度的偏差。比如 0.3 在二进制转换后，由于无穷无尽的关系，我们只能在 <code>float</code>、<code>double</code> 或 <code>long double</code> 类型表示完整的二进制位数后，舍弃掉后面的部分，于是这个数肯定就不等于原始数值了。</p>
 <p>不过，二进制表达是很复杂的，所以这里我不打算展开讲解，有兴趣的小伙伴可以看下网上有关 IEEE 754 的标准规范，这个就是专门规定如何把小数表示为二进制表示，存储到程序里的规范。</p>
 <p>这里告诉大家的是，经过这种精心转换的模式后，我们有了如下的结论：</p>
@@ -204,6 +225,7 @@
 <li><code>long double</code> 类型取决于系统实现，所以这里无法给出精确的范围，大约精确到 19 位有效数字。</li>
 </ul>
 <h2 id="所占字节大小"><a href="#所占字节大小" class="headerlink" title="所占字节大小"></a>所占字节大小</h2><p>大家都知道，数据存储到电脑里都是以一个叫做“字节”的单位作为衡量依据的，那么这些数据类型都对应了一个固定的、绝对的字节数，它就表示元素存进去时，用这个类型就需要占据多大的内存空间的容量。表格如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -211,7 +233,8 @@
 <th>字节数</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>短整数</td>
 <td>2</td>
 </tr>
@@ -263,13 +286,13 @@
 <td>布尔</td>
 <td>1</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>如果你有时候记不住它们的大小，可以用代码写成这样来得到结果：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="keyword">sizeof</span>(类型代号));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们把上面提到的类型代号写到这里，就可以输出对应的结果了。比如</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">int</span>));</span><br><span class="line">    <span class="comment">// You can also write code like this at present:</span></span><br><span class="line">    <span class="comment">//printf("%d", sizeof unsigned int);</span></span><br><span class="line">    <span class="comment">// This one is totally equivalent to that in line 5.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>因为这些所占字节数是可以测出来的，所以一般不要求记住它们，但考试会考，所以这些数值还是希望你记住，就好像化学元素的相对原子质量，常见的是需要作出记忆的。</p>
 <p>然后，先不要管这个代码里的 <code>%d</code> 是啥，稍后会作出解释。</p>
@@ -286,38 +309,29 @@
 </ol>
 <p>比如，一个程序写成这样</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">23</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"I\'m %d years old.\n"</span>, age);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>将得到</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">I&apos;m 23 years old.</span><br></pre></td></tr></table></figure>
-
 <p>其中的 <code>\&#39;</code> 在前文提到过，以 <code>\</code> 开头的、写在双引号里的内容可以表示一个另外意义的表达结果，这里 <code>\&#39;</code> 表示输出一个 <code>&#39;</code> 符号。然后 <code>%d</code> 则在这里表示 <code>printf</code> 语句小括号里第一个逗号后的变量的信息结果。这里就表示 <code>age</code> 这个变量的数值（23），然后把 23 替换到双引号的 <code>m</code> 和 <code>y</code> 之间。</p>
 <p>顺带一说，双引号的内容就称为一个字符串，而每一个字母（包括空格、<code>\&#39;</code> 等等符号，都表示一个字符）。</p>
 <h3 id="变量的自定义输入"><a href="#变量的自定义输入" class="headerlink" title="变量的自定义输入"></a>变量的自定义输入</h3><p>再拿出 <code>int</code> 作为数据类型举例。既然有输出就应该由输入。如果需要我们自己输进去一个数字，然后程序输出这个结果，就需要用到新的写法：<code>scanf</code> 语句。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;age); <span class="comment">// Input a value into the variable `age`.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"I\'m %d years old.\n"</span>, age);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这样就可以了。注意 <code>scanf</code> 语句的写法，逗号后跟的 <code>age</code> 变量必须要在前面加前缀符号 <code>&amp;</code>，这一点在后面再说。</p>
 <blockquote>
 <p>可以发现，C 语言是一种比较奇特的语言，它的大多数语法的耦合度较高，即前面的知识点要用超纲的内容做铺垫，而后面的知识点却又依赖于前面的知识点，所以……写教程真的很伤脑筋啊……</p>
 </blockquote>
 <p>当然，<code>scanf</code> 语句也可以同时为多个变量赋值。比如</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d, %d"</span>, &amp;a, &amp;b);</span><br></pre></td></tr></table></figure>
-
 <p>请注意，每一个变量后都得加 <code>&amp;</code> 前缀符号，而且在运行程序的时候，你必须得跟着这个字符串里写的格式写，比如这个字符串 <code>%d, %d</code> 里含有一个数、逗号、空格和一个数，所以你在输入的时候必须格外小心，照着这个格式写内容：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12, 5</span><br><span class="line">8, 19</span><br><span class="line">-3, 39</span><br><span class="line">0, -1</span><br></pre></td></tr></table></figure>
-
 <p>上述四种格式都是正确的。另外需要注意的是，<code>scanf</code> 语句甚至不以换行作为分割，所以你可以这么输入：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12</span><br><span class="line">,</span><br><span class="line"></span><br><span class="line"> 5</span><br></pre></td></tr></table></figure>
-
 <p>这样的书写格式里所有的换行都是不被读取的，所以你的所有换行都会被“抹掉”，故这种格式最终还是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">12, 5</span><br></pre></td></tr></table></figure>
-
 <p>但如果没有严格按照格式书写，比如</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12，5（注意这个输入的逗号用的是中文的）</span><br><span class="line">12 5</span><br><span class="line">12 ,5</span><br><span class="line">12 , 5</span><br></pre></td></tr></table></figure>
-
 <p>这些格式都是错的，最终只有 <code>a</code> 会正确得到 12，而 <code>b</code> 依旧是没有数值的。</p>
 <p>当然，你也可以分写两句：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;b);</span><br></pre></td></tr></table></figure>
-
 <p>不过后者写起来怪麻烦的。</p>
 <blockquote>
 <p>切记，字符串里带有空格的 <code>scanf</code> 语句，在运行程序时，你也要在输入完第一个数据时，空一格输入第二个数据。当然，后者这种格式，在输入的时候可以用回车的方式分割两个输入数据。</p>
@@ -327,6 +341,7 @@
 <p><code>scanf(&quot;%f&quot;, &amp;prize);</code></p>
 <p>这样就表示输入一个小数，然后利用这个叫做格式化字符串的东西给它把输入的“黑框”上面显示的那个数字字符改变为小数的数据，便于放置到prize所在的位置上去，既然是所在位置，所以需要用到<code>&amp;</code>了，这个符号就是专门用来找位置的。</p>
 <p>另需要你记忆一些格式化字符串的写法：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -334,7 +349,8 @@
 <th>用途</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>%d</td>
 <td>将控制台输入的一长串字符改变为整数（int）的规范存储形式存到电脑之中。</td>
 </tr>
@@ -374,41 +390,35 @@
 <td>%s</td>
 <td>字符串专用输出格式。</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>大家只需要记住前面四种和最后两种就可以了。</p>
 <p>如果我又定义了一个变量，是 <code>int</code>，就用 <code>%d</code> 转为整数存放到电脑之中。</p>
 <p>比如</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br></pre></td></tr></table></figure>
-
 <p>就将整数变量 <code>a</code> 输入到电脑里面用整数规范存储了。如果格式化字符串用成其他的，比如 <code>%f</code>，结果就很怪异。所以一定要配套。</p>
 <p>输入两次的话，可以简写成一次输入：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d %d"</span>, &amp;a, &amp;b);</span><br></pre></td></tr></table></figure>
-
 <p>注意，<code>scanf</code> 语句的字符串里中间最好要有字符。说白了就是不要写成 <code>%d%d</code> 挨在一起的写法。如果不给空格虽然程序不会出错，但是这样让容易出现安全漏洞，诸如缓存区溢出等。</p>
 <h3 id="格式化字符串的排版控制"><a href="#格式化字符串的排版控制" class="headerlink" title="格式化字符串的排版控制"></a>格式化字符串的排版控制</h3><p>因为是在控制台界面运行的，所以空格就可以用来排版了，不过有些时候，比如我们想让某个数输出的时候有对齐的效果，就会按情况来计算占据的显示的格数。比如一个两位数一定是占两格的，如果我们强制让所有输出的数值都占三格呢？</p>
 <p>我们可以在 <code>%</code> 和 <code>d</code> 之间添加数值以控制占的格数。比如 <code>%2d</code> 表示占两格，<code>%6d</code> 表示占六格。如果位数不够的，前面会有空格占位。比如说</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%2d %3d"</span>, <span class="number">6</span>, <span class="number">9</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%2d %3d"</span>, <span class="number">27</span>, <span class="number">15</span>); <span class="comment">// "\n"是换行符号。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%2d %3d"</span>, <span class="number">19</span>, <span class="number">265</span>);</span><br></pre></td></tr></table></figure>
-
 <p>输出的样子就是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> 6   9</span><br><span class="line">27  15</span><br><span class="line">19 265</span><br></pre></td></tr></table></figure>
-
 <p>就很好看。小数的话，除了可以控制输出的占格数，还可以控制输出的小数位数，如果你不希望小数位后很多零的话，可以这么写：<code>%占格数.小数位格数f</code>，是可以的。占格数是计算这个输入的字符一共有多少个，而不是整数位多少位。比如</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%2.3f"</span>, <span class="number">16.7</span>); <span class="comment">// 占两格，三位小数</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%7.2f"</span>, <span class="number">8.9</span>); <span class="comment">// 占七格，两位小数</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%8.5f"</span>, <span class="number">7.699</span>); <span class="comment">// 占三格，五位小数</span></span><br></pre></td></tr></table></figure>
-
 <p>将输出</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">16.700（前面没有空格）</span><br><span class="line">   8.90（前面三个空格）</span><br><span class="line"> 7.69900（前面一个空格）</span><br></pre></td></tr></table></figure>
-
 <p>特别要注意前面的空格。</p>
 <p>如果是输入里插入这样的格式化字符串的话，则会严格按照这样的标准执行输入，如果超出范围的部分会被直接舍弃掉，或是拿给下一个部分使用。比如</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%3d%2d"</span>, &amp;a, &amp;b);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"a = %d, b = %d"</span>, a, b);</span><br></pre></td></tr></table></figure>
-
 <p>那么提示输入的时候，如果输入的是 <code>12345</code> 的话，由于前面 <code>%3d</code> 的控制，后面的 45 会被切掉，而 <code>b</code> 恰好要两位数，所以 <code>a</code> 为 123，<code>b</code> 是 45，输出也是一样。</p>
 <p>但如果超出了范围，比如输入了 123456，则依然结果是 123 和 45，6 会被舍弃。</p>
 <p>最后讲一下这些语句的写法规范。</p>
 <h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><h3 id="代码格式规范"><a href="#代码格式规范" class="headerlink" title="代码格式规范"></a>代码格式规范</h3><p>其实呢，编译器这位翻译官将你的 C 语言代码给它转变为系统能够识别和操作的语言之前，会给你的代码进行排版，这个时候，分号这些就显得额外重要。</p>
 <p>一句话一定要用分号结尾，表示你这个操作做完了。不过换行不是必须有的，你可以把代码全写在一行，也可以换行写，只要有分号怎么写都无所谓，但是为了代码好看整洁，建议换行。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age;<span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;age);<span class="built_in">printf</span>(<span class="string">"%d岁"</span>,age);</span><br></pre></td></tr></table></figure>
-
 <p>这样当然可以了，不过肯定不好看！</p>
 <h3 id="标识符命名规范"><a href="#标识符命名规范" class="headerlink" title="标识符命名规范"></a>标识符命名规范</h3><p>在前文里我们提到了标签和变量，它们都遵循一个命名规则。这个规则保证了程序正确的执行。命名规范其实在前文已经说到了。</p>
 <ol>
@@ -477,24 +487,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -536,11 +553,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -569,10 +590,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

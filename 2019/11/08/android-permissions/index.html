@@ -106,21 +106,17 @@
 <h2 id="获取权限的流程"><a href="#获取权限的流程" class="headerlink" title="获取权限的流程"></a>获取权限的流程</h2><p>那么，我们应该怎么做呢？</p>
 <h3 id="第一步：修改-AndroidManifest-xml-文件"><a href="#第一步：修改-AndroidManifest-xml-文件" class="headerlink" title="第一步：修改 AndroidManifest.xml 文件"></a>第一步：修改 <code>AndroidManifest.xml</code> 文件</h3><p>我们打开项目里的 <code>AndroidManifest.xml</code> 文件，并在上方添加一项。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">package</span>=<span class="string">"com.example.sunnieapp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:versionCode</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:versionName</span>=<span class="string">"1.0"</span> &gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- Note here --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Other contents such as application node. --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>这样，我们就声明了，这个 App 可能会使用到使用网络的权限的说明。但是光声明没有用啊，我们还得添加上执行语句，判断是否获取到了权限，获取到权限就上网查东西，获取不了就弹窗啥的。</p>
 <h3 id="第二步：修改代码"><a href="#第二步：修改代码" class="headerlink" title="第二步：修改代码"></a>第二步：修改代码</h3><p>下面我们就需要在代码里添加权限获取和权限提示的方法了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">requestPermission</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Here, this activity is the current activity.</span></span><br><span class="line">    <span class="keyword">if</span> (ContextCompat.checkSelfPermission(<span class="keyword">this</span>, INTERNET)</span><br><span class="line">        != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">        ActivityCompat.requestPermissions(</span><br><span class="line">            <span class="keyword">this</span>,</span><br><span class="line">            <span class="keyword">new</span> String[] &#123; INTERNET &#125;,</span><br><span class="line">            NEED_INTERNET_REQUEST_CODE);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们需要先写出权限请求的代码。<code>requestPermission</code> 方法就是用来请求获取 <code>INTERNET</code> 这个权限的代码。其中的 <code>ActivityCompat.requestPermissions</code> 方法，就是为了使得当前活动获取对应的权限，第一个参数传递的是活动对象，这里肯定就是 <code>this</code> 了；而第二个参数传递的是你需要获取的权限的名称，这里获取的是网络权限，所以写 <code>INTERNET</code>。具体还有其它的权限，我们将在稍后罗列出来；第三个参数则是请求代码。这个代码是你自己规定的，我们可以随意给定一个数值，然后看这个请求结果最终是不是和我们预期给出的这个数值一样。如果不一样，显然就是出错了，这里我们随便传递一个数值进去就好。我的程序的整体代码是 <code>private final int NEED_INTERNET_REQUEST_CODE = 0xC0DE;</code>。</p>
 <h3 id="第三步：重写-onRequestPermissionsResult-方法"><a href="#第三步：重写-onRequestPermissionsResult-方法" class="headerlink" title="第三步：重写 onRequestPermissionsResult 方法"></a>第三步：重写 <code>onRequestPermissionsResult</code> 方法</h3><p>下面是重写当前活动里的 <code>onRequestPermissionResult</code> 方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onRequestPermissionsResult</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> requestCode, @NotNull String[] permissions, @NotNull <span class="keyword">int</span>[] grantResults)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (requestCode == NEED_INTERNET_REQUEST_CODE) &#123;</span><br><span class="line">        <span class="comment">// If request is cancelled, the result arrays are empty.</span></span><br><span class="line">        <span class="keyword">if</span> (grantResults.length &gt; <span class="number">0</span></span><br><span class="line">            &amp;&amp; grantResults[<span class="number">0</span>] == PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">            <span class="comment">// Permission was granted.</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// Permission denied, boo!</span></span><br><span class="line">            messageBoxHelper.show(<span class="string">"啊偶，我们需要网络 emmm……"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>然后我们就重写了这个方法。</p>
 <p>简单说一下。第一个参数 <code>requestCode</code> 表示请求码，也就是当请求的时候应该有的数值，它应等于刚才我们前文设定的 <code>0xC0DE</code>；第二个参数是权限列表，即我们需要获取的权限的名称序列。第三个参数传递的则是权限获取的每一个权限的结果。这里只需要一个，因为我们假设了这个项目只需要网络权限。</p>
 <p>然后在 <code>if</code> 条件里判断一下，参数 <code>grantResult</code> 是否有元素，并且第一个元素的数值确实是成功授权的。成功授权写的是 <code>PackageManager.PERMISSION_GRANTED</code>，这个是一个常量，这样就不用我们去记忆这个整数是多少了；否则的话，我们就报错，说获取权限失败。</p>
 <h3 id="第四步：在执行逻辑上调用这些方法"><a href="#第四步：在执行逻辑上调用这些方法" class="headerlink" title="第四步：在执行逻辑上调用这些方法"></a>第四步：在执行逻辑上调用这些方法</h3><p>比如，我们做了查词软件，需要等待用户点击了按钮后，执行操作，于是我们有这样的代码。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">buttonName.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Judge the text is null or empty.</span></span><br><span class="line">        <span class="keyword">if</span> (!editTextName.getText().toString().equals(<span class="string">""</span>)) &#123;</span><br><span class="line">            <span class="comment">// To check the permission of using Internet.</span></span><br><span class="line">            requestPermission();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Do something else...</span></span><br><span class="line">            <span class="comment">// Here you can use the Internet.</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
 <p>这里我们添加一个监听器即可，注意，<code>EditText</code> 的 <code>getText()</code> 方法，获取到的并不是字符串，而是一个字符序列 <code>CharSequence</code> 对象，这是一个接口对象，要想将其改为字符串 <code>String</code> 类型，还要对这个对象再调用 <code>toString()</code> 方法才行。</p>
 <blockquote>
 <p>在 Java 里，判断字符串相等用的是 <code>equals()</code> 方法，而不是 <code>==</code> 运算符。</p>
@@ -128,6 +124,7 @@
 <p>这样，完整的权限获取就写好了。</p>
 <h2 id="不写权限申请会怎么样？"><a href="#不写权限申请会怎么样？" class="headerlink" title="不写权限申请会怎么样？"></a>不写权限申请会怎么样？</h2><p>不写的话，会出现异常（Exception），导致程序崩溃的异常。</p>
 <h2 id="权限名称列表"><a href="#权限名称列表" class="headerlink" title="权限名称列表"></a>权限名称列表</h2><p>下面我们列举一些常用的权限的名称列表。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -135,7 +132,8 @@
 <th>权限</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>联系人</td>
 <td>android.permission.WRITE_CONTACTS(写入联系人)<br/>android.permission.GET_ACCOUNTS(查找设备上的帐户)<br/>android.permission.READ_CONTACTS(读取联系人)</td>
 </tr>
@@ -171,7 +169,9 @@
 <td>短信</td>
 <td>android.permission.READ_SMS(读取短信)<br/>android.permission.RECEIVE_WAP_PUSH(接收WAP PUSH信息)<br/>android.permission.RECEIVE_SMS(接收短信权限)<br/>android.permission.SEND_SMS(发送短信)<br/>android.permission.READ_CELL_BROADCASTS(获取小区广播)</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -232,24 +232,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -291,11 +298,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -324,10 +335,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

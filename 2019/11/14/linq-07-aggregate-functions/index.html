@@ -110,71 +110,52 @@
 <p>那么，LINQ 为我们提供了哪一些聚合函数呢？我们下面就来看看它们。</p>
 <h2 id="聚合函数使用一览"><a href="#聚合函数使用一览" class="headerlink" title="聚合函数使用一览"></a>聚合函数使用一览</h2><p>先假设我们有一个集合：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">value</span> <span class="keyword">in</span> values</span><br><span class="line">                <span class="keyword">where</span> <span class="keyword">value</span> &gt;= <span class="number">6</span></span><br><span class="line">                <span class="keyword">select</span> <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
-
 <p>当然了，这个集合下面用不用都无关紧要，仅仅是为了表达出一些常见的聚合函数的用法。</p>
 <h3 id="Max-和-Min-方法"><a href="#Max-和-Min-方法" class="headerlink" title="Max 和 Min 方法"></a><code>Max</code> 和 <code>Min</code> 方法</h3><p>显然，这两个方法用来求 <code>IEnumerable&lt;数值类型&gt;</code> 的最大值的。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> max = selection.Max(); <span class="comment">// Get the maximum value.</span></span><br><span class="line"><span class="keyword">int</span> min = selection.Min(); <span class="comment">// Get the minimum one.</span></span><br></pre></td></tr></table></figure>
-
 <p>它还有一堆重载方法。都是看的集合内元素的类型，进而去确定与之匹配的重载方法。</p>
 <h3 id="Average-方法"><a href="#Average-方法" class="headerlink" title="Average 方法"></a><code>Average</code> 方法</h3><p>这个用法和求最大最小值没有差别。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> result = selection.Average();</span><br></pre></td></tr></table></figure>
-
 <p>当然，请注意，这个返回值一定是 <code>double</code> 类型的。虽然 C# 提供了 <code>decimal</code> 类型，会更加精确，但 LINQ 里的求平均值用的是 <code>double</code>。</p>
 <p>另外，它也有一堆重载方法。也是和上面的思路一样。</p>
 <h3 id="Count-方法和-Any-无参方法"><a href="#Count-方法和-Any-无参方法" class="headerlink" title="Count 方法和 Any 无参方法"></a><code>Count</code> 方法和 <code>Any</code> 无参方法</h3><p>这个方法用于获取一个 <code>IEnumerable&lt;T&gt;</code> 集合里到底有多少个元素。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> count = selection.Count();</span><br></pre></td></tr></table></figure>
-
 <p>注意，由于 LINQ 的实现用的是扩展方法，所以 <code>Count</code> 在这里是一个方法名，而不是属性，所以必须要加上这一对小括号。另外，如果你需要使用这个数值来判断一个集合是否有元素的话，一般可以写成</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Count() != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
 <p>不过，我建议你使用 <code>Any</code> 方法（无参的这个重载），来判断集合是否有元素。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Any();</span><br></pre></td></tr></table></figure>
-
-
-
 <h3 id="存在量词-Any-函数和全称量词-All函数"><a href="#存在量词-Any-函数和全称量词-All函数" class="headerlink" title="存在量词 Any 函数和全称量词 All函数"></a>存在量词 <code>Any</code> 函数和全称量词 <code>All</code>函数</h3><p>接着是两个比较常用的聚合函数，它们用于判断集合里是否有元素满足指定条件，或者是全部元素都满足指定条件。</p>
 <p>举个例子。我们要查询集合里是否所有元素都小于 7，它的写法是这样的：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> allLessThanEight = selection.All(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
-
 <p>而如果查找集合里是否存在任意一个元素，它的数值小于 8，那么写作</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> anyValueLessThanEight = selection.Any(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>注意不要把 Lambda 运算符 <code>=&gt;</code> 和小于等于符号 <code>&lt;=</code> 以及大于等于符号 <code>&gt;=</code> 看混了。</p>
 </blockquote>
 <p>刚才也说过，<code>Any</code> 的无参重载表示的是这个集合是否包含元素。所以这里就不提及了。</p>
 <h3 id="Concat-函数"><a href="#Concat-函数" class="headerlink" title="Concat 函数"></a><code>Concat</code> 函数</h3><p>这个函数用于拼接两个元素类型一致的 <code>IEnumerable&lt;T&gt;</code> 集合。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; l1 = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span> &#125;;</span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; l2 = <span class="keyword">new</span> Stack&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Concat`.</span></span><br><span class="line"><span class="keyword">var</span> result = l1.Concat(l2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use the result.</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> v <span class="keyword">in</span> result)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>需要注意的是，两个集合即使类型不是一致的，但如果都实现了 <code>IEnumerable&lt;T&gt;</code> 接口的话，那么第 1、2 行给出的写法就一定奏效（隐式转换），然后调用 <code>Concat</code> 方法一定是可以的。但是，迭代器将会取决于具体类型的实现。比如例子给出的实现里，第二个则用的是一个栈（先进后出集合），所以最终拼接并遍历出来的结果顺序必然是 3、8、1、6、5、0、9、2、7、4，即后五个新加入的元素的顺序应倒过来。</p>
 </blockquote>
 <h3 id="Cast-函数"><a href="#Cast-函数" class="headerlink" title="Cast 函数"></a><code>Cast</code> 函数</h3><p>如果我们有一个 <code>IEnumerable</code> 集合，知道它的元素的类型，却发现我们无法使用 LINQ 函数，怎么办？我们可以调用该方法将其转换为泛型集合 <code>IEnumerable&lt;T&gt;</code> 对象。例如：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable helloStr = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"Hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Cast`.</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">string</span>&gt; result = helloStr.Cast&lt;<span class="keyword">string</span>&gt;();</span><br></pre></td></tr></table></figure>
-
 <p>注意，为这个方法添加泛型参数，来表示这个集合需要转换为这个类型。当然，如果你尝试把它转换为其它类型，那么只会出现报错，提示转换失败；而且，<code>IEnumerable</code> 接口在迭代的时候，每一个元素都是 <code>object</code> 类型。如果内部存放的是值类型的话，将会产生拆箱操作。</p>
 <h3 id="Distinct-函数"><a href="#Distinct-函数" class="headerlink" title="Distinct 函数"></a><code>Distinct</code> 函数</h3><p>这个函数类似于 SQL 语句里的 <code>distinct</code> 关键字，它用来筛选集合里的重复数据。重复的项将会只保留一个，但前提是，这个集合的元素类型必须是可以比较相等操作的（即要么它本身实现了 <code>IEquatable&lt;T&gt;</code> 或 <code>IEquatable</code> 接口，要么就手动规定比较规则，即使用 <code>IEqualityComparer&lt;T&gt;</code> 或 <code>IEqualityComparer</code> 接口）。</p>
 <p>例如，我们要对一个集合去重，那么写法如下。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Distinct`.</span></span><br><span class="line"><span class="comment">// `result` will include only three values: 3, 2 and 1.</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; result = values.Distinct();</span><br></pre></td></tr></table></figure>
-
-
-
 <h3 id="Range-函数（静态函数）"><a href="#Range-函数（静态函数）" class="headerlink" title="Range 函数（静态函数）"></a><code>Range</code> 函数（静态函数）</h3><p>这个函数用于生成一个 <code>IEnumerable&lt;int&gt;</code> 集合，且集合从指定数值增大，一次一个单位。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = Enumerable.Range(<span class="number">0</span>, <span class="number">9</span>);</span><br></pre></td></tr></table></figure>
-
 <p>这样将会获取 0 到 8，一共 9 个元素。第一个参数表示起始数值，第二个参数表示一共要取出多少个元素。</p>
 <p>注意，这个函数是静态函数，所以调用的时候，请使用 <code>Enumerable.Range</code> 的方式调用。</p>
 <h3 id="Repeat-函数（静态函数）"><a href="#Repeat-函数（静态函数）" class="headerlink" title="Repeat 函数（静态函数）"></a><code>Repeat</code> 函数（静态函数）</h3><p><code>Repeat</code> 函数和 <code>Range</code> 不同，它虽然也是静态函数，但生成的集合并不是按序增大的，而是重复的。比如：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">string</span>&gt; strings = Enumerable.Repeat(<span class="string">"I like programming."</span>, <span class="number">15</span>);</span><br></pre></td></tr></table></figure>
-
 <p>这样将会生成一个拥有 15 个元素的、且元素全都是 <code>I like programming</code> 字符串的字符串列表。</p>
 <h3 id="Take-和-Skip-函数"><a href="#Take-和-Skip-函数" class="headerlink" title="Take 和 Skip 函数"></a><code>Take</code> 和 <code>Skip</code> 函数</h3><p><code>Take</code> 函数用于获取集合的前多少个元素（类似于 SQL 的 <code>top</code> 关键字），而 <code>Skip</code> 函数则用于跳过指定个数的元素。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; r1 = values.Take(<span class="number">3</span>); <span class="comment">// 3, 2, 1</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; r2 = values.Skip(<span class="number">3</span>).Take(<span class="number">2</span>); <span class="comment">// 1, 2</span></span><br></pre></td></tr></table></figure>
-
 <p>需要注意的是，<code>Skip</code> 函数返回值依然是 <code>IEnumerable&lt;int&gt;</code> 类型，这样做的好处是可以继续使用成员访问运算符向下继续串联代码，而使用它所得到的集合，一定是从跳过了指定个数的元素后，作为第一项开始的新集合 <code>IEnumerable&lt;int&gt;</code>。换句话说，<code>values.Skip(3)</code> 将会返回的是 1、2、2、2、3、3、1、2、2 序列。</p>
 <h3 id="ToArray-和-ToList-函数"><a href="#ToArray-和-ToList-函数" class="headerlink" title="ToArray 和 ToList 函数"></a><code>ToArray</code> 和 <code>ToList</code> 函数</h3><p>这两个函数用于将集合转换为数组 <code>T[]</code> 和列表集合 <code>List&lt;T&gt;</code>。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> Queue&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span>[] r1 = values.ToArray();</span><br><span class="line">List&lt;<span class="keyword">string</span>&gt; r2 = values.ToList();</span><br></pre></td></tr></table></figure>
-
 <p>当然，LINQ 还提供了 <code>ToDictionary</code> 和 <code>ToHashSet</code> 函数，用于转字典和哈希表对象。这种转换就不在这里提及了，因为用得比较少，而且学习起来不太难。</p>
 <p>还有一个 <code>ToLookUp</code> 方法，用于生成仅用于 LINQ 的类似于字典的分组表集合，这种集合专门用来存放分组数据，表示一对多的映射关系。</p>
 <h3 id="First、FirstOrDefault、Single-和-SingleOrDefault-函数"><a href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数" class="headerlink" title="First、FirstOrDefault、Single 和 SingleOrDefault 函数"></a><code>First</code>、<code>FirstOrDefault</code>、<code>Single</code> 和 <code>SingleOrDefault</code> 函数</h3><p><code>First</code> 方法有两个重载。一个是无参的，表示取出集合的第一个元素；第二个是有一个 Lambda 表达式参数的，表示获取满足指定条件的第一个元素。但是，这两个方法都有一个问题。当元素全部不满足要求的时候，运行将会抛出 <code>InvalidOperationException</code> 异常。</p>
@@ -186,17 +167,13 @@
 <p>这个函数将每一次集合遍历过程的时候，通过指定的公式进行计算和处理，并得到最终的结果的行为就是这个函数的使用方式了。它有三个重载。</p>
 <p>第一个重载是非常简单的，除了扩展方法的 <code>IEnumerable&lt;T&gt;</code> 集合自己，只需要给出一个额外参数，这个参数是一个 Lambda 表达式，表示一个聚合公式，把所有元素按照这个公式计算的结果聚合起来。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> result = values.Aggregate((s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>);</span><br><span class="line">Console.WriteLine(result);</span><br></pre></td></tr></table></figure>
-
 <p>可以看懂这个聚合函数的意义吗？这个函数将字符串序列按照顺序依次拼接，得到字符串结果。Lambda 表达式里的 <code>s</code> 表示临时变量，用于积累元素处理期间的数据的，而这个 <code>v</code> 就是集合在每一次遍历过程之中的元素。我们把用来积累的变量 <code>s</code> 往后添加 <code>v</code>，就凑成了字符串拼接后的新字符串，然后再往后添加下一个字符串，直到集合遍历完成。当然最终这个结果就是一个完整的字符串了。</p>
 <p>第二个重载需要加入一个初始值 <code>seed</code> 参数。即可以改写一下上面的写法：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = values.Aggregate(<span class="string">"Sunnie, "</span>, (s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>);</span><br></pre></td></tr></table></figure>
-
 <p>第三个重载，则在最后增加一个参数，用于指定聚合的处理情况。如下代码所示。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = values.Aggregate(<span class="string">"Sunnie, "</span>, (s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>, v =&gt; v.ToUpper());</span><br></pre></td></tr></table></figure>
-
 <p>这个聚合操作，将会把所有聚合的元素全部先转为大写，然后输出。自然结果就是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUNNIE, HELLO, WORLD!</span><br></pre></td></tr></table></figure>
-
 <p>是不是很神奇呢？</p>
   
 	</div>
@@ -258,24 +235,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -317,11 +301,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -350,10 +338,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

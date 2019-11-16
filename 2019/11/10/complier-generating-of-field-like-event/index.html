@@ -11,13 +11,13 @@
     
 
     
-    <meta name="description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event;  它便会自动生成对应的 adder 和 remove">
+    <meta name="description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event; 它便会自动生成对应的 adder 和 remover">
 <meta name="keywords" content="C♯">
 <meta property="og:type" content="article">
 <meta property="og:title" content="字段长相的事件的编译器代码生成">
 <meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;complier-generating-of-field-like-event&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event;  它便会自动生成对应的 adder 和 remove">
+<meta property="og:description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event; 它便会自动生成对应的 adder 和 remover">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2019-11-10T14:29:54.885Z">
 <meta name="twitter:card" content="summary">
@@ -104,15 +104,12 @@
 		
 		<h2 id="什么是字段长相的事件声明？"><a href="#什么是字段长相的事件声明？" class="headerlink" title="什么是字段长相的事件声明？"></a>什么是字段长相的事件声明？</h2><p>所谓<strong>字段长相的事件</strong>（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br></pre></td></tr></table></figure>
-
 <p>它便会自动生成对应的 adder 和 remover。实际上，它会生成什么东西呢？</p>
 <h2 id="来看对照吧！"><a href="#来看对照吧！" class="headerlink" title="来看对照吧！"></a>来看对照吧！</h2><p>我在 SharpLab 上测试了一个事件的声明，它是这样的。</p>
 <p>源代码：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>而在编译后，生成的代码是这样的：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> EventHandler m_Event;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event</span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">add</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Combine(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">remove</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Remove(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>其中，<code>[ComplierGenerated]</code> 暗示代码块是由编译器自动生成，而类上面那一大堆东西，我们这里暂时不用去关心，因为这些内容不是本文需要涉及到的内容。</p>
 <p>仔细观察内部代码，可以看到代码里写的模式基本上就是通过一个生成的委托字段 <code>m_Event</code> 来执行操作。</p>
 <h2 id="adder-分析"><a href="#adder-分析" class="headerlink" title="adder 分析"></a>adder 分析</h2><p>下面来看添加器 <code>add</code> 块里的内容。实际上可以看到它的操作仅仅就是在线程上执行赋值。首先给了一个尚未赋值的对象 <code>eventHandler2</code> 作为临时变量，然后尝试为其赋值。当赋值完成后，将其使用 <code>Delegate.Combine</code> 方法进行委托合并。合并后，在使用提供线程操作的静态类 <code>Interlocked</code> 的线程上交换模式，进行变量的交换，这样就达到了赋值效果。</p>
@@ -178,24 +175,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -237,11 +241,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -270,10 +278,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

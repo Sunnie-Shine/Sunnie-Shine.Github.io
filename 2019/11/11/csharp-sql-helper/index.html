@@ -104,7 +104,6 @@
 		
 		<h2 id="话不多说，开始看代码！"><a href="#话不多说，开始看代码！" class="headerlink" title="话不多说，开始看代码！"></a>话不多说，开始看代码！</h2><p>下面来看看 SqlHelper 类的具体实现。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">SqlHelper</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span> ConnectionString</span><br><span class="line">        = ConfigurationManager.ConnectionStrings[<span class="string">"conn"</span>].ConnectionString;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ExecuteNonQuery</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[]? para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            conn.Open();</span><br><span class="line">            <span class="keyword">return</span> cmd.ExecuteNonQuery();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SqlDataReader <span class="title">ExecuteReader</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[]? para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        SqlDataReader result = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                conn.Open();</span><br><span class="line">                result = cmd.ExecuteReader(CommandBehavior.CloseConnection);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(ex.Message);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DataSet <span class="title">GetDataSet</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[] para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> da = <span class="keyword">new</span> SqlDataAdapter</span><br><span class="line">        &#123;</span><br><span class="line">            SelectCommand = <span class="keyword">new</span> SqlCommand</span><br><span class="line">            &#123;</span><br><span class="line">                Connection = conn,</span><br><span class="line">                CommandText = sql,</span><br><span class="line">                CommandType = commandType</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    da.SelectCommand.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> ds = <span class="keyword">new</span> DataSet();</span><br><span class="line">            conn.Open();</span><br><span class="line">            da.Fill(ds);</span><br><span class="line">            <span class="keyword">return</span> ds;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">object</span> <span class="title">ExecuteScalar</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[] para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            conn.Open();</span><br><span class="line">            <span class="keyword">return</span> cmd.ExecuteScalar();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -165,24 +164,31 @@
 
 
 
-<!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
-	<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
 
-       if (typeof LivereTower === 'function') { return; }
+  
+  <span id="<Your/Path/Name>" class="leancloud_visitors" data-flag-title="Your Article Title">
+    <em class="post-meta-item-text">阅读量 </em>
+    <i class="leancloud-visitors-count">1000000</i>
+  </span>
+  
+  <div class="comment"></div>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    new Valine({
+      av: AV,
+      el: '.comment', // 
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '有什么想说的嘛QwQ',
+      visitor: true
+    });
+  </script>
 
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
 
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-	</script>
-<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
-</div>
-<!-- City�氲װ��������� -->
+
+
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
@@ -224,11 +230,15 @@
 			
 		
 			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>2</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -257,10 +267,6 @@
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
 			
 		
 		</ul>

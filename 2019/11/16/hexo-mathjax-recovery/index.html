@@ -4,27 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>6 宫对角线数独的潜规则 | 向向的博客</title>
+    <title>Hexo 里关于 Mathjax 数学公式渲染问题的解决方案 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="简介六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。 六宫对角线数独一共存在 12 种不等价盘面，如图所示。  它具有如下两个潜规则。 潜规则一：中心对称潜规则中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。  例如这个图上给予了一个六宫对角线数独的">
-<meta name="keywords" content="数独">
+    <meta name="description" content="为什么会出错？因为内部使用的是 marked 的渲染模式，但它给出的渲染方式有点问题，导致最终渲染出现毛病。比如一个矩阵的渲染：  \left(     \begin{matrix}         1 &amp; 2 &amp; 3\\         4 &amp; 5 &amp; 6     \end{matrix} \right)就很有可能被渲染成  \left(     \begin{matrix}         1">
+<meta name="keywords" content="数学,Hexo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="6 宫对角线数独的潜规则">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;index.html">
+<meta property="og:title" content="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;16&#x2F;hexo-mathjax-recovery&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="简介六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。 六宫对角线数独一共存在 12 种不等价盘面，如图所示。  它具有如下两个潜规则。 潜规则一：中心对称潜规则中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。  例如这个图上给予了一个六宫对角线数独的">
+<meta property="og:description" content="为什么会出错？因为内部使用的是 marked 的渲染模式，但它给出的渲染方式有点问题，导致最终渲染出现毛病。比如一个矩阵的渲染：  \left(     \begin{matrix}         1 &amp; 2 &amp; 3\\         4 &amp; 5 &amp; 6     \end{matrix} \right)就很有可能被渲染成  \left(     \begin{matrix}         1">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_Global.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_HiddenRule_1.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_HiddenRule_2.png">
-<meta property="og:updated_time" content="2019-11-11T05:36:00.981Z">
+<meta property="og:updated_time" content="2019-11-16T14:08:42.096Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_Global.png">
 
     
     
@@ -86,14 +82,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
+      <a href="/2019/11/16/hexo-mathjax-recovery/" title="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案" itemprop="url">Hexo 里关于 Mathjax 数学公式渲染问题的解决方案</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-08T05:25:13.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    <time datetime="2019-11-16T13:58:38.000Z" itemprop="datePublished"> 发表于 2019-11-16</time>
     
   </p>
 </header>
@@ -102,30 +98,40 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则一：中心对称潜规则"><span class="toc-number">2.</span> <span class="toc-text">潜规则一：中心对称潜规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则二：轴对称潜规则"><span class="toc-number">3.</span> <span class="toc-text">潜规则二：轴对称潜规则</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么会出错？"><span class="toc-number">1.</span> <span class="toc-text">为什么会出错？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试修复"><span class="toc-number">2.</span> <span class="toc-text">尝试修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在最后"><span class="toc-number">3.</span> <span class="toc-text">写在最后</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。</p>
-<p>六宫对角线数独一共存在 12 种不等价盘面，如图所示。</p>
-<p><img src="DiagonalSix_Global.png" alt=""></p>
-<p>它具有如下两个潜规则。</p>
-<h2 id="潜规则一：中心对称潜规则"><a href="#潜规则一：中心对称潜规则" class="headerlink" title="潜规则一：中心对称潜规则"></a>潜规则一：中心对称潜规则</h2><p>中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。</p>
-<p><img src="DiagonalSix_HiddenRule_1.png" alt=""></p>
-<p>例如这个图上给予了一个六宫对角线数独的题目盘面的答案，答案体现出，r1c2和r6c5的填数一定不同（实际上是一个2和一个3，确实是不同的）。其他的同理。</p>
-<p>本潜规则可以直接在题目上使用，对于任意一个唯一解的六宫对角线数独题均适用。</p>
-<h2 id="潜规则二：轴对称潜规则"><a href="#潜规则二：轴对称潜规则" class="headerlink" title="潜规则二：轴对称潜规则"></a>潜规则二：轴对称潜规则</h2><p>轴对称潜规则指的是：盘面上任取的四格，只要满足以下几个条件，则有结论：四格的填数至少有一个数会出现两次（四格填数不能完全不同）：</p>
-<ol>
-<li>四格都不在对角线上；</li>
-<li>将四格只存在于一行、一列之中，且一行一列之中各两格；</li>
-<li>同在一行的这两格关于盘面中轴（c34中间的格线）轴对称、且同在一列的这两格关于盘面中轴（r34中间的格线）轴对称；</li>
-<li>四格必须存在于对角线两侧，且两侧各两格；</li>
-<li>两侧的四格必须一一关于对角线对称。</li>
-</ol>
-<p>什么意思呢？如图所示，以下四格就满足上述给予的所有要求：</p>
-<p><img src="DiagonalSix_HiddenRule_2.png" alt=""></p>
-<p>比如r25c6和r6c25四格，都不在对角线上；分属一行一列（r6和c6），而且恰有两格；r25c6确实对于盘面的中轴线轴对称、r6c25也是如此；四格也恰存在于捺对角线两侧，两侧也恰好各两格；并且r2c6和r6c2关于捺对角线对称、r5c6和r6c5关于捺对角线对称。</p>
-<p>由于满足这样一系列要求，所以四格内的填数一定至少有一个数是至少出现两次的（比如这里的3，有两个）。</p>
+		<h2 id="为什么会出错？"><a href="#为什么会出错？" class="headerlink" title="为什么会出错？"></a>为什么会出错？</h2><p>因为内部使用的是 <code>marked</code> 的渲染模式，但它给出的渲染方式有点问题，导致最终渲染出现毛病。比如一个矩阵的渲染：</p>
+<script type="math/tex; mode=display">
+\left(
+    \begin{matrix}
+        1 & 2 & 3\\
+        4 & 5 & 6
+    \end{matrix}
+\right)</script><p>就很有可能被渲染成</p>
+<script type="math/tex; mode=display">
+\left(
+    \begin{matrix}
+        1 & 2 & 3 \ 4 & 5 & 6
+    \end{matrix}
+\right)</script><p>如果你发现两个渲染结果完全一样，那么你的渲染就有问题；但是如果第一个是正常显示，但第二个不正常的话，那么就需要你仔细对比一下两个渲染的原 LaTeX 代码了。仔细对比就可以发现，第一个渲染正确的代码里</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">\left(</span><br><span class="line">	\begin&#123;matrix&#125;</span><br><span class="line">		1 &amp; 2 &amp; 3\\</span><br><span class="line">		4 &amp; 5 &amp; 6</span><br><span class="line">	\end&#123;matrix&#125;</span><br><span class="line">\right)</span><br></pre></td></tr></table></figure>
+<p>的结尾处用的是双反斜杠 <code>\\</code>，表示换行；而下面错误渲染的公式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\left(</span><br><span class="line">	\begin&#123;matrix&#125;</span><br><span class="line">		1 &amp; 2 &amp; 3 \ 4 &amp; 5 &amp; 6</span><br><span class="line">	\end&#123;matrix&#125;</span><br><span class="line">\right)</span><br></pre></td></tr></table></figure>
+<p>却是一个反斜杠 <code>\</code>。这便是问题所在。在渲染的期间，不小心在使用正则表达式的时候替换错误了。现在我们来修复它。</p>
+<h2 id="尝试修复"><a href="#尝试修复" class="headerlink" title="尝试修复"></a>尝试修复</h2><p>首先，我们需要在博客的文件夹下输入指定的卸载和安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm uninstall hexo-renderer-marked --save</span><br><span class="line">$ npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
+<p>进行卸载 <code>marked</code> 渲染和安装 <code>kramed</code> 的渲染。</p>
+<blockquote>
+<p>可能是我孤陋寡闻，不过我是偶然发现的，<code>mark</code> 和 <code>kram</code> 是一对镜面单词，即 <code>mark</code> 每个字母倒着读就是 <code>kram</code>……我估计设计者也是考虑到这样故意才取这个名的。</p>
+</blockquote>
+<p>然后，打开 <code>node_modules\kramed\lib\rules\inline.js</code> 文件，找到 <code>escape</code> 元素的正则表达式，替换为如下内容：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">escape</span>: <span class="regexp">/^\\([`*\[\]()#$+\-.!_&gt;])/</span>,</span><br></pre></td></tr></table></figure>
+<p>然后顺带把 <code>em</code> 一项也改掉：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em: <span class="regexp">/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/</span>,</span><br></pre></td></tr></table></figure>
+<p>然后保存，清除掉原本的数据库信息，然后重新部署和上传就可以了。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>不过，貌似复杂的公式依然无法渲染，因为需要导入 <code>package</code> 的功能，似乎一直都不行……所以这一点就算了吧，不过这样其实已经很好了，不是吗？</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -133,13 +139,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
+  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/数独/">数独</a>
+  <span></span> <a href="/tags/数学/">数学</a><a href="/tags/Hexo/">Hexo</a>
   </div>
 
 </div>
@@ -148,7 +154,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/08/diagonal-sudoku-6-da-rule/" data-title="6 宫对角线数独的潜规则 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/16/hexo-mathjax-recovery/" data-title="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -161,19 +167,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/08/common-01-nullable-types/" title="C# 内置类型详解系列（1）：可空类型">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C# 内置类型详解系列（1）：可空类型</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/08/android-permissions/"  title="安卓权限设置">
+<a href="/2019/11/15/linear-algebra-operations/"  title="矩阵操作">
  <strong>下一篇：</strong><br/> 
- <span>安卓权限设置
+ <span>矩阵操作
 </span>
 </a>
 </div>
@@ -217,7 +215,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则一：中心对称潜规则"><span class="toc-number">2.</span> <span class="toc-text">潜规则一：中心对称潜规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则二：轴对称潜规则"><span class="toc-number">3.</span> <span class="toc-text">潜规则二：轴对称潜规则</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么会出错？"><span class="toc-number">1.</span> <span class="toc-text">为什么会出错？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试修复"><span class="toc-number">2.</span> <span class="toc-text">尝试修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在最后"><span class="toc-number">3.</span> <span class="toc-text">写在最后</span></a></li></ol>
  
   </div>
 
