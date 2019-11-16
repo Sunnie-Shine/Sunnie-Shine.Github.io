@@ -186,36 +186,24 @@
 
 
 
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NzU3MC8yNDA3MA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
 
-<section id="comments" class="comment">
-  <h2>文章评论</h2>
-  <div class="valine_comment" id="valine_comment"></div>
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
-  <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script type="text/javascript">
-    window.AV = require('leancloud-storage');
-    const Valine = require('valine');
+       if (typeof LivereTower === 'function') { return; }
 
-    var GUEST = ['nick','mail','link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.indexOf(item) > -1;
-    });
-    new Valine({
-      av: AV,
-      el: '.valine_comment',
-      //verify: false,
-      //notify: false,
-      appId: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
-      appKey: 'B2b55wI7IvjoNCf8FTi9vgtr',
-      placeholder: '欢迎交流讨论！',
-      guest_info: guest,
-      pageSize: 10
-    });
-  </script>
-</section>
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
 
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript>Ϊ����ʹ�����������۹��ܣ��������� JavaScript��</noscript>
+</div>
+<!-- City�氲װ��������� -->
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
