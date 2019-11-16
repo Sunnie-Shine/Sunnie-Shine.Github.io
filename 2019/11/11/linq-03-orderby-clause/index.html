@@ -221,30 +221,30 @@
 
 
 <section id="comments" class="comment">
-  <hr />
   <h2>文章评论</h2>
-  <h3>ヾノ≧∀≦)o来啊，快活啊!</h3>
-  <div id="valine"></div>
+  <div class="valine_comment" id="valine_comment"></div>
   <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
   <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript">
     window.AV = require('leancloud-storage');
-    import Valine from 'valine';
+    const Valine = require('valine');
 
     var GUEST = ['nick','mail','link'];
-    var guest = theme.valine.guest_info;
+    var guest = 'nick,mail,link';
     guest = guest.split(',').filter(item => {
       return GUEST.indexOf(item) > -1;
     });
     new Valine({
-      el: '#valine',
-      verify: false,
-      notify: false,
+      av: AV,
+      el: '.valine_comment',
+      //verify: false,
+      //notify: false,
       appId: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
       appKey: 'B2b55wI7IvjoNCf8FTi9vgtr',
-      placeholder: 'ヾノ≧∀≦)o来啊，快活啊!',
+      placeholder: '欢迎交流讨论！',
       guest_info: guest,
-      pageSize: 10 || 10
+      pageSize: 10
     });
   </script>
 </section>
