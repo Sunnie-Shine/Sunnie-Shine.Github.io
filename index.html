@@ -82,6 +82,135 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/18/csharplang-complement-04-enum/" title="C# 语法查漏补缺系列（4）：枚举类型" itemprop="url">C# 语法查漏补缺系列（4）：枚举类型</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-18T11:47:37.000Z" itemprop="datePublished"> 发表于 2019-11-18</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="枚举类型是什么？"><a href="#枚举类型是什么？" class="headerlink" title="枚举类型是什么？"></a>枚举类型是什么？</h2><p>在搞懂枚举类型之前，我们先要搞清楚，什么是<strong>枚举</strong>（Enumeration）。枚举是一种机制，它将整数用更容易理解的自定义词汇表达，来表现数据的灵活性。最常见的枚举的使用就是表示执行程序的状态了。比如，程序分启动、运行、退出三种大状态，所以我们可以把它们三个情况用 <code>Start</code>、<code>Running</code> 和 <code>End</code> 三个单词表达出来。但计算机并不识别单词，所以我们不得不用数字表达，于是，我们便建立起了数字和单词的关系和映射。</p>
+<p>在使用的时候，我们就不必使用枯燥的数字来表示一个运行状态了。这就是枚举的产生。当然，<strong>枚举类型</strong>（Enumeration Type）就是这个枚举的名称，比如程序状态类型 <code>ExecutingStatus</code>。</p>
+<h2 id="枚举类型的使用"><a href="#枚举类型的使用" class="headerlink" title="枚举类型的使用"></a>枚举类型的使用</h2><h3 id="枚举类型的语法"><a href="#枚举类型的语法" class="headerlink" title="枚举类型的语法"></a>枚举类型的语法</h3><p>在 C# 里，枚举类型是这么书写的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[访问修饰符] enum 枚举类型名[ : 整数类型]</span><br><span class="line">&#123;</span><br><span class="line">    枚举值1[ = 值1],</span><br><span class="line">    枚举值2[ = 值2],</span><br><span class="line">    枚举值3[ = 值3],</span><br><span class="line">    ...</span><br><span class="line">    枚举值n[ = 值n,]</span><br><span class="line">&#125;[;]</span><br></pre></td></tr></table></figure>
+<p>其中所有的中括号内的东西都可以不写。比如，程序执行状态的类型 <code>ExecutingStatus</code> 就可以表达为</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> ExecutingStatus : <span class="keyword">byte</span></span><br><span class="line">&#123;</span><br><span class="line">    Start, <span class="comment">// Default value is 0.</span></span><br><span class="line">    Running, <span class="comment">// Default value is Start + 1.</span></span><br><span class="line">    End, <span class="comment">// Default value is Running + 1.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当你不写第一个变量的枚举的等价数值时，系统默认为你分配为 0，当然你也可以给出一个非 0 数据来表示起始数值。但尽量使用 0，因为枚举如果没有 0 的话，后面写代码就可能会产生很隐蔽的错误，这一点我们稍后说明。另外，后面的任意一个数据不给等价数值的时候，默认是它前一个枚举类型的数值再加上 1 的结果。比如这里的三个枚举值分别就是 0、1、2。</p>
+<p>另外，如果枚举类型的数值用得不是很大，我们为了节约内存，甚至可以为其设置枚举类型的数值范围，方法是在枚举类型名后跟上一个冒号，加上指定类型的范围的整数类型名称（可以是 <code>byte</code>、<code>sbyte</code>、<code>int</code>、<code>short</code>、<code>long</code>、<code>uint</code>、<code>ushort</code>、<code>ulong</code> 这些类型）。</p>
+<p>由于整个大括号的关系，整体末尾的分号可以不写。</p>
+<p>那么，我们就可以使用枚举类型了：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (thread.CurrentStatus == ExecutingStatus.Running)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Means the current status is running.</span></span><br><span class="line">    <span class="comment">// We can do something such as abort the execution.</span></span><br><span class="line">    thread.Abort();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如上面这种用法（只是一个举例），如果当前线程还在跑的话，我们就中止这个线程。</p>
+<h3 id="枚举类型的原理"><a href="#枚举类型的原理" class="headerlink" title="枚举类型的原理"></a>枚举类型的原理</h3><p>就枚举类型这一点来说，它可能比 Java 做得好。Java 的枚举类型是通过类实现的，这样使得枚举这种轻量级的东西变得非常“臃肿”。而 C# 里，枚举类型用的是值类型。在 C# 里，值类型认为是一些基础的、原子的类型（即元素不可拆分）。而这种类型通过调用栈来分配内存，使得比类的内存分配要快一点，而且要轻量级一些。</p>
+<p>实际上，枚举可以在某种程度上认为是整数类型的等价封装。因为 C# 只是提供了一种将有意义的标识符来替换掉原本枯燥的数字，所以可以这么认为。</p>
+<h3 id="枚举类型、数值和字符串三者的转换"><a href="#枚举类型、数值和字符串三者的转换" class="headerlink" title="枚举类型、数值和字符串三者的转换"></a>枚举类型、数值和字符串三者的转换</h3><p>枚举类型在编译期之前，可以使用显隐式转换，转换为对应的数值类型。比如，前文我们把 <code>ExecutingStatus</code> 类型设置为 <code>byte</code> 类型的数值范围，因为它只有三个字段，所以我们完全可以用 <code>byte</code> 内的元素搞定这些数值的枚举情况。</p>
+<p>而从另外一个角度出发，这种类型的所有字段数值都将可以被转换为 <code>byte</code> 类型的数据。所以，C# 语法层面提供了隐式转换和显式转换两种模式。</p>
+<p>当你想要把一个数值转换为枚举类型的时候，这个时候由于转换结果不定（比如我尝试把 3 转换为 <code>ExecutingStatus</code> 类型时，由于枚举里不存在该数值，所以这种转换是不安全的），所以 C# 提供的是显式转换，即需要写出转换类型符号来转换到指定类型）：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecutingStatus es = (ExecutingStatus)<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<p>显然，这样的转换是没有意义的。不过，在执行这句话的时候，是不会产生错误的；而相反，反而在使用的时候，它才会报错。</p>
+<p>而且，枚举类型转数值的时候，依然用的是显式转换。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span> b = (<span class="keyword">byte</span>)ExecutingStatus.Running;</span><br></pre></td></tr></table></figure>
+<p>所以，如果遇到想把上述枚举类型转为一个字符类型 <code>char</code> 的时候，你就必须写成这样：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> c = (<span class="keyword">char</span>)(<span class="keyword">byte</span>)ExecutingStatus.Running;</span><br></pre></td></tr></table></figure>
+<p>因为枚举类型是不允许直接转换为其它类型的，所以你需要先转换为 <code>byte</code> 后，然后再用 <code>byte</code> 转为 <code>char</code> 的强制转换来实现。当然，这种用法很少见。</p>
+<p>另外，如果你想要把枚举类型的文本标识符获取到的话，可以使用 <code>ToString</code> 方法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> s = ExecutingStatus.Running.ToString();</span><br></pre></td></tr></table></figure>
+<p>但如果你需要把字符串等价的枚举类型字段转换过去的话，就得使用 <code>Enum.Parse</code> 或 <code>Enum.TryParse</code> 方法了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Way of usage 1:</span></span><br><span class="line">ExecutingStatus es1</span><br><span class="line">    = (ExecutingStatus)Enum.Parse(<span class="keyword">typeof</span>(ExecutingStatus), <span class="string">"Start"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Way of usage 2:</span></span><br><span class="line">ExecutingStatus es2 = Enum.Parse&lt;ExecutingStatus&gt;(<span class="string">"Start"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Way of usage 3:</span></span><br><span class="line"><span class="keyword">if</span> (Enum.TryParse(<span class="keyword">typeof</span>(ExecutingStatus), <span class="string">"Start"</span>, <span class="keyword">out</span> <span class="keyword">object</span> o))</span><br><span class="line">&#123;</span><br><span class="line">    ExecutingStatus es3 = (ExecutingStatus)o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Way of usage 4:</span></span><br><span class="line"><span class="comment">// Same as type 3, but using pattern matching to get es3 value.</span></span><br><span class="line"><span class="keyword">if</span> (Enum.TryParse(<span class="keyword">typeof</span>(ExecutingStatus), <span class="string">"Start"</span>, <span class="keyword">out</span> <span class="keyword">object</span> o)</span><br><span class="line">    &amp;&amp; o <span class="keyword">is</span> ExecutingStatus es4)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Variable `es4` is assigned successfully.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Way of usage 5:</span></span><br><span class="line"><span class="keyword">if</span> (Enum.TryParse&lt;ExecutingStatus&gt;(<span class="string">"Start"</span>, <span class="keyword">out</span> ExecutingStatus es5))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Variable `es5` is assigned successfully.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这五种书写格式都可以读取字符串，但前面两种当字符串书写不正确的时候，会抛出转换失败的异常，后面三种则不会。但第三种、第四种模式都会通过拆箱，因为是把 <code>object</code> 引用类型拆箱为 <code>ExecutingStatus</code> 值类型。第五种则使用的是泛型转换，这样的话 <code>es5</code> 的类型一定是和泛型参数类型一样的类型。</p>
+<blockquote>
+<p>所以你可以从这里看到，由于类型是一样的，所以泛型参数和 <code>out</code> 参数的类型里的任意一个都可以不写，即要么</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (Enum.TryParse(<span class="string">"Start"</span>, <span class="keyword">out</span> ExecutingStatus es5))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Variable `es5` is assigned successfully.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要么</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (Enum.TryParse&lt;ExecutingStatus&gt;(<span class="string">"Start"</span>, <span class="keyword">out</span> <span class="keyword">var</span> es5))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Variable `es5` is assigned successfully.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这两种写法均可。</p>
+</blockquote>
+<p>以上就介绍了枚举类型转数字和字符串，以及数字和字符串转枚举类型的方法。</p>
+<h3 id="枚举类型的运算符重载"><a href="#枚举类型的运算符重载" class="headerlink" title="枚举类型的运算符重载"></a>枚举类型的运算符重载</h3><p>这才是最骚的，C# 由于和 Java 机制不同的关系，C# 具有操作符重载的说法。在语法层面上，C# 提供了枚举类型和整数的加减法重载。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> es1 = ExecutingStatus.Running + <span class="number">1</span>; <span class="comment">// ExecutingStatus.End</span></span><br><span class="line"><span class="keyword">var</span> es2 = ExecutingStatus.Running - <span class="number">1</span>; <span class="comment">// ExecutingStatus.Start</span></span><br></pre></td></tr></table></figure>
+<p>这样可以设置类似于“偏移量”的概念。</p>
+<p>不过，还可以为其设置枚举类型之间的位运算，这一点我们在后面这一节作详细讲解。</p>
+<h2 id="位域枚举类型"><a href="#位域枚举类型" class="headerlink" title="位域枚举类型"></a>位域枚举类型</h2><h3 id="位域枚举类型的定义"><a href="#位域枚举类型的定义" class="headerlink" title="位域枚举类型的定义"></a>位域枚举类型的定义</h3><p>位域枚举类型指的是，当某种类型的所有字段可以被复用的时候，我们可以使用二进制位表示每一种情况，这样可以允许一些“多角色”的情况出现。比如，Linux 操作文件的时候，文件具有可读可写可执行三大操作，这三种操作互不冲突，且文件可以具有多个属性，即某个文件完全可以实现可读和可写，或可读可写可执行都允许的情况。这种枚举类型是一种特殊的枚举类型，它就被称为<strong>位域枚举类型</strong>（Flag Enumeration Type）。</p>
+<h3 id="位域枚举类型的使用"><a href="#位域枚举类型的使用" class="headerlink" title="位域枚举类型的使用"></a>位域枚举类型的使用</h3><p>这种现象，我们只需要做两步工作就可以把一个枚举类型该为位域枚举类型：为其添加 <code>FlagsAttribute</code> 特性，并为每一个枚举数值赋值二进制位对应每一种情况的数值结果：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Flags</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> FileTypes</span><br><span class="line">&#123;</span><br><span class="line">    Readable = <span class="number">1</span>,</span><br><span class="line">    Writable = <span class="number">2</span>,</span><br><span class="line">    Executable = <span class="number">4</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样便完成了枚举类型转为位域枚举类型。</p>
+<blockquote>
+<p><code>FlagsAttribute</code> 特性可写可不写，下面的内容完全都可以用。但加上它可以让编译器辅助我们查找出一些隐藏的错误。</p>
+</blockquote>
+<p>这种类型有什么好处呢？由于每一个数值都是二进制位表示的，所以我们完全可以使用位运算符来操作它们，获取一个对象的固有枚举类型集。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ft = FileTypes.Readable | FileTypes.Writable;</span><br></pre></td></tr></table></figure>
+<p>这样就可以表示一个可读或者可写的行为，到时候就可以获取具体的枚举情况，查看它是否具有指定枚举情况。比如，我们需要判断文件是否有可读属性，如果可以读取，就执行读取操作；如果可写，则执行写入操作，等等。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> file = someFile;</span><br><span class="line"><span class="keyword">if</span> (file.FileTypes.HasFlag(FileTypes.Executable))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Execute file.</span></span><br><span class="line">    file.Execute();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// The file cannot be executed.</span></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="string">"The file cannot be executed."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以调用系统自带的 <code>HasFlag</code> 方法来表示当前对象是否具有当前枚举值的行为。</p>
+<p>诸如上述的操作。</p>
+<p>当然，你可以写另外的一种枚举数值模式，二进制字面量。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Flags</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> FileTypes</span><br><span class="line">&#123;</span><br><span class="line">    None       = <span class="number">0b000</span>,</span><br><span class="line">    Readable   = <span class="number">0b001</span>,</span><br><span class="line">    Writable   = <span class="number">0b010</span>,</span><br><span class="line">    Executable = <span class="number">0b100</span>,</span><br><span class="line">    All        = <span class="number">0b111</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样的话，更易于看懂和理解每一个数值的对应情况，甚至你可以提供特殊的枚举数值，比如文件什么操作都不给，或者什么操作都有。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (file.FileTypes == FileTypes.All)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Here all operation can be done.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用位运算来简化操作"><a href="#使用位运算来简化操作" class="headerlink" title="使用位运算来简化操作"></a>使用位运算来简化操作</h3><p>在前文里，我们使用了 <code>|</code> 位或运算符号来合并两种枚举情况，表示或的关系，二进制层面的话，数值则表示为 <code>0b110</code>，即可读可写的两个属性二进制位被置为 1。实际上，所有位运算符都适用于位域枚举类型。</p>
+<h4 id="位与运算符-amp"><a href="#位与运算符-amp" class="headerlink" title="位与运算符 &amp;"></a>位与运算符 <code>&amp;</code></h4><p>可以使用位与运算符 <code>&amp;</code> 来表示两者都需要同时满足。它一般用于判断某个位域数值是否被包含在里面。比如，我们可以通过 <code>HasFlag</code> 方法查看当前位域数值是否包含 <code>FileTypes.Executable</code>，也可以通过该符号实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((ft &amp; FileTypes.Executable) == FileTypes.Executable)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// The file can be executed.</span></span><br><span class="line">    <span class="comment">// Do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它完全等价于</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (ft.HasFlag(FileTypes.Executable))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// The file can be executed.</span></span><br><span class="line">    <span class="comment">// Do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="位或运算符"><a href="#位或运算符" class="headerlink" title="位或运算符 |"></a>位或运算符 <code>|</code></h4><p>在前文已经说过，它用于表示两个枚举类型的或的关系，即同时给两个二进制位赋上值，甚至也可以为一个已经给定一部分二进制位的情况的枚举对象赋值。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ft1 = FileTypes.Readable | FileTypes.Writable;</span><br><span class="line"><span class="keyword">var</span> ft2 = ft1 | FileTypes.Executable;</span><br></pre></td></tr></table></figure>
+<p>当前，请注意的是，二进制实现层面来说，哪怕你已经包含了某个属性，调用 <code>|</code> 运算符也不会清除掉它们。</p>
+<h4 id="位异或运算符"><a href="#位异或运算符" class="headerlink" title="位异或运算符 ^"></a>位异或运算符 <code>^</code></h4><p>位异或运算符 <code>^</code> 用于反转一个二进制位。如果这个二进制位想从 1 变为 0，或者 0 变为 1，可以通过这个方式实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ft = FileTypes.All ^ FileType.Executable;</span><br></pre></td></tr></table></figure>
+<p>这样的话，就可以表示去掉可执行的二进制位的位域值。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ft = FileTypes.None ^ FileType.Executable;</span><br></pre></td></tr></table></figure>
+<p>这样就可以表示一个文件仅仅可被执行。</p>
+<h4 id="位取反运算符"><a href="#位取反运算符" class="headerlink" title="位取反运算符 ~"></a>位取反运算符 <code>~</code></h4><p>位取反运算符 <code>~</code> 可以表示把一个二进制位反转，但这种用法并不常见，因为它甚至会把所有其它的二进制位都反转过来，所以显得非常没有意义。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/C%E2%99%AF-%E8%AF%AD%E6%B3%95-%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">C♯.语法.查漏补缺</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/17/async-await-fundamental/" title="Async/await 关键字原理" itemprop="url">Async/await 关键字原理</a>
     
   </h1>
@@ -992,110 +1121,9 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/14/linq-06-phase-exercises/" title="LINQ 教程（6）：阶段性练习" itemprop="url">LINQ 教程（6）：阶段性练习</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-14T09:38:10.000Z" itemprop="datePublished"> 发表于 2019-11-14</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="一起来练习吧！"><a href="#一起来练习吧！" class="headerlink" title="一起来练习吧！"></a>一起来练习吧！</h2><p>在前面的内容里，我们尝试了非常多的 LINQ 语句（查询表达式格式以及方法链调用格式），今天我们这一节不讲解内容，而是来做一个小练习。</p>
-<h3 id="题目一：关键字查询"><a href="#题目一：关键字查询" class="headerlink" title="题目一：关键字查询"></a>题目一：关键字查询</h3><p>我们依旧拿出之前用过的实例：关键字。C# 拥有上百个关键字，这使得我们使用 C# 语言更加丰富多彩：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> words = <span class="keyword">new</span>[]</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"abstract"</span>, <span class="string">"as"</span>,</span><br><span class="line">    <span class="string">"base"</span>, <span class="string">"bool"</span>, <span class="string">"break"</span>, <span class="string">"byte"</span>,</span><br><span class="line">    <span class="string">"case"</span>, <span class="string">"catch"</span>, <span class="string">"char"</span>, <span class="string">"checked"</span>, <span class="string">"class"</span>, <span class="string">"const"</span>, <span class="string">"continue"</span>,</span><br><span class="line">    <span class="string">"decimal"</span>, <span class="string">"default"</span>, <span class="string">"delegate"</span>, <span class="string">"do"</span>, <span class="string">"double"</span>,</span><br><span class="line">    <span class="string">"else"</span>, <span class="string">"enum"</span>, <span class="string">"event"</span>, <span class="string">"explicit"</span>, <span class="string">"extern"</span>,</span><br><span class="line">    <span class="string">"false"</span>, <span class="string">"finally"</span>, <span class="string">"fixed"</span>, <span class="string">"float"</span>, <span class="string">"for"</span>, <span class="string">"foreach"</span>,</span><br><span class="line">    <span class="string">"goto"</span>,</span><br><span class="line">    <span class="string">"if"</span>, <span class="string">"implicit"</span>, <span class="string">"in (foreach)"</span>, <span class="string">"int"</span>, <span class="string">"interface"</span>, <span class="string">"internal"</span>, <span class="string">"is"</span>,</span><br><span class="line">    <span class="string">"lock"</span>, <span class="string">"long"</span>,</span><br><span class="line">    <span class="string">"namespace"</span>, <span class="string">"new"</span>, <span class="string">"null"</span>,</span><br><span class="line">    <span class="string">"object"</span>, <span class="string">"operator"</span>, <span class="string">"out (generic modifier)"</span>, <span class="string">"out (parameter)"</span>, <span class="string">"override"</span>,</span><br><span class="line">    <span class="string">"params"</span>, <span class="string">"private"</span>, <span class="string">"protected"</span>, <span class="string">"public"</span>,</span><br><span class="line">    <span class="string">"readonly"</span>, <span class="string">"ref"</span>, <span class="string">"return"</span>,</span><br><span class="line">    <span class="string">"sbyte"</span>, <span class="string">"sealed"</span>, <span class="string">"short"</span>, <span class="string">"sizeof"</span>, <span class="string">"stackalloc"</span>, <span class="string">"static"</span>, <span class="string">"string"</span>, <span class="string">"struct"</span>, <span class="string">"switch"</span>,</span><br><span class="line">    <span class="string">"this"</span>, <span class="string">"throw"</span>, <span class="string">"true"</span>, <span class="string">"try"</span>, <span class="string">"typeof"</span>,</span><br><span class="line">    <span class="string">"uint"</span>, <span class="string">"ulong"</span>, <span class="string">"unchecked"</span>, <span class="string">"unsafe"</span>, <span class="string">"ushort"</span>, <span class="string">"using"</span>,</span><br><span class="line">    <span class="string">"virtual"</span>, <span class="string">"void"</span>, <span class="string">"volatile"</span>,</span><br><span class="line">    <span class="string">"while"</span>,</span><br><span class="line">    <span class="string">"*add"</span>, <span class="string">"*alias"</span>, <span class="string">"*ascending"</span>, <span class="string">"*async"</span>, <span class="string">"*await"</span>,</span><br><span class="line">    <span class="string">"*by"</span>,</span><br><span class="line">    <span class="string">"*descending"</span>, <span class="string">"*dynamic"</span>,</span><br><span class="line">    <span class="string">"*equals"</span>,</span><br><span class="line">    <span class="string">"*from"</span>,</span><br><span class="line">    <span class="string">"*get"</span>, <span class="string">"*global"</span>, <span class="string">"*group"</span>,</span><br><span class="line">    <span class="string">"*in (generic modifier)"</span>, <span class="string">"*in (parameter)"</span>, <span class="string">"*in (query)"</span>, <span class="string">"*into"</span>,</span><br><span class="line">    <span class="string">"*join"</span>,</span><br><span class="line">    <span class="string">"*let"</span>,</span><br><span class="line">    <span class="string">"*nameof"</span>, <span class="string">"*notnull"</span>,</span><br><span class="line">    <span class="string">"*on"</span>, <span class="string">"*orderby"</span>,</span><br><span class="line">    <span class="string">"*partial (method)"</span>, <span class="string">"*partial (type)"</span>,</span><br><span class="line">    <span class="string">"*remove"</span>,</span><br><span class="line">    <span class="string">"*select"</span>, <span class="string">"*set"</span>, <span class="string">"*switch (expression)"</span>,</span><br><span class="line">    <span class="string">"*unmanaged"</span>, <span class="string">"*using static"</span>,</span><br><span class="line">    <span class="string">"*value"</span>, <span class="string">"*var"</span>,</span><br><span class="line">    <span class="string">"*when"</span>, <span class="string">"*where (generic constraint)"</span>, <span class="string">"*where (query)"</span>,</span><br><span class="line">    <span class="string">"*yield"</span>,</span><br><span class="line">    <span class="string">"#annotations"</span>,</span><br><span class="line">    <span class="string">"#checksum"</span>,</span><br><span class="line">    <span class="string">"#disable"</span>,</span><br><span class="line">    <span class="string">"#enable"</span>,</span><br><span class="line">    <span class="string">"#nullable"</span>,</span><br><span class="line">    <span class="string">"#restore"</span>,</span><br><span class="line">    <span class="string">"!#safeonly"</span>,</span><br><span class="line">    <span class="string">"#warning"</span>, <span class="string">"#warnings"</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>下面试着完成如下的小练习：</p>
-<ol>
-<li>取出所有第一个字符不是符号的关键字；</li>
-<li>取出所有不含有注解文字（包含小括号的注解）的关键字；</li>
-<li>取出所有只有一个符号开头的关键字（例如 <code>!#safeonly</code> 就不应该包含在该集合里，因为它以两个符号开头）；</li>
-<li>取出所有上下文关键字（以 <code>*</code> 符号开头的关键字）；</li>
-<li>取出所有的预处理器关键字（以 <code>#</code> 或以 <code>!#</code> 符号开头的关键字）；</li>
-<li>取出所有超过 7 个字符的关键字（包含符号在内）；</li>
-<li>将所有不是以符号开头的关键字按字母表顺序升序排序；</li>
-<li>将所有第一个字符是符号的关键字以第二个字符升序排序；</li>
-<li>将所有关键字以第一个字符分组；</li>
-<li>取出所有关键字的第一个字符的所有情况；</li>
-<li>取出所有关键字的单词部分（即忽略掉所有的前缀符号），并按忽略后的关键字，它们的第一个字符进行升序排序并分组；</li>
-<li>使用目前学过的知识点，尝试将所有关键字按第一个字符进行升序排序，然后取出倒数 30 个关键字。</li>
-</ol>
-<h3 id="题目二：宠物和主人"><a href="#题目二：宠物和主人" class="headerlink" title="题目二：宠物和主人"></a>题目二：宠物和主人</h3><p>现给出狗狗和猫咪若干只，并给出如下的类：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">internal class Person : IEquatable&lt;Person&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> FirstName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> LastName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params">Person other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> FirstName == other.FirstName &amp;&amp; LastName == other.LastName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params"><span class="keyword">object</span> other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> other <span class="keyword">is</span> Person comparer &amp;&amp; Equals(comparer);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">GetHashCode</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> FirstName.GetHashCode() ^ LastName.GetHashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">$"<span class="subst">&#123;FirstName&#125;</span> <span class="subst">&#123;LastName&#125;</span>"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> ==(Person left, Person right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> left.Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> !=(Person left, Person right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> !left.Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">class</span> <span class="title">Pet</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> Person Owner &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> Name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">class</span> <span class="title">Dog</span> : <span class="title">Pet</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">class</span> <span class="title">Cat</span> : <span class="title">Pet</span> &#123; &#125;</span><br></pre></td></tr></table></figure>
-<p>并给出如下信息：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> magnus = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Magnus"</span>, LastName = <span class="string">"Hedlund"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> terry = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Terry"</span>, LastName = <span class="string">"Adams"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> charlotte = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Charlotte"</span>, LastName = <span class="string">"Weiss"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> arlene = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Arlene"</span>, LastName = <span class="string">"Huff"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> rui = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Rui"</span>, LastName = <span class="string">"Raposo"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> phyllis = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Phyllis"</span>, LastName = <span class="string">"Harris"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> barley = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Barley"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> boots = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Boots"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> whiskers = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Whiskers"</span>, Owner = charlotte &#125;;</span><br><span class="line"><span class="keyword">var</span> bluemoon = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Blue Moon"</span>, Owner = rui &#125;;</span><br><span class="line"><span class="keyword">var</span> daisy = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Daisy"</span>, Owner = magnus &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fourwheeldrive = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Four Wheel Drive"</span>, Owner = phyllis &#125;;</span><br><span class="line"><span class="keyword">var</span> duke = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Duke"</span>, Owner = magnus &#125;;</span><br><span class="line"><span class="keyword">var</span> denim = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Denim"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> wiley = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Wiley"</span>, Owner = charlotte &#125;;</span><br><span class="line"><span class="keyword">var</span> snoopy = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Snoopy"</span>, Owner = rui &#125;;</span><br><span class="line"><span class="keyword">var</span> snickers = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Snickers"</span>, Owner = arlene &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create three lists.</span></span><br><span class="line"><span class="keyword">var</span> people =</span><br><span class="line">    <span class="keyword">new</span> List&lt;Person&gt; &#123; magnus, terry, charlotte, arlene, rui, phyllis &#125;;</span><br><span class="line"><span class="keyword">var</span> cats =</span><br><span class="line">    <span class="keyword">new</span> List&lt;Cat&gt; &#123; barley, boots, whiskers, bluemoon, daisy &#125;;</span><br><span class="line"><span class="keyword">var</span> dogs =</span><br><span class="line">    <span class="keyword">new</span> List&lt;Dog&gt; &#123; fourwheeldrive, duke, denim, wiley, snoopy, snickers &#125;;</span><br></pre></td></tr></table></figure>
-<p>请查找如下内容：</p>
-<ol>
-<li>所有狗狗自己的名字；</li>
-<li>所有猫咪的主人的姓和名；</li>
-<li>所有狗狗和猫咪的主人的姓和名；</li>
-<li>所有养了两只狗狗的主人；</li>
-<li>所有没有养宠物的人。</li>
-</ol>
-<h3 id="题目三：杂货铺"><a href="#题目三：杂货铺" class="headerlink" title="题目三：杂货铺"></a>题目三：杂货铺</h3><p>给定一些类：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Product</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> CategoryID &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Category</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> ID &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>并提供如下信息：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> categories = <span class="keyword">new</span> List&lt;Category&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">new</span> Category() &#123; Name = <span class="string">"Beverages"</span>, ID = <span class="number">001</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Category() &#123; Name = <span class="string">"Condiments"</span>, ID = <span class="number">002</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Category() &#123; Name = <span class="string">"Vegetables"</span>, ID = <span class="number">003</span> &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Specify the second data source.</span></span><br><span class="line"><span class="keyword">var</span> products = <span class="keyword">new</span> List&lt;Product&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Tea"</span>, CategoryID = <span class="number">001</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Mustard"</span>, CategoryID = <span class="number">002</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Pickles"</span>, CategoryID = <span class="number">002</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Carrots"</span>, CategoryID = <span class="number">003</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Bok Choy"</span>, CategoryID = <span class="number">003</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Peaches"</span>, CategoryID = <span class="number">005</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Melons"</span>, CategoryID = <span class="number">005</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Ice Cream"</span>, CategoryID = <span class="number">007</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Mackerel"</span>, CategoryID = <span class="number">012</span> &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>请找出如下内容：</p>
-<ol>
-<li>所有商品的分类 ID；</li>
-<li>所有名字至少含有两个单词的商品；</li>
-<li>所有饮品；</li>
-<li>所有调味料；</li>
-<li>胡萝卜（Carrot）的所有信息（名字、编号以及它的所属类别的名称）；</li>
-<li>白菜（Bok Choy）的分类名称；</li>
-<li>所有拥有两个商品的分类。</li>
-</ol>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
   </nav>
 
 </div>
@@ -1120,7 +1148,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>19</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>20</sup></a></li>
 			
 		
 			
@@ -1168,11 +1196,11 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>
