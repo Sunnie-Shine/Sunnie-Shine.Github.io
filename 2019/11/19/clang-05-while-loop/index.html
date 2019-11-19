@@ -4,23 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>字段长相的事件的编译器代码生成 | 向向的博客</title>
+    <title>C 语言语法教程（5）：while 语句 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event; 它便会自动生成对应的 adder 和 remover">
-<meta name="keywords" content="C♯,C♯.编译器生成">
+    <meta name="description" content="循环是什么？在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：  S_n = \frac{n(n - 1)}2显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我">
+<meta name="keywords" content="C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="字段长相的事件的编译器代码生成">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;complier-generating-of-field-like-event&#x2F;index.html">
+<meta property="og:title" content="C 语言语法教程（5）：while 语句">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="什么是字段长相的事件声明？所谓字段长相的事件（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好： 1public event EventHandler Event; 它便会自动生成对应的 adder 和 remover">
+<meta property="og:description" content="循环是什么？在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：  S_n = \frac{n(n - 1)}2显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-18T05:25:15.835Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;while-loop-example.png">
+<meta property="og:updated_time" content="2019-11-19T01:12:47.135Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;while-loop-example.png">
 
     
     
@@ -82,7 +84,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/10/complier-generating-of-field-like-event/" title="字段长相的事件的编译器代码生成" itemprop="url">字段长相的事件的编译器代码生成</a>
+      <a href="/2019/11/19/clang-05-while-loop/" title="C 语言语法教程（5）：while 语句" itemprop="url">C 语言语法教程（5）：while 语句</a>
     
   </h1>
   <p class="article-author">By
@@ -90,7 +92,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-10T14:17:35.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    <time datetime="2019-11-19T00:21:22.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
     
   </p>
 </header>
@@ -99,23 +101,38 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是字段长相的事件声明？"><span class="toc-number">1.</span> <span class="toc-text">什么是字段长相的事件声明？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#来看对照吧！"><span class="toc-number">2.</span> <span class="toc-text">来看对照吧！</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#adder-分析"><span class="toc-number">3.</span> <span class="toc-text">adder 分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#remover-分析"><span class="toc-number">4.</span> <span class="toc-text">remover 分析</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-语句"><span class="toc-number">2.</span> <span class="toc-text">while 语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="什么是字段长相的事件声明？"><a href="#什么是字段长相的事件声明？" class="headerlink" title="什么是字段长相的事件声明？"></a>什么是字段长相的事件声明？</h2><p>所谓<strong>字段长相的事件</strong>（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br></pre></td></tr></table></figure>
-<p>它便会自动生成对应的 adder 和 remover。实际上，它会生成什么东西呢？</p>
-<h2 id="来看对照吧！"><a href="#来看对照吧！" class="headerlink" title="来看对照吧！"></a>来看对照吧！</h2><p>我在 SharpLab 上测试了一个事件的声明，它是这样的。</p>
-<p>源代码：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>而在编译后，生成的代码是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> EventHandler m_Event;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event</span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">add</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Combine(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">remove</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Remove(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中，<code>[ComplierGenerated]</code> 暗示代码块是由编译器自动生成，而类上面那一大堆东西，我们这里暂时不用去关心，因为这些内容不是本文需要涉及到的内容。</p>
-<p>仔细观察内部代码，可以看到代码里写的模式基本上就是通过一个生成的委托字段 <code>m_Event</code> 来执行操作。</p>
-<h2 id="adder-分析"><a href="#adder-分析" class="headerlink" title="adder 分析"></a>adder 分析</h2><p>下面来看添加器 <code>add</code> 块里的内容。实际上可以看到它的操作仅仅就是在线程上执行赋值。首先给了一个尚未赋值的对象 <code>eventHandler2</code> 作为临时变量，然后尝试为其赋值。当赋值完成后，将其使用 <code>Delegate.Combine</code> 方法进行委托合并。合并后，在使用提供线程操作的静态类 <code>Interlocked</code> 的线程上交换模式，进行变量的交换，这样就达到了赋值效果。</p>
-<p>但请注意，在外层，是有一个 <code>do-while</code> 循环的。如果检测到执行后的操作并不是同一个引用时，将会重新执行循环体。实际上，它就是为了保证交换和委托结合的成功。</p>
-<h2 id="remover-分析"><a href="#remover-分析" class="headerlink" title="remover 分析"></a>remover 分析</h2><p>再来看看移除器 <code>remove</code> 块里的内容。和刚才一样的逻辑，就不重复了，主要就是换掉 <code>Delegate.Combine</code>，改为 <code>Delegate.Remove</code> 而已。</p>
+		<h2 id="循环是什么？"><a href="#循环是什么？" class="headerlink" title="循环是什么？"></a>循环是什么？</h2><p>在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：</p>
+<script type="math/tex; mode=display">
+S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我们完全感觉不到。</p>
+<p>那么，如何进行重复性的运算呢？我们先理清楚执行思路：</p>
+<p><img src="while-loop-example.png" alt=""></p>
+<p>如图所示，我们首先为 <code>i</code> 和 <code>S</code> 赋值，这些数值在后续都会使用到，这个称为初始值。然后，我们尝试先判断一次是否这个数字 <code>i</code> 超过了 100。如果没有超过，我们就执行第一次把 <code>i</code> 累加到 <code>S</code> 之中。可见 <code>S</code> 表示整个计算的和值结果。接着，<code>i</code> 增大一个单位。于是，我们重新作一次判断，看此时的 <code>i</code> 是否超过了 100（超过 100 就不计算在内了）。如果没有超过，就重复操作，继续把 <code>i</code> 的新数值累加到 <code>S</code> 之中，并再次增大 <code>i</code> 一个单位；如果 <code>i</code> 已经超过了 100，整个计算的活动行为就结束了。于是我们此时输出 <code>S</code> 的结果，并退出程序，整个程序执行完毕。</p>
+<p>看得出来，这个逻辑是比较清楚的。</p>
+<h2 id="while-语句"><a href="#while-语句" class="headerlink" title="while 语句"></a><code>while</code> 语句</h2><p>说完基本的计算思路，下面我们来说说它的代码的语法格式。</p>
+<h3 id="基本写法"><a href="#基本写法" class="headerlink" title="基本写法"></a>基本写法</h3><p><code>while</code> 语句可以解决上述的写法。我们尝试来看一下整体的逻辑。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        S += i;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, S);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先我们依旧尝试为 <code>i</code> 和 <code>S</code> 进行初始赋值，然后直接进入循环部分。当 <code>i</code> 不超过 100 的时候，就进行累加，并且要增大 <code>i</code> 变量的数值。最后执行完毕后，输出 <code>S</code> 的结果即可。</p>
+<p>由此可见，这个类型的执行逻辑还是比较清晰的。有一点看起来像是瑕疵的地方在于，我们明明知道 <code>i</code> 此时初始数值是 1，没有超过 100，而为什么非要在最开始就写上判断条件 <code>i &lt;= 100</code> 来判断是否小于等于 100 呢？这不是废话吗？</p>
+<p>实际上，这个程序当你输入了一个无效的数值时，比如 107，这个时候根本不可能计算从 107 到 100 的和（我们的目的是从 1 增大到 100，而 107 超过了 100），所以直接就退出了循环。另外，<code>while</code> 语句的格式要求把条件放到最开始，所以我们不得不这么做。</p>
+<p>所以，总的来说，<code>while</code> 语句的写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (condition)</span><br><span class="line">&#123;</span><br><span class="line">    loopExecutingSentence;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>while</code> 旁边写执行的元素的判断条件，然后在大括号里写上执行反复操作的语句。</p>
+<blockquote>
+<p><code>while</code> 语句也经常被称为 <code>while</code> 循环。</p>
+</blockquote>
+<h3 id="作出优化"><a href="#作出优化" class="headerlink" title="作出优化"></a>作出优化</h3><p>显然，在前文我们学习了自增自减运算符的前后缀书写方式的计算问题。当 <code>++</code> 写在变量之后，则表示变量在使用完成后最后增大一个单位。这使得我们原本需要写成两句话的语句可以写成一句话：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S += i++;</span><br></pre></td></tr></table></figure>
+<p>这个写法等价于先执行 <code>sum += i;</code> 语句，然后执行 <code>i++;</code> 语句增大 <code>i</code> 变量一个单位。</p>
+<p>所以，<code>while</code> 语句和 <code>if</code> 执行的模式完全一样，如果重复执行的语句只有一个语句，则可以省略大括号，所以上述写法融入到 <code>while</code> 里则可以写成这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    S += i++;</span><br></pre></td></tr></table></figure>
+<h2 id="另外一个示例"><a href="#另外一个示例" class="headerlink" title="另外一个示例"></a>另外一个示例</h2><p>下面我们来看另外一则示例。我们还是用求和的思路来讲解，不过我们稍作改动。如果我们要计算从 1 到某个数的和，不过问题变为了”请求出从 1 到 $n$ 的所有整数的和 $S$ 在<strong>第一次</strong>超过 2400 的时候，此时的 $n$ 的值“。这个问题怎么解决呢？</p>
+<p>实际上，可能你想得很复杂。我们知道，<code>while</code> 语句的写法是一个条件加上重复运算的语句，所以这个题目完全可以只修改执行的条件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (S &lt;= <span class="number">2400</span>) <span class="comment">// Note here.</span></span><br><span class="line">    S += i++;</span><br></pre></td></tr></table></figure>
+<p>注意条件改为了 <code>S &lt;= 2400</code>，其它的地方都没变化。最后只需要输出 <code>i</code> 的结果就可以了。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -123,13 +140,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a>
+  <span></span> <a href="/tags/C/">C</a>
   </div>
 
 </div>
@@ -138,7 +155,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/10/complier-generating-of-field-like-event/" data-title="字段长相的事件的编译器代码生成 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/19/clang-05-while-loop/" data-title="C 语言语法教程（5）：while 语句 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -152,18 +169,18 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2019/11/11/linq-02-let-clause/" title="LINQ 教程（2）：let 从句">
+ <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法教程（6）：do-while 语句">
   <strong>上一篇：</strong><br/>
   <span>
-  LINQ 教程（2）：let 从句</span>
+  C 语言语法教程（6）：do-while 语句</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2019/11/10/csharp-concurrent-examples-01-elementary-async/"  title="C# 并发编程实例系列（1）：异步编程基础">
+<a href="/2019/11/18/csharplang-complement-04-enum/"  title="C# 语法查漏补缺系列（4）：枚举类型">
  <strong>下一篇：</strong><br/> 
- <span>C# 并发编程实例系列（1）：异步编程基础
+ <span>C# 语法查漏补缺系列（4）：枚举类型
 </span>
 </a>
 </div>
@@ -287,7 +304,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是字段长相的事件声明？"><span class="toc-number">1.</span> <span class="toc-text">什么是字段长相的事件声明？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#来看对照吧！"><span class="toc-number">2.</span> <span class="toc-text">来看对照吧！</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#adder-分析"><span class="toc-number">3.</span> <span class="toc-text">adder 分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#remover-分析"><span class="toc-number">4.</span> <span class="toc-text">remover 分析</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-语句"><span class="toc-number">2.</span> <span class="toc-text">while 语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
  
   </div>
 
