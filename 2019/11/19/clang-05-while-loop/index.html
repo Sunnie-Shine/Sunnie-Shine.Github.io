@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C 语言语法教程（5）：while 语句 | 向向的博客</title>
+    <title>C 语言语法系列（5）：while 语句 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
@@ -14,13 +14,13 @@
     <meta name="description" content="循环是什么？在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：  S_n = \frac{n(n - 1)}2显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我">
 <meta name="keywords" content="C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C 语言语法教程（5）：while 语句">
+<meta property="og:title" content="C 语言语法系列（5）：while 语句">
 <meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="循环是什么？在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：  S_n = \frac{n(n - 1)}2显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;while-loop-example.png">
-<meta property="og:updated_time" content="2019-11-19T01:12:47.135Z">
+<meta property="og:updated_time" content="2019-11-19T12:42:28.041Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;while-loop-example.png">
 
@@ -84,7 +84,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/19/clang-05-while-loop/" title="C 语言语法教程（5）：while 语句" itemprop="url">C 语言语法教程（5）：while 语句</a>
+      <a href="/2019/11/19/clang-05-while-loop/" title="C 语言语法系列（5）：while 语句" itemprop="url">C 语言语法系列（5）：while 语句</a>
     
   </h1>
   <p class="article-author">By
@@ -101,7 +101,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-语句"><span class="toc-number">2.</span> <span class="toc-text">while 语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-（循环）语句"><span class="toc-number">2.</span> <span class="toc-text">while （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
 		
 		</div>
 		
@@ -112,7 +112,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 <p><img src="while-loop-example.png" alt=""></p>
 <p>如图所示，我们首先为 <code>i</code> 和 <code>S</code> 赋值，这些数值在后续都会使用到，这个称为初始值。然后，我们尝试先判断一次是否这个数字 <code>i</code> 超过了 100。如果没有超过，我们就执行第一次把 <code>i</code> 累加到 <code>S</code> 之中。可见 <code>S</code> 表示整个计算的和值结果。接着，<code>i</code> 增大一个单位。于是，我们重新作一次判断，看此时的 <code>i</code> 是否超过了 100（超过 100 就不计算在内了）。如果没有超过，就重复操作，继续把 <code>i</code> 的新数值累加到 <code>S</code> 之中，并再次增大 <code>i</code> 一个单位；如果 <code>i</code> 已经超过了 100，整个计算的活动行为就结束了。于是我们此时输出 <code>S</code> 的结果，并退出程序，整个程序执行完毕。</p>
 <p>看得出来，这个逻辑是比较清楚的。</p>
-<h2 id="while-语句"><a href="#while-语句" class="headerlink" title="while 语句"></a><code>while</code> 语句</h2><p>说完基本的计算思路，下面我们来说说它的代码的语法格式。</p>
+<h2 id="while-（循环）语句"><a href="#while-（循环）语句" class="headerlink" title="while （循环）语句"></a><code>while</code> （循环）语句</h2><p>说完基本的计算思路，下面我们来说说它的代码的语法格式。</p>
 <h3 id="基本写法"><a href="#基本写法" class="headerlink" title="基本写法"></a>基本写法</h3><p><code>while</code> 语句可以解决上述的写法。我们尝试来看一下整体的逻辑。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        S += i;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, S);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>首先我们依旧尝试为 <code>i</code> 和 <code>S</code> 进行初始赋值，然后直接进入循环部分。当 <code>i</code> 不超过 100 的时候，就进行累加，并且要增大 <code>i</code> 变量的数值。最后执行完毕后，输出 <code>S</code> 的结果即可。</p>
@@ -155,7 +155,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/19/clang-05-while-loop/" data-title="C 语言语法教程（5）：while 语句 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/19/clang-05-while-loop/" data-title="C 语言语法系列（5）：while 语句 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -169,10 +169,10 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法教程（6）：do-while 语句">
+ <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法系列（6）：do-while 语句">
   <strong>上一篇：</strong><br/>
   <span>
-  C 语言语法教程（6）：do-while 语句</span>
+  C 语言语法系列（6）：do-while 语句</span>
 </a>
 </div>
 
@@ -304,7 +304,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-语句"><span class="toc-number">2.</span> <span class="toc-text">while 语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-（循环）语句"><span class="toc-number">2.</span> <span class="toc-text">while （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
  
   </div>
 
@@ -327,7 +327,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>21</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>22</sup></a></li>
 			
 		
 			
@@ -335,7 +335,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>7</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>8</sup></a></li>
 			
 		
 			
@@ -355,11 +355,19 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
@@ -371,19 +379,11 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			

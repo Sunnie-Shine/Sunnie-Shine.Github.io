@@ -82,6 +82,243 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/09/bayes-rule/" title="贝叶斯公式解读" itemprop="url">贝叶斯公式解读</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T12:05:53.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="先来看看贝叶斯公式"><a href="#先来看看贝叶斯公式" class="headerlink" title="先来看看贝叶斯公式"></a>先来看看贝叶斯公式</h2><p><strong>贝叶斯公式</strong>（Bayes Formula）是用于解决概率问题的公式，长成这样。</p>
+<script type="math/tex; mode=display">
+P(A|B) = \frac{P(B|A)P(A)}{P(B)}</script><p>其中的 $A$ 和 $B$ 指的是两个不同的事件，并且此时 $P(B)$，即事件 $B$ 的概率不能为 0（即 $P(B) \neq 0$），另外：</p>
+<ul>
+<li>$P(A|B)$ 表示一个条件概率，即当事件 $B$ 一定成立的前提下，事件 $A$ 发生的可能性。</li>
+<li>$P(B|A)$ 则是反过来的，事件 $A$ 一定成立的前提下，事件 $B$ 发生的可能性。</li>
+<li>$P(A)$ 和 $P(B)$ 都是针对于 $A$ 和 $B$ 两个事件的概率，但它们是互相独立的。</li>
+</ul>
+<p>不过有趣的地方在于，公式里带有的两个信息 $P(A|B)$ 和 $P(B|A)$ 刚好是反过来的，却得到了关联性，是不是很有意思呢？</p>
+<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>我们来看一个表格，清晰可见，还好懂。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>事件发生数量</th>
+<th>$B$</th>
+<th>$\bar B$</th>
+<th>总和</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$A$</td>
+<td>💗💗</td>
+<td>🧡🧡🧡</td>
+<td>5</td>
+</tr>
+<tr>
+<td>$\bar A$</td>
+<td>💛💛<br />💛💛<br />💛💛</td>
+<td>💜💜💜<br />💜💜💜<br />💜💜💜</td>
+<td>15</td>
+</tr>
+<tr>
+<td>总和</td>
+<td>8</td>
+<td>12</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>那么</p>
+<script type="math/tex; mode=display">
+\begin{align}
+P(B, \text{已知}A) \cdot P(A) &= P(B|A) \cdot P(A)\\
+\frac{
+    \textcolor[rgb]{1,0,0}{2}
+}{
+    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}
+}\cdot \frac{
+    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}
+}{
+    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
+    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
+}&= \frac{
+    \textcolor[rgb]{1,0,0}{2}
+}{
+    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
+    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
+}\\
+\\
+P(A, \text{已知}B) \cdot P(B) &= P(A|B) \cdot P(B)\\
+\frac{
+    \textcolor[rgb]{1,0,0}{2}
+}{
+    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}
+}\cdot \frac{
+    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}
+}{
+    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
+    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
+}&= \frac{
+    \textcolor[rgb]{1,0,0}{2}
+}{
+    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
+    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
+}\\
+\\
+\because P(A|B) \cdot P(B) &= P(B|A) \cdot P(A)\\
+\therefore P(A|B) &= \frac{P(B|A) \cdot P(A)}{P(B)}
+\end{align}</script><h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>先来看个例子。某城市发生了一起汽车撞人逃跑事件，该城市只有两种颜色的车，蓝色15%，绿色85%，事发时有一个人在现场看见了，他指证是蓝车。但是根据专家在现场分析,当时那种条件能看正确的可能性是80%。那么,肇事的车是蓝车的概率到底是多少？ </p>
+<p>令 $B$ 是城市里车为蓝色的事件，$G$ 为车子是绿色的事件，$E$ 为观察到车子为蓝色的事件。则由已知条件可以得出$P(B) = 0.15$，$P(G) = P(\bar B) = 0.85$，至于 $P(E)$ 我们一会儿再说。</p>
+<p>好了。如果现在没有证人看到肇事者车的话，那么我们只能盲猜，因此肇事者的车子为蓝色的概率只能是整个城市里面车为蓝色的概率，也就是先验概率 $P(B) = 0.15$，因为这时我们还没有其他证据介入，只能做个粗略的估算。</p>
+<p>接下来，当当当当，有证人了。证人说他看到了车子，并且说是蓝色的，注意，这分两种情况，…………重要的事情说两遍：<strong>贝叶斯里面现象(新的证据)部分总是分两种情况出现的</strong>：一是车子的确是蓝色的，并且证人也正确的分辨出车是蓝色的来了，概率为</p>
+<script type="math/tex; mode=display">
+\begin{align}
+P(E, B) &= P(B) \cdot P(E|B)\\
+&= 0.15 \times 0.8\\
+&= 0.12
+\end{align}</script><p>二是车子根本就是绿色的，只是证人看成蓝色的了，概率为</p>
+<script type="math/tex; mode=display">
+\begin{align}
+P(E, \bar B) &= P(\bar B) \cdot P(E|\bar B)\\
+&= P(\bar B) \times (1 -  P(\bar E|\bar B))\\
+&= 0.85 \times (1 - 0.8)\\
+&= 0.17
+\end{align}</script><p>所以</p>
+<script type="math/tex; mode=display">
+\begin{align}
+P(E) &= P(E, B) + P(E, \bar B)\\
+&= 0.12 + 0.17\\
+&= 0.29
+\end{align}</script><p>然后，我们要求解的其实是在有证人的条件下车子为蓝色的概率，也就是</p>
+<script type="math/tex; mode=display">
+\begin{align}
+P(B|E) &= \frac{P(E, B)}{P(E)}\\
+&= \frac{0.12}{0.29}\\
+&\approx 0.41
+\end{align}</script><p>你看，<strong>$P(B|E)$ 根本就是 $P(B)$ 的加强版本</strong>，条件概率跟先验概率描述的根本就是同一件事。</p>
+<p>那么当当当当，又一个结论来了：当有新的证据出现时，$P(B|E)$ 会替代原来 $P(B)$ 的角色。换句话说，现在警察找到了一个新的证人，他也觉得这辆肇事车是蓝色的，这时在新一轮的贝叶斯概率计算中，基础概率$P(B)=0.41$，而不是原先的 $0.15$，大家可以算一下，新的 $P(B|E)=0.73$，换句话说，当有两个人看见肇事车辆为蓝色的时候，对比只有一个人看到肇事车辆为蓝色的时候，该车实际为蓝色的概率大大增加。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/数学/">数学</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/09/windoku-da-rule/" title="窗口数独的潜规则" itemprop="url">窗口数独的潜规则</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-09T09:47:50.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="窗口数独的简单介绍"><a href="#窗口数独的简单介绍" class="headerlink" title="窗口数独的简单介绍"></a>窗口数独的简单介绍</h2><p>除了需要满足标准数独的规则外，还需要使得四个涂色粗线的“窗口”内的数字也都要包括数字1到9各一个。</p>
+<p><img src="Windoku.png" alt=""></p>
+<p>它的解答如下。</p>
+<p><img src="WindokuSolution.png" alt=""></p>
+<h2 id="潜规则——窗口-18-宫"><a href="#潜规则——窗口-18-宫" class="headerlink" title="潜规则——窗口 18 宫"></a>潜规则——窗口 18 宫</h2><p>窗口数独题有一个潜规则。</p>
+<p><img src="18Wins.png" alt=""></p>
+<p>如图所示，除了基本的9个宫不重复和4个窗口也满足以外，相同涂色的9个单元格所构成的一个区域内，也不能包括重复。</p>
+<p>数数看，恰好有18个“宫”呢！9个基本宫，外加4个窗口宫，再加5个额外“宫”！</p>
+<p>原因是，任意观察一组非粉红色的涂色区域。找到这些涂色单元格夹住的两个窗口宫，它们一起所处的三行（或三列）应该包含三组数字1到9。比如我们观察红色涂色区域。算上中间夹住的两个窗口宫，它们所处的三列，一定是三组数字1到9。</p>
+<p><img src="18Wins_Detail.png" alt=""></p>
+<p>不过这27个单元格去掉2个窗口宫后，剩下9格就一定也是一组1到9。</p>
+<p>所以，其他的三个非粉红色区域也是这样类似的推导方式。而最终粉红色区域，则是将盘面上所有的涂色区域和4个窗口宫得到的8组数字1到9后，最终剩下来的9格。它们自成一组。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/数独/">数独</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/09/clang-01-datatype/" title="C 语言语法系列（1）：数据类型" itemprop="url">C 语言语法系列（1）：数据类型</a>
     
   </h1>
@@ -550,7 +787,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/08/common-01-nullable-types/" title="C# 内置类型详解系列（1）：可空类型" itemprop="url">C# 内置类型详解系列（1）：可空类型</a>
+      <a href="/2019/11/08/csharp-common-01-nvt/" title="C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;" itemprop="url">C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;</a>
     
   </h1>
   <p class="article-author">By
@@ -565,7 +802,7 @@
     <div class="article-content">
         
         <p>从本文开始，我们将探究 C# 里常见的一些内置类型，并详细分析这些类型的使用方式和原理（当然，如果有的话）。</p>
-<h2 id="可空类型是什么？"><a href="#可空类型是什么？" class="headerlink" title="可空类型是什么？"></a>可空类型是什么？</h2><p>在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：<code>byte</code>、<code>int</code>、<code>short</code>、<code>long</code>、<code>float</code>、<code>double</code>、<code>char</code>、<code>boolean</code>，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都是我们 Java 里提供好的一些特殊的类型，它们分别都是 <code>Byte</code>、<code>Integer</code>、<code>Short</code>、<code>Long</code>、<code>Float</code>、<code>Double</code>、<code>Character</code> 和 <code>Boolean</code> 类型的一个特殊实例。之所以这么说，是因为在泛型语法里，我们无法把那些以关键字作为类型的所谓的类型，作为泛型参数，即我们无法使用</p>
+<h2 id="可空值类型是什么？"><a href="#可空值类型是什么？" class="headerlink" title="可空值类型是什么？"></a>可空值类型是什么？</h2><p>在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：<code>byte</code>、<code>int</code>、<code>short</code>、<code>long</code>、<code>float</code>、<code>double</code>、<code>char</code>、<code>boolean</code>，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都是我们 Java 里提供好的一些特殊的类型，它们分别都是 <code>Byte</code>、<code>Integer</code>、<code>Short</code>、<code>Long</code>、<code>Float</code>、<code>Double</code>、<code>Character</code> 和 <code>Boolean</code> 类型的一个特殊实例。之所以这么说，是因为在泛型语法里，我们无法把那些以关键字作为类型的所谓的类型，作为泛型参数，即我们无法使用</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">int</span>&gt; l = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">// Wrong.</span></span><br></pre></td></tr></table></figure>
 <p>这种写法。但是，对应的这些类类型，由于都是类，所以它们反而可以被赋值为 <code>null</code> 值，即我们完全可以租到下面的操作：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="keyword">null</span>;   <span class="comment">// Allow.</span></span><br><span class="line">Character c = <span class="keyword">null</span>; <span class="comment">// Allow.</span></span><br><span class="line"><span class="comment">//int i = null;     // Disallow.</span></span><br></pre></td></tr></table></figure>
@@ -580,7 +817,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IList&lt;<span class="keyword">int</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
 <p>所以，这一点和 Java 不同。</p>
 <p>当然，开篇内容说得太多了。我们现在看看，今天要说的内容：<strong>可空类型</strong>（Nullable Types）。可空类型是一种类型，这种类型允许为 <code>null</code> 值。在 C# 的机制里，<code>null</code> 无法赋值给一个值类型变量，因为所有的值类型，都是通过直接创建对象，然后在栈内分配空间并直接赋值的，而引用类型，则在堆里分配。由于在单独的内存块里，所以引用类型往往在分配好后，会得到一个引用，这个引用便是一个地址的信息，即一个指针信息。而指针，是可以为 <code>null</code> 的，所以引用类型才允许为 <code>null</code>。C# 不能让值类型为 <code>null</code>，但这种机制会为我们带来诸多不便，比如我们迫不得已需要一个特殊数值来表示一些特有信息时，就显得很不好搞定。</p>
-<p>举个例子，假如我们需要表示一个数据库里可为空值的数据信息，这怎么办呢？最早的方式是，通过“牺牲”一个特殊数值来表示空值，比如我们拿出 <code>0x3f3f3f3f</code> 来表达这里存储的数值为空。但这带来一个不便是，如果真有一个数据非得等于 <code>0x3f3f3f3f</code>，这怎么办呢？所以就不方便解决了。于是，在 C# 2 里，我们带来了一个新的数据类型，可空值类型（Nullable Value Types），一般被简称为 NVT。</p>
+<p>举个例子，假如我们需要表示一个数据库里可为空值的数据信息，这怎么办呢？最早的方式是，通过“牺牲”一个特殊数值来表示空值，比如我们拿出 <code>0x3f3f3f3f</code> 来表达这里存储的数值为空。但这带来一个不便是，如果真有一个数据非得等于 <code>0x3f3f3f3f</code>，这怎么办呢？所以就不方便解决了。于是，在 C# 2 里，我们带来了一个新的数据类型，<strong>可空值类型</strong>（Nullable Value Types），一般被简称为 NVT。</p>
 <blockquote>
 <p>上述内容里提到了泛型，我们在此处不作过多阐述，因为这里的重点并非泛型。</p>
 </blockquote>
@@ -590,7 +827,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable&lt;<span class="keyword">int</span>&gt; ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
 <p>意思就是，这两种写法是等价的，唯一的区别是，后者需要引用 <code>System</code> 命名空间，就像 <code>Int32</code> 和 <code>int</code> 的唯一区别就是引用命名空间一样。</p>
 <p>显然，我们这样写是非常简单的，所以语法层面基本上就说完了。不过！</p>
-<h3 id="可空值类型的转换"><a href="#可空值类型的转换" class="headerlink" title="可空值类型的转换"></a>可空值类型的转换</h3><p>有些时候，我们会使用条件运算符 <code>?:</code> 来表达赋值行为，但如果带有可空类型，比如下面这样</p>
+<h3 id="可空值类型和普通值类型的转换"><a href="#可空值类型和普通值类型的转换" class="headerlink" title="可空值类型和普通值类型的转换"></a>可空值类型和普通值类型的转换</h3><p>有些时候，我们会使用条件运算符 <code>?:</code> 来表达赋值行为，但如果带有可空类型，比如下面这样</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : p;</span><br></pre></td></tr></table></figure>
 <p>乍一看，这个写法是没啥毛病的，因为我们当 <code>p</code> 为空的时候，赋值为默认数值 0，而当它不为空的时候，赋值则是 <code>p</code> 的原始数值。所以看起来好像没有问题，但你写成代码后，就会得到一个语法错误，大概说“你的条件表达式的两边的返回值类型不一样”。可以看到，0 显然是 <code>int</code> 类型的，而 <code>p</code> 呢？这里的 <code>p</code> 可是 <code>int?</code> 类型的啊，条件运算符的两侧返回的必须得是完全一样的类型的结果，但这里一个是 <code>int</code>，而另外一个则是 <code>int?</code>。这显然是不对的。所以，我们只能这么做：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : (<span class="keyword">int</span>)p;</span><br></pre></td></tr></table></figure>
@@ -600,92 +837,6 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">int</span> q = (<span class="keyword">int</span>)p + <span class="number">3</span>;</span><br><span class="line">Console.WriteLine(q);</span><br></pre></td></tr></table></figure>
 <p>这是显然的。我哦们尝试直接把 <code>null</code> 值的对象加上 3，这显然是不合适的。</p>
 <p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型。</p>
-<h2 id="可空引用类型"><a href="#可空引用类型" class="headerlink" title="可空引用类型"></a>可空引用类型</h2><p>是的，你没有看错，从 C# 8 开始，引用类型也开始支持可空了。但是，引用类型不是一直都可以为 <code>null</code> 吗？它默认数值不就是为 <code>null</code> 吗？是的，但 C# 8 “暴力地”破坏了这一个要求，为了防止尽可能少出现 <code>NullReferenceException</code> 这种可怕的异常，我们产生了一个新的语法规则：强制引用类型不可空。然后如果非得让引用类型为空的话，请采用 <code>T?</code> 的写法，和值类型可空的写法一样，比如：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>但需要你注意的是，这种写法需要基于可空引用类型的环境。你需要先打开你的项目配置文件 <code>.csproj</code>，然后添加一项：<code>&lt;Nullable&gt;Enable&lt;/Nullable&gt;</code> 即可使用这个特性。</p>
-<blockquote>
-<p>类似地，<strong>可空引用类型</strong>（Nullable Reference Type）一般被简称为 NRT。</p>
-</blockquote>
-<h3 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h3><p>我们通过和可空值类型完全一样的语法 <code>T?</code> 来声明一个类型可空：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>; <span class="comment">// A string can be null.</span></span><br><span class="line">s = <span class="string">"Hello"</span>; <span class="comment">// Okay.</span></span><br><span class="line">s = <span class="literal">null</span>; <span class="comment">// Okay.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> t = <span class="literal">null</span>; <span class="comment">// Will get a complier warning.</span></span><br></pre></td></tr></table></figure>
-<p>但请注意，可空引用类型仅仅是语法上看起来和可空值类型一样，但实际上，可空引用类型并没有类似于 <code>Nullable&lt;T&gt;</code> 的类型，它在运行时是和原本的类型完全一样的，只是从编译器层面约束和限制了我们无法赋 <code>null</code> 值的要求。说白了，<code>string?</code> 和 <code>string</code> 依旧用的是同一个数据类型，只是编译器在看到你的类型后带 <code>?</code> 后会被判定为“可空”，于是这个类型你就可以放 <code>null</code> 进去；但没有这个符号，你就没办法赋 <code>null</code> 值，否则将会产生 <code>CS86</code> 和 <code>CS87</code> 系列警告。</p>
-<p>那么，对应的一些语法，我们就得注意了：</p>
-<h3 id="后缀运算符"><a href="#后缀运算符" class="headerlink" title="! 后缀运算符"></a><code>!</code> 后缀运算符</h3><p>为了保证一些特定情况下，我们需要赋值不为空，但编译器依然认为你赋的是 <code>null</code> 值时，我们可以采用 <code>!</code> 后缀运算符来强制编译器取消告警。</p>
-<p>举一个例子，例如我们写了一个字符串转结构体的 <code>Parse</code> 方法，其中返回值是一个可空的类型，</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">Point</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Point</span>(<span class="params"><span class="keyword">int</span> x, <span class="keyword">int</span> y</span>)</span> =&gt; (X, Y) = (x, y);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> X &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Y &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Point? Parse(<span class="keyword">string</span> str)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// `(a, b)` form is correct,</span></span><br><span class="line">        <span class="comment">// so we use regular expression to get `a` and `b`.</span></span><br><span class="line">        <span class="keyword">var</span> regex = <span class="keyword">new</span> Regex(<span class="string">@"\(\d+,\s*\d+\)"</span>);</span><br><span class="line">        <span class="keyword">var</span> match = regex.Match(str);</span><br><span class="line">        <span class="keyword">if</span> (match.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Parse successfully.</span></span><br><span class="line">            <span class="keyword">var</span> valRegex = <span class="keyword">new</span> Regex(<span class="string">@"\d+"</span>);</span><br><span class="line">            <span class="keyword">var</span> matches = regex.Matches(match.Value);</span><br><span class="line">            <span class="keyword">var</span> s1 = matches[<span class="number">0</span>].Value;</span><br><span class="line">            <span class="keyword">var</span> s2 = matches[<span class="number">1</span>].Value;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Return the correct answer.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Point(<span class="keyword">int</span>.Parse(s1), <span class="keyword">int</span>.Parse(s2));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Parse failed, it will return null value</span></span><br><span class="line">            <span class="comment">// to tell user the parsing operation has failed.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后，我在调用期间使用了这个方法：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Point p = Point.Parse(<span class="string">"(1, 3)"</span>);</span><br></pre></td></tr></table></figure>
-<p>此时，将会产生一个编译器警告，提示你转换后的结果可能是 <code>null</code>。客观来讲，这确实是对的，因为返回值是可空类型的，而我们用一个不可为空的类型接受这个可空类型时，显然范围变小了，确实需要报错。</p>
-<p>但是，我们完全可以发现，这个转换是有效且正确的，因为我们的正则表达式转换出来的结果一定可以得到 <code>X = 1</code> 和 <code>Y = 3</code> 的结果，这是令人烦躁的，所以我们只需要在转换结果后添加一个感叹号 <code>!</code> 来告诉编译器，这里的非空结果是预料之中的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Point p = Point.Parse(<span class="string">"(1, 3)"</span>)!;</span><br></pre></td></tr></table></figure>
-<p>但需要你注意的是，如果在此时我们使用 <code>var</code> 类型来表示 <code>p</code> 的话，这两个语句都会得到什么结果呢？</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p = Point.Parse(<span class="string">"(1, 3)"</span>);  <span class="comment">// `p` is Point? type.</span></span><br><span class="line"><span class="keyword">var</span> q = Point.Parse(<span class="string">"(1, 3)"</span>)!; <span class="comment">// `q` is Point type.</span></span><br></pre></td></tr></table></figure>
-<p>你答对了吗？</p>
-<blockquote>
-<p><code>!</code> 后缀运算符在 <a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/operators/null-forgiving" target="_blank" rel="noopener">MSDN</a> 里称为<strong>null 包容运算符</strong>（Null-forgiving Operator），而在 Visual Studio 2019 下，这个运算符称为<strong>null 警告禁用运算符</strong>（Null-suppress Operator）。</p>
-</blockquote>
-<h3 id="as-的默认值"><a href="#as-的默认值" class="headerlink" title="as 的默认值"></a><code>as</code> 的默认值</h3><p>在 <a href="https://sunnie-shine.github.io/2019/11/06/csharplang-01-is-as-operator/">is 和 as</a> 一文中，我们提到了 <code>as</code> 的默认值。当引用类型时，转换无效时会返回 <code>null</code>。考虑如下情况。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line"><span class="keyword">string</span> i = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// Hmmm</span></span><br></pre></td></tr></table></figure>
-<p>可以看到，第二句话里，我们尝试将我们认为的 <code>o</code> 转为 <code>string</code> 类型。但这是不可能的，因为 <code>o</code> 装的是一个 <code>Point</code>，所以 <code>as</code> 转换失败后会返回 <code>null</code>。但显然，<code>string</code> 后没有问号，所以并不可空。那么这里一定会出现编译器的警告。那么，这下怎么办呢？</p>
-<p>如果我们能保证这个转换是成立的，我们应当使用 <code>!</code> 后缀运算符来修饰结果，表示这个结果此时肯定不可空，是在我们预料之中的。但我们随时随地都可以加这个符号来取消警告。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line"><span class="keyword">string</span> i = (o <span class="keyword">as</span> <span class="keyword">string</span>)!; <span class="comment">// What the hell?</span></span><br></pre></td></tr></table></figure>
-<p>显然，这个转换是错误的，但我们确实取消了编译器的警告，那么，我们此时如果随意地使用这个 <code>i</code>，就会出现问题。比如我们取字符串的第 3 个字符：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> c = i[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
-<p>显然，这是会错的。所以，这产生了语义层面的 bug。我们应当尽量少使用 <code>!</code> 符号，而更多用在正确的地方。而且，哪怕原本类型就是 <code>string</code>，编译器依然会报错。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"><span class="keyword">string</span> s = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// Complier warning...</span></span><br></pre></td></tr></table></figure>
-<p>这是因为编译器仅检查类型，它发现 <code>o</code> 是 <code>object</code> 时，就不会再往下查看具体 <code>o</code> 装的是什么类型的数据了，于是在使用 <code>as</code> 转换时，完全可能产生 <code>null</code> 结果，所以报错。此时我们不得不使用 <code>!</code> 后缀运算符：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"><span class="keyword">string</span> s = (o <span class="keyword">as</span> <span class="keyword">string</span>)!;</span><br></pre></td></tr></table></figure>
-<p>但请注意，刚才说过，如果这里使用 <code>var</code> 来表示类型的话，如果不加 <code>!</code> 后缀运算符，将会被识别为 <code>string?</code> 而不是 <code>string</code>。</p>
-<h3 id="使用特性来减少-后缀运算符的使用"><a href="#使用特性来减少-后缀运算符的使用" class="headerlink" title="使用特性来减少 ! 后缀运算符的使用"></a>使用特性来减少 <code>!</code> 后缀运算符的使用</h3><p>前文说过，<code>!</code> 的用法是认为决定的，所以这完全取决于人的使用方式，故我们无法做到编译器层面的完全禁止。而有一些情况，我们完全可以不去使用它们，以此让编译器为我们产生错误信息，来更好地约束我们的代码思维。此时，我们需要用到如下的一些特性。</p>
-<h4 id="NotNullWhenAttribute"><a href="#NotNullWhenAttribute" class="headerlink" title="NotNullWhenAttribute"></a><code>NotNullWhenAttribute</code></h4><p>考虑如下 API。我们把刚才的 <code>Point</code> 类的 <code>Parse</code> 方法转换为 <code>TryParse</code> 方法，让它返回 <code>bool</code> 数值，而结果从参数返回。那么</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Parse</span>(<span class="params"><span class="keyword">string</span> str, <span class="keyword">out</span> Point? result</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// `(a, b)` form is correct,</span></span><br><span class="line">    <span class="comment">// so we use regular expression to get `a` and `b`.</span></span><br><span class="line">    <span class="keyword">var</span> regex = <span class="keyword">new</span> Regex(<span class="string">@"\(\d+,\s*\d+\)"</span>);</span><br><span class="line">    <span class="keyword">var</span> match = regex.Match(str);</span><br><span class="line">    <span class="keyword">if</span> (match.Success)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Parse successfully.</span></span><br><span class="line">        <span class="keyword">var</span> valRegex = <span class="keyword">new</span> Regex(<span class="string">@"\d+"</span>);</span><br><span class="line">        <span class="keyword">var</span> matches = regex.Matches(match.Value);</span><br><span class="line">        <span class="keyword">var</span> s1 = matches[<span class="number">0</span>].Value;</span><br><span class="line">        <span class="keyword">var</span> s2 = matches[<span class="number">1</span>].Value;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Return the correct answer.</span></span><br><span class="line">        result = <span class="keyword">new</span> Point(<span class="keyword">int</span>.Parse(s1), <span class="keyword">int</span>.Parse(s2));</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Parse failed, it will return null value</span></span><br><span class="line">        <span class="comment">// to tell user the parsing operation has failed.</span></span><br><span class="line">        result = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们只需要变化一点点内容即可。</p>
-<p>现在，新的问题来了。我们调用的方式是</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-<p>这样显然是不会有问题的，首先，返回为 <code>true</code> 时，意味着 <code>result</code> 此时肯定不为 <code>null</code>，所以可以安全赋值过去，但编译器由于发现 <code>result</code> 是 <code>Point?</code> 的，所以会报错。于是此时我们不得不使用 <code>!</code>。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result!;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-<p>这样是没有错误的。但我们发现，这种写法是受到返回值的约束。当返回值为 <code>true</code>，这个 <code>out</code> 参数肯定是不为空的。所以我们可以把 API 改变一下。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Parse</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">string</span> str, [NotNullWhen(returnValue: <span class="literal">true</span></span>)] <span class="keyword">out</span> Point? result)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Same as before.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们在第二个参数前面加上特性：<code>[NotNullWhen(returnValue: true)]</code>，那么这个 <code>result</code> 在编译器层面就会认为，当返回值为 <code>true</code> 时，这个参数值一定不会为空。所以，我们一旦用了这个模式书写代码，那么调用方就不用写 <code>!</code> 了：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result; <span class="comment">// Correct now.</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-<h4 id="AllowNullAttribute-和-DisallowNullAttribute"><a href="#AllowNullAttribute-和-DisallowNullAttribute" class="headerlink" title="AllowNullAttribute 和 DisallowNullAttribute"></a><code>AllowNullAttribute</code> 和 <code>DisallowNullAttribute</code></h4><p>下面我们来看另外一个特性。这个特性表示我们给的数值是允许为 <code>null</code> 的。它一般用在属性的 setter，或参数上。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">string</span> Name</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">get</span> &#123; <span class="keyword">return</span> name; &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">AllowNull</span>]</span><br><span class="line">    <span class="keyword">set</span> &#123; name = Name ?? <span class="string">"DefaultName"</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样的话，这个 setter 原本应该赋值为 <code>string</code> 的，但编译器此时允许你为其赋 <code>null</code> 进去。</p>
-<p>当然了，<code>DisallowNull</code> 就是反过来的，不为 <code>null</code>。</p>
-<h4 id="MaybeNullAttribute"><a href="#MaybeNullAttribute" class="headerlink" title="MaybeNullAttribute"></a><code>MaybeNullAttribute</code></h4><p>思考一下，当我们使用一个泛型是很普通的类型时，如果它为 <code>null</code> 了怎么办？</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> T FirstOrDefault&lt;T&gt;(<span class="keyword">this</span> IEnumerable&lt;T&gt; source, Precicate&lt;T&gt; predicate)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>比如这个例子，它是 <a href="https://source.dot.net/#System.Linq/System/Linq/First.cs,8087366974af11d2,references" target="_blank" rel="noopener">Linq</a> 代码里的一个部分。这个方法是用于查找一个类型为 <code>T</code> 的集合 <code>source</code> 里，第一个满足 <code>predicate</code> 给定条件的项。当找到结果后，返回值为这个值；但没有找到结果的时候，返回值将为这个类型的默认值：值类型则是对应的默认结果，而引用类型则默认为 <code>null</code>。</p>
-<p>按道理来讲，这里返回值就应当为可空的类型，所以我们应该设为 <code>T?</code> 类似的写法，来强制规定返回值可空。但很遗憾的是，这么做编译器会报错。这个编译器报错的大概意思是：“由于值类型和引用类型的行为不同，我们无法设置这一要求，请设置约束来规定这个泛型参数 <code>T</code> 是值类型还是引用类型”。</p>
-<p>编译器的说法是有道理的。因为我们的值类型和引用类型的行为不同，值类型的可空，是将其翻译为另外一个类型 <code>Nullable&lt;T&gt;</code>，而引用类型则完全没有变化类型，只是告诉编译器它可空而已。如果我们“妄自”添加问号在类型上面的话，值类型和引用类型的处理方式都不同，那么后续交给程序，它并不知道这个类型此时是值类型还是引用类型，那后续有应该该怎么做呢？这是很复杂的一个问题。所以，我们临时给出的解决方案是，为这个返回值添加一个特性：<code>MaybeNullAttribute</code> 来表示这个返回值是可空的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: MaybeNull</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> T FirstOrDefault&lt;T&gt;(<span class="keyword">this</span> IEnumerable&lt;T&gt; source, Precicate&lt;T&gt; predicate)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样的话，编译器就能明白，此处的这个泛型返回值对应的类型，会依据值类型和引用类型分情况处理。引用类型下，就会产生警告。实际上，这个方法调用的是另外一个方法：<code>TryGetFirst</code>。它的源代码我也复制出来。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: MaybeNull</span>]</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> TSource TryGetFirst&lt;T&gt;(</span><br><span class="line">    <span class="keyword">this</span> IEnumerable&lt;T&gt;? source, Predicate&lt;T&gt;? predicate, <span class="keyword">out</span> <span class="keyword">bool</span> found)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">is</span> <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (predicate <span class="keyword">is</span> <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.predicate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">is</span> OrderedEnumerable&lt;T&gt; ordered)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Check the type is OrderedEnumerable&lt;T&gt; or not.</span></span><br><span class="line">        <span class="comment">// If so, the code will be simplified a bit.</span></span><br><span class="line">        <span class="keyword">return</span> ordered.TryGetFirst(predicate, <span class="keyword">out</span> found);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Iterate on source.</span></span><br><span class="line">    <span class="keyword">foreach</span> (T element <span class="keyword">in</span> source)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// If satisfying the predicate...</span></span><br><span class="line">        <span class="keyword">if</span> (predicate(element))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Return the result.</span></span><br><span class="line">            found = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">return</span> element;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Failed to find.</span></span><br><span class="line">    found = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">default</span>!; <span class="comment">// The value may be null when the value is a reference type.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>希望你能感受一下，这个特性在代码里起到的作用。</p>
-<h4 id="NotNullAttribute"><a href="#NotNullAttribute" class="headerlink" title="NotNullAttribute"></a><code>NotNullAttribute</code></h4><p>下面来介绍一个用法和刚才这个差不多的特性。这个特性一般用在 <code>ref</code> 参数上，表示参数在传参时不可以赋值为 <code>null</code>，虽然它此时是可以为 <code>null</code> 的类型。</p>
-<p>在 .NET 提供的数据结构的代码里，某个数据结构需要进行扩容，此时为了保证容量，会调用下面这样的代码：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Messages has the default value (null) when EnsureCapacity is called:</span></span><br><span class="line">EnsureCapacity&lt;<span class="keyword">string</span>&gt;(<span class="keyword">ref</span> storage, <span class="number">10</span>);</span><br><span class="line"><span class="comment">// Messages is not null.</span></span><br><span class="line">EnsureCapacity&lt;<span class="keyword">string</span>&gt;(storage, <span class="number">50</span>);</span><br></pre></td></tr></table></figure>
-<p>如果原本是一个数组的话，我们可以为 API 设计为这样：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> EnsureCapacity&lt;T&gt;([NotNull] <span class="keyword">ref</span> T[]? storage, <span class="keyword">int</span> size)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>此时来告诉编译器，在传参时，是不允许为 <code>null</code> 赋值过去的，但最后 <code>storage</code> 可以为 <code>null</code>，并是否为 <code>null</code> 将在 API 设计的代码里决定，而不是外界。</p>
-<h4 id="NotNullIfNotNullAttribute"><a href="#NotNullIfNotNullAttribute" class="headerlink" title="NotNullIfNotNullAttribute"></a><code>NotNullIfNotNullAttribute</code></h4><p>最后一个特性是最鬼畜的特性。这个特性其实和 <code>NotNullWhenAttribute</code> 的用法非常相似，只是有一点区别：<code>NotNullWhenAttribute</code> 依赖于返回值来决定是否为空，而这里说的这个特性，依赖于其它参数。其中参数是什么，那么它的可空性和返回值的可空性是一样的。</p>
-<p>考虑如下代码。我们假设要写一个 DNS 解析的服务。我们需要返回一个根域名服务器的地址，用字符串表示，而参数表示当前主机的地址。但如果参数为空，显然返回值就应为空，因为主机都没有，那么对应的根域名服务器肯定也就为空了，返回值此时的可空行为是和参数 <code>url</code> 是一样的，所以我们为返回值设定 <code>NotNullIfNotNullAttribute</code> 特性，来告诉编译器，返回值在参数 <code>url</code> 不为空的时候不为空。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: NotNullIfNotNull(<span class="meta-string">"url"</span>)</span>]</span><br><span class="line"><span class="keyword">string</span>? GetTopLevelDomainFromFullUrl(<span class="keyword">string</span>? url);</span><br></pre></td></tr></table></figure>
-<p>虽然有点绕，但意思应该是清晰的。</p>
-<h3 id="关于泛型的可空性"><a href="#关于泛型的可空性" class="headerlink" title="关于泛型的可空性"></a>关于泛型的可空性</h3><p>在前文我们提到了泛型的可空性。由于值类型和引用类型的可空行为不同，所以我们恐怕无法单纯添加一个问号就解决这一点。在 <a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/nullable-attributes#generic-definitions-and-nullability" target="_blank" rel="noopener">MSDN</a> 的原文里，原文是这么说的：</p>
-<blockquote>
-<p>Correctly communicating the null state of generic types and generic methods requires special care. This stems from the fact that a nullable value type and a nullable reference type are fundamentally different. An <code>int?</code> is a synonym for <code>Nullable&lt;int&gt;</code>, whereas <code>string?</code> is <code>string</code> with an attribute added by the compiler. The result is that the compiler can’t generate correct code for <code>T?</code> without knowing if <code>T</code> is a <code>class</code> or a <code>struct</code>.</p>
-<p>This doesn’t mean you can’t use a nullable type (either value type or reference type) as the type argument for a closed generic type. Both <code>List</code> and <code>List</code> are valid instantiations of <code>List</code>.</p>
-<p>What it does mean is that you can’t use <code>T?</code> in a generic class or method declaration without constraints. For example, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.firstordefault#System_Linq_Enumerable_FirstOrDefault__1_System_Collections_Generic_IEnumerable___0__" target="_blank" rel="noopener">Enumerable.FirstOrDefault(IEnumerable)</a> won’t be changed to return <code>T?</code>. You can overcome this limitation by adding either the <code>struct</code> or <code>class</code> constraint. With either of those constraints, the compiler knows how to generate code for both <code>T</code> and <code>T?</code>.</p>
-<p>You may want to restrict the types used for a generic type argument to be non-nullable types. You can do that by adding the <code>notnull</code> constraint on that type argument. When that constraint is applied, the type argument must not be a nullable type.</p>
-</blockquote>
-<p>我把这段话大致翻译了一下，我希望你能看懂中文。:P</p>
-<blockquote>
-<p>对于一个泛型类型和泛型方法的 null 的状态的正确处理是我们肯定会关心的地方。这个“梗”的诞生源于值类型和引用类型处理的方式完全不同。一个 <code>int?</code> 类型被翻译转为 <code>Nullable&lt;int&gt;</code>，但 <code>string?</code> 在编译器层面仅仅是添加了一个特性标记来标注它是个可空的 <code>string</code> 类型而已，因此类型并没发生变化。所以，编译器根本不可能在它本身并不知道 <code>T</code> 是一个值类型还是引用类型之前，就生成完全正确的代码。</p>
-<p>但这并不意味着，我们不能在一个闭合的泛型类型参数上使用可空类型了（这里的可空类型指的是值类型或引用类型的两种可空情况的其一）。换句话说，<code>List&lt;string?&gt;</code> 和 <code>List&lt;int?&gt;</code> 在初始化 <code>List&lt;T&gt;</code> 集合的时候，都是完全被允许的。</p>
-<p>但是，我们也确实无法在没有任何泛型约束的状态下指定一个泛型类或泛型方法的泛型参数 <code>T</code> 上随意指定它可空（即 <code>T?</code>）。比如，<a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.firstordefault#System_Linq_Enumerable_FirstOrDefault__1_System_Collections_Generic_IEnumerable___0__" target="_blank" rel="noopener">Enumerable.FirstOrDefault(IEnumerable)</a>（上文里我们才看过的那个代码）就不可能允许直接返回一个 <code>T?</code>。但你完全可以克服这一点限制，通过为泛型参数添加一个值类型或引用类型的约束（写法是 <code>where T : struct</code> 或 <code>where T : class</code>），这样的话，编译器就肯定知道，接下来泛型类型 <code>T</code> 应如何去处理这个可空情况，即 <code>T?</code> 了。</p>
-<p>你可能会想去限制某处的泛型参数不要为可空的类型，而且值类型和引用类型都可能。现在我们提供了一个泛型约束关键字 <code>notnull</code> 来表示这种特殊情况，只要我们为其设置 <code>where T : notnull</code> 泛型约束，那么此时的 <code>T</code> 就一定是一个不可以为空的类型了，而且值类型或引用类型均是允许的，只要它们不可空。</p>
-</blockquote>
-<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>很抱歉，这篇文章太长了。但我希望你能明白，可空值类型和可空引用类型的真正使用方式和操作，我可不希望你用错了。</p>
 
         
         
@@ -987,229 +1138,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/07/csharplang-complement-03-trivalue-boolean/" title="C# 语法查漏补缺系列（3）：三值布尔运算表" itemprop="url">C# 语法查漏补缺系列（3）：三值布尔运算表</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-07T09:01:43.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="可空值类型和-bool-简介"><a href="#可空值类型和-bool-简介" class="headerlink" title="可空值类型和 bool? 简介"></a>可空值类型和 <code>bool?</code> 简介</h2><p>我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 <code>int</code> 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 <code>Integer</code> 是可以为 <code>null</code> 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就是，这种类型基本上就是一个数据整体，一般迫不得已不拆开它们的内部数据，例如一个点对 <code>Point</code>，显然横纵坐标被拆解后完全显得无意义了，所以 <code>Point</code> 被作为一种值类型来看待。但 Java 受到语法的制约，我们只能写成引用类型。</p>
-<p>那么，在 C# 里，我们可以为其声明含有空值的值类型数据，这种类型提供的 <code>null</code> 可是真的 <code>null</code> 哦！这种类型叫做 <code>Nullable&lt;T&gt;</code>，即可空值类型，其中的 <code>T</code> 必须是一个值类型。那么，<code>Nullable&lt;bool&gt;</code> 便是里面特殊的一种类型（可空值类型都可以简写为类型名加问号，即此处可以简写为 <code>bool?</code>）。由于布尔型数据的特殊性，这个类型只有两个数值，而加上可空类型的空值 <code>null</code>，这种类型就有了三个值：<code>true</code>、<code>false</code> 和 <code>null</code>。既然有值，就肯定有计算公式和方式，下面我们来看看它们的结果。</p>
-<h2 id="bool-类型计算表"><a href="#bool-类型计算表" class="headerlink" title="bool? 类型计算表"></a><code>bool?</code> 类型计算表</h2><p>下面陈列出 <code>bool?</code> 类型的计算结果表。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>x</th>
-<th>y</th>
-<th>x&amp;y</th>
-<th>x\</th>
-<th>y</th>
-<th>!x</th>
-<th>x^y</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td>false</td>
-<td>false</td>
-</tr>
-<tr>
-<td>true</td>
-<td>false</td>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-</tr>
-<tr>
-<td>true</td>
-<td>null</td>
-<td></td>
-<td>true</td>
-<td>false</td>
-<td></td>
-</tr>
-<tr>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td>true</td>
-<td>true</td>
-<td>true</td>
-</tr>
-<tr>
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td>true</td>
-<td>false</td>
-</tr>
-<tr>
-<td>false</td>
-<td>null</td>
-<td>false</td>
-<td></td>
-<td>true</td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>true</td>
-<td></td>
-<td>true</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>false</td>
-<td>false</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>null</td>
-<td>null</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div>
-<blockquote>
-<p>为了精简表格，看起来不臃肿，所以所有空格都是 <code>null</code>。</p>
-</blockquote>
-<p>你可以参考如下代码，并执行。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> series = <span class="keyword">new</span> <span class="keyword">bool</span>?[] &#123; <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> a <span class="keyword">in</span> series)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> b <span class="keyword">in</span> series)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;(a?.ToString() ?? <span class="string">"null"</span>)&#125;</span> &amp; <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a &amp; b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> | <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a | b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"!<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(!a)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ^ <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a ^ b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>一定要注意的是，执行语句里一定要对字符串使用 <code>?.ToString()</code> 方式调用，否则由于 <code>null</code> 值的原因，什么都不输出。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/C%E2%99%AF-%E8%AF%AD%E6%B3%95-%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">C♯.语法.查漏补缺</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/07/gdip-extension/" title="GDI+ 拓展操作" itemprop="url">GDI+ 拓展操作</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-07T07:14:17.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>我相信大家肯定或多或少都用过 GDI+ 图形接口，它方便了我们绘制很多东西，但有时候，我们还是会遇到绘制的问题，比如，如何绘制一个 GDI+ 里没有提供好的图形。下面我们来看看。</p>
-<h2 id="画圆角矩形和填充圆角矩形"><a href="#画圆角矩形和填充圆角矩形" class="headerlink" title="画圆角矩形和填充圆角矩形"></a>画圆角矩形和填充圆角矩形</h2><p>相信小伙伴肯定都遇到过这种问题，下面我们来看，如何绘制这种东西，并完全填充它们。</p>
-<h3 id="绘制圆角矩形"><a href="#绘制圆角矩形" class="headerlink" title="绘制圆角矩形"></a>绘制圆角矩形</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制一个圆角矩形。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层对象。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="pen"&gt;</span>画笔。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>绘制矩形范围（将圆角矩形视作普通矩形下的矩形绘制范围）。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="circleRadius"&gt;</span>边角处的半径。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="ArgumentException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 参数 <span class="doctag">&lt;paramref name="circleRadius"/&gt;</span> 比矩形 <span class="doctag">&lt;paramref name="rectangle"/&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制的区域还大，无法绘制。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DrawRoundedRectangle</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">this</span> Graphics g, Pen pen, Rectangle rectangle, <span class="keyword">int</span> circleRadius</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (circleRadius &gt; Math.Max(rectangle.Width, rectangle.Height))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(circleRadius)&#125;</span>：参数数据比矩形宽度还大，无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Rectangle r1, r2, r3, r4;</span><br><span class="line">    Point p1, p2, p3, p4, p5, p6, p7, p8;</span><br><span class="line">    p8 = p7 = p6 = p5 = p4 = p3 = p2 = p1 = rectangle.Location;</span><br><span class="line">    p1.X += circleRadius;</span><br><span class="line">    p2.X += rectangle.Width - circleRadius;</span><br><span class="line">    p3.Y += circleRadius;</span><br><span class="line">    p4.X += rectangle.Width;</span><br><span class="line">    p4.Y += circleRadius;</span><br><span class="line">    p5.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p6.X += rectangle.Width;</span><br><span class="line">    p6.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p7.X += circleRadius;</span><br><span class="line">    p7.Y += rectangle.Height;</span><br><span class="line">    p8.X += rectangle.Width - circleRadius;</span><br><span class="line">    p8.Y += rectangle.Height;</span><br><span class="line">    r1 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y, circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r2 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius, rectangle.Y,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r3 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r4 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius,</span><br><span class="line">        rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> path = <span class="keyword">new</span> GraphicsPath();</span><br><span class="line">    path.AddLine(p1, p2);</span><br><span class="line">    path.AddArc(r2, <span class="number">270</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p4, p6);</span><br><span class="line">    path.AddArc(r4, <span class="number">0</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p7, p8);</span><br><span class="line">    path.AddArc(r3, <span class="number">90</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p5, p3);</span><br><span class="line">    path.AddArc(r1, <span class="number">180</span>, <span class="number">90</span>);</span><br><span class="line">    path.CloseFigure();</span><br><span class="line"></span><br><span class="line">    g.DrawPath(pen, path);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>你完全可以发现，这种绘制方式就是画了矩形的四条边，然后在边角处留白，绘制四个 1 / 4 扇形圆弧。</p>
-<h3 id="填充圆角矩形"><a href="#填充圆角矩形" class="headerlink" title="填充圆角矩形"></a>填充圆角矩形</h3><p>填充圆角矩形的思路和上述方式一样，只是区别在于，填充将会采用填充 1 / 4 扇形的方式来搞定。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 填充一个圆角矩形的图形。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层对象。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="brush"&gt;</span>画刷。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>填充矩形范围（将圆角矩形视作普通矩形下的矩形绘制范围）。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="circleRadius"&gt;</span>边角处的半径。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="ArgumentException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 参数 <span class="doctag">&lt;paramref name="circleRadius"/&gt;</span> 比矩形 <span class="doctag">&lt;paramref name="rectangle"/&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制的区域还大，无法绘制。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FillRoundedRectangle</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">this</span> Graphics g, Brush brush, Rectangle rectangle, <span class="keyword">int</span> circleRadius</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (circleRadius &gt;= Math.Max(rectangle.Width, rectangle.Height))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(circleRadius)&#125;</span>：参数数据比矩形宽度还大，无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Rectangle r1, r2, r3, r4, head, bottom, center;</span><br><span class="line">    Point p1, p2, p3, p4, p5, p6, p7, p8;</span><br><span class="line">    p8 = p7 = p6 = p5 = p4 = p3 = p2 = p1 = rectangle.Location;</span><br><span class="line">    p1.X += circleRadius;</span><br><span class="line">    p2.X += rectangle.Width - circleRadius;</span><br><span class="line">    p3.Y += circleRadius;</span><br><span class="line">    p4.X += rectangle.Width;</span><br><span class="line">    p4.Y += circleRadius;</span><br><span class="line">    p5.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p6.X += rectangle.Width;</span><br><span class="line">    p6.Y += rectangle.Height - circleRadius;</span><br><span class="line">    p7.X += circleRadius;</span><br><span class="line">    p7.Y += rectangle.Height;</span><br><span class="line">    p8.X += rectangle.Width - circleRadius;</span><br><span class="line">    p8.Y += rectangle.Height;</span><br><span class="line">    r1 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y, circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r2 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius, rectangle.Y,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r3 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X, rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    r4 = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        rectangle.X + rectangle.Width - <span class="number">2</span> * circleRadius,</span><br><span class="line">        rectangle.Y + rectangle.Height - <span class="number">2</span> * circleRadius,</span><br><span class="line">        circleRadius * <span class="number">2</span>, circleRadius * <span class="number">2</span>);</span><br><span class="line">    head = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        p1.X, p1.Y, rectangle.Width - <span class="number">2</span> * circleRadius, circleRadius);</span><br><span class="line">    bottom = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        p1.X, p5.Y, rectangle.Width - <span class="number">2</span> * circleRadius, circleRadius);</span><br><span class="line">    center = <span class="keyword">new</span> Rectangle(</span><br><span class="line">        p3.X, p3.Y, rectangle.Width, rectangle.Height - <span class="number">2</span> * circleRadius);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> path = <span class="keyword">new</span> GraphicsPath();</span><br><span class="line">    path.AddLine(p1, p2);</span><br><span class="line">    path.AddArc(r2, <span class="number">270</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p4, p6);</span><br><span class="line">    path.AddArc(r4, <span class="number">0</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p7, p8);</span><br><span class="line">    path.AddArc(r3, <span class="number">90</span>, <span class="number">90</span>);</span><br><span class="line">    path.AddLine(p5, p3);</span><br><span class="line">    path.AddArc(r1, <span class="number">180</span>, <span class="number">90</span>);</span><br><span class="line">    path.CloseFigure();</span><br><span class="line"></span><br><span class="line">    g.FillPath(brush, path);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="绘制一个空心箭头"><a href="#绘制一个空心箭头" class="headerlink" title="绘制一个空心箭头"></a>绘制一个空心箭头</h2><p>有时候我们甚至会需要绘制一个空心的箭头符号，这个时候我们可以采用画折线的方式围成一圈，构成箭头，不过这一点需要你打草稿了。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制一个空心箭头。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>绘图图面。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="pen"&gt;</span>边框线画笔。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="center"&gt;</span>绘制中心。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="length"&gt;</span>绘制长度。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="width"&gt;</span>绘制箭头帽的宽度。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="height"&gt;</span>绘制箭头帽的高度。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="angle"&gt;</span>箭头的旋转角度。角度以角度制（angle）为单位。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="ArgumentException"&gt;</span><span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DrawHollowArrow</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">this</span> Graphics g, Pen pen, Point center,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> length, <span class="keyword">int</span> width, <span class="keyword">int</span> height, <span class="keyword">float</span> angle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (length &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"参数：<span class="subst">&#123;<span class="keyword">nameof</span>(length)&#125;</span>，数据小于 0，绘制箭头把的长度不应小于 0。无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (width &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"参数：<span class="subst">&#123;<span class="keyword">nameof</span>(width)&#125;</span>，数据小于 0，绘制箭头帽宽度不应小于 0。无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (height &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">$"参数：<span class="subst">&#123;<span class="keyword">nameof</span>(height)&#125;</span>，数据小于 0，绘制箭头帽高度不应小于 0。无法绘制。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> halfWidth = width / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> totalHeight = height + length;</span><br><span class="line">    <span class="keyword">int</span> heightHalf = (height + length) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> arrowBarWidth = (width + height) / <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">var</span> points = <span class="keyword">new</span> Point[<span class="number">7</span>]</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> Point(center.X, center.Y - (height + length) / <span class="number">2</span>)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X + halfWidth,</span><br><span class="line">            center.Y - (height + length) / <span class="number">2</span> + height)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X + halfWidth - (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + height)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X + halfWidth - (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + totalHeight)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X - halfWidth + (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + totalHeight)),</span><br><span class="line">        <span class="keyword">new</span> Point(</span><br><span class="line">            center.X - halfWidth + (width - arrowBarWidth) / <span class="number">2</span>,</span><br><span class="line">            center.Y - heightHalf + height)),</span><br><span class="line">        <span class="keyword">new</span> Point(center.X - halfWidth, center.Y - heightHalf + height))</span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Rotation.</span></span><br><span class="line">    <span class="keyword">var</span> oldMatrix = g.Transform;</span><br><span class="line">    <span class="keyword">var</span> newMatrix = g.Transform;</span><br><span class="line">    newMatrix.RotateAt(angle, center);</span><br><span class="line">    g.Transform = newMatrix;</span><br><span class="line">    g.DrawPolygon(pen, points);</span><br><span class="line">    g.Transform = oldMatrix;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="画胶囊"><a href="#画胶囊" class="headerlink" title="画胶囊"></a>画胶囊</h2><p>胶囊的形状完全就跟圆角矩形一样，只是特殊的地方在于，它的两端就是一个完整的半圆，所以我们直接把数据调整到极限即可。</p>
-<h3 id="绘制胶囊"><a href="#绘制胶囊" class="headerlink" title="绘制胶囊"></a>绘制胶囊</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 绘制一个胶囊形状。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="pen"&gt;</span>画笔。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>矩形范围。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DrawCapsule</span>(<span class="params"><span class="keyword">this</span> Graphics g, Pen pen, Rectangle rectangle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    g.DrawRoundedRectangle(</span><br><span class="line">        pen, rectangle, Math.Min(rectangle.Width, rectangle.Height) / <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="填充胶囊"><a href="#填充胶囊" class="headerlink" title="填充胶囊"></a>填充胶囊</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 填充一个胶囊形状的图形。</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="g"&gt;</span>图层。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="brush"&gt;</span>画刷。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="rectangle"&gt;</span>矩形。<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FillCapsule</span>(<span class="params"><span class="keyword">this</span> Graphics g, Brush brush, Rectangle rectangle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    g.FillRoundedRectangle(</span><br><span class="line">        brush, rectangle, Math.Min(rectangle.Width, rectangle.Height) / <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>可以发现，前面的代码里大量使用了除以 2、4 的操作，为了效率，你可以改写为位运算：<code>n &gt;&gt; 1</code> 和 <code>n &gt;&gt; 2</code> 的模式。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-GDI/">C♯.GDI+</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/GDI/">GDI+</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/3/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">下一页 ↓</a>
@@ -1237,7 +1165,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>21</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>22</sup></a></li>
 			
 		
 			
@@ -1245,7 +1173,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>7</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>8</sup></a></li>
 			
 		
 			
@@ -1265,11 +1193,19 @@
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
@@ -1281,19 +1217,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			

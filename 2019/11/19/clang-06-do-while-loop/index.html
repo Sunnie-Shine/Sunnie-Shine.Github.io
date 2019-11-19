@@ -4,23 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C 语言语法教程（6）：do-while 语句 | 向向的博客</title>
+    <title>C 语言语法系列（6）：do-while 语句 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="改下上一个例子的代码在求得 1 到 100 的和的计算结果的时候，我们明显知道 i 第一次的初始数值（即 1）是不可能超过 100 的，所以第一次完全不必判断这个条件。 正是因为这样，我们便产生了 do-while 语句。在提及代码的写法格式之前，我们先来看一下它的执行逻辑，如下图所示。  do-while 语句下面我们来看一下 do-while 语句的执行逻辑和代码规范。 12345int i">
+    <meta name="description" content="改下上一个例子的代码在求得 1 到 100 的和的计算结果的时候，我们明显知道 i 第一次的初始数值（即 1）是不可能超过 100 的，所以第一次完全不必判断这个条件。 正是因为这样，我们便产生了 do-while 语句。在提及代码的写法格式之前，我们先来看一下它的执行逻辑，如下图所示。  do-while （循环）语句下面我们来看一下 do-while 语句的执行逻辑和代码规范。 12345in">
 <meta name="keywords" content="C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C 语言语法教程（6）：do-while 语句">
+<meta property="og:title" content="C 语言语法系列（6）：do-while 语句">
 <meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-06-do-while-loop&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="改下上一个例子的代码在求得 1 到 100 的和的计算结果的时候，我们明显知道 i 第一次的初始数值（即 1）是不可能超过 100 的，所以第一次完全不必判断这个条件。 正是因为这样，我们便产生了 do-while 语句。在提及代码的写法格式之前，我们先来看一下它的执行逻辑，如下图所示。  do-while 语句下面我们来看一下 do-while 语句的执行逻辑和代码规范。 12345int i">
+<meta property="og:description" content="改下上一个例子的代码在求得 1 到 100 的和的计算结果的时候，我们明显知道 i 第一次的初始数值（即 1）是不可能超过 100 的，所以第一次完全不必判断这个条件。 正是因为这样，我们便产生了 do-while 语句。在提及代码的写法格式之前，我们先来看一下它的执行逻辑，如下图所示。  do-while （循环）语句下面我们来看一下 do-while 语句的执行逻辑和代码规范。 12345in">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-06-do-while-loop&#x2F;do-while-loop-example.png">
-<meta property="og:updated_time" content="2019-11-19T01:24:39.637Z">
+<meta property="og:updated_time" content="2019-11-19T12:42:34.157Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-06-do-while-loop&#x2F;do-while-loop-example.png">
 
@@ -84,7 +84,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法教程（6）：do-while 语句" itemprop="url">C 语言语法教程（6）：do-while 语句</a>
+      <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法系列（6）：do-while 语句" itemprop="url">C 语言语法系列（6）：do-while 语句</a>
     
   </h1>
   <p class="article-author">By
@@ -101,14 +101,14 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#改下上一个例子的代码"><span class="toc-number">1.</span> <span class="toc-text">改下上一个例子的代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#do-while-语句"><span class="toc-number">2.</span> <span class="toc-text">do-while 语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-和-do-while-的异同"><span class="toc-number">3.</span> <span class="toc-text">while 和 do-while 的异同</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#改下上一个例子的代码"><span class="toc-number">1.</span> <span class="toc-text">改下上一个例子的代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#do-while-（循环）语句"><span class="toc-number">2.</span> <span class="toc-text">do-while （循环）语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-和-do-while-的异同"><span class="toc-number">3.</span> <span class="toc-text">while 和 do-while 的异同</span></a></li></ol>
 		
 		</div>
 		
 		<h2 id="改下上一个例子的代码"><a href="#改下上一个例子的代码" class="headerlink" title="改下上一个例子的代码"></a>改下上一个例子的代码</h2><p>在求得 1 到 100 的和的计算结果的时候，我们明显知道 <code>i</code> 第一次的初始数值（即 1）是不可能超过 100 的，所以第一次完全不必判断这个条件。</p>
 <p>正是因为这样，我们便产生了 <code>do-while</code> 语句。在提及代码的写法格式之前，我们先来看一下它的执行逻辑，如下图所示。</p>
 <p><img src="do-while-loop-example.png" alt=""></p>
-<h2 id="do-while-语句"><a href="#do-while-语句" class="headerlink" title="do-while 语句"></a><code>do-while</code> 语句</h2><p>下面我们来看一下 <code>do-while</code> 语句的执行逻辑和代码规范。</p>
+<h2 id="do-while-（循环）语句"><a href="#do-while-（循环）语句" class="headerlink" title="do-while （循环）语句"></a><code>do-while</code> （循环）语句</h2><p>下面我们来看一下 <code>do-while</code> 语句的执行逻辑和代码规范。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">    S += i++;</span><br><span class="line">&#125; <span class="keyword">while</span> (i &lt;= <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
 <p>这种写法把条件进行了后置处理，所以执行 <code>S += i++;</code> 操作是无条件都会执行至少一次的。然后执行后才会判断数值 <code>i</code> 是否不超过 100。</p>
 <p>不过，此时的大括号最好就不要省略了，虽然编译器依旧允许你这么写：</p>
@@ -145,7 +145,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/19/clang-06-do-while-loop/" data-title="C 语言语法教程（6）：do-while 语句 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/19/clang-06-do-while-loop/" data-title="C 语言语法系列（6）：do-while 语句 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -168,9 +168,9 @@
 
 
 <div class="next">
-<a href="/2019/11/19/clang-05-while-loop/"  title="C 语言语法教程（5）：while 语句">
+<a href="/2019/11/19/clang-05-while-loop/"  title="C 语言语法系列（5）：while 语句">
  <strong>下一篇：</strong><br/> 
- <span>C 语言语法教程（5）：while 语句
+ <span>C 语言语法系列（5）：while 语句
 </span>
 </a>
 </div>
@@ -294,7 +294,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#改下上一个例子的代码"><span class="toc-number">1.</span> <span class="toc-text">改下上一个例子的代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#do-while-语句"><span class="toc-number">2.</span> <span class="toc-text">do-while 语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-和-do-while-的异同"><span class="toc-number">3.</span> <span class="toc-text">while 和 do-while 的异同</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#改下上一个例子的代码"><span class="toc-number">1.</span> <span class="toc-text">改下上一个例子的代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#do-while-（循环）语句"><span class="toc-number">2.</span> <span class="toc-text">do-while （循环）语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-和-do-while-的异同"><span class="toc-number">3.</span> <span class="toc-text">while 和 do-while 的异同</span></a></li></ol>
  
   </div>
 
@@ -317,7 +317,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>21</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>22</sup></a></li>
 			
 		
 			
@@ -325,7 +325,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>7</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>8</sup></a></li>
 			
 		
 			
@@ -345,11 +345,19 @@
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
@@ -361,19 +369,11 @@
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
