@@ -1,0 +1,714 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C# 8 里的默认接口实现 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="接口基础知识接口是一种面向对象编程 OOP 的语法机制，它和抽象类不同的地方在于，它需要你完全实现接口里给出的全部方法集合。 比如如下给定一个坐标对对象 Point，实现代码全部给出： 123456789public readonly struct Point&amp;#123;    public Point(int row, int column) =&amp;gt; (Row, Column) = (row">
+<meta name="keywords" content="C♯,C♯ 8,TODO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C# 8 里的默认接口实现">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;csharp-default-interface&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="接口基础知识接口是一种面向对象编程 OOP 的语法机制，它和抽象类不同的地方在于，它需要你完全实现接口里给出的全部方法集合。 比如如下给定一个坐标对对象 Point，实现代码全部给出： 123456789public readonly struct Point&amp;#123;    public Point(int row, int column) =&amp;gt; (Row, Column) = (row">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;csharp-default-interface&#x2F;error-info.png">
+<meta property="og:updated_time" content="2019-11-19T06:10:36.096Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;csharp-default-interface&#x2F;error-info.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/19/csharp-default-interface/" title="C# 8 里的默认接口实现" itemprop="url">C# 8 里的默认接口实现</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-19T01:37:49.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#接口基础知识"><span class="toc-number">1.</span> <span class="toc-text">接口基础知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是默认接口实现？"><span class="toc-number">2.</span> <span class="toc-text">什么是默认接口实现？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重新实现接口"><span class="toc-number">3.</span> <span class="toc-text">重新实现接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类重新实现基接口的成员"><span class="toc-number">3.1.</span> <span class="toc-text">类重新实现基接口的成员</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口重新实现基接口的成员"><span class="toc-number">3.2.</span> <span class="toc-text">接口重新实现基接口的成员</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用其它访问修饰符成员的支持"><span class="toc-number">4.</span> <span class="toc-text">使用其它访问修饰符成员的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态成员的支持"><span class="toc-number">5.</span> <span class="toc-text">静态成员的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现和重抽象化成员"><span class="toc-number">6.</span> <span class="toc-text">* 实现和重抽象化成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#重写"><span class="toc-number">6.1.</span> <span class="toc-text">重写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重抽象"><span class="toc-number">6.2.</span> <span class="toc-text">重抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#菱形结构"><span class="toc-number">6.3.</span> <span class="toc-text">菱形结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#该不该加-virtual-关键字？"><span class="toc-number">6.4.</span> <span class="toc-text">该不该加 virtual 关键字？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指定基接口调用和实现"><span class="toc-number">6.5.</span> <span class="toc-text">指定基接口调用和实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">7.</span> <span class="toc-text">参考</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="接口基础知识"><a href="#接口基础知识" class="headerlink" title="接口基础知识"></a>接口基础知识</h2><p>接口是一种面向对象编程 OOP 的语法机制，它和抽象类不同的地方在于，它需要你完全实现接口里给出的全部方法集合。</p>
+<p>比如如下给定一个坐标对对象 <code>Point</code>，实现代码全部给出：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> Point</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Point</span>(<span class="params"><span class="keyword">int</span> row, <span class="keyword">int</span> column</span>)</span> =&gt; (Row, Column) = (row, column);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Row &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Column &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span> =&gt; (Row, Column).ToString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，这些写法比较新，用的是 C# 6 提供的更多成员的 Lambda 实现模式以及 C# 7 给的元组模式来对位赋值，以及值元组类型 <code>ValueTuple&lt;...&gt;</code>。</p>
+<p>显然，这个 API 太过于简单，我们还没有实现更多的东西。由于坐标对对象明显可以比较相等（只要行列的数值都相同，就可以认为坐标对对象是一样的），但我们为了后续可以告诉其它程序员，这个 API 可以提供比较和字典比较这些操作，我们需要实现 <code>IEquatable&lt;T&gt;</code> 接口来保证对象可以使用比较判断。</p>
+<p>接着，设置好所有的重写方法和操作符重载：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> Point : IEquatable&lt;Point&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Point</span>(<span class="params"><span class="keyword">int</span> row, <span class="keyword">int</span> column</span>)</span> =&gt; (Row, Column) = (row, column);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Row &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Column &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params"><span class="keyword">object</span>? obj</span>)</span> =&gt; obj <span class="keyword">is</span> Point p &amp;&amp; Equals(p);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params">Point other</span>)</span> =&gt; Row == other.Row &amp;&amp; Column == other.Column;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span> =&gt; (Row, Column).ToString();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">GetHashCode</span>(<span class="params"></span>)</span> =&gt; Row ^ Column;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> ==(Point left, Point right) =&gt; left.Equals(right);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> !=(Point left, Point right) =&gt; !left.Equals(right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先大致不用去看具体实现，因为我们这里的侧重点不是实现，而是接口。</p>
+<p>当然，如果你不希望对方调用这个 <code>Equals</code> 方法的话，请把实现的方法改为显式实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> IEquatable&lt;Point&gt;.Equals(Point other)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> Row == other.Row &amp;&amp; Column == other.Column;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 <code>接口名.方法名</code> 来表示实现的接口，并且返回值前强制不加 <code>public</code>，因为接口里的方法在实现起来必然是 <code>public</code> 的，完全不必写出来。</p>
+<h2 id="什么是默认接口实现？"><a href="#什么是默认接口实现？" class="headerlink" title="什么是默认接口实现？"></a>什么是默认接口实现？</h2><p>当我们需要的接口具有通用性，但又不是非要实现的话，我们就可以使用默认实现，类似于类里的虚方法。比如，我们完全可以使用给定的 <code>GetHashCode</code> 方法来判断对象是否数值上相等，于是我们就可以写一个接口，又不必实现，只需要这么写：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public interface IEquatableDefault&lt;in T&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Default interface implementation.</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params">[MaybeNull] T other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">if</span> (other <span class="keyword">is</span> <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> GetHashCode() == other.GetHashCode();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样的话，我们就不必再每次都实现接口的方法了。把原来的 API 修改一下即可：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> Point : IEquatableDefault&lt;Point&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Point</span>(<span class="params"><span class="keyword">int</span> row, <span class="keyword">int</span> column</span>)</span> =&gt; (Row, Column) = (row, column);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Row &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Column &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params"><span class="keyword">object</span>? obj</span>)</span> =&gt; obj <span class="keyword">is</span> Point p &amp;&amp; Equals(p);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params">Point other</span>)</span> =&gt; ((IEquatableDefault&lt;Point&gt;)<span class="keyword">this</span>).Equals(other);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span> =&gt; (Row, Column).ToString();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">GetHashCode</span>(<span class="params"></span>)</span> =&gt; Row ^ Column;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> ==(Point left, Point right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ((IEquatableDefault&lt;Point&gt;)left).Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> !=(Point left, Point right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> !((IEquatableDefault&lt;Point&gt;)left).Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但请注意，接口默认的实现规则使得必须先把调用对象转为对应接口对象，然后才能调用。这是因为对象使用的默认方法实现，而实现机制要求你需要转换回接口，才能使用该方法，类似于显式实现的接口。</p>
+<h2 id="重新实现接口"><a href="#重新实现接口" class="headerlink" title="重新实现接口"></a>重新实现接口</h2><h3 id="类重新实现基接口的成员"><a href="#类重新实现基接口的成员" class="headerlink" title="类重新实现基接口的成员"></a>类重新实现基接口的成员</h3><p>在前文给出的实现机制下，我们显然发现，这个 <code>GetHashCode</code> 写起来有点不太对，因为它直接异或运算得到的结果来比较，这一点不是很好。所以我们尝试去把原本接口里实现的方式进行修改。</p>
+<p>我们尝试在 <code>Point</code> 里加入显式接口实现：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> IEquatableDefault&lt;Point&gt;.Equals(Point other)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> Row == other.Row &amp;&amp; Column == other.Column;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这一点和虚方法的重写不同，它不需要添加 <code>override</code> 关键字，因为它是属于接口层面的实现（之前的接口实现从来就没有写过 <code>override</code> 关键字，所以此时这里也是一样）。</p>
+<p>然后，它就替换掉原本接口里的默认实现了。也就是说，如果我们尝试调用原本 API 的 <code>Equals</code> 方法，由于它调用的是接口的 <code>Equals</code> 方法的实现，而此时已经被重写，所以调用的实际上是上面这个重写后的显式接口实现的方法。</p>
+<p>那么，原本接口内的方法就变成了类似于虚方法的机制了，当然，这只是”类似于“。</p>
+<h3 id="接口重新实现基接口的成员"><a href="#接口重新实现基接口的成员" class="headerlink" title="接口重新实现基接口的成员"></a>接口重新实现基接口的成员</h3><p>下面来看另外一种情况。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public interface IEquatableDefault&lt;T&gt; : IEquatable&lt;T&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">bool</span> IEquatable&lt;T&gt;.Equals([AllowNull] T other)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (other <span class="keyword">is</span> <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> GetHashCode() == other.GetHashCode();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样的实现模式就可以把基类的 <code>Equals</code> 方法实现掉。不过这样的实现模式就不允许在类里重写方法了。因为显式接口实现是不允许重写的，否则将会产生如下的报错：</p>
+<p><img src="error-info.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CS0539:</span><br><span class="line">&apos;Point.Equals(Point)&apos; in explicit interface declaration</span><br><span class="line">is not found among members of the interface that can be implemented.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>从报错的编码就可以看出，实际上它并不是一种新的错误类型，而是之前的错误类型：不允许重写显式实现的方法。当你显式实现了一个接口里并不含有的方法时，就会产生这个错误，例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">I</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">M</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Clx</span> : <span class="title">I</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">void</span> I.X() <span class="comment">// CS0539</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样便会产生 CS0539 错误。而从上面的文章示例可以看出，由于你显式实现的原接口 <code>IEquatable&lt;T&gt;</code> 的方法，所以类里就无法进行重写，因为这个显式实现并非 <code>IEquatableDefault&lt;T&gt;</code> 类里的元素（或者说，这个显式实现具有良好的封装性）。</p>
+</blockquote>
+<h2 id="使用其它访问修饰符成员的支持"><a href="#使用其它访问修饰符成员的支持" class="headerlink" title="使用其它访问修饰符成员的支持"></a>使用其它访问修饰符成员的支持</h2><p>当然，这一次默认接口实现的特性还添加了对其它访问修饰符成员的支持。你可以在接口里自行声明 <code>private</code>、<code>private protected</code>、<code>protected</code>、<code>protected internal</code>、<code>internal</code> 或 <code>public</code> 的默认接口成员的实现。不过，用法和前文介绍的默认接口实现的机制基本上一样，除了一点，就是访问修饰符的级别而已。</p>
+<h2 id="静态成员的支持"><a href="#静态成员的支持" class="headerlink" title="静态成员的支持"></a>静态成员的支持</h2><p>除此之外，默认接口实现还支持静态成员。举个例子。类似于上文的 <code>Point</code> 对象，我们完全可以默认实现一个 <code>Parse</code> 执行的静态方法。</p>
+<p>比方说，我们可以写一个模块，专门用于实现 <code>Point</code> 类型用字符串转换的解析操作，我们可以这么设计接口的 API。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IPointParsable</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Point <span class="title">Parse</span>(<span class="params"><span class="keyword">string</span> str</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">var</span> match = <span class="keyword">new</span> Regex(<span class="string">@"\(\d+,\s*\d+\)"</span>).Match(str);</span><br><span class="line">        <span class="keyword">if</span> (match.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> digitPair = <span class="keyword">new</span> Regex(<span class="string">@"\d+"</span>).Matches(match.Value);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Point(</span><br><span class="line">                <span class="keyword">int</span>.Parse(digitPair[<span class="number">0</span>].Value),</span><br><span class="line">                <span class="keyword">int</span>.Parse(digitPair[<span class="number">1</span>].Value));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(<span class="string">"Parse failed."</span>, <span class="keyword">nameof</span>(str));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">TryParse</span>(<span class="params"><span class="keyword">string</span> str, [NotNullWhen(<span class="literal">true</span></span>)] <span class="keyword">out</span> Point? result)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            result = Parse(str);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span></span><br><span class="line">        &#123;</span><br><span class="line">            result = <span class="keyword">default</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过调用的时候就只能这么书写了：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pt = IPointParsable.Parse(<span class="string">"(3, 5)"</span>);</span><br></pre></td></tr></table></figure>
+<p>即使用 <code>接口名.静态方法名</code> 来调用。这一点确实有点让人不爽，还不如把方法直接写进结构里，哪怕在前期使用单独的静态类加静态方法，也可以使用 <code>静态类名.静态方法名</code> 依然可以解决，所以这个功能目前来说还不是很有用处。</p>
+<h2 id="实现和重抽象化成员"><a href="#实现和重抽象化成员" class="headerlink" title="* 实现和重抽象化成员"></a>* 实现和重抽象化成员</h2><p>在官方给出的提案里，是提到了<strong>重写基默认接口成员的方法</strong>（Override）和<strong>重抽象</strong>（Re-abstraction）的内容，不过在目前的 C# 8 里全部尚不可以使用。所以这个坑就只能等到语法层面更新的时候才能继续往下写了。现在先给出一点概念。</p>
+<h3 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h3><p>重写基接口成员的方法，官方给出的方案是通过 <code>override</code> 的方式提供显式和隐式实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">M</span>(<span class="params"></span>)</span> =&gt; Console.WriteLine(<span class="string">"IA.M"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title">IB</span> : <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">void</span> IA.M() =&gt; Console.WriteLine(<span class="string">"IB.M"</span>); <span class="comment">// explicitly named</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title">IC</span> : <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">override</span> <span class="keyword">void</span> <span class="title">M</span>(<span class="params"></span>)</span> =&gt; Console.WriteLine(<span class="string">"IC.M"</span>); <span class="comment">// implicitly named</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如上述示例里，<code>IA</code> 接口里有一个实现，在派生接口里，都得到了重写实现，它们都加上了 <code>override</code> 关键字，即使是显式实现的。</p>
+<blockquote>
+<p>不过从前文可以得知，目前想要实现基接口里的成员，必须使用显式接口实现，隐式目前还不支持。</p>
+</blockquote>
+<h3 id="重抽象"><a href="#重抽象" class="headerlink" title="重抽象"></a>重抽象</h3><p>你甚至支持在派生接口里重新把原本实现的操作再次抽象掉，这样在继续派生的话，就必须给出实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">M</span>(<span class="params"></span>)</span> &#123; WriteLine(<span class="string">"IA.M"</span>); &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> <span class="title">IB</span> : <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">abstract</span> <span class="keyword">override</span> <span class="keyword">void</span> IA.M();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title">C</span> : <span class="title">IB</span> &#123; &#125; <span class="comment">// error: class 'C' does not implement 'IA.M'.</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>不过，目前的重抽象是否被允许，还是一个遗留问题（Open issue），甚至 <code>IB</code> 接口里的显式实现到底应该写作 <code>abstract override</code> 还是 <code>abstract</code> 现在还没有给出结论。</p>
+</blockquote>
+<h3 id="菱形结构"><a href="#菱形结构" class="headerlink" title="菱形结构"></a>菱形结构</h3><p>当允许了上述的逻辑时，就必然会产生菱形结构：即某个类型继承自两个不同的接口，但两个不同的接口又同时实现了同一个接口的行为，且实现方式不同。</p>
+<p>那么此时，这个所谓的“某个类型”到底是取哪一个接口的实现行为才应该是合理的呢？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Method</span>(<span class="params"></span>)</span> =&gt; Console.WriteLine(<span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(IA)&#125;</span>.<span class="subst">&#123;<span class="keyword">nameof</span>(Method)&#125;</span>()"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IB</span> : <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">void</span> IA.Method() =&gt; Console.WriteLine(<span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(IB)&#125;</span>.<span class="subst">&#123;<span class="keyword">nameof</span>(Method)&#125;</span>()"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IC</span> : <span class="title">IA</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">void</span> IA.Method() =&gt; Console.WriteLine(<span class="string">$"<span class="subst">&#123;<span class="keyword">nameof</span>(IC)&#125;</span>.<span class="subst">&#123;<span class="keyword">nameof</span>(Method)&#125;</span>()"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Class</span> : <span class="title">IB</span>, <span class="title">IC</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ???</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上，<code>Class</code> 里会报错，报错信息是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CS8705:</span><br><span class="line">Interface memeber &apos;IA.Method()&apos; does not have a most specific implementation.</span><br><span class="line">Neither &apos;IB.IA.Method()&apos;, nor &apos;IC.IA.Method()&apos; are most specific.</span><br></pre></td></tr></table></figure>
+<p>提示信息的意思是，你现在使用的 <code>Class</code> 类实现了两个相似的接口 <code>IB</code> 和 <code>IC</code>，而它们全部显式实现了 <code>IA</code> 接口里的 <code>Method</code> 方法。但问题在于，它们都是显式接口实现，这都不是“真正实现”的方法。这样确实也防止了菱形结构的模棱两可的情况。</p>
+<h3 id="该不该加-virtual-关键字？"><a href="#该不该加-virtual-关键字？" class="headerlink" title="该不该加 virtual 关键字？"></a>该不该加 <code>virtual</code> 关键字？</h3><p>前文用到的实现哪怕加入了 <code>override</code> 关键字来表达重写，但依旧不知道是否需要添加 <code>virtual</code> 关键字支持。从目前来说，在 IDE 里你完全可以添加 <code>virtual</code> 关键字，但实际上这个关键字加了当没加。因为加不加，都可以允许你显式实现接口成员，因此没有区别。但以后就不一定了，因为可能会出现 <code>override</code> 的情况，这样就可能出现前文提到了隐式实现模式和重抽象，这一点就完全可能会出现和体现 <code>virtual</code> 的功能了。</p>
+<h3 id="指定基接口调用和实现"><a href="#指定基接口调用和实现" class="headerlink" title="指定基接口调用和实现"></a>指定基接口调用和实现</h3><p>在重写和重抽象的时候，我们可以使用 <code>base</code> 关键字指明你调用的是哪个基接口的对象的成员，不过目前也不支持，貌似等到 C# 9 才会出现了。目前有两种调用机制：<code>base(接口名).成员名</code> 和 <code>base&lt;接口名&gt;.成员名</code>。 </p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://sunnie-shine.github.io/2019/11/08/common-01-nullable-types/#可空引用类型">可空引用类型</a>（博文）</li>
+<li><a href="https://github.com/dotnet/csharplang/blob/master/proposals/csharp-8.0/default-interface-methods.md" target="_blank" rel="noopener">默认接口实现的提案</a>（GitHub “CSharplang” repo 里的提案）</li>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/misc/cs0539" target="_blank" rel="noopener">CS0539 错误</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-8/">C♯ 8</a><a href="/tags/TODO/">TODO</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/19/csharp-default-interface/" data-title="C# 8 里的默认接口实现 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/19/clang-06-do-while-loop/"  title="C 语言语法教程（6）：do-while 语句">
+ <strong>下一篇：</strong><br/> 
+ <span>C 语言语法教程（6）：do-while 语句
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#接口基础知识"><span class="toc-number">1.</span> <span class="toc-text">接口基础知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是默认接口实现？"><span class="toc-number">2.</span> <span class="toc-text">什么是默认接口实现？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重新实现接口"><span class="toc-number">3.</span> <span class="toc-text">重新实现接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类重新实现基接口的成员"><span class="toc-number">3.1.</span> <span class="toc-text">类重新实现基接口的成员</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口重新实现基接口的成员"><span class="toc-number">3.2.</span> <span class="toc-text">接口重新实现基接口的成员</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用其它访问修饰符成员的支持"><span class="toc-number">4.</span> <span class="toc-text">使用其它访问修饰符成员的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态成员的支持"><span class="toc-number">5.</span> <span class="toc-text">静态成员的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现和重抽象化成员"><span class="toc-number">6.</span> <span class="toc-text">* 实现和重抽象化成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#重写"><span class="toc-number">6.1.</span> <span class="toc-text">重写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重抽象"><span class="toc-number">6.2.</span> <span class="toc-text">重抽象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#菱形结构"><span class="toc-number">6.3.</span> <span class="toc-text">菱形结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#该不该加-virtual-关键字？"><span class="toc-number">6.4.</span> <span class="toc-text">该不该加 virtual 关键字？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指定基接口调用和实现"><span class="toc-number">6.5.</span> <span class="toc-text">指定基接口调用和实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">7.</span> <span class="toc-text">参考</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>21</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
