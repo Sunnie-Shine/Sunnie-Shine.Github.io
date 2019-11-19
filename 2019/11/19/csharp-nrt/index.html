@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="可空引用类型在前文里，我们介绍过可空值类型 Nullable&amp;lt;T&amp;gt; 的相关内容，可以发现值类型是可以使用 Nullable&amp;lt;T&amp;gt; 使之为 null 的，不过引用类型基于指针这一点来说，肯定是需要 null 这种机制的。 不过……是的，你没有看错，从 C# 8 开始，引用类型也开始支持可空了。但是，引用类型不是一直都可以为 null 吗？它默认数值不就是为 null 吗？是的">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-19T12:54:52.393Z">
+<meta property="og:updated_time" content="2019-11-19T12:58:28.404Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -103,7 +103,7 @@
 		
 		</div>
 		
-		<h2 id="可空引用类型"><a href="#可空引用类型" class="headerlink" title="可空引用类型"></a>可空引用类型</h2><p>在前文里，我们介绍过可空值类型 <code>Nullable&lt;T&gt;</code> 的相关内容，可以发现值类型是可以使用 <code>Nullable&lt;T&gt;</code> 使之为 <code>null</code> 的，不过引用类型基于指针这一点来说，肯定是需要 <code>null</code> 这种机制的。</p>
+		<h2 id="可空引用类型"><a href="#可空引用类型" class="headerlink" title="可空引用类型"></a>可空引用类型</h2><p>在前文里，我们介绍过<a href="https://sunnie-shine.github.io/2019/11/08/csharp-common-01-nvt/">可空值类型 <code>Nullable&lt;T&gt;</code></a> 的相关内容，可以发现值类型是可以使用 <code>Nullable&lt;T&gt;</code> 使之为 <code>null</code> 的，不过引用类型基于指针这一点来说，肯定是需要 <code>null</code> 这种机制的。</p>
 <p>不过……是的，你没有看错，从 C# 8 开始，引用类型也开始支持可空了。但是，引用类型不是一直都可以为 <code>null</code> 吗？它默认数值不就是为 <code>null</code> 吗？是的，但 C# 8 “暴力地”破坏了这一个要求，为了防止尽可能少出现 <code>NullReferenceException</code> 这种可怕的异常，我们产生了一个新的语法规则：强制引用类型不可空。然后如果非得让引用类型为空的话，请采用 <code>T?</code> 的写法，和值类型可空的写法一样，比如：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
 <p>但需要你注意的是，这种写法需要基于可空引用类型的环境。你需要先打开你的项目配置文件 <code>.csproj</code>，然后添加一项：<code>&lt;Nullable&gt;Enable&lt;/Nullable&gt;</code> 即可使用这个特性。</p>
@@ -225,6 +225,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2019/11/19/csharp-complier-generating-auto-property/" title="C# 里自动属性特性的编译器生成">
+  <strong>上一篇：</strong><br/>
+  <span>
+  C# 里自动属性特性的编译器生成</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2019/11/19/clang-07-for-loop/"  title="C 语言语法系列（7）：for 语句">
@@ -376,7 +384,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>22</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>23</sup></a></li>
 			
 		
 			
@@ -392,15 +400,15 @@
 			
 		
 			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/数学/" title="数学">数学<sup>3</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>2</sup></a></li>
 			
 		
 			
@@ -412,14 +420,6 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -428,11 +428,27 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
