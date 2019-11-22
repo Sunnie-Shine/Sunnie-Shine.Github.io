@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="for （循环）语句for 语句的标准写法变量循环其实就是 while 和 do-while 语句的一种特别写法，为了方便人的理解，才创立的这样的循环操作，它是 while 的语法糖。 写法是这样的： 12345int i, sum = 0;for (i = 1; i &amp;lt; 100; i++)&amp;#123;    sum += i; &#x2F;&#x2F; Note here, &#96;i&#96; is not &#96;i++&#96;.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-19T12:42:11.577Z">
+<meta property="og:updated_time" content="2019-11-22T12:43:59.860Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#for-（循环）语句"><span class="toc-number">1.</span> <span class="toc-text">for （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#for-语句的标准写法"><span class="toc-number">1.1.</span> <span class="toc-text">for 语句的标准写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#残缺-for"><span class="toc-number">1.2.</span> <span class="toc-text">残缺 for</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带有逗号表达式的-for"><span class="toc-number">1.3.</span> <span class="toc-text">带有逗号表达式的 for</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式"><span class="toc-number">1.3.1.</span> <span class="toc-text">逗号表达式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式嵌套到-for-里"><span class="toc-number">1.3.2.</span> <span class="toc-text">逗号表达式嵌套到 for 里</span></a></li></ol></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#for-（循环）语句"><span class="toc-number">1.</span> <span class="toc-text">for （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#for-语句的标准写法"><span class="toc-number">1.1.</span> <span class="toc-text">for 语句的标准写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#残缺-for"><span class="toc-number">1.2.</span> <span class="toc-text">残缺 for</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带有逗号表达式的-for"><span class="toc-number">1.3.</span> <span class="toc-text">带有逗号表达式的 for</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式"><span class="toc-number">1.3.1.</span> <span class="toc-text">逗号表达式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式嵌套到-for-里"><span class="toc-number">1.3.2.</span> <span class="toc-text">逗号表达式嵌套到 for 里</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么经常把-for-里用的变量命名为-i？"><span class="toc-number">2.</span> <span class="toc-text">为什么经常把 for 里用的变量命名为 i？</span></a></li></ol>
 		
 		</div>
 		
@@ -118,7 +118,7 @@
 <p>这种写法在 C99 标准里可以使用，而基本的 ANSI C 标准（C89）则不允许这么使用。</p>
 </blockquote>
 <h3 id="残缺-for"><a href="#残缺-for" class="headerlink" title="残缺 for"></a>残缺 <code>for</code></h3><p><code>for</code> 循环的分号内的东西可有可无，比如不需要的时候就可以不写，不过呢，分号不能省略。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int i = 1, sum = 0;</span><br><span class="line">for(; i &lt; 100; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样和上面的语句是等价的。毕竟赋初值可以在前面写，也可以后面写。</p>
 <p>还可以这样：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(; i &lt; <span class="number">100</span>;)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -143,6 +143,8 @@
 <p>当然了，简化写法：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt;= <span class="number">100</span>; sum += i++);</span><br></pre></td></tr></table></figure>
 <p>也是 OK 的。注意，这次 <code>for</code> 因为没有大括号的关系，循环的部分就只有 <code>for</code> 带上这个小括号这一部分而已。所以加上了分号，表示它在这里截断，<code>for</code> 的语句只能到这里。</p>
+<h2 id="为什么经常把-for-里用的变量命名为-i？"><a href="#为什么经常把-for-里用的变量命名为-i？" class="headerlink" title="为什么经常把 for 里用的变量命名为 i？"></a>为什么经常把 <code>for</code> 里用的变量命名为 <code>i</code>？</h2><p>这是一个很好的问题。你记住一点，它诞生自人们的习惯。之前就说过，变量名称只会受到标识符命名规则的约束，所以取名这一点才是关键。我们最初经常使用到 <code>int</code> 类型来表示整数，除非万不得已才会调整类型。而在 <code>for</code> 循环里，我们常常使用 <code>int</code> 类型的变量作为循环的成员。而这个变量一般表示循环的量，所以它不太好取名。为了简单化处理，我们一般使用它的类型名称的首字母就直接作为了这个变量的名字。比如这里的 <code>int</code> 变量就直接叫做 <code>i</code>。包括后续会介绍到的嵌套循环，那么里面的变量就叫做 <code>j</code>，按着顺序排下来，从 <code>i</code> 开始，<code>i</code>、<code>j</code>、<code>k</code>、……。</p>
+<p>当然，如果是一个字符类型的变量作为初始变量，那么一般就叫做 <code>c</code> 或者 <code>ch</code>，其它的变量按类型取名也都是一样的规则。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -314,7 +316,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#for-（循环）语句"><span class="toc-number">1.</span> <span class="toc-text">for （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#for-语句的标准写法"><span class="toc-number">1.1.</span> <span class="toc-text">for 语句的标准写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#残缺-for"><span class="toc-number">1.2.</span> <span class="toc-text">残缺 for</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带有逗号表达式的-for"><span class="toc-number">1.3.</span> <span class="toc-text">带有逗号表达式的 for</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式"><span class="toc-number">1.3.1.</span> <span class="toc-text">逗号表达式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式嵌套到-for-里"><span class="toc-number">1.3.2.</span> <span class="toc-text">逗号表达式嵌套到 for 里</span></a></li></ol></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#for-（循环）语句"><span class="toc-number">1.</span> <span class="toc-text">for （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#for-语句的标准写法"><span class="toc-number">1.1.</span> <span class="toc-text">for 语句的标准写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#残缺-for"><span class="toc-number">1.2.</span> <span class="toc-text">残缺 for</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带有逗号表达式的-for"><span class="toc-number">1.3.</span> <span class="toc-text">带有逗号表达式的 for</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式"><span class="toc-number">1.3.1.</span> <span class="toc-text">逗号表达式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#逗号表达式嵌套到-for-里"><span class="toc-number">1.3.2.</span> <span class="toc-text">逗号表达式嵌套到 for 里</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么经常把-for-里用的变量命名为-i？"><span class="toc-number">2.</span> <span class="toc-text">为什么经常把 for 里用的变量命名为 i？</span></a></li></ol>
  
   </div>
 
@@ -341,11 +343,11 @@
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>13</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>8</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
 			
 		
 			
@@ -385,11 +387,11 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			

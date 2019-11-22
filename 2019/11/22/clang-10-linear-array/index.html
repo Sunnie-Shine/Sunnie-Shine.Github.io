@@ -1,0 +1,718 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C 语言语法系列（10）：一维数组 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="数组是什么？在前文的知识点里，我们描述了很多有关重复性的内容，例如 C 语言提供的三大循环语句：while、do-while 和 for 循环，还谈论了 for 的各种“奇葩”用法。今天要讲的重复性内容，并非针对执行操作，而是针对于数值存储。 试想一下，如果我们需要大量信息，而且它们需要的内容的类型近乎一致。比如我们要存储 50 个学生的数学成绩，如果我们单纯使用 50 个变量的话，显然是不好读也">
+<meta name="keywords" content="C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言语法系列（10）：一维数组">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;22&#x2F;clang-10-linear-array&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="数组是什么？在前文的知识点里，我们描述了很多有关重复性的内容，例如 C 语言提供的三大循环语句：while、do-while 和 for 循环，还谈论了 for 的各种“奇葩”用法。今天要讲的重复性内容，并非针对执行操作，而是针对于数值存储。 试想一下，如果我们需要大量信息，而且它们需要的内容的类型近乎一致。比如我们要存储 50 个学生的数学成绩，如果我们单纯使用 50 个变量的话，显然是不好读也">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-22T06:54:23.611Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/22/clang-10-linear-array/" title="C 语言语法系列（10）：一维数组" itemprop="url">C 语言语法系列（10）：一维数组</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-22T04:43:34.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组是什么？"><span class="toc-number">1.</span> <span class="toc-text">数组是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的定义"><span class="toc-number">2.</span> <span class="toc-text">数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的赋值"><span class="toc-number">3.</span> <span class="toc-text">数组的赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化赋值"><span class="toc-number">3.1.</span> <span class="toc-text">初始化赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续赋值"><span class="toc-number">3.2.</span> <span class="toc-text">后续赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组内元素的存取"><span class="toc-number">4.</span> <span class="toc-text">数组内元素的存取</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="数组是什么？"><a href="#数组是什么？" class="headerlink" title="数组是什么？"></a>数组是什么？</h2><p>在前文的知识点里，我们描述了很多有关重复性的内容，例如 C 语言提供的三大循环语句：<code>while</code>、<code>do-while</code> 和 <code>for</code> 循环，还谈论了 <code>for</code> 的各种“奇葩”用法。今天要讲的重复性内容，并非针对执行操作，而是针对于数值存储。</p>
+<p>试想一下，如果我们需要大量信息，而且它们需要的内容的类型近乎一致。比如我们要存储 50 个学生的数学成绩，如果我们单纯使用 50 个变量的话，显然是不好读也不好取。那么，有没有办法解决呢？有，这便是我们今天要说到的新的知识点：<strong>数组</strong>（Array）。</p>
+<h2 id="数组的定义"><a href="#数组的定义" class="headerlink" title="数组的定义"></a>数组的定义</h2><p>数组有<strong>类型</strong>（Type）一说，有<strong>维度</strong>（Rank）一说，也有<strong>长度</strong>（Length）一说，这是在初始定义的时候为其决定的，这类似于变量的定义。语法约定是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">50</span>];</span><br></pre></td></tr></table></figure>
+<p>这样便定义了一个数组（有时候也把数组直接叫做数组变量），这个数组一共存放 50 个元素，且全部都是 <code>int</code> 类型的元素。</p>
+<p>数组一共具有三大属性：类型、维度和长度，那么针对于这个数组变量而言，它的类型是 <code>int</code>，维度是一维的，而长度是 50（即总元素个数）。所谓的维度，就是数组整体呈现几个维度的形式。我们今天讲的内容都是一维数组，即只有一个维度。</p>
+<h2 id="数组的赋值"><a href="#数组的赋值" class="headerlink" title="数组的赋值"></a>数组的赋值</h2><p>数组赋值有两种操作，一种是自定义数据，在初始化的方式赋值，还有一种是后续赋值，后续赋值就需要借助循环语句来实现，因为它是采用的逐个元素的赋值的逻辑。</p>
+<h3 id="初始化赋值"><a href="#初始化赋值" class="headerlink" title="初始化赋值"></a>初始化赋值</h3><p>初始化赋值方式是在定义语句上直接使用赋值符号 <code>=</code> 和一个大括号表示的集合序列来赋值的。</p>
+<blockquote>
+<p>下面为了简化赋值，这里把 50 个元素更改为 10 个元素的数组，进行赋值。</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>这样的赋值操作是逐个对应的。这个 <code>scores</code> 数组的第一个元素数值是 1，第二个元素是 2，第三个是 4，第四个是 8，以此类推。</p>
+<p>如果你赋值的数值过多，编译器层面就会报错，提示你不遵循语法规则，exe 的文件都不会让你成功生成。</p>
+<p>不过，元素如果不够 10 个的话，赋值是成功的，也是不会出错的，但是剩余的元素都会被默认赋值为 0。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">3</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">12</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>这表示 <code>scores</code> 数组里最后 6 个元素全部为 0。</p>
+<p>但请注意。如果初始化不给出大括号的赋值语句，这个数组就是空的，即没有赋值的状态。如果在没有初始化的情况就在使用这个数组的话，就会容易出现程序崩溃的错误。所以请尽量避免这个操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>]; <span class="comment">// Non-assigned state.</span></span><br></pre></td></tr></table></figure>
+<p>如果你想把数组全部赋值为 0，可以采用下面两种方式赋值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">memset</span>(scores, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>) * <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+<p>这是第一种赋值方式，小括号第一个部分写上数组名称，第二个部分写上赋值的初始值（这里是 0，其它数值需要非常复杂的转换得到，这里不作出讲解），第三个部分写上数组整体占的内存大小。</p>
+<p>第二种是用大括号这种熟悉的方式赋值，只需要在大括号里写一个元素 0 即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">0</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>这样就可以了，因为其它没有赋值的部分都会默认赋值为 0，而此时给了第一个元素也赋值为 0，所以相当于就是全部为 0 了。</p>
+<blockquote>
+<p>在明确赋值元素足够的时候，中括号里的数值可以不写。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>就等价于</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>中括号里的数值，就等于后面大括号里元素的总个数 10 个。</p>
+</blockquote>
+<h3 id="后续赋值"><a href="#后续赋值" class="headerlink" title="后续赋值"></a>后续赋值</h3><p>你也可以借用循环语句赋值，但需要讲解存取数组的元素的语法才可以。现在我们来说一下，如何取出数组里的元素，和修改这些元素的值。</p>
+<h2 id="数组内元素的存取"><a href="#数组内元素的存取" class="headerlink" title="数组内元素的存取"></a>数组内元素的存取</h2><p>前文讲述了如何使用数组进行定义和初始化，它采用的是中括号的方式，写在数组名称的后面，中括号里写上总元素个数来表达。</p>
+<p>在存取元素的时候，我们依旧用的是中括号，而且稍微在使用上和初始化里的中括号有一点区别：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">82</span>, <span class="number">100</span>, <span class="number">96</span>, <span class="number">57</span>, <span class="number">14</span>, <span class="number">99</span>, <span class="number">90</span>, <span class="number">60</span>, <span class="number">68</span>, <span class="number">77</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>我们要取出上述第三个元素的话，请使用 <code>[第几个元素 - 1]</code> 的方式来取值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> thirdOne = scores[<span class="number">2</span>]; <span class="comment">// thirdOne is assigned 96</span></span><br></pre></td></tr></table></figure>
+<p>在 C 语言里，取值是从 0 开始的，并非 1 开始，所以需要你注意数组取值的时候，中括号里写的数值是多少。比如取出第三个元素，则写的是 <code>array[2]</code>，而非 <code>array[3]</code>。</p>
+<p>那么，整体使用的格式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> scores[] = &#123; <span class="number">82</span>, <span class="number">100</span>, <span class="number">96</span>, <span class="number">57</span>, <span class="number">14</span>, <span class="number">99</span>, <span class="number">90</span>, <span class="number">60</span>, <span class="number">68</span>, <span class="number">77</span> &#125;;</span><br><span class="line">    <span class="keyword">int</span> thirdOne = scores[<span class="number">2</span>]; <span class="comment">// thirdOne is assigned 96</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, thirdOne);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个程序将会输出 96。</p>
+<p>下面就可以说下后续赋值的方式了。</p>
+<p>由于我们学习了循环语句，所以我们可以采用方便 <code>for</code> 循环为其赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    arr[i] = i + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意，数组赋值用到了 <code>for</code> 循环，而我们之前说过，取值的中括号里写的数字是从 0 开始算的，所以最大的元素值是 9（因为 0 到 9 一共是 10 个元素了），所以初始化赋值的时候 <code>i = 0</code> 而不是 <code>i = 1</code>，因为这个 <code>i</code> 就是表示这个中括号里的数值的；而条件写的是 <code>i &lt; 10</code> 而不是 <code>i &lt;= 10</code>。</p>
+<p>而上述逻辑里的 <code>arr[i]</code> 就表示 <code>arr</code> 数组的第 <code>i + 1</code> 个元素。比如 <code>i</code> 是 6，则 <code>arr[i]</code> 就表示的是第七个元素，因为从 0 开始计算。而最终执行完毕这个 <code>for</code> 后，整个数组的数值就是 1、2、3、4、5、6、7、8、9、10 了。</p>
+<p>当然，你还可以为其进行手动赋值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="number">10</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">arr[<span class="number">1</span>] = <span class="number">3</span>;</span><br><span class="line">arr[<span class="number">6</span>] = <span class="number">8</span>;</span><br><span class="line">arr[<span class="number">9</span>] = <span class="number">14</span>;</span><br></pre></td></tr></table></figure>
+<p>这样就可以为这个数组的第 2、7、10 个元素赋值 3、8 和 14，而其余元素的数值都会被默认初始化为 0。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/22/clang-10-linear-array/" data-title="C 语言语法系列（10）：一维数组 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2019/11/22/clang-11-matrix-array/" title="C 语言语法系列（11）：二维数组">
+  <strong>上一篇：</strong><br/>
+  <span>
+  C 语言语法系列（11）：二维数组</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/11/20/regex-learning/"  title="正则表达式基础">
+ <strong>下一篇：</strong><br/> 
+ <span>正则表达式基础
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组是什么？"><span class="toc-number">1.</span> <span class="toc-text">数组是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的定义"><span class="toc-number">2.</span> <span class="toc-text">数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的赋值"><span class="toc-number">3.</span> <span class="toc-text">数组的赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化赋值"><span class="toc-number">3.1.</span> <span class="toc-text">初始化赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续赋值"><span class="toc-number">3.2.</span> <span class="toc-text">后续赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组内元素的存取"><span class="toc-number">4.</span> <span class="toc-text">数组内元素的存取</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>25</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

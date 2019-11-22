@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="if 关键字的用法接下来，我将为你讲解的是一种新的执行语法模式：条件判断。 在前文的介绍里，我们可以使用运算符和类型声明的表达式，来获取一些数据的数值，并输出。但整个程序的写法格式是这样的： 12345678910#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;int main(void)&amp;#123;    int a = 2, b = 3;">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-17T08:09:12.536Z">
+<meta property="og:updated_time" content="2019-11-22T07:44:22.976Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#if-关键字的用法"><span class="toc-number">1.</span> <span class="toc-text">if 关键字的用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三目运算符：条件运算"><span class="toc-number">2.</span> <span class="toc-text">三目运算符：条件运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if"><span class="toc-number">3.</span> <span class="toc-text">嵌套 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#串联-if"><span class="toc-number">4.</span> <span class="toc-text">串联 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if-时的三目运算"><span class="toc-number">5.</span> <span class="toc-text">嵌套 if 时的三目运算</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#if-关键字的用法"><span class="toc-number">1.</span> <span class="toc-text">if 关键字的用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三目运算符：条件运算"><span class="toc-number">2.</span> <span class="toc-text">三目运算符：条件运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if"><span class="toc-number">3.</span> <span class="toc-text">嵌套 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#串联-if"><span class="toc-number">4.</span> <span class="toc-text">串联 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if-时的三目运算"><span class="toc-number">5.</span> <span class="toc-text">嵌套 if 时的三目运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数值条件"><span class="toc-number">6.</span> <span class="toc-text">数值条件</span></a></li></ol>
 		
 		</div>
 		
@@ -129,6 +129,16 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c = a + b == <span class="number">3</span> ? (a - b == <span class="number">3</span> ? a * b : a / b) : <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>请注意，三目运算符的查找逻辑是从右到左的。所以它会有先发现到 <code>(a - b == 3 ? a * b : a / b)</code> 表达式是完整的整体，所以这个括号是可以不要的，即：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c = a + b == <span class="number">3</span> ? a - b == <span class="number">3</span> ? a * b : a / b : <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="数值条件"><a href="#数值条件" class="headerlink" title="数值条件"></a>数值条件</h2><p>最后要说明一下的是，任意一个整数数值都可以作为条件使用，写在 <code>if</code> 语句的小括号里。在前文里，我们说到，一个整数数值，只要它不是 0，我们就认为这个数值表示的条件是“正确的”的意思，而是 0 则表示这个条件是“不成立的”、“错误的”的意思。所以，如果我们想要把一个数值作为真假两种情况的判断的话，我们可以这么写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> isPrime = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">if</span> (isPrime)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"17 is a prime.\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"17 is not a prime.\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，你就能得到 <code>17 is a prime</code> 的输出信息。当然，你甚至也可以为 <code>isPrime</code> 变量的条件处添加前缀取反符号 <code>!</code> 来表示逻辑取反。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> isPrime = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">if</span> (!isPrime) <span class="comment">// Note here.</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"34 is not a prime.\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"34 is a prime.\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过，从这个角度来看，<code>isPrime</code> 单独作为条件，可以等价用判断语句表示为 <code>isPrime != 0</code>，而 <code>!isPrime</code> 则可以等价表示为 <code>isPrime == 0</code>。所以推广到任意情况下：</p>
+<ul>
+<li><code>digit == 0</code> 简写作 <code>!digit</code>；</li>
+<li><code>digit != 0</code> 简写作 <code>digit</code>。</li>
+</ul>
+<p>当然，这两种说法仅用于 <code>if</code> 的条件断言（小括号）处。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -300,7 +310,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#if-关键字的用法"><span class="toc-number">1.</span> <span class="toc-text">if 关键字的用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三目运算符：条件运算"><span class="toc-number">2.</span> <span class="toc-text">三目运算符：条件运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if"><span class="toc-number">3.</span> <span class="toc-text">嵌套 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#串联-if"><span class="toc-number">4.</span> <span class="toc-text">串联 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if-时的三目运算"><span class="toc-number">5.</span> <span class="toc-text">嵌套 if 时的三目运算</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#if-关键字的用法"><span class="toc-number">1.</span> <span class="toc-text">if 关键字的用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三目运算符：条件运算"><span class="toc-number">2.</span> <span class="toc-text">三目运算符：条件运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if"><span class="toc-number">3.</span> <span class="toc-text">嵌套 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#串联-if"><span class="toc-number">4.</span> <span class="toc-text">串联 if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套-if-时的三目运算"><span class="toc-number">5.</span> <span class="toc-text">嵌套 if 时的三目运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数值条件"><span class="toc-number">6.</span> <span class="toc-text">数值条件</span></a></li></ol>
  
   </div>
 
@@ -327,11 +337,11 @@
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>13</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>8</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
 			
 		
 			
@@ -371,11 +381,11 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			

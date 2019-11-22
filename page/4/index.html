@@ -82,6 +82,410 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/13/linq-04-group-by-clause/" title="LINQ 教程（4）：group-by 从句" itemprop="url">LINQ 教程（4）：group-by 从句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-13T10:47:55.000Z" itemprop="datePublished"> 发表于 2019-11-13</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="group-by-从句"><a href="#group-by-从句" class="headerlink" title="group-by 从句"></a><code>group-by</code> 从句</h2><p>今天我们来看一个类似于 <code>orderby</code> 但写法不太一样、并且执行原理也不太一样的从句类型：<code>group-by</code> 从句。它的用法有一点麻烦，写法倒是很简单，但使用起来不如前文用的结果那样，一层 <code>foreach</code> 就可以遍历，而需要两层。</p>
+<p>比如，我们尝试拿出之前的关键词实例给大家举例。假设我们今天要把所有的关键字，按第一个字符分组显示，那么显示模式是如何的呢？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Uses group-by clause.</span></span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">group</span> word <span class="keyword">by</span> word[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// Uses `selection` to get all different groups.</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> wordGroup <span class="keyword">in</span> selection)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Output the grouping basis.</span></span><br><span class="line">    Console.WriteLine(<span class="string">$"<span class="subst">&#123;wordGroup.Key&#125;</span>:"</span>);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> word <span class="keyword">in</span> wordGroup)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// All words in the same group.</span></span><br><span class="line">        Console.WriteLine(<span class="string">$"    <span class="subst">&#123;word&#125;</span>"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Console.WriteLine();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先来看上面的使用 <code>group-by</code> 从句的方法：使用 <code>group</code> 和 <code>by</code> 关键字，把需要排序的成员写在之间，然后在 <code>by</code> 后写上排序的依据（按首字母排序，当然，有些单词含有符号，比如以 <code>#</code> 和 <code>!</code> 开头的关键字）。</p>
+<p>然后在使用的时候，需要两层循环，在外层写上的是按字母分组的那个一组元素，然后在内层，在继续执行循环，遍历这一组元素的每一个关键字。然后我们尝试使用 <code>wordGroup.Key</code> 属性来获取这一组元素的排序依据的值。比如按第一个字符把所有关键字分组的话，自然每一组的分组依据的值就是 <code>a</code>、<code>b</code>、<code>c</code>、……、<code>*</code>、<code>#</code> 这些了。</p>
+<blockquote>
+<p>注意，它和 <code>orderby</code> 从句的写法不同的是，它的 <code>by</code> 是被拆分出来的，而不像是 <code>order</code> 和 <code>by</code>，没有拆分开来，是一个整体；而且，<code>group-by</code> 从句后不要再写 <code>select</code> 从句了，即 <code>group-by</code> 从句应作为整个 LINQ 查询表达式的结尾。</p>
+</blockquote>
+<p>用起来其实也不算比较难的地方，但掌握它的调用模式和原理是非常难的。前面我们说到了这个使用方式，而下面我们就来说一下它的原理，和它的方法链写法。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="IGrouping-lt-TKey-TElement-gt-接口"><a href="#IGrouping-lt-TKey-TElement-gt-接口" class="headerlink" title="IGrouping&lt;TKey, TElement&gt; 接口"></a><code>IGrouping&lt;TKey, TElement&gt;</code> 接口</h3><p>接下来我们来说一个接口：<code>IGrouping&lt;TKey, TElement&gt;</code> 接口。这个接口是什么呢？这个接口就是上文提到的 <code>group-by</code> 从句使用后得到的这个返回的元素类型，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">group</span> word <span class="keyword">by</span> word[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+<p>这个语句的返回值就是 <code>IEnumerable&lt;IGrouping&lt;char, string&gt;&gt;</code> 接口类型（即 <code>var</code> 关键字代替的就是这个类型）。其中的第一个泛型参数 <code>char</code> 表示分组依据的类型，而第二个泛型参数 <code>string</code> 表示这个分组里的元素的元素类型。由此可见，这个类型是一个一对多的模型。当我们查看这个接口的实现代码的时候，就可以发现，它里面提供了轻松的 <code>Key</code> 属性来获取分组依据，而且它直接实现了 <code>IEnumerable&lt;TElement&gt;</code> 接口，这样我们就可以轻松使用 <code>foreach</code> 循环来获取每一个元素了。</p>
+<p>现在我们来进行解惑。为啥这个返回值这么复杂。<code>IEnumerable&lt;IGrouping&lt;char, string&gt;&gt;</code> 初学起来肯定会觉得很不好理解。现在我们来看，为什么这个 <code>group-by</code> 从句使用过后，返回值的类型会长成这样奇怪。</p>
+<p>首先，发明 <code>IGrouping&lt;TKey, TElement&gt;&gt;</code> 接口，目的非常简单，就是为了推迟执行。还记得前文提到的推迟执行吗？推迟执行便是让执行推后到 <code>foreach</code> 调用的时候才会使用的一种执行机制。这里发明这个接口，为的就是让程序在调用 <code>foreach</code> 遍历的时候，这个接口的成员才会被全部迭代出来，这是这个接口存在的第一个意义。</p>
+<p>第二个意义是，这个接口类型如果我们不发明出来的话，那么这里的 <code>group-by</code> 从句执行的结果应该用什么表示呢？显然，既然是分组的模式，必然需要一个可以表示分组意义的类型来表示，于是微软 C# 语言设计师就想到了，使用一个一对多的模型，来表示这个构型。然后，外层这个 <code>IEnumerable&lt;T&gt;</code> 表示的是这个外层循环迭代出来的每一个组，而内层的元素类型，就是这个所谓的 <code>IGrouping&lt;TKey, TElement&gt;</code> 了，这样就变得非常清晰：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">                                               ↓ IEnumerable&lt;IGrouping&lt;char, string&gt;&gt;</span><br><span class="line">foreach (IGrouping&lt;char, string&gt; group in everyGroups)</span><br><span class="line">&#123;</span><br><span class="line">                              ↓ IGrouping&lt;char, string&gt;</span><br><span class="line">    foreach (string word in group)</span><br><span class="line">    &#123;</span><br><span class="line">        // Use them...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>显然，这个设计模式是非常正确的。</p>
+<h3 id="方法链写法"><a href="#方法链写法" class="headerlink" title="方法链写法"></a>方法链写法</h3><p>下面我们来看看这个关键字的实现原理：方法链写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.GroupBy(word =&gt; word[<span class="number">0</span>]);</span><br><span class="line">                   <span class="comment">//.Select(word =&gt; word); // This is a redundant way to call.</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，这个方法的调用非常简单：LINQ 提供了一个非常好用的 <code>GroupBy</code> 方法，只要我们依葫芦画瓢，照着 <code>OrderBy</code> 的调用方式书写这里的 Lambda 表达式即可。请注意，这里调用 <code>GroupBy</code> 方法一定是生成好的 <code>IEnumerable&lt;IGrouping&lt;TKey, TElement&gt;&gt;</code> 类型了，所以你完全不需要多此一举在后面加上 <code>Select</code> 方法不然就相当于多做了一次完全没有意义的工作。</p>
+<h3 id="愉快地看下输出结果吧！"><a href="#愉快地看下输出结果吧！" class="headerlink" title="愉快地看下输出结果吧！"></a>愉快地看下输出结果吧！</h3><p>下面我们来看看，上述调用的输出结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line">a:</span><br><span class="line">    abstract</span><br><span class="line">    as</span><br><span class="line"></span><br><span class="line">b:</span><br><span class="line">    base</span><br><span class="line">    bool</span><br><span class="line">    break</span><br><span class="line">    byte</span><br><span class="line"></span><br><span class="line">c:</span><br><span class="line">    case</span><br><span class="line">    catch</span><br><span class="line">    char</span><br><span class="line">    checked</span><br><span class="line">    class</span><br><span class="line">    const</span><br><span class="line">    continue</span><br><span class="line"></span><br><span class="line">d:</span><br><span class="line">    decimal</span><br><span class="line">    default</span><br><span class="line">    delegate</span><br><span class="line">    do</span><br><span class="line">    double</span><br><span class="line"></span><br><span class="line">e:</span><br><span class="line">    else</span><br><span class="line">    enum</span><br><span class="line">    event</span><br><span class="line">    explicit</span><br><span class="line">    extern</span><br><span class="line"></span><br><span class="line">f:</span><br><span class="line">    false</span><br><span class="line">    finally</span><br><span class="line">    fixed</span><br><span class="line">    float</span><br><span class="line">    for</span><br><span class="line">    foreach</span><br><span class="line"></span><br><span class="line">g:</span><br><span class="line">    goto</span><br><span class="line"></span><br><span class="line">i:</span><br><span class="line">    if</span><br><span class="line">    implicit</span><br><span class="line">    in (foreach)</span><br><span class="line">    int</span><br><span class="line">    interface</span><br><span class="line">    internal</span><br><span class="line">    is</span><br><span class="line"></span><br><span class="line">l:</span><br><span class="line">    lock</span><br><span class="line">    long</span><br><span class="line"></span><br><span class="line">n:</span><br><span class="line">    namespace</span><br><span class="line">    new</span><br><span class="line">    null</span><br><span class="line"></span><br><span class="line">o:</span><br><span class="line">    object</span><br><span class="line">    operator</span><br><span class="line">    out (generic modifier)</span><br><span class="line">    out (parameter)</span><br><span class="line">    override</span><br><span class="line"></span><br><span class="line">p:</span><br><span class="line">    params</span><br><span class="line">    private</span><br><span class="line">    protected</span><br><span class="line">    public</span><br><span class="line"></span><br><span class="line">r:</span><br><span class="line">    readonly</span><br><span class="line">    ref</span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">s:</span><br><span class="line">    sbyte</span><br><span class="line">    sealed</span><br><span class="line">    short</span><br><span class="line">    sizeof</span><br><span class="line">    stackalloc</span><br><span class="line">    static</span><br><span class="line">    string</span><br><span class="line">    struct</span><br><span class="line">    switch</span><br><span class="line"></span><br><span class="line">t:</span><br><span class="line">    this</span><br><span class="line">    throw</span><br><span class="line">    true</span><br><span class="line">    try</span><br><span class="line">    typeof</span><br><span class="line"></span><br><span class="line">u:</span><br><span class="line">    uint</span><br><span class="line">    ulong</span><br><span class="line">    unchecked</span><br><span class="line">    unsafe</span><br><span class="line">    ushort</span><br><span class="line">    using</span><br><span class="line"></span><br><span class="line">v:</span><br><span class="line">    virtual</span><br><span class="line">    void</span><br><span class="line">    volatile</span><br><span class="line"></span><br><span class="line">w:</span><br><span class="line">    while</span><br><span class="line"></span><br><span class="line">*:</span><br><span class="line">    *add</span><br><span class="line">    *alias</span><br><span class="line">    *ascending</span><br><span class="line">    *async</span><br><span class="line">    *await</span><br><span class="line">    *by</span><br><span class="line">    *descending</span><br><span class="line">    *dynamic</span><br><span class="line">    *equals</span><br><span class="line">    *from</span><br><span class="line">    *get</span><br><span class="line">    *global</span><br><span class="line">    *group</span><br><span class="line">    *in (generic modifier)</span><br><span class="line">    *in (parameter)</span><br><span class="line">    *in (query)</span><br><span class="line">    *into</span><br><span class="line">    *join</span><br><span class="line">    *let</span><br><span class="line">    *nameof</span><br><span class="line">    *notnull</span><br><span class="line">    *on</span><br><span class="line">    *orderby</span><br><span class="line">    *partial (method)</span><br><span class="line">    *partial (type)</span><br><span class="line">    *remove</span><br><span class="line">    *select</span><br><span class="line">    *set</span><br><span class="line">    *switch (expression)</span><br><span class="line">    *unmanaged</span><br><span class="line">    *using static</span><br><span class="line">    *value</span><br><span class="line">    *var</span><br><span class="line">    *when</span><br><span class="line">    *where (generic constraint)</span><br><span class="line">    *where (query)</span><br><span class="line">    *yield</span><br><span class="line"></span><br><span class="line">#:</span><br><span class="line">    #annotations</span><br><span class="line">    #checksum</span><br><span class="line">    #disable</span><br><span class="line">    #enable</span><br><span class="line">    #nullable</span><br><span class="line">    #restore</span><br><span class="line">    #warning</span><br><span class="line">    #warnings</span><br><span class="line"></span><br><span class="line">!:</span><br><span class="line">    !#safeonly</span><br></pre></td></tr></table></figure>
+<p>emmm……可能有点长。</p>
+<h2 id="group-by-into-从句"><a href="#group-by-into-从句" class="headerlink" title="group-by-into 从句"></a><code>group-by-into</code> 从句</h2><p>在 <code>group-by</code> 从句里，LINQ 还提供了一个辅助语句：<code>into</code> 从句。<code>into</code> 从句作为临时存储的方式而存在，把 <code>into</code> 后写上自己取的临时名，那么前面取出来的这些数据就都会存到这个变量里，留着后面用。如果写了 <code>into</code> 从句，那么查询表达式就可以继续写下去了。</p>
+<p>举个例子。我们觉得上文太长了，我们尝试只把所有的分组依据取出来。那么接下来怎么办呢？</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">group</span> word <span class="keyword">by</span> word[<span class="number">0</span>] <span class="keyword">into</span> grp</span><br><span class="line">                <span class="keyword">select</span> grp.Key;</span><br></pre></td></tr></table></figure>
+<p>这样的话，我们就可以尝试把每一个组都取出来，然后取出其中的 <code>Key</code> 属性了。那么此时，<code>selection</code> 变量就是 <code>IEnumerable&lt;char&gt;</code> 类型的了。方法链写法是：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.GroupBy(word =&gt; word[<span class="number">0</span>])</span><br><span class="line">                     .Select(grp =&gt; grp.Key);</span><br></pre></td></tr></table></figure>
+<p>可以看到，实际上在方法链模式下，书写格式是完全允许继续往下写的，因为在 <code>GroupBy</code> 方法的层面来说，它的返回值类型虽然是 <code>IEnumerable&lt;IGrouping&lt;TKey, TElement&gt;&gt;</code> 这么长的类型，但依旧是 <code>IEnumerable&lt;T&gt;</code> 的，所以依旧可以继续进行枚举和使用 <code>Select</code> 方法继续往下写。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/11/asp-csharp-sql-helper/" title="ASP.NET SQL 查询类辅助操作的实现" itemprop="url">ASP.NET SQL 查询类辅助操作的实现</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-11T14:54:31.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="话不多说，直接看代码！"><a href="#话不多说，直接看代码！" class="headerlink" title="话不多说，直接看代码！"></a>话不多说，直接看代码！</h2><p>下面来看看 SqlHelper 类的具体实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">SqlHelper</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span> ConnectionString</span><br><span class="line">        = ConfigurationManager.ConnectionStrings[<span class="string">"conn"</span>].ConnectionString;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ExecuteNonQuery</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[]? para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            conn.Open();</span><br><span class="line">            <span class="keyword">return</span> cmd.ExecuteNonQuery();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SqlDataReader <span class="title">ExecuteReader</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[]? para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        SqlDataReader result = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                conn.Open();</span><br><span class="line">                result = cmd.ExecuteReader(CommandBehavior.CloseConnection);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(ex.Message);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DataSet <span class="title">GetDataSet</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[] para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> da = <span class="keyword">new</span> SqlDataAdapter</span><br><span class="line">        &#123;</span><br><span class="line">            SelectCommand = <span class="keyword">new</span> SqlCommand</span><br><span class="line">            &#123;</span><br><span class="line">                Connection = conn,</span><br><span class="line">                CommandText = sql,</span><br><span class="line">                CommandType = commandType</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    da.SelectCommand.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> ds = <span class="keyword">new</span> DataSet();</span><br><span class="line">            conn.Open();</span><br><span class="line">            da.Fill(ds);</span><br><span class="line">            <span class="keyword">return</span> ds;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">object</span> <span class="title">ExecuteScalar</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[] para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            conn.Open();</span><br><span class="line">            <span class="keyword">return</span> cmd.ExecuteScalar();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-ASP/">C♯.ASP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/ASP/">ASP</a><a href="/tags/SQL/">SQL</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/11/linq-03-orderby-clause/" title="LINQ 教程（3）：orderby 从句" itemprop="url">LINQ 教程（3）：orderby 从句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-11T03:04:11.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="orderby-从句"><a href="#orderby-从句" class="headerlink" title="orderby 从句"></a><code>orderby</code> 从句</h2><p>下面我们继续来看一个新的从句：<code>orderby</code> 从句。需要注意的是，这里的 <code>orderby</code> 是连体的，也就意味着两个单词不能拆开书写，中间没有任何空白字符。</p>
+<p>我们依旧使用上一节的关键字实例给大家讲解。今天我们来讲的从句是用来排序的。虽说原来给出的关键字已经以字母顺序排序了，但如果想要实现我们自己定义的排序行为，就需要这个从句了。</p>
+<p>比如，我们假设前文给出的序列是乱序的，我们尝试进行单词的升序排序。那么代码可以这么写。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>可以从代码看到，它实际上就是先对 <code>words</code> 进行遍历，对每一个单词进行升序排序，然后按排序后的结果进行按序摆放，构成一个集合。</p>
+<p>注意，<code>orderby</code> 从句的写法有三种：</p>
+<ul>
+<li><code>orderby xxx ascending</code></li>
+<li><code>orderby xxx</code></li>
+<li><code>orderby xxx descending</code></li>
+</ul>
+<p>三种写法都是合适的写法，但都必须位于 <code>select</code> 从句之前。和 SQL 不同，<code>orderby</code> 从句并不能作为语句的结束。其中第一种和第二种是等价写法，即省略 <code>ascending</code> 关键字，将会按照给定的键值进行升序排序，而如果给定 <code>descending</code> 关键字，则进行降序排序。另外请注意，当一次排序的思路完成后，还可以继续执行排序操作。比如给出一个新的问题：我们想要按照单词长度进行升序排序后，再按照每一个单词的字母表顺序进行排序。那么，我们可以这么写：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">orderby</span> word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>或不写 <code>ascending</code> 关键字。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length</span><br><span class="line">                <span class="keyword">orderby</span> word</span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>或写成一行。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length <span class="keyword">ascending</span>, word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>甚至写成一行后也可以不要 <code>ascending</code> 关键字。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length, word</span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>那么，现在肯定会留下一个问题。两次 <code>orderby</code> 进行排序，是否表示着如此操作会执行两次 <code>foreach</code> 遍历集合，进而会影响性能呢？下面我们就来分析它的原理和方法链的写法。</p>
+<h2 id="原理和方法链调用模式"><a href="#原理和方法链调用模式" class="headerlink" title="原理和方法链调用模式"></a>原理和方法链调用模式</h2><h3 id="单条件排序"><a href="#单条件排序" class="headerlink" title="单条件排序"></a>单条件排序</h3><p>在前文里，我们尝试着使用了多个排序操作，不过我们从入门角度开始，先从排一次序来看它的方法链的写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.OrderBy(w =&gt; w)</span><br><span class="line">                     .Select(w =&gt; w);</span><br></pre></td></tr></table></figure>
+<p>简单的一句话。我们先不去关心 <code>Select</code> 的部分，因为它仅仅是用于强制执行排序，所以我们暂时先只关心前面的部分。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.OrderBy(w =&gt; w);</span><br></pre></td></tr></table></figure>
+<p>排序的过程非常简单，直接把每一个单词作为键值进行排序。而由于每一个键值本身就是一个 <code>string</code> 类型，它是实现了 <code>IComparable&lt;T&gt;</code> 接口的，所以在排序的时候，我们完全可以不用关心内部是如何实现排序的；反之，如果你给出的对象没有实现可比较接口 <code>IComparable&lt;T&gt;</code> 或 <code>IComparable</code> 的话，对象就不可能排序了，除非你在外部定义一个排序过程，自定义这种类型的排序模式是如何的，不过这一点我们将后面再来说明。</p>
+<p>我们先关心内部的实现。我们来看下官网给出的源代码实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IOrderedEnumerable&lt;TSource&gt; OrderBy&lt;TSource, TKey&gt;</span><br><span class="line">    (<span class="keyword">this</span> IEnumerable&lt;TSource&gt; source, Func&lt;TSource, TKey&gt; keySelector)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> OrderedEnumerable&lt;TSource, TKey&gt;(</span><br><span class="line">        source, keySelector, <span class="literal">null</span>, <span class="literal">false</span>, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>看起来名字挺长的，这里就把代码重新该写成一行能看完的样式。</p>
+</blockquote>
+<p>看下代码，它压根没有给我们实现排序的功能，而是转去创建了一个新的数据集合类型 <code>OrderedEnumerable&lt;T&gt;</code>。这是在搞什么飞机呢？实际上，这样也就是为了能够实现推迟执行的效果而搞的，就是为了保证，万一后续要执行很多的排序，那岂不是每一次排序都得立马执行，就相当于多执行了很多次无用功，所以它尽量快捷一些，于是创建了一个可排序的可迭代对象。</p>
+<p>具体的代码就不扒出来了，因为太长了，挨个理解非常耗时，我们提一下最终的结论。首先，它的排序操作是推后执行的，而且执行排序的算法使用的是快速排序。</p>
+<p>如果这个需要排序的对象执行 <code>IComparable</code> 或 <code>IComparable&lt;T&gt;</code> 的实现的话，你必须提供比较接口 <code>IComparer&lt;T&gt;</code>。这个接口更类似于静态比较操作，它好比是 Java 里的匿名内部类。比如，我们可能会对一个自己设计的 <code>Person</code> 类实现比较操作，那么我们可以实现 <code>IComparer&lt;Person&gt;</code> 接口，写在这个对象里作为嵌套类类型（当然，嵌套的内部结构类型也可以，不过会产生装箱操作）。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Person</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> PersonComparer : IComparer&lt;Person&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Explicit implementation of `IComparer&lt;T&gt;`.</span></span><br><span class="line">        <span class="keyword">int</span> IComparer&lt;Person&gt;.Compare(Person x, Person y)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> result = x.Age.CompareTo(y.Age);</span><br><span class="line">            <span class="keyword">return</span> result != <span class="number">0</span> ? result : x.Name.CompareTo(y.Name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后创建出这个类型的对象出来：<code>var comparer = new Person.PersonComparer();</code>，这样的比较器就可以传入到排序方法 <code>OrderBy</code> 里的第二个参数了，所以完整的写法是：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> comparer = <span class="keyword">new</span> Person.PersonComparer();</span><br><span class="line"><span class="keyword">var</span> selection = persons.OrderBy(person =&gt; person, comparer)</span><br><span class="line">                       .Select(person =&gt; person);</span><br></pre></td></tr></table></figure>
+<p>这样，就可以在没有实现比较接口的情况下，自己实现出一个排序操作了。</p>
+<p>另外，如果是降序排序，调用的方法则是 <code>OrderByDescending</code>，参数的传递模式是一样的，所以就不多赘述了。</p>
+<h3 id="多条件排序"><a href="#多条件排序" class="headerlink" title="多条件排序"></a>多条件排序</h3><p>那么，两个排序项，怎么办呢？实际上，两个排序项的行为也会被逐个拆分，其中第一个排序项将作为 <code>OrderedEnumerable&lt;T&gt;</code> 对象创建出来，然后后续的排序项，都会调用另外一个方法，即 <code>ThenBy</code> 和 <code>ThenByDescending</code>，而不是刚才学到的 <code>OrderBy</code> 和 <code>OrderByDescending</code> 了。</p>
+<p>仔细思考一下，后续的操作是不是就直接往创建好的 <code>OrderedEnumerable&lt;T&gt;</code> 对象里加比较条件就行了啊？实际上就是如此，所以 <code>ThenBy</code> 和 <code>ThenByDescending</code> 的执行操作也很简单：为前文创建好的对象继续“挂”新的比较条件上去，然后返回原对象，这样就可以串联起来了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IOrderedEnumerable&lt;TSource&gt; ThenBy&lt;TSource, TKey&gt;(</span><br><span class="line">    <span class="keyword">this</span> IOrderedEnumerable&lt;TSource&gt; source, Func&lt;TSource, TKey&gt; keySelector)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (source == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> source.CreateOrderedEnumerable(keySelector, <span class="literal">null</span>, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上可以看出，它的判断方式确实就是如此简单的。直接往原本的对象上挂条件即可。当然，它也没忘记判断对象是否为 <code>null</code>。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/OrderBy.cs,e449fbc07f49dc52" target="_blank" rel="noopener">Enumerable.OrderBy 方法</a></li>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/OrderBy.cs,5fc6f26f82dec7e7" target="_blank" rel="noopener">Enumerable.ThenBy 方法</a></li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/11/linq-02-let-clause/" title="LINQ 教程（2）：let 从句" itemprop="url">LINQ 教程（2）：let 从句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-11T01:49:42.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="let-从句"><a href="#let-从句" class="headerlink" title="let 从句"></a><code>let</code> 从句</h2><p>今天来看一下 <code>let</code> 从句的使用模式和逻辑。<code>let</code> 从句一般写在 <code>from</code> 从句和 <code>select</code> 从句之间，用于临时创建变量行为。</p>
+<p>今天我们来换一个例子，后续都采用这个实例来讲解。在 C# 里，一共有大约 130 个关键字，它们已经全部被我写到程序里，并以字母表顺序排序。如下代码所示。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> words = <span class="keyword">new</span>[]</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"abstract"</span>, <span class="string">"as"</span>,</span><br><span class="line">    <span class="string">"base"</span>, <span class="string">"bool"</span>, <span class="string">"break"</span>, <span class="string">"byte"</span>,</span><br><span class="line">    <span class="string">"case"</span>, <span class="string">"catch"</span>, <span class="string">"char"</span>, <span class="string">"checked"</span>, <span class="string">"class"</span>, <span class="string">"const"</span>, <span class="string">"continue"</span>,</span><br><span class="line">    <span class="string">"decimal"</span>, <span class="string">"default"</span>, <span class="string">"delegate"</span>, <span class="string">"do"</span>, <span class="string">"double"</span>,</span><br><span class="line">    <span class="string">"else"</span>, <span class="string">"enum"</span>, <span class="string">"event"</span>, <span class="string">"explicit"</span>, <span class="string">"extern"</span>,</span><br><span class="line">    <span class="string">"false"</span>, <span class="string">"finally"</span>, <span class="string">"fixed"</span>, <span class="string">"float"</span>, <span class="string">"for"</span>, <span class="string">"foreach"</span>,</span><br><span class="line">    <span class="string">"goto"</span>,</span><br><span class="line">    <span class="string">"if"</span>, <span class="string">"implicit"</span>, <span class="string">"in (foreach)"</span>, <span class="string">"int"</span>, <span class="string">"interface"</span>, <span class="string">"internal"</span>, <span class="string">"is"</span>,</span><br><span class="line">    <span class="string">"lock"</span>, <span class="string">"long"</span>,</span><br><span class="line">    <span class="string">"namespace"</span>, <span class="string">"new"</span>, <span class="string">"null"</span>,</span><br><span class="line">    <span class="string">"object"</span>, <span class="string">"operator"</span>, <span class="string">"out (generic modifier)"</span>, <span class="string">"out (parameter)"</span>, <span class="string">"override"</span>,</span><br><span class="line">    <span class="string">"params"</span>, <span class="string">"private"</span>, <span class="string">"protected"</span>, <span class="string">"public"</span>,</span><br><span class="line">    <span class="string">"readonly"</span>, <span class="string">"ref"</span>, <span class="string">"return"</span>,</span><br><span class="line">    <span class="string">"sbyte"</span>, <span class="string">"sealed"</span>, <span class="string">"short"</span>, <span class="string">"sizeof"</span>, <span class="string">"stackalloc"</span>, <span class="string">"static"</span>, <span class="string">"string"</span>, <span class="string">"struct"</span>, <span class="string">"switch"</span>,</span><br><span class="line">    <span class="string">"this"</span>, <span class="string">"throw"</span>, <span class="string">"true"</span>, <span class="string">"try"</span>, <span class="string">"typeof"</span>,</span><br><span class="line">    <span class="string">"uint"</span>, <span class="string">"ulong"</span>, <span class="string">"unchecked"</span>, <span class="string">"unsafe"</span>, <span class="string">"ushort"</span>, <span class="string">"using"</span>,</span><br><span class="line">    <span class="string">"virtual"</span>, <span class="string">"void"</span>, <span class="string">"volatile"</span>,</span><br><span class="line">    <span class="string">"while"</span>,</span><br><span class="line">    <span class="string">"*add"</span>, <span class="string">"*alias"</span>, <span class="string">"*ascending"</span>, <span class="string">"*async"</span>, <span class="string">"*await"</span>,</span><br><span class="line">    <span class="string">"*by"</span>,</span><br><span class="line">    <span class="string">"*descending"</span>, <span class="string">"*dynamic"</span>,</span><br><span class="line">    <span class="string">"*equals"</span>,</span><br><span class="line">    <span class="string">"*from"</span>,</span><br><span class="line">    <span class="string">"*get"</span>, <span class="string">"*global"</span>, <span class="string">"*group"</span>,</span><br><span class="line">    <span class="string">"*in (generic modifier)"</span>, <span class="string">"*in (parameter)"</span>, <span class="string">"*in (query)"</span>, <span class="string">"*into"</span>,</span><br><span class="line">    <span class="string">"*join"</span>,</span><br><span class="line">    <span class="string">"*let"</span>,</span><br><span class="line">    <span class="string">"*nameof"</span>, <span class="string">"*notnull"</span>,</span><br><span class="line">    <span class="string">"*on"</span>, <span class="string">"*orderby"</span>,</span><br><span class="line">    <span class="string">"*partial (method)"</span>, <span class="string">"*partial (type)"</span>,</span><br><span class="line">    <span class="string">"*remove"</span>,</span><br><span class="line">    <span class="string">"*select"</span>, <span class="string">"*set"</span>, <span class="string">"*switch (expression)"</span>,</span><br><span class="line">    <span class="string">"*unmanaged"</span>, <span class="string">"*using static"</span>,</span><br><span class="line">    <span class="string">"*value"</span>, <span class="string">"*var"</span>,</span><br><span class="line">    <span class="string">"*when"</span>, <span class="string">"*where (generic constraint)"</span>, <span class="string">"*where (query)"</span>,</span><br><span class="line">    <span class="string">"*yield"</span>,</span><br><span class="line">    <span class="string">"#annotations"</span>,</span><br><span class="line">    <span class="string">"#checksum"</span>,</span><br><span class="line">    <span class="string">"#disable"</span>,</span><br><span class="line">    <span class="string">"#enable"</span>,</span><br><span class="line">    <span class="string">"#nullable"</span>,</span><br><span class="line">    <span class="string">"#restore"</span>,</span><br><span class="line">    <span class="string">"!#safeonly"</span>,</span><br><span class="line">    <span class="string">"#warning"</span>, <span class="string">"#warnings"</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们尝试取出首字母，判断首字母位于 <code>m</code> 字符之前的所有单词。为了题目简单，我们暂时不管第一个字符不是字母的关键字。</p>
+<p>那么我们的筛选模式是，先尝试用 <code>let</code> 从句把首字母取出，然后判断该字母是否是 <code>m</code> 之前即可。所以写法如下：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">let</span> Capital = word[<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">where</span> Capital &gt;= <span class="string">'a'</span> &amp;&amp; Capital &lt;= <span class="string">'m'</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>下面来阐述一下 <code>let</code> 从句在内存里操作的原理。</p>
+<p><code>let</code> 从句的赋值行为并非实际上写法这样，也就是说，它并不是一种直接的赋值行为。在内存里，它会创建出一个<strong>匿名类型</strong>（Anonymous Type）。在 C# 的设计里，匿名类型使用的是创建一个类的模式来搞定，只是这个类的类名我们不关心，于是这个类就让 C# 的编译器来创建了，而不需要我们创建。</p>
+<p>当我们声明了 <code>let Capital = word[0]</code> 的时候，系统就会为我们创建一个匿名类型。这个类型使用 IDE 来查看，你将看到它叫做 <code>&#39;a</code> 类（把鼠标放到 <code>Capital</code> 上就会看到这个 <code>&#39;a</code> 类）。在这个所谓的 <code>&#39;a</code> 里，它包含一个属性，这个属性是 <code>Capital</code>。</p>
+<blockquote>
+<p>可以看到，匿名类型会自动创建的成员是属性，而并非字段。于是我们使用的时候，实际上应当按照命名格式，为这个使用 <code>let</code> 从句创建出来的所谓的临时变量用 PascalCase（帕斯卡）命名法，而不是 camelCase（驼峰）命名法。</p>
+</blockquote>
+<p>于是，我们就可以通过整个语句环境下，可以任意操作整个 <code>&#39;a</code> 匿名类型。</p>
+<h2 id="方法链写法"><a href="#方法链写法" class="headerlink" title="方法链写法"></a>方法链写法</h2><p>下面提一下方法链的写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.Select(word =&gt; <span class="keyword">new</span> &#123; Word = word, Capital = word[<span class="number">0</span>] &#125;)</span><br><span class="line">                     .Where(pair =&gt; pair.Capital &gt;= <span class="string">'a'</span> &amp;&amp; pair.Capital &lt;= <span class="string">'m'</span>)</span><br><span class="line">                     .Select(pair =&gt; pair.Word);</span><br></pre></td></tr></table></figure>
+<p>我们来仔细分析一下它的实现原理。在上文之中，我们已经知道 <code>Select</code> 方法和 <code>Where</code> 方法的具体实现模式和逻辑。大致分为两个特点：</p>
+<ol>
+<li><strong>推迟执行</strong>（Deferring Execution）特点：<code>Where</code> 不会立马执行筛选，而是推后给出一个新的对象 <code>WhereEnumerableIterator&lt;T&gt;</code> 对象，而 <code>Select</code> 作为语句末端，才会执行。</li>
+<li>方法链调用顺序是类似于 <code>A.B().C().D()</code> 的方式，那么可以暗示 <code>A.B()</code> 得到的类型可以使用 <code>C</code> 方法，而执行 <code>C</code> 方法后得到的类型，可以调用 <code>D</code> 类型。</li>
+</ol>
+<p>第一个点是我们前文说到比较细节的地方，这里就不再详细说明了。而第二个点是什么意思呢？从上述代码上来看，执行逻辑是 <code>word.Select(...)</code>，得到一个类型，然后这个类型可以继续再调用 <code>.Where(...)</code> 方法，然后得到的类型再使用 <code>.Select(...)</code> 方法。</p>
+<p>第一个调用方法是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">words.Select(word =&gt; <span class="keyword">new</span> &#123; Word = word, Capital = word[<span class="number">0</span>] &#125;)</span><br></pre></td></tr></table></figure>
+<p>可以发现，<code>Select</code> 方法实际上是得到一种对应的映射关系。我们把每一个单词提取出来，这里执行 <code>foreach</code> 循环的临时变量就是这里 Lambda 表达式运算符左侧的变量 <code>word</code>，而符号右侧的内容则是执行的结果。可以看到，这里的结果是一个匿名类型，匿名类型使用 <code>new { PropertyName = value }</code> 的方式书写。这样的话，根据 <code>Select</code> 方法的特性，最终我们得到的类型当然就是 <code>IEnumerable&lt;&#39;a&gt;</code> 的结果了，其中的 <code>&#39;a</code> 自然就是映射出来的这个匿名类型了。</p>
+<p>而 C# 语法支持扩展方法，这使得接口对象在没有内部实现一些特定操作的时候依然可以使用 <code>对象名.方法名()</code> 的模式调用一些我们外部实现的方法。所以，这个所谓的 <code>IEnumerable&lt;&#39;a&gt;</code> 就可以立马用作临时的变量，作为条件筛选，执行 <code>Where</code> 方法，获取一个可提供筛选的 <code>WhereEnumerableIterator&lt;&#39;a&gt;</code> 对象。最后，在最后的 <code>Select</code> 方法里，前文得到的结果又被得到 <code>foreach</code> 循环的执行，并开始执行筛选行为。</p>
+<p>那么，从方法链来看，它是否执行了两次 <code>foreach</code> 循环呢？是的。</p>
+<h2 id="值元组和匿名类型的对比"><a href="#值元组和匿名类型的对比" class="headerlink" title="值元组和匿名类型的对比"></a>值元组和匿名类型的对比</h2><p>还需要注意的是，C# 7 开始支持<strong>值元组</strong>（Value Tuple）类型，这种类型是 C# 4 提供的<strong>元组</strong>（Tuple）的轻量级版本。它采用值类型结构完成实现，使得生成这些类型都会相较于类快一些，而且支持任意时刻命名每一个创建好的字段。</p>
+<p>这就需要你注意两点内容了。值元组和匿名类型有非常相似的地方：它们最终都是操作内部的内容，并且它们的名称（类名和结构名）我们并不关心，这些都会交给编译器生成。但需要注意的地方是，匿名类型创建出来的成员是属性，而值元组创建出来的却是字段。这是我们第一个需要注意的地方。</p>
+<p>第二个需要注意的是，由于 LINQ 机制的问题，很遗憾的是，到 C# 8 都依然不支持在 <code>let</code> 语句里使用值元组的模式来创建更快捷更轻量级的值元组的模式。这并非意味着我们无法在 LINQ 里面使用值元组。这仅仅是想说明，值元组并不能用于 <code>let</code> 从句里的解构（即用于赋值语句的左侧，即左值表达式）。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/10/csharp-complier-generating-field-like-event/" title="字段长相的事件的编译器代码生成" itemprop="url">字段长相的事件的编译器代码生成</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T14:17:35.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="什么是字段长相的事件声明？"><a href="#什么是字段长相的事件声明？" class="headerlink" title="什么是字段长相的事件声明？"></a>什么是字段长相的事件声明？</h2><p>所谓<strong>字段长相的事件</strong>（Field-Like Event），在最初 C# 1 的时候是需要我们手动写事件的 adder 和 remover 的，所以后面发现，这种写法基本上是一样的，所以索性就在 C# 3 里就省略了，只需要写成字段样式的事件声明格式就好：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br></pre></td></tr></table></figure>
+<p>它便会自动生成对应的 adder 和 remover。实际上，它会生成什么东西呢？</p>
+<h2 id="来看对照吧！"><a href="#来看对照吧！" class="headerlink" title="来看对照吧！"></a>来看对照吧！</h2><p>我在 SharpLab 上测试了一个事件的声明，它是这样的。</p>
+<p>源代码：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而在编译后，生成的代码是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> EventHandler m_Event;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> EventHandler Event</span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">add</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Combine(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">        [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">        <span class="keyword">remove</span></span><br><span class="line">        &#123;</span><br><span class="line">            EventHandler eventHandler = <span class="keyword">this</span>.m_Event;</span><br><span class="line">            EventHandler eventHandler2;</span><br><span class="line">            <span class="keyword">do</span></span><br><span class="line">            &#123;</span><br><span class="line">                eventHandler2 = eventHandler;</span><br><span class="line">                EventHandler value2 = (EventHandler)Delegate.Remove(eventHandler2, <span class="keyword">value</span>);</span><br><span class="line">                eventHandler = Interlocked.CompareExchange(<span class="keyword">ref</span> <span class="keyword">this</span>.m_Event, value2, eventHandler2);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">object</span>)eventHandler != eventHandler2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>[ComplierGenerated]</code> 暗示代码块是由编译器自动生成，而类上面那一大堆东西，我们这里暂时不用去关心，因为这些内容不是本文需要涉及到的内容。</p>
+<p>仔细观察内部代码，可以看到代码里写的模式基本上就是通过一个生成的委托字段 <code>m_Event</code> 来执行操作。</p>
+<h2 id="adder-分析"><a href="#adder-分析" class="headerlink" title="adder 分析"></a>adder 分析</h2><p>下面来看添加器 <code>add</code> 块里的内容。实际上可以看到它的操作仅仅就是在线程上执行赋值。首先给了一个尚未赋值的对象 <code>eventHandler2</code> 作为临时变量，然后尝试为其赋值。当赋值完成后，将其使用 <code>Delegate.Combine</code> 方法进行委托合并。合并后，在使用提供线程操作的静态类 <code>Interlocked</code> 的线程上交换模式，进行变量的交换，这样就达到了赋值效果。</p>
+<p>但请注意，在外层，是有一个 <code>do-while</code> 循环的。如果检测到执行后的操作并不是同一个引用时，将会重新执行循环体。实际上，它就是为了保证交换和委托结合的成功。</p>
+<h2 id="remover-分析"><a href="#remover-分析" class="headerlink" title="remover 分析"></a>remover 分析</h2><p>再来看看移除器 <code>remove</code> 块里的内容。和刚才一样的逻辑，就不重复了，主要就是换掉 <code>Delegate.Combine</code>，改为 <code>Delegate.Remove</code> 而已。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/10/csharp-concurrent-examples-01-elementary-async/" title="C# 并发编程实例系列（1）：异步编程基础" itemprop="url">C# 并发编程实例系列（1）：异步编程基础</a>
     
   </h1>
@@ -426,847 +830,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/linq-01-from-and-select-clause/" title="LINQ 教程（1）：from 和 select 从句" itemprop="url">LINQ 教程（1）：from 和 select 从句</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T13:14:25.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="什么是-LINQ？"><a href="#什么是-LINQ？" class="headerlink" title="什么是 LINQ？"></a>什么是 LINQ？</h2><p>LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为<strong>集成语言查询</strong>），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>你就会从控制台上获取到 8 和 9 两个数值。</p>
-<p>看起来似乎不太像是 SQL 哈，除了方法名 <code>Where</code> 用的是 SQL 的条件判断的名词。下面我们改写为等价的写法：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            <span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                            <span class="keyword">where</span> d &gt;= <span class="number">8</span></span><br><span class="line">                            <span class="keyword">select</span> d;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>现在，你就会发现，这个查询语句 <code>from-in-where-select</code> 就很像是 SQL 里的 <code>select-from-where</code> 了。由于这个语法格式极其类似，所以我们大体上可以认为，C# 确实在语法层面实现了 SQL 那一套查询语句，而且普遍认为很好用。</p>
-<blockquote>
-<p>当然，查询语句是一个表达式，所以并不受空格字符的约束，你完全可以写成一行：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>这样依旧没有问题。当然了，这样的查询和前文是等价的，所以 <code>var</code> 表示的是 <code>IEnumerable&lt;int&gt;</code> 类型。</p>
-</blockquote>
-<h2 id="IEnumerable-lt-T-gt-类型简介"><a href="#IEnumerable-lt-T-gt-类型简介" class="headerlink" title="IEnumerable&lt;T&gt; 类型简介"></a><code>IEnumerable&lt;T&gt;</code> 类型简介</h2><p>这个类型是一个泛型类型，它表示一个可以使用 <code>foreach</code> 循环的基本列表接口类型。只要你实现了 <code>IEnumerable&lt;T&gt;</code> 里那一套成员，你就可以把这个类型的所有数据都用 <code>foreach</code> 循环遍历一遍。所以这个类型被称为“可枚举类型”、“可迭代类型”、“可列举类型”等等。其中的 <code>T</code> 是泛型参数，表示一个实体化类型，但目前还没有实现。当我们使用这个类型的时候，需要提供这个类型参数，并最终生成一个与该类型配套的完整的类型。比如前文里的 <code>IEnumerable&lt;int&gt;</code> 就是表示为元素为 <code>int</code> 类型的可枚举序列。</p>
-<h2 id="Lambda-表达式简介"><a href="#Lambda-表达式简介" class="headerlink" title="Lambda 表达式简介"></a>Lambda 表达式简介</h2><p>由于这份教程考虑到初级学习的小伙伴，所以这里将为你展示的所有内容都不会超纲。Lambda 表达式实际上是超纲范畴，但这里让大家能明白这个东西，我们简单说一下。</p>
-<p>Lambda 表达式是一种函数的简化书写方法，它允许执行逻辑直接写到参数上，而不用再单独写一个函数在外面。至于为什么叫 Lambda 表达式，是因为它起源于数学里的 Lambda 演算（Lambda 就是希腊字母 λ 的英语写法），并在现在的函数式编程（FP）和面向对象编程（OOP）里经常使用到。</p>
-<p>我们使用 Lambda 算符 <code>=&gt;</code>（即一个等号和一个大于号）来表达一个函数的执行逻辑，符号左边写函数需要的“虚拟执行的”参数名，符号右边写执行逻辑，如果有返回值的函数，则省略 <code>return</code> 一词。 </p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">IsOdd</span>(<span class="params"><span class="keyword">int</span> val</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> val % <span class="number">2</span> == <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其等价写法是</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<p>又如</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Output</span>(<span class="params"><span class="keyword">int</span> number</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.WriteLine(number);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Lambda 表达式写法为</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> number) =&gt; Console.WriteLine(number)</span><br></pre></td></tr></table></figure>
-<p>再如</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GreetingFor</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>它不是一句话构成，所以 Lambda 表达式是这样的</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">string</span> name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>另外，一般来说参数的类型都是可以省略不写的。即上述的所有 Lambda 表达式就变为</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">(val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">(number) =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">(name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>甚至当参数只有一个且类型没有写出来的时候，还可以不写参数外围的小括号。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">val =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">number =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">name =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>那么，为什么可以不写呢？这是因为 Lambda 表达式的发明出来就是为了把小型函数“参数化”，即利用一种简单的语法机制，把一个不是那么大型的函数直接写到参数上，就免得我们每一次仅仅为了某个特定的操作去单独书写一个函数出来。发明了这样的机制后，我们就可以直接把这种东西写到参数上面去。</p>
-<p>比如排序操作，我们经常会遇到升序和降序排序的形式，所以开发人员在写开发应有的 API 的时候，为了你方便使用，它不会提前单独实现两个函数，一个升序一个降序，而是留给你，把排序的中间行为写出来，然后自己执行对应操作，达到排序的效果。这种时候就可以用上参数化了的 Lambda 表达式了。</p>
-<p>比如，前文的 <code>Where</code> 方法里传入了一个 <code>d =&gt; d &gt;= 8</code> 的 Lambda 表达式，它表示，提供筛选的条件是 <code>d &gt;= 8</code>，其中的 <code>d</code> 变量就是需要逐个遍历的时候的临时变量，你目前可以理解为参与 <code>foreach</code> 循环的循环变量。</p>
-<h2 id="开始愉快学习吧！"><a href="#开始愉快学习吧！" class="headerlink" title="开始愉快学习吧！"></a>开始愉快学习吧！</h2><p>下面我们来学习一些基本的筛选模式。</p>
-<h3 id="from-和-select-从句：取出所有元素"><a href="#from-和-select-从句：取出所有元素" class="headerlink" title="from 和 select 从句：取出所有元素"></a><code>from</code> 和 <code>select</code> 从句：取出所有元素</h3><p>第一个要学习的就是 <code>from-in-select</code> 语句。我们依旧使用前文的数组序列，然后来看看下面标题上的这个问题如何得到。当然，这显然是废话。LINQ 的写法如下。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>这样就可以了。我们把每一个元素取出来，其中的 <code>d</code> 称为<strong>范围变量</strong>（Range Variable），表示 LINQ 表达式里才奏效的变量，它不需要写出它的类型，而它原本的类型，就是整个序列里的每一个元素的类型，此处即 <code>int</code>，所以完整可以写成这样：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">int</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>当一般的集合数据类型下，我们都可以省略，除了非一维数组，我们不得不写出它的类型，因为非一维数组都仅仅实现了没有类型参数的 <code>IEnumerable</code> 接口，这使得元素在使用 <code>foreach</code> 循环的时候，得到的每一个元素都仅是 <code>object</code> 类型的。于是每一个元素都会被拆箱……</p>
-<h3 id="where-从句：筛选出所有大于等于-8-的所有元素"><a href="#where-从句：筛选出所有大于等于-8-的所有元素" class="headerlink" title="where 从句：筛选出所有大于等于 8 的所有元素"></a><code>where</code> 从句：筛选出所有大于等于 8 的所有元素</h3><p>实际上，这一点在前文已经说得比较清楚了，所以这里给出例子的代码即可。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>这样就可以了。</p>
-<h3 id="嵌套语句：筛选所有偶数序列里大于等于-8-的元素"><a href="#嵌套语句：筛选所有偶数序列里大于等于-8-的元素" class="headerlink" title="嵌套语句：筛选所有偶数序列里大于等于 8 的元素"></a>嵌套语句：筛选所有偶数序列里大于等于 8 的元素</h3><p>这个题目的难点在于，你需要先筛选出偶数，然后还要看大于等于 8。实际上，LINQ 是支持同步筛选的，即利用条件判断的运算符 <code>&amp;&amp;</code>、<code>||</code>、<code>!</code> 和 <code>^</code> 进行筛选。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span> &amp;&amp; d &gt;= <span class="number">8</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>这么写是完美的。当然，你可以拆分为两个部分。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line">                <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="comment">// And then selecting in all evens.</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>那么，此时我还要介绍一种写法。是当筛选出了所有偶数后，然后根据这个只有偶数的序列，再来筛选大于等于 8 的元素。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="function"><span class="keyword">from</span> d <span class="title">in</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">from</span> d <span class="keyword">in</span> array</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span></span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">select</span> d</span></span></span><br><span class="line"><span class="function"><span class="params">                </span>) <span class="keyword">where</span> d &gt;</span>= <span class="number">8</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Also you can write like this:</span></span><br><span class="line"><span class="keyword">var</span> tempSeries = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span> <span class="keyword">select</span> d;</span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> tempSeries <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>那么执行效果就是，先看内层括号，筛选出所有的偶数，然后组成序列后，再从这个序列里得到大于等于 8 的元素。但是这样显然比前两个写法耗时，而且不推荐这样写。但是这里为了讲解语法规则和逻辑，所以我们作为参考列举出来了。另外，LINQ 甚至支持去掉嵌套语句的小括号，所以你这么写，编译器完全是认识的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span></span><br><span class="line">                    <span class="keyword">from</span> d <span class="keyword">in</span> array</span><br><span class="line">                    <span class="keyword">where</span> d % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line">                    <span class="keyword">select</span> d</span><br><span class="line">                <span class="keyword">where</span> d &gt;= <span class="number">8</span></span><br><span class="line">                <span class="keyword">select</span> d;</span><br></pre></td></tr></table></figure>
-<p>从这里就可以看出，微软设计 C# 语言做到了非常细节的地方。细节除了这个括号外，还有这个范围变量 <code>d</code>，在这个嵌套查询里，我们使用了完全一样的范围变量名 <code>d</code>，但依旧不会出错。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>LINQ 可以使用查询表达式，也可以使用方法链来书写，这取决于你的风格和思维方式。如果你绝对查询表达式写起来好看，也喜欢写这种的话，就写这种；如果你觉得方法链更利于学习原理的话，你可以使用方法链。这两种写法在运行期间是等价的，也就是说，不论是哪一种写法，最终都会被翻译为完全一样的代码。</p>
-<p>那么，前文提到的所有查询表达式都会被如何转换为方法链呢？</p>
-<h3 id="等价的-foreach-循环模式"><a href="#等价的-foreach-循环模式" class="headerlink" title="等价的 foreach 循环模式"></a>等价的 <code>foreach</code> 循环模式</h3><p>首先，我们前文提到的 <code>d</code>，前文叫范围变量，那么为啥它被称为变量呢？SQL 里不是都是筛选每一个表里的字段吗？是的，LINQ 在提供到语言层面的时候，它被认为是用来提取一个对象的属性的，所以这里 <code>in</code> 后面的东西，就是 <code>foreach</code> 循环的序列，而 <code>d</code> 则是 <code>foreach</code> 循环遍历出来的每一个实体对象（此处指的是这里的 <code>int</code> 数据）。所以，实际上，原本的写法是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">int</span> d <span class="keyword">in</span> array <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Is equivalent to</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">int</span> d <span class="keyword">in</span> array)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>所以它实际上就是一个 <code>foreach</code> 循环。接着，我们试着为其插入条件语句。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Is equi to</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> d <span class="keyword">in</span> array)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (d &gt;= <span class="number">8</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Do something...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// And also equi to</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> d <span class="keyword">in</span> selection)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Do something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>所以，可以看到，代码实际上是很简单的。</p>
-<h3 id="方法链模式"><a href="#方法链模式" class="headerlink" title="方法链模式"></a>方法链模式</h3><p>不过，LINQ 还有方法链的写法。我们也来看一下。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Is equi to</span></span><br><span class="line"><span class="keyword">var</span> selection = array</span><br><span class="line">    .Where(d =&gt; d &gt;= <span class="number">8</span>)</span><br><span class="line">    .Select(d =&gt; d);</span><br><span class="line"></span><br><span class="line"><span class="comment">// One line.</span></span><br><span class="line"><span class="keyword">var</span> selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>).Select(d =&gt; d);</span><br></pre></td></tr></table></figure>
-<p>那么，我们来阐述一下，这个方法链到底是怎么起作用的。</p>
-<p>首先，在 LINQ 的内部实现之中，<code>Where</code> 方法计算的表达式会被推后执行，因为执行这样的语句是耗时间的，程序为了避免立马执行，就先考虑到性能的问题，把条件信息和元素的数据信息全部提取出来，放在一旁，产生出一个可执行筛选的对象（实际上称为 <code>WhereEnumerableIterator&lt;T&gt;</code> 对象）。这个对象并没有立马得到执行，它此时只是一个提供了筛选功能的对象而已。而真正需要执行筛选的操作，则直接推后到了 <code>foreach</code> 循环调用的时候，不得不去遍历该集合时，内部的元素才会得到遍历，并执行筛选。</p>
-<p>所以，可以看出来，微软的工程师们还是很厉害的，想到了一个万全之计推后了 <code>foreach</code> 的执行，同时也解决了影响性能的问题。当这个集合一直没有被 <code>foreach</code> 调用到，那么这个语句就只是一个语句，生成的对象也不会得到任何结果。比如，上述的四个变量都是这么去书写的，导致得到的都是这个所谓的 <code>WhereEnumerableIterator&lt;T&gt;</code> 对象，而这个对象在没有得到 <code>foreach</code> 调用的情况下，我们如果此时尝试不执行 <code>foreach</code> 循环的前提下就取出元素，那么这样是否可能呢？是可能的，但这样做只会让程序陷入“危险”的境地，因为元素并没有没迭代，就想要获取里面的元素，这显然是不现实的。</p>
-<p>下面我们再来看 <code>Select</code> 方法。<code>Select</code> 方法实际上开始调用了 <code>foreach</code> 循环。此时，<code>foreach</code> 循环开始执行时，就意味着前文的 <code>WhereEnumerableIterator&lt;T&gt;</code> 开始从此处遍历。这也就是为什么，微软设计 LINQ 的时候，一定要你书写 <code>Select</code> 方法、写 <code>select</code> 语句、或是在没有 <code>Select</code> 方法时一定要在取值的地方加上 <code>foreach</code> 的原因。</p>
-<p>当然，一些内置的 LINQ 方法也自带了循环操作，比如计算数据的总个数 <code>Count</code> 方法。注意，这个是 LINQ 提供的一个扩展方法，所以需要为 <code>Count</code> 后添加一对空的小括号。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Console.WriteLine((<span class="keyword">from</span> d <span class="keyword">in</span> array <span class="keyword">where</span> d &gt;= <span class="number">8</span> <span class="keyword">select</span> d).Count());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Or</span></span><br><span class="line">Console.WriteLine(array.Where(d &gt;= <span class="number">8</span>).Count());</span><br></pre></td></tr></table></figure>
-<p>这样，你就会得到结果 2（8 和 9 都大于等于 8）。</p>
-<blockquote>
-<p>最后顺带说一下，在 IDE 的重构代码里，方法链这种书写格式被称为 <strong>LINQ (Call Form)</strong>。</p>
-</blockquote>
-<h3 id="有没有-Select-d-gt-d-很重要吗？"><a href="#有没有-Select-d-gt-d-很重要吗？" class="headerlink" title="有没有 Select(d =&gt; d) 很重要吗？"></a>有没有 <code>Select(d =&gt; d)</code> 很重要吗？</h3><p>回到前文给出的代码，我们发现最后有一个 <code>Select(d =&gt; d)</code> 这样写法的方法。我们知道，<code>Select</code> 方法执行的是一种映射关系，在 <code>foreach</code> 循环的每一次迭代过程上，临时变量 <code>d</code> 都会被映射到 Lambda  表达式后给出的结果上来。但实际上，这样写貌似一点映射也没变，对每一个元素 <code>d</code> 进行迭代，然后返回的依然还是它自己。那写这个和不写这个有没有区别呢？</p>
-<p>实际上是有的。不写的话，就不会执行 <code>foreach</code> 的迭代过程，也就意味着这个列表并没有在此时就开始执行，并得到结果。由于 LINQ 有推迟执行的特效，导致如果不写 <code>Select</code> 的话，执行就不会在这个时候开始，而是推后到你后面的某处 <code>foreach</code> 代码，或是调用聚合函数，才会触发 <code>foreach</code> 的调用。否则，这里就只是一个可迭代对象。</p>
-<p>如果你想在这里就给出结果，请添加上 <code>Select(d =&gt; d)</code> 方法；而如果后续你一定能保证会执行 <code>foreach</code> 循环，那么就不用写了。</p>
-<h3 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h3><p>在前文我们提到了 <code>where</code> 从句的并联和嵌套查询语句，那么你能否根据上面给出的逻辑，思考出这两种情况的执行逻辑呢？</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a href="https://source.dot.net/#System.Linq/System/Linq/Select.cs,d3e6cf8553f8ad92" target="_blank" rel="noopener">Linq.Enumerable.Select 方法</a></li>
-<li><a href="https://source.dot.net/#System.Linq/System/Linq/Where.cs,e11d6842eee7c2e6" target="_blank" rel="noopener">Linq.Enumerable.Where 方法</a></li>
-<li><a href="https://source.dot.net/#System.Linq/System/Linq/Where.cs,ed14299f42af7eb2,references" target="_blank" rel="noopener">Linq.WhereEnumerableIterator 对象</a></li>
-</ol>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/bayes-rule/" title="贝叶斯公式解读" itemprop="url">贝叶斯公式解读</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T12:05:53.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="先来看看贝叶斯公式"><a href="#先来看看贝叶斯公式" class="headerlink" title="先来看看贝叶斯公式"></a>先来看看贝叶斯公式</h2><p><strong>贝叶斯公式</strong>（Bayes Formula）是用于解决概率问题的公式，长成这样。</p>
-<script type="math/tex; mode=display">
-P(A|B) = \frac{P(B|A)P(A)}{P(B)}</script><p>其中的 $A$ 和 $B$ 指的是两个不同的事件，并且此时 $P(B)$，即事件 $B$ 的概率不能为 0（即 $P(B) \neq 0$），另外：</p>
-<ul>
-<li>$P(A|B)$ 表示一个条件概率，即当事件 $B$ 一定成立的前提下，事件 $A$ 发生的可能性。</li>
-<li>$P(B|A)$ 则是反过来的，事件 $A$ 一定成立的前提下，事件 $B$ 发生的可能性。</li>
-<li>$P(A)$ 和 $P(B)$ 都是针对于 $A$ 和 $B$ 两个事件的概率，但它们是互相独立的。</li>
-</ul>
-<p>不过有趣的地方在于，公式里带有的两个信息 $P(A|B)$ 和 $P(B|A)$ 刚好是反过来的，却得到了关联性，是不是很有意思呢？</p>
-<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>我们来看一个表格，清晰可见，还好懂。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>事件发生数量</th>
-<th>$B$</th>
-<th>$\bar B$</th>
-<th>总和</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>$A$</td>
-<td>💗💗</td>
-<td>🧡🧡🧡</td>
-<td>5</td>
-</tr>
-<tr>
-<td>$\bar A$</td>
-<td>💛💛<br />💛💛<br />💛💛</td>
-<td>💜💜💜<br />💜💜💜<br />💜💜💜</td>
-<td>15</td>
-</tr>
-<tr>
-<td>总和</td>
-<td>8</td>
-<td>12</td>
-<td>20</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>那么</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(B, \text{已知}A) \cdot P(A) &= P(B|A) \cdot P(A)\\
-\frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}
-}\cdot \frac{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}&= \frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}\\
-\\
-P(A, \text{已知}B) \cdot P(B) &= P(A|B) \cdot P(B)\\
-\frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}
-}\cdot \frac{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}&= \frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}\\
-\\
-\because P(A|B) \cdot P(B) &= P(B|A) \cdot P(A)\\
-\therefore P(A|B) &= \frac{P(B|A) \cdot P(A)}{P(B)}
-\end{align}</script><h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>先来看个例子。某城市发生了一起汽车撞人逃跑事件，该城市只有两种颜色的车，蓝色15%，绿色85%，事发时有一个人在现场看见了，他指证是蓝车。但是根据专家在现场分析,当时那种条件能看正确的可能性是80%。那么,肇事的车是蓝车的概率到底是多少？ </p>
-<p>令 $B$ 是城市里车为蓝色的事件，$G$ 为车子是绿色的事件，$E$ 为观察到车子为蓝色的事件。则由已知条件可以得出$P(B) = 0.15$，$P(G) = P(\bar B) = 0.85$，至于 $P(E)$ 我们一会儿再说。</p>
-<p>好了。如果现在没有证人看到肇事者车的话，那么我们只能盲猜，因此肇事者的车子为蓝色的概率只能是整个城市里面车为蓝色的概率，也就是先验概率 $P(B) = 0.15$，因为这时我们还没有其他证据介入，只能做个粗略的估算。</p>
-<p>接下来，当当当当，有证人了。证人说他看到了车子，并且说是蓝色的，注意，这分两种情况，…………重要的事情说两遍：<strong>贝叶斯里面现象(新的证据)部分总是分两种情况出现的</strong>：一是车子的确是蓝色的，并且证人也正确的分辨出车是蓝色的来了，概率为</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(E, B) &= P(B) \cdot P(E|B)\\
-&= 0.15 \times 0.8\\
-&= 0.12
-\end{align}</script><p>二是车子根本就是绿色的，只是证人看成蓝色的了，概率为</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(E, \bar B) &= P(\bar B) \cdot P(E|\bar B)\\
-&= P(\bar B) \times (1 -  P(\bar E|\bar B))\\
-&= 0.85 \times (1 - 0.8)\\
-&= 0.17
-\end{align}</script><p>所以</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(E) &= P(E, B) + P(E, \bar B)\\
-&= 0.12 + 0.17\\
-&= 0.29
-\end{align}</script><p>然后，我们要求解的其实是在有证人的条件下车子为蓝色的概率，也就是</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(B|E) &= \frac{P(E, B)}{P(E)}\\
-&= \frac{0.12}{0.29}\\
-&\approx 0.41
-\end{align}</script><p>你看，<strong>$P(B|E)$ 根本就是 $P(B)$ 的加强版本</strong>，条件概率跟先验概率描述的根本就是同一件事。</p>
-<p>那么当当当当，又一个结论来了：当有新的证据出现时，$P(B|E)$ 会替代原来 $P(B)$ 的角色。换句话说，现在警察找到了一个新的证人，他也觉得这辆肇事车是蓝色的，这时在新一轮的贝叶斯概率计算中，基础概率$P(B)=0.41$，而不是原先的 $0.15$，大家可以算一下，新的 $P(B|E)=0.73$，换句话说，当有两个人看见肇事车辆为蓝色的时候，对比只有一个人看到肇事车辆为蓝色的时候，该车实际为蓝色的概率大大增加。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数学/">数学</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/windoku-da-rule/" title="窗口数独的潜规则" itemprop="url">窗口数独的潜规则</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T09:47:50.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="窗口数独的简单介绍"><a href="#窗口数独的简单介绍" class="headerlink" title="窗口数独的简单介绍"></a>窗口数独的简单介绍</h2><p>除了需要满足标准数独的规则外，还需要使得四个涂色粗线的“窗口”内的数字也都要包括数字1到9各一个。</p>
-<p><img src="Windoku.png" alt=""></p>
-<p>它的解答如下。</p>
-<p><img src="WindokuSolution.png" alt=""></p>
-<h2 id="潜规则——窗口-18-宫"><a href="#潜规则——窗口-18-宫" class="headerlink" title="潜规则——窗口 18 宫"></a>潜规则——窗口 18 宫</h2><p>窗口数独题有一个潜规则。</p>
-<p><img src="18Wins.png" alt=""></p>
-<p>如图所示，除了基本的9个宫不重复和4个窗口也满足以外，相同涂色的9个单元格所构成的一个区域内，也不能包括重复。</p>
-<p>数数看，恰好有18个“宫”呢！9个基本宫，外加4个窗口宫，再加5个额外“宫”！</p>
-<p>原因是，任意观察一组非粉红色的涂色区域。找到这些涂色单元格夹住的两个窗口宫，它们一起所处的三行（或三列）应该包含三组数字1到9。比如我们观察红色涂色区域。算上中间夹住的两个窗口宫，它们所处的三列，一定是三组数字1到9。</p>
-<p><img src="18Wins_Detail.png" alt=""></p>
-<p>不过这27个单元格去掉2个窗口宫后，剩下9格就一定也是一组1到9。</p>
-<p>所以，其他的三个非粉红色区域也是这样类似的推导方式。而最终粉红色区域，则是将盘面上所有的涂色区域和4个窗口宫得到的8组数字1到9后，最终剩下来的9格。它们自成一组。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数独/">数独</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/clang-01-datatype/" title="C 语言语法系列（1）：数据类型" itemprop="url">C 语言语法系列（1）：数据类型</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T03:09:10.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="数据类型概述"><a href="#数据类型概述" class="headerlink" title="数据类型概述"></a>数据类型概述</h2><p>我们先要掌握一个概念：<strong>数据类型</strong>（Data Type）。世间万物都有自己独特的表示方式。例如人的性别只有男、女、其它三种方式就可以完整表达出来，再比如身高只需要是一个正整数来表示就比较合适了，又比如说话的文字可以用语音的形式呈现，也可以用文字形式呈现。在电脑里，每一种想要表示出来的数据都有他们自己的数据表示机制，这种机制就称为数据类型。</p>
-<p>在 C 语言里，我们提供了如下一些类型。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>数据类型</th>
-<th>学名</th>
-<th>表示代号</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>范围较窄的整数</td>
-<td>短整数</td>
-<td><code>short int</code> 或 <code>short</code> 或 <code>signed short int</code> 或 <code>signed short</code></td>
-</tr>
-<tr>
-<td>一般的整数</td>
-<td>整数</td>
-<td><code>int</code> 或 <code>signed int</code></td>
-</tr>
-<tr>
-<td>范围较宽的整数</td>
-<td>长整数</td>
-<td><code>long int</code> 或 <code>long</code> 或 <code>signed long int</code> 或 <code>signed long</code></td>
-</tr>
-<tr>
-<td>不表示负数的短整数</td>
-<td>无符号短整数</td>
-<td><code>unsigned short int</code> 或 <code>unsigned short</code></td>
-</tr>
-<tr>
-<td>不表示负数的整数</td>
-<td>无符号整数</td>
-<td><code>unsigned int</code></td>
-</tr>
-<tr>
-<td>不表示负数的长整数</td>
-<td>无符号长整数</td>
-<td><code>unsigned long int</code> 或 <code>unsigned long</code></td>
-</tr>
-<tr>
-<td>单精度二进制小数</td>
-<td>单精度小数</td>
-<td><code>float</code></td>
-</tr>
-<tr>
-<td>双精度二进制小数</td>
-<td>双精度小数</td>
-<td><code>double</code></td>
-</tr>
-<tr>
-<td>长双精度二进制小数</td>
-<td>长双精度小数</td>
-<td><code>long double</code></td>
-</tr>
-<tr>
-<td>字符类型</td>
-<td>字符</td>
-<td><code>char</code> 或 <code>signed char</code></td>
-</tr>
-<tr>
-<td>单字节类型</td>
-<td>无符号字符</td>
-<td><code>unsigned char</code></td>
-</tr>
-<tr>
-<td>只读字符串类型</td>
-<td>字符串</td>
-<td><code>char *</code></td>
-</tr>
-<tr>
-<td>真假逻辑类型</td>
-<td>布尔</td>
-<td><code>bool</code> 或 <code>_Bool</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>头晕是吧，我们先来说说，什么叫无符号、什么叫带符号（有符号）、什么叫字符、什么叫字符串、什么叫布尔、什么叫二进制小数、什么叫浮点小数、什么又叫精度。</p>
-<ul>
-<li><strong>无符号</strong>（Unsigned）：非负的；</li>
-<li><strong>带符号</strong>（或<strong>有符号</strong>，Signed）：可以表示负数的；</li>
-<li><strong>字符</strong>（Character）：可以表示出一个普通的英文文本信息的最小单元。这样说不好理解，你可以认为是“英文所有大小写字母 + 数字 + 各种英文标点符号”的集合；</li>
-<li><strong>字符串</strong>（简称<strong>串</strong>，String）：一系列字符；</li>
-<li><strong>布尔</strong>（Boolean）：只用来表示真假情况的；</li>
-<li><strong>二进制小数</strong>（Binary Decimal）：使用二进制格式表达出来的小数；</li>
-<li><strong>浮点小数</strong>（Floating Point Decimal）：二进制小数存储在电脑里的一种存储机制，类似于科学计数法，不过是表达为 $a \times 2^b$ 的格式；</li>
-<li><strong>精度</strong>（Accuracy）：表示表达出一个完整数据和原始数据比较起来的完全精确的程度，在 C 语言里特指小数转为二进制小数后，在存放为浮点小数时，表达出来的数值和原始数值相差多少个小数位。</li>
-</ul>
-<p>下面我们来说一下精度和二进制小数的东西。</p>
-<h2 id="精度和二进制小数"><a href="#精度和二进制小数" class="headerlink" title="精度和二进制小数"></a>精度和二进制小数</h2><p>一般在学校里，老师都会讲解如何把一个数字利用二进制表达出来。可它们并没有讲解，如何表示一个小数，以及一个负数。不过，我会带领大家认识一下，如何表示一个二进制小数，使用 0 和 1。首先，我们举个例子。</p>
-<h3 id="将-0-15625-转为-0-和-1"><a href="#将-0-15625-转为-0-和-1" class="headerlink" title="将 0.15625 转为 0 和 1"></a>将 0.15625 转为 0 和 1</h3><p>表示小数的方式很简单。既然表示整数利用的是<strong>除2取整</strong>的模式，那么小数自然就是<strong>乘2取余</strong>的模式。</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-0.15625 & \times & 2 & = & 0.3125 & - & 0 & = & 0.3125\\
-0.3125  & \times & 2 & = & 0.625  & - & 0 & = & 0.625\\
-0.625   & \times & 2 & = & 1.25   & - & 1 & = & 0.25\\
-0.25    & \times & 2 & = & 0.5    & - & 0 & = & 0.5\\
-0.5     & \times & 2 & = & 1      & - & 1 & = & 0 & (\text{结束})\\
-\end{matrix}</script><p>大致说一下。从第一步开始，每一次都把数字乘以 2，得到的结果的整数部分提取出来，然后做减法，使得数字一直要保持小于 0 的状态。将得到的结果再一次迭代到下一轮计算里。</p>
-<p>比如这个示例里，我们把 0.15625 乘以 2，得到 0.3125，整数部分为 0，把它提取出来，做减法得到 0.3125（因为是减去 0，所以数字并没变化），然后把这个数继续乘以 2，得到 0.625，整数部分为 0，继续提取出来，然后用 0.625 乘以 2，得到 1.25，提取整数部分 1，再将 0.25 乘以 2，继续往下做，直到我们得到 0 结束计算。</p>
-<p>最终，我们得到的数字 0、0、1、0、1 即是二进制小数表达的小数部分，由于这个数的整数部分本来就是 0，所以整数部分无需我们作更多的二进制表达的转换，所以这个数的二进制表示就是 $0.00101_2$。</p>
-<h3 id="能遇到十进制表示里的循环小数类似的情况吗？"><a href="#能遇到十进制表示里的循环小数类似的情况吗？" class="headerlink" title="能遇到十进制表示里的循环小数类似的情况吗？"></a>能遇到十进制表示里的循环小数类似的情况吗？</h3><p>如果我们尝试把 0.3 按上述逻辑转换为二进制小数的时候，就会发现异样：</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-0.3 & \times & 2 & = & 0.6 & - & 0 & = & 0.6\\
-0.6 & \times & 2 & = & 1.2 & - & 1 & = & 0.2\\
-0.2 & \times & 2 & = & 0.4 & - & 0 & = & 0.4\\
-0.4 & \times & 2 & = & 0.8 & - & 0 & = & 0.8\\
-0.8 & \times & 2 & = & 1.6 & - & 1 & = & 0.6 & \text{(回到 0.6 的循环)}\\
-    &        &   &   & \text{...}
-\end{matrix}</script><p>可以看到，在计算 0.3 的时候，运算总能得到 0.3、0.6、0.2、0.4、0.8、0.6、0.2、0.4、……的序列，后面无穷无尽。所以，0.3 的二进制表示就是 $0.0\dot100\dot1_2$。</p>
-<h3 id="现在再来说精度的问题"><a href="#现在再来说精度的问题" class="headerlink" title="现在再来说精度的问题"></a>现在再来说精度的问题</h3><p>正是因为数字并不能完整转换为准确的二进制表示，比如 0.3，所以表示上一定会存在精度的偏差。比如 0.3 在二进制转换后，由于无穷无尽的关系，我们只能在 <code>float</code>、<code>double</code> 或 <code>long double</code> 类型表示完整的二进制位数后，舍弃掉后面的部分，于是这个数肯定就不等于原始数值了。</p>
-<p>不过，二进制表达是很复杂的，所以这里我不打算展开讲解，有兴趣的小伙伴可以看下网上有关 IEEE 754 的标准规范，这个就是专门规定如何把小数表示为二进制表示，存储到程序里的规范。</p>
-<p>这里告诉大家的是，经过这种精心转换的模式后，我们有了如下的结论：</p>
-<ul>
-<li><code>float</code> 类型的小数，精度是表示为十进制数的情况下的 6 或 7 位有效数字（6 或 7 的其一，详细情况则取决于二进制表示，这里不展开说明）；</li>
-<li><code>double</code> 类型的小数，精度是表示为十进制数的情况下的 14 或 15 位有效数字；</li>
-<li><code>long double</code> 类型取决于系统实现，所以这里无法给出精确的范围，大约精确到 19 位有效数字。</li>
-</ul>
-<h2 id="所占字节大小"><a href="#所占字节大小" class="headerlink" title="所占字节大小"></a>所占字节大小</h2><p>大家都知道，数据存储到电脑里都是以一个叫做“字节”的单位作为衡量依据的，那么这些数据类型都对应了一个固定的、绝对的字节数，它就表示元素存进去时，用这个类型就需要占据多大的内存空间的容量。表格如下：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>数据类型</th>
-<th>字节数</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>短整数</td>
-<td>2</td>
-</tr>
-<tr>
-<td>整数</td>
-<td>2、4 或 8，这取决于电脑系统是多少位的。<br />16位是 2 字节，32 位的占 4 字节，64 位的为 8 字节（一般是 4）。</td>
-</tr>
-<tr>
-<td>长整数</td>
-<td>8</td>
-</tr>
-<tr>
-<td>无符号短整数</td>
-<td>2</td>
-</tr>
-<tr>
-<td>无符号整数</td>
-<td>2、4 或 8（原因同整数型，一般是 4）</td>
-</tr>
-<tr>
-<td>无符号长整数</td>
-<td>6</td>
-</tr>
-<tr>
-<td>单精度小数</td>
-<td>4</td>
-</tr>
-<tr>
-<td>双精度小数</td>
-<td>8</td>
-</tr>
-<tr>
-<td>长双精度小数</td>
-<td>8、10、12、16 等。<br />这个不要求记忆，而且这个类型取决于不同的实现方式，占据不同的大小。</td>
-</tr>
-<tr>
-<td>字符</td>
-<td>1</td>
-</tr>
-<tr>
-<td>无符号字符</td>
-<td>1</td>
-</tr>
-<tr>
-<td>字符串</td>
-<td>由字符构成，所以字符有多少个就多少个字节。<br />但是下方代码里用 <code>char *</code> 测出来的结果一定只是 4 或 8（原因在后面才能说明）。</td>
-</tr>
-<tr>
-<td>布尔</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>如果你有时候记不住它们的大小，可以用代码写成这样来得到结果：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="keyword">sizeof</span>(类型代号));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们把上面提到的类型代号写到这里，就可以输出对应的结果了。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">int</span>));</span><br><span class="line">    <span class="comment">// You can also write code like this at present:</span></span><br><span class="line">    <span class="comment">//printf("%d", sizeof unsigned int);</span></span><br><span class="line">    <span class="comment">// This one is totally equivalent to that in line 5.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>因为这些所占字节数是可以测出来的，所以一般不要求记住它们，但考试会考，所以这些数值还是希望你记住，就好像化学元素的相对原子质量，常见的是需要作出记忆的。</p>
-<p>然后，先不要管这个代码里的 <code>%d</code> 是啥，稍后会作出解释。</p>
-</blockquote>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="变量的定义和声明"><a href="#变量的定义和声明" class="headerlink" title="变量的定义和声明"></a>变量的定义和声明</h3><p>在数学里，表示一个可以变化的数据信息是通过变量来表达的，比如 $f(x) = 3x^2 + 5x + 7$ 这个表达式里，$x$ 就是所谓的自变量，而 $f(x)$ 称为函数，如果写成 $y$ 则又称为因变量。在 C 语言里，我们不区分所谓的自变量和因变量，只要能写成一个数值的表示形式，就称为变量。</p>
-<p>变量的形式一般是这样的：</p>
-<ol>
-<li><code>数据类型 变量名;</code>（简单声明）</li>
-<li><code>数据类型 变量名 = 数值;</code>（赋值数值常量）</li>
-<li><code>数据类型 变量名 = 计算表达式;</code>（赋值表达式）</li>
-<li><code>数据类型 变量1, 变量2, 变量3;</code>（不赋值）</li>
-<li><code>数据类型 变量1, 变量2 = 多少, 变量3;</code>（不全赋值）</li>
-<li><code>数据类型 变量1 = 多少, 变量2 = 多少, 变量3 = 多少;</code>（全赋值）</li>
-</ol>
-<p>比如，一个程序写成这样</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">23</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"I\'m %d years old.\n"</span>, age);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>将得到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">I&apos;m 23 years old.</span><br></pre></td></tr></table></figure>
-<p>其中的 <code>\&#39;</code> 在前文提到过，以 <code>\</code> 开头的、写在双引号里的内容可以表示一个另外意义的表达结果，这里 <code>\&#39;</code> 表示输出一个 <code>&#39;</code> 符号。然后 <code>%d</code> 则在这里表示 <code>printf</code> 语句小括号里第一个逗号后的变量的信息结果。这里就表示 <code>age</code> 这个变量的数值（23），然后把 23 替换到双引号的 <code>m</code> 和 <code>y</code> 之间。</p>
-<p>顺带一说，双引号的内容就称为一个字符串，而每一个字母（包括空格、<code>\&#39;</code> 等等符号，都表示一个字符）。</p>
-<h3 id="变量的自定义输入"><a href="#变量的自定义输入" class="headerlink" title="变量的自定义输入"></a>变量的自定义输入</h3><p>再拿出 <code>int</code> 作为数据类型举例。既然有输出就应该由输入。如果需要我们自己输进去一个数字，然后程序输出这个结果，就需要用到新的写法：<code>scanf</code> 语句。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;age); <span class="comment">// Input a value into the variable `age`.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"I\'m %d years old.\n"</span>, age);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样就可以了。注意 <code>scanf</code> 语句的写法，逗号后跟的 <code>age</code> 变量必须要在前面加前缀符号 <code>&amp;</code>，这一点在后面再说。</p>
-<blockquote>
-<p>可以发现，C 语言是一种比较奇特的语言，它的大多数语法的耦合度较高，即前面的知识点要用超纲的内容做铺垫，而后面的知识点却又依赖于前面的知识点，所以……写教程真的很伤脑筋啊……</p>
-</blockquote>
-<p>当然，<code>scanf</code> 语句也可以同时为多个变量赋值。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d, %d"</span>, &amp;a, &amp;b);</span><br></pre></td></tr></table></figure>
-<p>请注意，每一个变量后都得加 <code>&amp;</code> 前缀符号，而且在运行程序的时候，你必须得跟着这个字符串里写的格式写，比如这个字符串 <code>%d, %d</code> 里含有一个数、逗号、空格和一个数，所以你在输入的时候必须格外小心，照着这个格式写内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12, 5</span><br><span class="line">8, 19</span><br><span class="line">-3, 39</span><br><span class="line">0, -1</span><br></pre></td></tr></table></figure>
-<p>上述四种格式都是正确的。另外需要注意的是，<code>scanf</code> 语句甚至不以换行作为分割，所以你可以这么输入：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12</span><br><span class="line">,</span><br><span class="line"></span><br><span class="line"> 5</span><br></pre></td></tr></table></figure>
-<p>这样的书写格式里所有的换行都是不被读取的，所以你的所有换行都会被“抹掉”，故这种格式最终还是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">12, 5</span><br></pre></td></tr></table></figure>
-<p>但如果没有严格按照格式书写，比如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">12，5（注意这个输入的逗号用的是中文的）</span><br><span class="line">12 5</span><br><span class="line">12 ,5</span><br><span class="line">12 , 5</span><br></pre></td></tr></table></figure>
-<p>这些格式都是错的，最终只有 <code>a</code> 会正确得到 12，而 <code>b</code> 依旧是没有数值的。</p>
-<p>当然，你也可以分写两句：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;b);</span><br></pre></td></tr></table></figure>
-<p>不过后者写起来怪麻烦的。</p>
-<blockquote>
-<p>切记，字符串里带有空格的 <code>scanf</code> 语句，在运行程序时，你也要在输入完第一个数据时，空一格输入第二个数据。当然，后者这种格式，在输入的时候可以用回车的方式分割两个输入数据。</p>
-</blockquote>
-<h2 id="格式化字符串的定义和使用"><a href="#格式化字符串的定义和使用" class="headerlink" title="格式化字符串的定义和使用"></a>格式化字符串的定义和使用</h2><p>下面还要来看看，什么是<strong>格式化字符串</strong>（Formatting String）。其实，说白了，前文出现的 <code>%d</code> 就是格式化字符串的一种。但请注意，它只是其中一种，如果你把它认为是输出数值结果的话，那就错了。所有的格式化字符串如下。</p>
-<p>要把数据输入到电脑里面去，我们需要用到的是C语言自带的输入功能，写法也有两种不同的类型：</p>
-<p><code>scanf(&quot;%f&quot;, &amp;prize);</code></p>
-<p>这样就表示输入一个小数，然后利用这个叫做格式化字符串的东西给它把输入的“黑框”上面显示的那个数字字符改变为小数的数据，便于放置到prize所在的位置上去，既然是所在位置，所以需要用到<code>&amp;</code>了，这个符号就是专门用来找位置的。</p>
-<p>另需要你记忆一些格式化字符串的写法：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>写法</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>%d</td>
-<td>将控制台输入的一长串字符改变为整数（int）的规范存储形式存到电脑之中。</td>
-</tr>
-<tr>
-<td>%ld</td>
-<td>将控制台输入的一长串字符改变为长整数（long）的规范存储形式存放到电脑之中。</td>
-</tr>
-<tr>
-<td>%f</td>
-<td>将控制台输入的一长串字符改变为小数（float）的规范存储方式存放到电脑之中。</td>
-</tr>
-<tr>
-<td>%lf</td>
-<td>将控制台输入的一长串字符改变为小数（double）的规范存储方式存放到电脑之中。</td>
-</tr>
-<tr>
-<td>%e</td>
-<td>将控制台输入的一长串字符改变为科学计数法写法（$a\times 10^b$），不过$10^b$会显示为 <code>eb</code> 的形式，比如 $6.09 \times 10^{23}$ 会显示为 <code>6.09e23</code>，而 $1.7 \times 10^{-2}$ 则显示为 <code>1.7e-2</code>。</td>
-</tr>
-<tr>
-<td>%o</td>
-<td>将控制台输入的东西改变为八进制数。</td>
-</tr>
-<tr>
-<td>%x</td>
-<td>将控制台输入的东西改变为十六进制数。</td>
-</tr>
-<tr>
-<td>%g</td>
-<td>电脑自动给你选取转变形式。</td>
-</tr>
-<tr>
-<td>%c</td>
-<td>转为字符规范。</td>
-</tr>
-<tr>
-<td>%s</td>
-<td>字符串专用输出格式。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>大家只需要记住前面四种和最后两种就可以了。</p>
-<p>如果我又定义了一个变量，是 <code>int</code>，就用 <code>%d</code> 转为整数存放到电脑之中。</p>
-<p>比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br></pre></td></tr></table></figure>
-<p>就将整数变量 <code>a</code> 输入到电脑里面用整数规范存储了。如果格式化字符串用成其他的，比如 <code>%f</code>，结果就很怪异。所以一定要配套。</p>
-<p>输入两次的话，可以简写成一次输入：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d %d"</span>, &amp;a, &amp;b);</span><br></pre></td></tr></table></figure>
-<p>注意，<code>scanf</code> 语句的字符串里中间最好要有字符。说白了就是不要写成 <code>%d%d</code> 挨在一起的写法。如果不给空格虽然程序不会出错，但是这样让容易出现安全漏洞，诸如缓存区溢出等。</p>
-<h3 id="格式化字符串的排版控制"><a href="#格式化字符串的排版控制" class="headerlink" title="格式化字符串的排版控制"></a>格式化字符串的排版控制</h3><p>因为是在控制台界面运行的，所以空格就可以用来排版了，不过有些时候，比如我们想让某个数输出的时候有对齐的效果，就会按情况来计算占据的显示的格数。比如一个两位数一定是占两格的，如果我们强制让所有输出的数值都占三格呢？</p>
-<p>我们可以在 <code>%</code> 和 <code>d</code> 之间添加数值以控制占的格数。比如 <code>%2d</code> 表示占两格，<code>%6d</code> 表示占六格。如果位数不够的，前面会有空格占位。比如说</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%2d %3d"</span>, <span class="number">6</span>, <span class="number">9</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%2d %3d"</span>, <span class="number">27</span>, <span class="number">15</span>); <span class="comment">// "\n"是换行符号。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%2d %3d"</span>, <span class="number">19</span>, <span class="number">265</span>);</span><br></pre></td></tr></table></figure>
-<p>输出的样子就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> 6   9</span><br><span class="line">27  15</span><br><span class="line">19 265</span><br></pre></td></tr></table></figure>
-<p>就很好看。小数的话，除了可以控制输出的占格数，还可以控制输出的小数位数，如果你不希望小数位后很多零的话，可以这么写：<code>%占格数.小数位格数f</code>，是可以的。占格数是计算这个输入的字符一共有多少个，而不是整数位多少位。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%2.3f"</span>, <span class="number">16.7</span>); <span class="comment">// 占两格，三位小数</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%7.2f"</span>, <span class="number">8.9</span>); <span class="comment">// 占七格，两位小数</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"\n%8.5f"</span>, <span class="number">7.699</span>); <span class="comment">// 占三格，五位小数</span></span><br></pre></td></tr></table></figure>
-<p>将输出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">16.700（前面没有空格）</span><br><span class="line">   8.90（前面三个空格）</span><br><span class="line"> 7.69900（前面一个空格）</span><br></pre></td></tr></table></figure>
-<p>特别要注意前面的空格。</p>
-<p>如果是输入里插入这样的格式化字符串的话，则会严格按照这样的标准执行输入，如果超出范围的部分会被直接舍弃掉，或是拿给下一个部分使用。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%3d%2d"</span>, &amp;a, &amp;b);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"a = %d, b = %d"</span>, a, b);</span><br></pre></td></tr></table></figure>
-<p>那么提示输入的时候，如果输入的是 <code>12345</code> 的话，由于前面 <code>%3d</code> 的控制，后面的 45 会被切掉，而 <code>b</code> 恰好要两位数，所以 <code>a</code> 为 123，<code>b</code> 是 45，输出也是一样。</p>
-<p>但如果超出了范围，比如输入了 123456，则依然结果是 123 和 45，6 会被舍弃。</p>
-<p>最后讲一下这些语句的写法规范。</p>
-<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><h3 id="代码格式规范"><a href="#代码格式规范" class="headerlink" title="代码格式规范"></a>代码格式规范</h3><p>其实呢，编译器这位翻译官将你的 C 语言代码给它转变为系统能够识别和操作的语言之前，会给你的代码进行排版，这个时候，分号这些就显得额外重要。</p>
-<p>一句话一定要用分号结尾，表示你这个操作做完了。不过换行不是必须有的，你可以把代码全写在一行，也可以换行写，只要有分号怎么写都无所谓，但是为了代码好看整洁，建议换行。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age;<span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;age);<span class="built_in">printf</span>(<span class="string">"%d岁"</span>,age);</span><br></pre></td></tr></table></figure>
-<p>这样当然可以了，不过肯定不好看！</p>
-<h3 id="标识符命名规范"><a href="#标识符命名规范" class="headerlink" title="标识符命名规范"></a>标识符命名规范</h3><p>在前文里我们提到了标签和变量，它们都遵循一个命名规则。这个规则保证了程序正确的执行。命名规范其实在前文已经说到了。</p>
-<ol>
-<li>数字、字母、下划线 <code>_</code> 三者的组合；</li>
-<li>第一个字符不能是数字；</li>
-<li>不能是前文用到过的那些 C 语言自带的字符组合，如 <code>int</code> 等（注意，此时 <code>scanf</code> 还不是 C 语言固有的东西，也就是说你可以把 <code>scanf</code>、<code>printf</code>、<code>main</code> 这种东西定义为变量名，但完全不建议这么做）。</li>
-</ol>
-<p>只要满足这 3 点就可以了。比如 <code>hello</code>、<code>age</code>、<code>test_01</code>、<code>T_T</code>、<code>o_O</code> 都是正确的标识符，而 <code>2_4</code>、<code>^_^</code> 则不行。但建议名字取得有意义，因为下文可能会用到它们，取一个有意义的名字对语义理解有帮助。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/clang-00-beginning/" title="C 语言语法系列开篇" itemprop="url">C 语言语法系列开篇</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T02:26:28.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>欢迎跟我一起学习 C 语言。我们会列出一些常见的语法特性，以及对应使用场合，以及它们的基本考点。</p>
-<p>你先不要着急，看起来下面的内容都偏难，因为它是超纲的知识点，但在本文里，它们不会被讲解得非常难，所以本应该在后续才会提到的这些东西，在这里也只是做个了解，而且你只需要知道这些东西到底是个什么框架就可以了。</p>
-<h2 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h2><p>C 语言里，以分号结尾的一整段文字叫做一句话。</p>
-<h2 id="main-函数"><a href="#main-函数" class="headerlink" title="main 函数"></a><code>main</code> 函数</h2><p>整个程序的代码一般长这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    </span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中的第 6 行才是我们需要关心的，其它都不用关心。由整个大括号括起来的部分，是 <code>main</code> 函数的主要部分。程序一定从 <code>main</code> 函数进入，并从 <code>return 0;</code> 语句退出。即，整个程序的执行流程一定是从第 4 行开始进去，然后从第 9 行执行完毕后退出。期间一句一句执行，从上到下。</p>
-<p>建议你把整个代码内容的框架写成上面这样的形式，其中的 <strong>May be not exist</strong> 的所在行你可以不写。但第 4 行，建议你这么写，有些书上写的是 <code>void main()</code>、<code>void main(void)</code>、<code>void main(int argc, char *argv[])</code>、<code>int main()</code>，这四种都是不合规矩的写法。原因将在后面阐述。</p>
-<h2 id="空行和语义分割"><a href="#空行和语义分割" class="headerlink" title="空行和语义分割"></a>空行和语义分割</h2><p>第 7 行叫<strong>空行</strong>（Null Line），这一行不写东西，仅仅用于分割代码的上下部分，用于分清楚执行逻辑。比如这个程序里，第 7 行前面是用于输出（稍后会解释 <code>printf</code> 函数），第 7 行后面是用于退出程序。所以程序可以尝试通过这样的方式来分割一个大括号里很多语句之间的执行逻辑。</p>
-<p>分割语义有多种方式，你还可以通过下面的方式。</p>
-<h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">Printing:</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">ExitTheProgram:</span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们可以通过牺牲一行代码，写成文字加冒号的方式，来表示一个<strong>标签</strong>（Label）。这样的标签文字可以达到分割语义的效果，但注意的是，标签的文字只能以数字、字母、下划线 <code>_</code> 三种东西进行组合，且第一个文字不能是数字。比如，<code>Hello world</code> 和 <code>2_Hello</code> 都是命名格式不正确的标签。</p>
-<h3 id="用大括号进行语义分割"><a href="#用大括号进行语义分割" class="headerlink" title="用大括号进行语义分割"></a>用大括号进行语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Printing.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Exit the program.</span></span><br><span class="line">    &#123;</span><br><span class="line">        system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样可以达到分割效果。</p>
-<h3 id="借用-pragma-region-来作语义分割"><a href="#借用-pragma-region-来作语义分割" class="headerlink" title="借用 #pragma region 来作语义分割"></a>借用 <code>#pragma region</code> 来作语义分割</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt; // May be not exist.</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Printing</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!\n"</span>);</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Exit the program</span></span><br><span class="line">    system(<span class="string">"pause"</span>); <span class="comment">// May be not exist.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样依旧可以进行语义分割，而且 Visual Studio 还能根据你分割的方式，折叠和展开代码。不过请注意的是，这种分割方式仅用于 Visual Studio，在其它的软件里，无法使用这种方式。</p>
-<blockquote>
-<p>注意，所有上面提到的语义分割所牺牲的代码行都是无意义的，它们都不是真正的执行代码，你可以当成注释一般的存在。</p>
-</blockquote>
-<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>在第 2 和第 8 行里，以双斜杠 <code>//</code> 形式书写的内容（包含当前行里，符号后面的所有内容）称为<strong>注释</strong>（Comment），可以写一些任何你觉得想写的东西，不需要是程序才认识的东西。这些文字有助于你看懂代码逻辑。所以这些东西叫注释，就是这个原因。</p>
-<p>还有一种注释，可以跨行书写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">This is multi-line comment,</span></span><br><span class="line"><span class="comment">and you can write anything you want,</span></span><br><span class="line"><span class="comment">even if the comment spans multi lines.</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
-<p>这种注释叫多行注释，以 <code>/*</code> 和 <code>*/</code> 作为配对，可以理解为一个特殊的括号。期间的所有内容都会被当作注释内容，即使跨行书写也是如此。但注意，多行注释的开头和结尾符号不能嵌套，即</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">    /*</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">        ...</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
-<p>这种是不允许的。程序会被认定，处于第 1 行的 <code>/*</code> 符号一直到第 7 行结束，而非第 8 行。</p>
-<h2 id="include-指令"><a href="#include-指令" class="headerlink" title="#include 指令"></a><code>#include</code> 指令</h2><p>原代码的第 1、2 行叫做<strong>预处理器指令</strong>（Preprocessor Command），以井号 <code>#</code> 开头，包含 <code>#pragma</code>、<code>#include</code> 等众多指令，这里掌握 <code>#include</code> 指令。这个指令表示，将系统自带的操作引入到程序之中，使得后面我们写代码的时候可以使用写好的代码，不用自己去写。这些提供好的代码，都是以 <code>*.h</code> 的文件形式存放，它们叫<strong>头文件</strong>（Header File），即放在代码头部的文件。其中的 stdio.h 叫做<strong>标准输入输出流头文件</strong>（Standard Input &amp; Output），简称 std i o。</p>
-<p>第 2 行是提供 <code>system</code> 命令（处于代码第 8 行），用于暂停程序。这些程序统称为<strong>命令行程序</strong>（Command-Line Application），或<strong>控制台程序</strong>（Console Application），这些程序没有所谓的退出按钮和最小、最大化按钮，它们仅仅被黑色风格的框约束着。黑色风格的框叫做<strong>控制台</strong>（Console），是只用于输入命令来控制操作系统或程序执行逻辑的代码化窗口。这意味着，这里面只会输入一些奇怪的代码文字，而没有 QQ 这样美丽的界面。</p>
-<h2 id="printf-语句"><a href="#printf-语句" class="headerlink" title="printf 语句"></a><code>printf</code> 语句</h2><p><code>printf</code> 语句是用于把文字显示到控制台上的语句，它可以原封不动把我们书写在 <code>printf</code> 括号里的文字全部显示出来。例如原示例里，最终执行程序会得到的结果是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello, world!</span><br></pre></td></tr></table></figure>
-<p>注意，<code>\n</code> 没有输出，是因为 <code>\n</code> 在双引号里被表示为换行，并非是原本的 <code>\</code> 和 <code>n</code> 两个符号。所有这样奇特的符号都以 <code>\</code> 作为开头，系统提供了对应的转换表，在这里我们不多作出说明。另外，写在双引号里的 <code>%%</code> 将表示输出显示一个 <code>%</code> 符号。别问我为什么要两个符号才会输出显示一个。这一点后面再说。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/3/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">下一页 ↓</a>
@@ -1298,11 +861,11 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>13</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>8</sup></a></li>
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
 			
 		
 			
@@ -1342,11 +905,11 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
