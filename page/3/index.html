@@ -82,6 +82,91 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/19/clang-05-while-loop/" title="C 语言语法系列（5）：while 语句" itemprop="url">C 语言语法系列（5）：while 语句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-19T00:21:22.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="循环是什么？"><a href="#循环是什么？" class="headerlink" title="循环是什么？"></a>循环是什么？</h2><p>在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：</p>
+<script type="math/tex; mode=display">
+S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我们完全感觉不到。</p>
+<p>那么，如何进行重复性的运算呢？我们先理清楚执行思路：</p>
+<p><img src="while-loop-example.png" alt=""></p>
+<p>如图所示，我们首先为 <code>i</code> 和 <code>S</code> 赋值，这些数值在后续都会使用到，这个称为初始值。然后，我们尝试先判断一次是否这个数字 <code>i</code> 超过了 100。如果没有超过，我们就执行第一次把 <code>i</code> 累加到 <code>S</code> 之中。可见 <code>S</code> 表示整个计算的和值结果。接着，<code>i</code> 增大一个单位。于是，我们重新作一次判断，看此时的 <code>i</code> 是否超过了 100（超过 100 就不计算在内了）。如果没有超过，就重复操作，继续把 <code>i</code> 的新数值累加到 <code>S</code> 之中，并再次增大 <code>i</code> 一个单位；如果 <code>i</code> 已经超过了 100，整个计算的活动行为就结束了。于是我们此时输出 <code>S</code> 的结果，并退出程序，整个程序执行完毕。</p>
+<p>看得出来，这个逻辑是比较清楚的。</p>
+<h2 id="while-（循环）语句"><a href="#while-（循环）语句" class="headerlink" title="while （循环）语句"></a><code>while</code> （循环）语句</h2><p>说完基本的计算思路，下面我们来说说它的代码的语法格式。</p>
+<h3 id="基本写法"><a href="#基本写法" class="headerlink" title="基本写法"></a>基本写法</h3><p><code>while</code> 语句可以解决上述的写法。我们尝试来看一下整体的逻辑。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        S += i;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, S);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先我们依旧尝试为 <code>i</code> 和 <code>S</code> 进行初始赋值，然后直接进入循环部分。当 <code>i</code> 不超过 100 的时候，就进行累加，并且要增大 <code>i</code> 变量的数值。最后执行完毕后，输出 <code>S</code> 的结果即可。</p>
+<p>由此可见，这个类型的执行逻辑还是比较清晰的。有一点看起来像是瑕疵的地方在于，我们明明知道 <code>i</code> 此时初始数值是 1，没有超过 100，而为什么非要在最开始就写上判断条件 <code>i &lt;= 100</code> 来判断是否小于等于 100 呢？这不是废话吗？</p>
+<p>实际上，这个程序当你输入了一个无效的数值时，比如 107，这个时候根本不可能计算从 107 到 100 的和（我们的目的是从 1 增大到 100，而 107 超过了 100），所以直接就退出了循环。另外，<code>while</code> 语句的格式要求把条件放到最开始，所以我们不得不这么做。</p>
+<p>所以，总的来说，<code>while</code> 语句的写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (condition)</span><br><span class="line">&#123;</span><br><span class="line">    loopExecutingSentence;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>while</code> 旁边写执行的元素的判断条件，然后在大括号里写上执行反复操作的语句。</p>
+<blockquote>
+<p><code>while</code> 语句也经常被称为 <code>while</code> 循环。</p>
+</blockquote>
+<h3 id="作出优化"><a href="#作出优化" class="headerlink" title="作出优化"></a>作出优化</h3><p>显然，在前文我们学习了自增自减运算符的前后缀书写方式的计算问题。当 <code>++</code> 写在变量之后，则表示变量在使用完成后最后增大一个单位。这使得我们原本需要写成两句话的语句可以写成一句话：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S += i++;</span><br></pre></td></tr></table></figure>
+<p>这个写法等价于先执行 <code>sum += i;</code> 语句，然后执行 <code>i++;</code> 语句增大 <code>i</code> 变量一个单位。</p>
+<p>所以，<code>while</code> 语句和 <code>if</code> 执行的模式完全一样，如果重复执行的语句只有一个语句，则可以省略大括号，所以上述写法融入到 <code>while</code> 里则可以写成这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    S += i++;</span><br></pre></td></tr></table></figure>
+<h2 id="另外一个示例"><a href="#另外一个示例" class="headerlink" title="另外一个示例"></a>另外一个示例</h2><p>下面我们来看另外一则示例。我们还是用求和的思路来讲解，不过我们稍作改动。如果我们要计算从 1 到某个数的和，不过问题变为了”请求出从 1 到 $n$ 的所有整数的和 $S$ 在<strong>第一次</strong>超过 2400 的时候，此时的 $n$ 的值“。这个问题怎么解决呢？</p>
+<p>实际上，可能你想得很复杂。我们知道，<code>while</code> 语句的写法是一个条件加上重复运算的语句，所以这个题目完全可以只修改执行的条件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (S &lt;= <span class="number">2400</span>) <span class="comment">// Note here.</span></span><br><span class="line">    S += i++;</span><br></pre></td></tr></table></figure>
+<p>注意条件改为了 <code>S &lt;= 2400</code>，其它的地方都没变化。最后只需要输出 <code>i</code> 的结果就可以了。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/18/csharplang-complement-04-enum/" title="C# 语法查漏补缺系列（4）：枚举类型" itemprop="url">C# 语法查漏补缺系列（4）：枚举类型</a>
     
   </h1>
@@ -839,7 +924,9 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 <p>不过，还是很丑陋。不过我们发现，既然 <code>else</code> 和 <code>if</code> 语句还有 <code>else</code> 完全可以连起来，那么何不把它们直接串联起来呢？</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a == <span class="number">2</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">3</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">4</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样不就很好看了吗。这个写法就是 <code>if</code> 串联的写法。</p>
-<h2 id="嵌套-if-时的三目运算"><a href="#嵌套-if-时的三目运算" class="headerlink" title="嵌套 if 时的三目运算"></a>嵌套 <code>if</code> 时的三目运算</h2><p>上文可以被简写为</p>
+<h2 id="嵌套-if-时的三目运算"><a href="#嵌套-if-时的三目运算" class="headerlink" title="嵌套 if 时的三目运算"></a>嵌套 <code>if</code> 时的三目运算</h2><p>前文用到的这个示例</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a + b == <span class="number">3</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (a - b == <span class="number">3</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        c = a * b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        c = a / b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以被简写为</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c = a + b == <span class="number">3</span> ? (a - b == <span class="number">3</span> ? a * b : a / b) : <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>请注意，三目运算符的查找逻辑是从右到左的。所以它会有先发现到 <code>(a - b == 3 ? a * b : a / b)</code> 表达式是完整的整体，所以这个括号是可以不要的，即：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c = a + b == <span class="number">3</span> ? a - b == <span class="number">3</span> ? a * b : a / b : <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
@@ -1001,136 +1088,6 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/14/linq-07-aggregate-functions/" title="LINQ 教程（7）：聚合函数" itemprop="url">LINQ 教程（7）：聚合函数</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-14T12:55:42.000Z" itemprop="datePublished"> 发表于 2019-11-14</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="什么是聚合函数？"><a href="#什么是聚合函数？" class="headerlink" title="什么是聚合函数？"></a>什么是聚合函数？</h2><p>在 LINQ 的使用过程之中，我们肯定会用到 <code>Select</code>、<code>SelectMany</code>、<code>Where</code> 等方法。不过，这些方法是可以允许串联使用的，也就是说，这些方法可以一直往下通过方法链的方式，往下延伸到想要的地方结束。</p>
-<p>不过，有一些 LINQ 提供的函数并不支持这种用途，而它们仅仅用来获取这些数据里的属性信息，例如求得一个整数集合 <code>IEnumerable&lt;int&gt;</code> 的最大值、平均值，或是获取总个数等等。这些函数在调用后，就无法继续往下调用其它的 LINQ 函数，而且它们往往都表示集合内部的属性。我们把这种函数称为<strong>聚合函数</strong>（Aggregate Function）。</p>
-<blockquote>
-<p>请记住，C# 在一般情况下都会把可执行的操作集称为方法（Method），而不是函数（Function）。但在一些特殊术语词汇和用途上，它们更被习惯性地称为函数。例如构造函数、析构函数以及聚合函数等，这些词汇一般不用“方法”一词。</p>
-</blockquote>
-<p>那么，LINQ 为我们提供了哪一些聚合函数呢？我们下面就来看看它们。</p>
-<h2 id="聚合函数使用一览"><a href="#聚合函数使用一览" class="headerlink" title="聚合函数使用一览"></a>聚合函数使用一览</h2><p>先假设我们有一个集合：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">value</span> <span class="keyword">in</span> values</span><br><span class="line">                <span class="keyword">where</span> <span class="keyword">value</span> &gt;= <span class="number">6</span></span><br><span class="line">                <span class="keyword">select</span> <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
-<p>当然了，这个集合下面用不用都无关紧要，仅仅是为了表达出一些常见的聚合函数的用法。</p>
-<h3 id="Max-和-Min-方法"><a href="#Max-和-Min-方法" class="headerlink" title="Max 和 Min 方法"></a><code>Max</code> 和 <code>Min</code> 方法</h3><p>显然，这两个方法用来求 <code>IEnumerable&lt;数值类型&gt;</code> 的最大值的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> max = selection.Max(); <span class="comment">// Get the maximum value.</span></span><br><span class="line"><span class="keyword">int</span> min = selection.Min(); <span class="comment">// Get the minimum one.</span></span><br></pre></td></tr></table></figure>
-<p>它还有一堆重载方法。都是看的集合内元素的类型，进而去确定与之匹配的重载方法。</p>
-<h3 id="Average-方法"><a href="#Average-方法" class="headerlink" title="Average 方法"></a><code>Average</code> 方法</h3><p>这个用法和求最大最小值没有差别。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> result = selection.Average();</span><br></pre></td></tr></table></figure>
-<p>当然，请注意，这个返回值一定是 <code>double</code> 类型的。虽然 C# 提供了 <code>decimal</code> 类型，会更加精确，但 LINQ 里的求平均值用的是 <code>double</code>。</p>
-<p>另外，它也有一堆重载方法。也是和上面的思路一样。</p>
-<h3 id="Count-方法和-Any-无参方法"><a href="#Count-方法和-Any-无参方法" class="headerlink" title="Count 方法和 Any 无参方法"></a><code>Count</code> 方法和 <code>Any</code> 无参方法</h3><p>这个方法用于获取一个 <code>IEnumerable&lt;T&gt;</code> 集合里到底有多少个元素。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> count = selection.Count();</span><br></pre></td></tr></table></figure>
-<p>注意，由于 LINQ 的实现用的是扩展方法，所以 <code>Count</code> 在这里是一个方法名，而不是属性，所以必须要加上这一对小括号。另外，如果你需要使用这个数值来判断一个集合是否有元素的话，一般可以写成</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Count() != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>不过，我建议你使用 <code>Any</code> 方法（无参的这个重载），来判断集合是否有元素。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Any();</span><br></pre></td></tr></table></figure>
-<h3 id="存在量词-Any-函数和全称量词-All函数"><a href="#存在量词-Any-函数和全称量词-All函数" class="headerlink" title="存在量词 Any 函数和全称量词 All函数"></a>存在量词 <code>Any</code> 函数和全称量词 <code>All</code>函数</h3><p>接着是两个比较常用的聚合函数，它们用于判断集合里是否有元素满足指定条件，或者是全部元素都满足指定条件。</p>
-<p>举个例子。我们要查询集合里是否所有元素都小于 7，它的写法是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> allLessThanEight = selection.All(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
-<p>而如果查找集合里是否存在任意一个元素，它的数值小于 8，那么写作</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> anyValueLessThanEight = selection.Any(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注意不要把 Lambda 运算符 <code>=&gt;</code> 和小于等于符号 <code>&lt;=</code> 以及大于等于符号 <code>&gt;=</code> 看混了。</p>
-</blockquote>
-<p>刚才也说过，<code>Any</code> 的无参重载表示的是这个集合是否包含元素。所以这里就不提及了。</p>
-<h3 id="Concat-函数"><a href="#Concat-函数" class="headerlink" title="Concat 函数"></a><code>Concat</code> 函数</h3><p>这个函数用于拼接两个元素类型一致的 <code>IEnumerable&lt;T&gt;</code> 集合。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; l1 = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span> &#125;;</span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; l2 = <span class="keyword">new</span> Stack&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Concat`.</span></span><br><span class="line"><span class="keyword">var</span> result = l1.Concat(l2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use the result.</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> v <span class="keyword">in</span> result)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>需要注意的是，两个集合即使类型不是一致的，但如果都实现了 <code>IEnumerable&lt;T&gt;</code> 接口的话，那么第 1、2 行给出的写法就一定奏效（隐式转换），然后调用 <code>Concat</code> 方法一定是可以的。但是，迭代器将会取决于具体类型的实现。比如例子给出的实现里，第二个则用的是一个栈（先进后出集合），所以最终拼接并遍历出来的结果顺序必然是 3、8、1、6、5、0、9、2、7、4，即后五个新加入的元素的顺序应倒过来。</p>
-</blockquote>
-<h3 id="Cast-函数"><a href="#Cast-函数" class="headerlink" title="Cast 函数"></a><code>Cast</code> 函数</h3><p>如果我们有一个 <code>IEnumerable</code> 集合，知道它的元素的类型，却发现我们无法使用 LINQ 函数，怎么办？我们可以调用该方法将其转换为泛型集合 <code>IEnumerable&lt;T&gt;</code> 对象。例如：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable helloStr = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"Hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Cast`.</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">string</span>&gt; result = helloStr.Cast&lt;<span class="keyword">string</span>&gt;();</span><br></pre></td></tr></table></figure>
-<p>注意，为这个方法添加泛型参数，来表示这个集合需要转换为这个类型。当然，如果你尝试把它转换为其它类型，那么只会出现报错，提示转换失败；而且，<code>IEnumerable</code> 接口在迭代的时候，每一个元素都是 <code>object</code> 类型。如果内部存放的是值类型的话，将会产生拆箱操作。</p>
-<h3 id="Distinct-函数"><a href="#Distinct-函数" class="headerlink" title="Distinct 函数"></a><code>Distinct</code> 函数</h3><p>这个函数类似于 SQL 语句里的 <code>distinct</code> 关键字，它用来筛选集合里的重复数据。重复的项将会只保留一个，但前提是，这个集合的元素类型必须是可以比较相等操作的（即要么它本身实现了 <code>IEquatable&lt;T&gt;</code> 或 <code>IEquatable</code> 接口，要么就手动规定比较规则，即使用 <code>IEqualityComparer&lt;T&gt;</code> 或 <code>IEqualityComparer</code> 接口）。</p>
-<p>例如，我们要对一个集合去重，那么写法如下。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Distinct`.</span></span><br><span class="line"><span class="comment">// `result` will include only three values: 3, 2 and 1.</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; result = values.Distinct();</span><br></pre></td></tr></table></figure>
-<h3 id="Range-函数（静态函数）"><a href="#Range-函数（静态函数）" class="headerlink" title="Range 函数（静态函数）"></a><code>Range</code> 函数（静态函数）</h3><p>这个函数用于生成一个 <code>IEnumerable&lt;int&gt;</code> 集合，且集合从指定数值增大，一次一个单位。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = Enumerable.Range(<span class="number">0</span>, <span class="number">9</span>);</span><br></pre></td></tr></table></figure>
-<p>这样将会获取 0 到 8，一共 9 个元素。第一个参数表示起始数值，第二个参数表示一共要取出多少个元素。</p>
-<p>注意，这个函数是静态函数，所以调用的时候，请使用 <code>Enumerable.Range</code> 的方式调用。</p>
-<h3 id="Repeat-函数（静态函数）"><a href="#Repeat-函数（静态函数）" class="headerlink" title="Repeat 函数（静态函数）"></a><code>Repeat</code> 函数（静态函数）</h3><p><code>Repeat</code> 函数和 <code>Range</code> 不同，它虽然也是静态函数，但生成的集合并不是按序增大的，而是重复的。比如：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">string</span>&gt; strings = Enumerable.Repeat(<span class="string">"I like programming."</span>, <span class="number">15</span>);</span><br></pre></td></tr></table></figure>
-<p>这样将会生成一个拥有 15 个元素的、且元素全都是 <code>I like programming</code> 字符串的字符串列表。</p>
-<h3 id="Take-和-Skip-函数"><a href="#Take-和-Skip-函数" class="headerlink" title="Take 和 Skip 函数"></a><code>Take</code> 和 <code>Skip</code> 函数</h3><p><code>Take</code> 函数用于获取集合的前多少个元素（类似于 SQL 的 <code>top</code> 关键字），而 <code>Skip</code> 函数则用于跳过指定个数的元素。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; r1 = values.Take(<span class="number">3</span>); <span class="comment">// 3, 2, 1</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; r2 = values.Skip(<span class="number">3</span>).Take(<span class="number">2</span>); <span class="comment">// 1, 2</span></span><br></pre></td></tr></table></figure>
-<p>需要注意的是，<code>Skip</code> 函数返回值依然是 <code>IEnumerable&lt;int&gt;</code> 类型，这样做的好处是可以继续使用成员访问运算符向下继续串联代码，而使用它所得到的集合，一定是从跳过了指定个数的元素后，作为第一项开始的新集合 <code>IEnumerable&lt;int&gt;</code>。换句话说，<code>values.Skip(3)</code> 将会返回的是 1、2、2、2、3、3、1、2、2 序列。</p>
-<h3 id="ToArray-和-ToList-函数"><a href="#ToArray-和-ToList-函数" class="headerlink" title="ToArray 和 ToList 函数"></a><code>ToArray</code> 和 <code>ToList</code> 函数</h3><p>这两个函数用于将集合转换为数组 <code>T[]</code> 和列表集合 <code>List&lt;T&gt;</code>。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> Queue&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span>[] r1 = values.ToArray();</span><br><span class="line">List&lt;<span class="keyword">string</span>&gt; r2 = values.ToList();</span><br></pre></td></tr></table></figure>
-<p>当然，LINQ 还提供了 <code>ToDictionary</code> 和 <code>ToHashSet</code> 函数，用于转字典和哈希表对象。这种转换就不在这里提及了，因为用得比较少，而且学习起来不太难。</p>
-<p>还有一个 <code>ToLookUp</code> 方法，用于生成仅用于 LINQ 的类似于字典的分组表集合，这种集合专门用来存放分组数据，表示一对多的映射关系。</p>
-<h3 id="First、FirstOrDefault、Single-和-SingleOrDefault-函数"><a href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数" class="headerlink" title="First、FirstOrDefault、Single 和 SingleOrDefault 函数"></a><code>First</code>、<code>FirstOrDefault</code>、<code>Single</code> 和 <code>SingleOrDefault</code> 函数</h3><p><code>First</code> 方法有两个重载。一个是无参的，表示取出集合的第一个元素；第二个是有一个 Lambda 表达式参数的，表示获取满足指定条件的第一个元素。但是，这两个方法都有一个问题。当元素全部不满足要求的时候，运行将会抛出 <code>InvalidOperationException</code> 异常。</p>
-<p>显然，这样做是容易出错的，于是我们提供了新方法：<code>FirstOrDefault</code>，它的操作和上一个一样，但当找不到元素的时候的行为不同。<code>FirstOrDefault</code> 方法在找不到满足要求的元素的时候，将会返回和元素的类型完全一样的这个类型的默认数值。比如一个集合是 <code>int</code> 类型的元素构成的，那么当找不到元素时，将会返回 <code>default(int)</code>，即 0。</p>
-<p><code>Single</code> 和 <code>SingleOrDefault</code> 方法的行为则不同。它们除了计算整个集合满足要求的元素以外，还要要求整个集合只能有一个元素满足要求。<code>Single</code> 方法调用时，如果集合有超过一个元素满足该要求，则会直接抛出异常，而 <code>SingleOrDefault</code> 方法被调用时，如何有集合超过一个元素满足要求时，则会返回和集合元素类型一致的类型的默认值 <code>default(T)</code>。</p>
-<h3 id="Last-和-LastOrDefault-函数"><a href="#Last-和-LastOrDefault-函数" class="headerlink" title="Last 和 LastOrDefault 函数"></a><code>Last</code> 和 <code>LastOrDefault</code> 函数</h3><p>当然了，这两个函数和上述用法基本一样，只是用来获取集合最后一个满足要求的元素。当然，找不到的话，<code>Last</code> 会产生 <code>InvalidOperationException</code>，而 <code>LastOrDefault</code> 将会返回默认数值 <code>default(T)</code>。</p>
-<h3 id="ElementAt-函数"><a href="#ElementAt-函数" class="headerlink" title="ElementAt 函数"></a><code>ElementAt</code> 函数</h3><p>这个函数你完全可以理解为 <code>IEnumerable&lt;T&gt;</code> 集合类型的索引器。这里就不举例子了。</p>
-<h3 id="Aggregate-函数"><a href="#Aggregate-函数" class="headerlink" title="Aggregate 函数"></a><code>Aggregate</code> 函数</h3><p>最后讲一个比较常见的聚合函数。把 aggregate 这个单词直译过来，实际上就是“聚合”的意思。真·聚合函数！</p>
-<p>这个函数将每一次集合遍历过程的时候，通过指定的公式进行计算和处理，并得到最终的结果的行为就是这个函数的使用方式了。它有三个重载。</p>
-<p>第一个重载是非常简单的，除了扩展方法的 <code>IEnumerable&lt;T&gt;</code> 集合自己，只需要给出一个额外参数，这个参数是一个 Lambda 表达式，表示一个聚合公式，把所有元素按照这个公式计算的结果聚合起来。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> result = values.Aggregate((s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>);</span><br><span class="line">Console.WriteLine(result);</span><br></pre></td></tr></table></figure>
-<p>可以看懂这个聚合函数的意义吗？这个函数将字符串序列按照顺序依次拼接，得到字符串结果。Lambda 表达式里的 <code>s</code> 表示临时变量，用于积累元素处理期间的数据的，而这个 <code>v</code> 就是集合在每一次遍历过程之中的元素。我们把用来积累的变量 <code>s</code> 往后添加 <code>v</code>，就凑成了字符串拼接后的新字符串，然后再往后添加下一个字符串，直到集合遍历完成。当然最终这个结果就是一个完整的字符串了。</p>
-<p>第二个重载需要加入一个初始值 <code>seed</code> 参数。即可以改写一下上面的写法：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = values.Aggregate(<span class="string">"Sunnie, "</span>, (s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>);</span><br></pre></td></tr></table></figure>
-<p>第三个重载，则在最后增加一个参数，用于指定聚合的处理情况。如下代码所示。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = values.Aggregate(<span class="string">"Sunnie, "</span>, (s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>, v =&gt; v.ToUpper());</span><br></pre></td></tr></table></figure>
-<p>这个聚合操作，将会把所有聚合的元素全部先转为大写，然后输出。自然结果就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUNNIE, HELLO, WORLD!</span><br></pre></td></tr></table></figure>
-<p>是不是很神奇呢？</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/SQL/">SQL</a><a href="/tags/LINQ/">LINQ</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/2/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/">下一页 ↓</a>
@@ -1162,7 +1119,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>15</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>16</sup></a></li>
 			
 		
 			

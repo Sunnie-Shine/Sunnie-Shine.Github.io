@@ -1,0 +1,785 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C 语言语法系列（15）：指针和数组 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="上文我们基本上了解清楚了指针的基本用法和操作，不过，光是变量操作的指针模型可能过于单一，所以今天我们要看的是数组和指针的用法。 一维数组和指针首先讲一下简单的一维数组和指针。首先你要明白一个东西，数组它其实除了是一系列数据的统一管理的集合外，它还有一个用的方式：指针形式。 我们可以使用指针，将数组改变为指针，然后对变量名操作来达到操作内部数据的方式。比如之前我们讲到的数组的声明和使用。我们先来看一">
+<meta name="keywords" content="C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言语法系列（15）：指针和数组">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;23&#x2F;clang-15-pointer-and-array&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="上文我们基本上了解清楚了指针的基本用法和操作，不过，光是变量操作的指针模型可能过于单一，所以今天我们要看的是数组和指针的用法。 一维数组和指针首先讲一下简单的一维数组和指针。首先你要明白一个东西，数组它其实除了是一系列数据的统一管理的集合外，它还有一个用的方式：指针形式。 我们可以使用指针，将数组改变为指针，然后对变量名操作来达到操作内部数据的方式。比如之前我们讲到的数组的声明和使用。我们先来看一">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-23T07:16:16.723Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/23/clang-15-pointer-and-array/" title="C 语言语法系列（15）：指针和数组" itemprop="url">C 语言语法系列（15）：指针和数组</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-23T05:48:41.000Z" itemprop="datePublished"> 发表于 2019-11-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一维数组和指针"><span class="toc-number">1.</span> <span class="toc-text">一维数组和指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一维数组配合自增自减运算符"><span class="toc-number">2.</span> <span class="toc-text">一维数组配合自增自减运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一个复杂但重要的例子"><span class="toc-number">2.1.</span> <span class="toc-text">一个复杂但重要的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解释"><span class="toc-number">2.2.</span> <span class="toc-text">解释</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二维数组和指针"><span class="toc-number">3.</span> <span class="toc-text">二维数组和指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三维数组？"><span class="toc-number">4.</span> <span class="toc-text">三维数组？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组传参"><span class="toc-number">5.</span> <span class="toc-text">数组传参</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数组指针和指针数组"><span class="toc-number">5.1.</span> <span class="toc-text">数组指针和指针数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一维数组传参"><span class="toc-number">5.2.</span> <span class="toc-text">一维数组传参</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#amp-a-0-、a-和-amp-a？"><span class="toc-number">5.3.</span> <span class="toc-text">&amp;a[0]、a 和 &amp;a？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二维数组传参"><span class="toc-number">5.4.</span> <span class="toc-text">二维数组传参</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的运算"><span class="toc-number">6.</span> <span class="toc-text">指针的运算</span></a></li></ol>
+		
+		</div>
+		
+		<p>上文我们基本上了解清楚了指针的基本用法和操作，不过，光是变量操作的指针模型可能过于单一，所以今天我们要看的是数组和指针的用法。</p>
+<h2 id="一维数组和指针"><a href="#一维数组和指针" class="headerlink" title="一维数组和指针"></a>一维数组和指针</h2><p>首先讲一下简单的一维数组和指针。首先你要明白一个东西，数组它其实除了是一系列数据的统一管理的集合外，它还有一个用的方式：指针形式。</p>
+<p>我们可以使用指针，将数组改变为指针，然后对变量名操作来达到操作内部数据的方式。比如之前我们讲到的数组的声明和使用。我们先来看一下基本的使用数组的方式。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">6</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> b = a[<span class="number">3</span>]; <span class="comment">// 4</span></span><br></pre></td></tr></table></figure>
+<p>这样写起来很轻松，不过呢，我们除了使用中括号来找出数据外，还有一种写法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">6</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a + <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> b = *(a + <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<p>注意看清楚，<code>*p</code> 和 <code>b</code> 变量，一个是指针变量，另一个则是一个普通的存数值的变量。我们再看右侧，<code>a</code> 只是一个数组名啊，为什么数组名字还可以加一个 2 和 3 呢？</p>
+<p>这是因为，数组名本身除了表示它是一个数组的名字外，它也是一个指针，且这个指针指向 <code>a[0]</code>。换句话说，数组名除了表示数组的名称外，它还是一个指针变量，这个指针的位置上存的数据是 <code>a[0]</code> 的地址。</p>
+<p>那么，对于地址加 2 来说，我们就很清楚了。因为数组是顺序存储数据的，每一个数据都是挨着放的，所以加 2 的话，自然就表示 <code>a[2]</code> 了。不过，<code>a + 2</code> 是真的 <code>a[2]</code> 吗？当然不是。刚说到，<code>a</code> 是指针，所以加了 2，还是一个指针，这个性质是没有变的。不会因为它是指针，加了数值之后变成了数值。所以 <code>a + 2</code> 其实是 <code>&amp;a[2]</code>。换句话说：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p;</span><br><span class="line"><span class="keyword">int</span> *q;</span><br><span class="line">p = a;</span><br><span class="line">q = &amp;a[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+<p>最后 <code>p</code> 和 <code>q</code> 的结果是一样的。而</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p;</span><br><span class="line"><span class="keyword">int</span> *q;</span><br><span class="line">p = a + C; <span class="comment">// C can be any constant.</span></span><br><span class="line">q = &amp;a[C]; <span class="comment">// Same as C above.</span></span><br></pre></td></tr></table></figure>
+<p><code>p</code> 和 <code>q</code> 也是一样的，只要没有找出数组存储的范围（如果数组只有 5 个元素，那么这里的 <code>C</code> 就最好别超过 4，如果 <code>C</code> = 5 甚至大于 5，都会出现超出访问数组的范围的隐藏 bug）。</p>
+<p>所以，为了取出数值，还需要取值符号 <code>*</code>。所以相当于这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a + <span class="number">3</span>; <span class="comment">// Equi to int *p = &amp;a[3];</span></span><br><span class="line"><span class="keyword">int</span> b = *p;</span><br></pre></td></tr></table></figure>
+<p>看懂上面的写法了吗？那么现在来做个等效代替：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b = *(&amp;a[<span class="number">3</span>]);</span><br></pre></td></tr></table></figure>
+<p>因为取地址和取值是一对相反的运算，所以可以同时去掉。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b = a[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+<p>另外，它还可以写作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b = *(a + <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<p>你可以理解一下，这一点是为什么。</p>
+<h2 id="一维数组配合自增自减运算符"><a href="#一维数组配合自增自减运算符" class="headerlink" title="一维数组配合自增自减运算符"></a>一维数组配合自增自减运算符</h2><h3 id="一个复杂但重要的例子"><a href="#一个复杂但重要的例子" class="headerlink" title="一个复杂但重要的例子"></a>一个复杂但重要的例子</h3><p>我们来看一下，指针变量在配合自增自减运算符后的意思的理解。我们先来看示例和运行后的结果，来理解它们。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123;<span class="number">1</span>, <span class="number">6</span>, <span class="number">11</span>, <span class="number">16</span>, <span class="number">21</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> *p, *q, *r, *s, *t, *u, *v;</span><br><span class="line">p = q = r = s = t = u = v = a; <span class="comment">// Let all pointer point to array variable `a`.</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*p++     = %d\n"</span>, *p++);     <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"(*q)++   = %d\n"</span>, (*q)++);   <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*(r++)   = %d\n"</span>, *(r++));   <span class="comment">// 2</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*(s + 1) = %d\n"</span>, *(s + <span class="number">1</span>)); <span class="comment">// 6</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*t + 1   = %d\n"</span>, *t + <span class="number">1</span>);   <span class="comment">// 3</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*++u     = %d\n"</span>, *++u);     <span class="comment">// 6</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*(++v)   = %d\n"</span>, *(++v));   <span class="comment">// 6</span></span><br></pre></td></tr></table></figure>
+<p>这里提到了七个不同的语句写法：</p>
+<ul>
+<li><code>*p++</code></li>
+<li><code>(*p)++</code></li>
+<li><code>*(p++)</code></li>
+<li><code>*(p+1)</code></li>
+<li><code>*p+1</code></li>
+<li><code>*++p</code></li>
+<li><code>*(++p)</code></li>
+</ul>
+<p>最后发现数值除了一个数有些奇怪（<code>*t + 1</code>）外，其他都还算比较正常。现在我们来一个一个理解。</p>
+<h3 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h3><p>第一个为什么是 1 呢？因为 <code>*p++</code> 的自增符号在后，所以先不会改变值，而是先被取值。<code>p</code> 最开始指向了 <code>a</code>，就表示语句 <code>p = &amp;a[0]</code>。由于自增符号在后，所以输出的应为 <code>a[0]</code>，即 1。</p>
+<p>第二个为什么还是 1 呢？因为刚说过了，自增符号在后，所以打不打括号其实都是先取值。所以输出的值也是 1。</p>
+<p>第三个为什么是 2 呢？好像怎么看，自增运算符都不执行啊，即使有这个括号。这其实是因为，刚才 <code>(*q)++</code> 式子最开始取出了值，但因为自增在后，所以输出原来的 1，但后面的自增符号使得 <code>a[0]</code> 从 1 变为了 2。所以 <code>*(r++)</code> 虽然打了括号，但由于在后的关系，数值不会发生改变，但 <code>a[0]</code> 已经变为了 2，所以自然取出数值时，就是 2 了。</p>
+<p>第四个则比较好理解，<code>*(s + 1)</code> 自然取的是 <code>a[1]</code> 的值，故为 6。</p>
+<p>第五个，这里括号不见了，可是为什么变成3了呢？<code>*t + 1</code> 语句下，是先取了 <code>a[0]</code> 的值，然后对值再加 1，所以自然是 2 + 1（注意是 2 哈，刚才已经改为 2 了，不要带 1 进去）。</p>
+<p>第六个，<code>*++u</code>，自增符号在前，所以自然是对原本指向的 <code>a[0]</code> 往后移动一位，变为指向 <code>a[1]</code>。或者换句话说，<code>++u</code> 其实也就是 <code>a + 1</code>，或者是 <code>&amp;a[1]</code>。所以加星号表示取其值，所以是 <code>a[1]</code> 的值，也就是 6 了。</p>
+<p>第七个，和刚才不加括号是一样的效果。</p>
+<p>可能你会问第一个，为什么 <code>*p++</code> 和 <code>(*p)++</code> 不同。我是这么解释的：<code>*p++</code> 是相当于 <code>*(p++)</code> 的，这个自增符号不管在哪里，始终要记得，因为它挨着变量，所以它是先会被打括号的；而取值符号 <code>*</code>，不一定会直接挨着变量，所以有时候并不会先计算。所以我们有一个结论：<strong><code>*p++</code>和<code>*(p++)</code>一样，<code>*++p</code>和<code>*(++p)</code>一样</strong>。刚才我们在计算第六个的时候，就知道了，自增是挨着变量的，不论前后的关系，既然挨着，就肯定是先计算的咯。</p>
+<p>所以，优先级什么的都喂狗去吧！根本不需要去死记硬背的。</p>
+<p>从中我们可以总结以下内容：</p>
+<ul>
+<li><code>*p++</code> 等价于 <code>*(p++)</code> 等价于 <code>*((&amp;a[0])++)</code> 等价于 <code>*(&amp;a[0]++)</code> 等价于两个语句 <code>a[0]; &amp;a[1];</code>，自增符号在后，显示数据时，自增符号不会起作用，即使使用完毕后，因为后面是 <code>&amp;a[1]</code>，对后续变量的操作也没有任何影响（指针变动而不是数值变动），所以并没有用。</li>
+<li><code>*++p</code> 等价于 <code>*(++p)</code> 等价于 <code>*(++(&amp;a[0]))</code> 等价于 <code>*(++&amp;a[0])</code> 等价于 <code>*(&amp;a[1])</code> 等价于 <code>a[1]</code>，自增符号在前，取 <code>a[1]</code>。</li>
+<li><code>*p + 1</code> 等价于 <code>*(&amp;a[0]) + 1</code> 等价于 <code>a[0] + 1</code>。</li>
+<li><code>(*p)++</code> 等价于 <code>(*(&amp;a[0]))++</code> 等价于 <code>(a[0])++</code> 等价于 <code>a[0]++</code>，即 <code>a[0]</code> 使用完毕后自增 1。</li>
+</ul>
+<p>最后考一个问题：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">4</span>] = &#123; <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">22</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a;</span><br><span class="line">*p = *p + <span class="number">1</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, *p); <span class="comment">// 2</span></span><br><span class="line">*p = (*p + <span class="number">1</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, *p); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>看一下，注释表示当前位置输出的数值。请尝试理解一下为什么。</p>
+<h2 id="二维数组和指针"><a href="#二维数组和指针" class="headerlink" title="二维数组和指针"></a>二维数组和指针</h2><p>二维数组是既有行又有列的数组，所以相当于行、列均有数组的指针。</p>
+<p>和刚才一样，我们先定义一个数组。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span> &#125;,</span><br><span class="line">    &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span> &#125;,</span><br><span class="line">    &#123; <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>然后，这个 <code>a</code> 变量除了是数组的变量名外，还是一个指针。不过因为是二维的，就稍显麻烦。</p>
+<p>我们可以尝试将这里的a理解成一个二重指针。它是指向指向数值的指针的指针。很绕对吧~</p>
+<p>其实是这个意思：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> **doublePointer = a;</span><br></pre></td></tr></table></figure>
+<p>因为说的是二重指针，所以在声明指针变量时，需要两个星号。它等效于这句话：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> **doublePointer = &amp;((&amp;a[<span class="number">0</span>])[<span class="number">0</span>]);</span><br></pre></td></tr></table></figure>
+<p>首先我们使用一重指针指向行上的位置，因为数组名的缘故，所以指针指向的是最初的位置 <code>a[0]</code>；但是因为 <code>a[0]</code> 在二维数组下并不是一个数，而是一系列数据（可以看作是一个数组，数组内各自又有一个单独的数组），所以，<code>&amp;a[0]</code>实际还不够，还要取出列下标为 0 的情况，所以有两层括号和两层取地址符号。</p>
+<p>那么，普通的指针可以这么表示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *singlePtr = &amp;a[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+<p>那么，假设要取 <code>a[0][1]</code> 的值，可以这么做：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> d = *(*a + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p>看看为什么。首先 <code>*a</code> 表示是 <code>a</code> 数组的第一行的所有数据，即 <code>&amp;a[0]</code>，所以上述语句可以等效为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> d = *(a[<span class="number">0</span>] + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p>但是依然不够。因为 <code>a[0]</code> 我们刚才说过，<code>a[0]</code> 是一组数据，虽然光秃秃在这里写着，没有地址符也没有取值符，但始终记得它相当于是一个数组名叫 <code>a[0]</code>。</p>
+<p>然后 <code>a[0] + 1</code> 表示将列往后移动一位，即相当于一维数组的指针 <code>a + 1</code> 这样的存在。</p>
+<p>所以这里就表示为了 <code>&amp;a[0][1]</code>。可为什么还带个指针呢？因为刚才就说过，一维数组的指针就带有取地址符号，即 <code>a + 1</code> 等效于 <code>&amp;a[1]</code>，所以自然二维数组的指针也有这样的符号了，故 <code>a[0] + 1</code> 就表示 <code>&amp;a[0][1]</code> 了。所以取出值还得需要一个取值符号，故 <code>*(&amp;a[0][1])</code> 就变为了 <code>a[0][1]</code> 了。</p>
+<p>所以上述语句就变为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> d = a[<span class="number">0</span>][<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
+<p>明白意思了吗？</p>
+<p>所以第 $i$ 行第 $j$ 列的数值用指针表示为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> value = *(*(a + i) + j);</span><br></pre></td></tr></table></figure>
+<h2 id="三维数组？"><a href="#三维数组？" class="headerlink" title="三维数组？"></a>三维数组？</h2><p>三维数组也是，只是指针变为三重指针罢了，只是就不多阐述了。它的表示可以类比这个推导出来：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> threeDArray[][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;,</span><br><span class="line">        &#123; <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span> &#125;,</span><br><span class="line">        &#123; <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span> &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span> &#125;,</span><br><span class="line">        &#123; <span class="number">10</span>, <span class="number">12</span>, <span class="number">14</span>, <span class="number">16</span> &#125;,</span><br><span class="line">        &#123; <span class="number">18</span>, <span class="number">20</span>, <span class="number">22</span>, <span class="number">24</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> ***triplePtr = a; <span class="comment">// What does this one equi to?</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> value = *(*(*(a + i) + j) + k);</span><br><span class="line"><span class="keyword">int</span> a = *(*(a[i] + j) + k);</span><br><span class="line"><span class="keyword">int</span> b = *(a[i][j] + k);</span><br><span class="line"><span class="keyword">int</span> c = a[i][j][k];</span><br></pre></td></tr></table></figure>
+<h2 id="数组传参"><a href="#数组传参" class="headerlink" title="数组传参"></a>数组传参</h2><p>数组是可以用于传参的。换句话说，数组是可以当形式参数（形参）传递的。不过，古老的C语言只允许数组的指针写法传递，而且还有着另外的写法。因为这里用的类型不多，所以只讲解一维和二维数组的传参。</p>
+<p>不过在此之前，我们要搞清楚数组指针和指针数组的区别。这个名字有些绕，我们不用管名字，看它怎么用。</p>
+<h3 id="数组指针和指针数组"><a href="#数组指针和指针数组" class="headerlink" title="数组指针和指针数组"></a>数组指针和指针数组</h3><p>首先我们来看以下两种写法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p[<span class="number">20</span>];</span><br><span class="line"><span class="keyword">int</span> (*q)[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
+<p>它们的区别就只是星号和数组变量名称有没有括号。这里要告诉大家，其实它们是有完全不一样的用途的。第一个是一个数组（<code>p[20]</code> 明显是一个数组的定义嘛），不过加了个星号，被定义为了指针，但其实这个写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *(p[<span class="number">20</span>]);</span><br></pre></td></tr></table></figure>
+<p>换句话说，我们借用本文最开头的第三种理解思路：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>* p[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
+<p>其实就看得很清楚了。它是一个数组，有 20 个元素组成。不过这个数组全存放的是指针罢了。</p>
+<p>这种数组称为<strong>指针数组</strong>（存放指针的数组）。</p>
+<p>下面这个呢？被打了括号，所以完全不同。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*q)[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
+<p>因为括号的关系，星号不可被拆开。所以它是什么呢？它是一个可以指向一个数组的指针。换句话说，如果我有100 个数据，被认为划分为了 5 个数组，每一个数组都有 20 个元素，并且它们是随便划分的，所以毫无关联。</p>
+<p>这个时候，我们可以让这个指向数组的指针（即<strong>数组指针</strong>）分别去指向这不同的 5 个数组，来测试这些数据。</p>
+<p>有了这些基础的理论后，我们来看一下示例。</p>
+<h3 id="一维数组传参"><a href="#一维数组传参" class="headerlink" title="一维数组传参"></a>一维数组传参</h3><p>首先我们试想一个场景，求一个数组下的最大数值。这个时候，我们可以这么做：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (a[i] &lt;= m)</span><br><span class="line">        &#123;</span><br><span class="line">            m = a[i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，一个数组的最大值的算法就写好了。接下来我们来看一下，指针写法（因为 C 语言要用数组的指针写法来传递形参）。</p>
+<p>所以首先，我们要把上面的 <code>a[]</code> 这个诡异的中括号里值都没有的写法给它改掉，改为指针写法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> length)</span></span></span><br></pre></td></tr></table></figure>
+<p>就可以了。所以在声明时，按照可以去掉变量名称的手段，我们可以将刚才的程序的完整版写成这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> *, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> arr[<span class="number">5</span>] = &#123; <span class="number">2</span>, <span class="number">9</span>, <span class="number">-5</span>, <span class="number">19</span> &#125;; <span class="comment">// The last one is assigned 0.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"数组之中最大的数值是 %d\n"</span>, <span class="built_in">max</span>(arr, <span class="number">5</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">        <span class="keyword">if</span> (a[i] &lt;= m)</span><br><span class="line">            m = a[i];</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，<code>max</code> 内的 <code>a[i]</code> 等使用到数组的地方的，也可以改写为指针写法。当然，这里不改也没有关系。</p>
+<blockquote>
+<p>注意数组传参的过程，直接把数组名称写上去，而不要地址符号，也不要中括号，因为它传递的是一个地址数值，表示 <code>&amp;a[0]</code>。</p>
+</blockquote>
+<h3 id="amp-a-0-、a-和-amp-a？"><a href="#amp-a-0-、a-和-amp-a？" class="headerlink" title="&amp;a[0]、a 和 &amp;a？"></a><code>&amp;a[0]</code>、<code>a</code> 和 <code>&amp;a</code>？</h3><p>或许有小伙伴会对一维数组的指针三种写法提出问题：如果我们把数组命名为 <code>a</code> 的话，它同时等价于首元素的地址，即 <code>&amp;a[0]</code>，那么，<code>&amp;a</code> 表示什么？按照道理来说，<code>&amp;a</code> 表示的是这个数组变量本身的地址，而这个变量的地址不应该就是 <code>&amp;a[0]</code> 吗？所以这么说来的话，<code>a</code>、<code>&amp;a</code> 和 <code>&amp;a[0]</code> 三者不是就完全一样了吗？</p>
+<p>我想告诉你的是，这个说法目前来说确实是正确的。我们也确实经常写 <code>a</code> 来表示首元素地址，也有时候会用 <code>&amp;a</code> 来“严谨地”表达数组变量本身的地址，而由于数组变量本身而言，从这里开始存放的一系列元素就是这数组里的东西，所以 <code>&amp;a</code> 和 <code>a</code> 这么看是等价的。不过……</p>
+<p>在使用 <code>+</code> 和 <code>-</code> 的运算符的时候，就可以看出它们的区别。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a;</span><br><span class="line"><span class="keyword">int</span> *q = &amp;a;</span><br><span class="line"><span class="keyword">int</span> *r = &amp;a[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> *x, *y, *z;</span><br><span class="line">x = p + <span class="number">1</span>;</span><br><span class="line">y = q + <span class="number">1</span>;</span><br><span class="line">z = r + <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>来看这个执行逻辑，<code>x</code>、<code>y</code> 和 <code>z</code> 都得到什么结果？第一个是把数组地址加上 1，它表示往下移动 1 个单位，所以等价于 <code>&amp;a[0] + 1</code>，即 <code>&amp;a[1]</code>；而 <code>z</code> 也就是这个结果。那么中间的 <code>y</code> 呢？它其实表示的是，以数组整体大小为单位，往下跨越一个完整大小的空间，所以它一口气就相当于往后移动到指向不存在的 <code>a[4]</code> 上去了。所以，请不要这样使用指针来操作数组，会立马超出访问范围，出现致命的 bug。</p>
+<h3 id="二维数组传参"><a href="#二维数组传参" class="headerlink" title="二维数组传参"></a>二维数组传参</h3><p>二维数组依然要取出最大值，就不容易了，因为它有两个维度。于是我们先要改写上面的 <code>max</code> 函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> (*a)[], <span class="keyword">int</span> row, <span class="keyword">int</span> column)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; row; i++)</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; column; j++)</span><br><span class="line">            <span class="keyword">if</span> (a[i][j] &lt;= m)</span><br><span class="line">                m = a[i][j];</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意这里，传参的写法，是一个数组指针，即指向数组的指针。这一点也很好理解。因为二维数组本身应当在处理成指针写法时可以改为二重指针，但因为传参的缘故，它的行列都可以变动，所以我们不能在处理函数时，行、列同时变动，即必须是“一静一动”，不然程序就不受控了。所以我们要保证其中一个维度是静止的（即数组形式），而另外一个维度则用指针来操作，就很轻松。所以写成了数组指针写法。刚才也告诉大家，数组指针是一种指针，不过这个指针是指向一个数组而不是一个数值的。当改变指针的值时，也就相当于移动了指针，达到测试和使用二维数组之中“一个维度下的数组”的操作。</p>
+<p>那么它的声明就省略变量名即可，但是因为只能省略变量名，所以括号是不能少的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Statement of the function.</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> (*)[], <span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a[<span class="number">2</span>][<span class="number">3</span>] =</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">9</span>, <span class="number">-5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">-7</span>, <span class="number">0</span>, <span class="number">8</span> &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"The maximum value of the array is %d\n"</span>, <span class="built_in">max</span>(a, <span class="number">2</span>, <span class="number">3</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> (*arr)[], <span class="keyword">int</span> row, <span class="keyword">int</span> column)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; row; i++)</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; column; j++)</span><br><span class="line">            <span class="keyword">if</span> (a[i][j] &lt;= m)</span><br><span class="line">                m = a[i][j];</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="指针的运算"><a href="#指针的运算" class="headerlink" title="指针的运算"></a>指针的运算</h2><p>在 C 语言里，我们为指针也提供了方便的运算符，使得我们可以通过运算符来操作和计算内存地址。</p>
+<p>上文我们其实已经用到了一部分这样的运算符，诸如 <code>++</code>、<code>--</code> 这些符号，下面要提到的是这样的一些运算符：</p>
+<ul>
+<li><code>+</code>：计算两个地址的和，或是为一个地址增加偏移量。比如 <code>a</code> 是一个数组，<code>a + 3</code> 将会把当前地址往后移动 3 个元素单位。</li>
+<li><code>-</code>：和上面的算法相反，这里是减法。</li>
+<li><code>*</code>：将地址数值相乘。这个用法很少。</li>
+<li><code>/</code>：将地址数值相除。这个用法也很少。</li>
+<li><code>%</code>：把两个地址数值以整数方式执行取模运算。这个用法也很少。</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/23/clang-15-pointer-and-array/" data-title="C 语言语法系列（15）：指针和数组 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/23/clang-14-pointer-basic/"  title="C 语言语法系列（14）：指针入门">
+ <strong>下一篇：</strong><br/> 
+ <span>C 语言语法系列（14）：指针入门
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一维数组和指针"><span class="toc-number">1.</span> <span class="toc-text">一维数组和指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一维数组配合自增自减运算符"><span class="toc-number">2.</span> <span class="toc-text">一维数组配合自增自减运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一个复杂但重要的例子"><span class="toc-number">2.1.</span> <span class="toc-text">一个复杂但重要的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解释"><span class="toc-number">2.2.</span> <span class="toc-text">解释</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二维数组和指针"><span class="toc-number">3.</span> <span class="toc-text">二维数组和指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三维数组？"><span class="toc-number">4.</span> <span class="toc-text">三维数组？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组传参"><span class="toc-number">5.</span> <span class="toc-text">数组传参</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数组指针和指针数组"><span class="toc-number">5.1.</span> <span class="toc-text">数组指针和指针数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一维数组传参"><span class="toc-number">5.2.</span> <span class="toc-text">一维数组传参</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#amp-a-0-、a-和-amp-a？"><span class="toc-number">5.3.</span> <span class="toc-text">&amp;a[0]、a 和 &amp;a？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二维数组传参"><span class="toc-number">5.4.</span> <span class="toc-text">二维数组传参</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的运算"><span class="toc-number">6.</span> <span class="toc-text">指针的运算</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>25</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>16</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

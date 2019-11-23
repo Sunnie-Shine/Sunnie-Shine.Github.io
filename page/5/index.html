@@ -82,6 +82,90 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/10/csharp-concurrent-examples-01-elementary-async/" title="C# 并发编程实例系列（1）：异步编程基础" itemprop="url">C# 并发编程实例系列（1）：异步编程基础</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T13:30:29.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>从现在开始，我们将使用 C# 语言为大家介绍并发编程期间遇到了大量可能会遇到的经典实例。本部分内容完全参照自《C# 并发编程经典实例》（<em>Concurrency in C# Cookbook</em>）。</p>
+<p>本部分介绍异步操作之中使用 <code>async</code> 和 <code>await</code> 的基础知识。本部分只会涉及本质上适合异步的操作，例如 HTTP 请求、数据库指令、Web 服务调用等。</p>
+<blockquote>
+<p>当然，有些代码会尝试用 C# 8 的描述模式进行描述，比如变量模式的 <code>using</code> 声明、可空引用类型等，原本的书里是用的较老的语法，所以在此会被重写翻译为较新的代码。</p>
+</blockquote>
+<h3 id="暂停一段时间"><a href="#暂停一段时间" class="headerlink" title="暂停一段时间"></a>暂停一段时间</h3><h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>需要让程序以异步方式等待一段时间。这在进行单元测试或者实现重试延迟时非常有用。本解决方案也能用于实现简单的超时。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>Task</code> 类里有一个返回 <code>Task</code> 对象的静态函数 <code>Task.Delay</code>，这个 <code>Task</code> 对象会在指定的时间后完成。</p>
+<p>下面的这个例子用于单元测试，定义了一个异步完成的任务。在模拟一个异步操作时，至少要测试“同步成功”、“异步成功”和“异步失败”三种情况，这一点很重要。下面的例子返回一个 <code>Task</code> 对象，用于“异步成功”测试。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;T&gt; DelayResult&lt;T&gt;(T result, TimeSpan delay)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Delay(delay);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下一个例子实现了一个简单的指数退避。指数退避是一种重试策略，重试的延迟时间会逐次增加。在访问 Web 服务时，最好的方式就是采用指数退避，它可以防止服务器呗太多的重试阻塞。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt; DownloadStringWithRetries(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> nextDelay = TimeSpan.FromSeconds(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i != <span class="number">3</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> &#123; &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">await</span> Task.Delay(nextDelay);</span><br><span class="line">        nextDelay += nextDelay;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> client.GetStriingAsync(uri);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后的例子用 <code>Task.Delay</code> 实现一个简单的超时功能。本例子中代码的目的是，如果服务在 3 秒内没有相应，就返回 <code>null</code>。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt;? DownloadStringWithTimeout(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> downloadTask = client.GetStringAsync(uri);</span><br><span class="line">    <span class="keyword">var</span> timeoutTask = Task.Delay(<span class="number">3000</span>); <span class="comment">// Delay 3s.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> Task.WhenAny(downloadTask, timeoutTask) == timeoutTask</span><br><span class="line">        ? <span class="literal">null</span></span><br><span class="line">        : <span class="keyword">await</span> downloadTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h4><p><code>Task.Delay</code> 适合用于对异步代码进行单元测试或实现重试逻辑。如果要实现超时功能的话，最好还是使用取消令牌对象（<code>CancellationToken</code>），这一点将在后续内容说明。</p>
+<p>另外，前文用到的 <code>Task.WhenAny</code> 方法可以传入一系列 <code>Task</code> 对象，当其中任意一个完成，就会返回一个 <code>Task</code>，表示该完成的任务对象。</p>
+<h3 id="返回完成的任务"><a href="#返回完成的任务" class="headerlink" title="返回完成的任务"></a>返回完成的任务</h3><h4 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h4><p>如何实现一个具有异步签名的同步方法。如果从异步接口或基类继承代码，但希望用同步的方法来实现它，就会出现这种情况。对异步代码做单元测试，以及用简单的生成方法存根（stub）或者模拟对象（mock）来产生异步接口，这两种情况下都可使用这种技术。</p>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>可以使用 <code>Task.FromResult</code> 方法创建并返回一个新的 <code>Task&lt;T&gt;</code> 对象，这个 <code>Task</code> 对象是已经完成的，并由具体的值。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">MySyncImplementation</span> : <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span> =&gt; Task.FromResult(<span class="number">13</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果你使用了 <code>Microsoft.Bcl.Async</code>，那么 <code>FromResult</code> 方法就在 <code>TaskEx</code> 类之中。</p>
+</blockquote>
+<h4 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h4><p>在用同步代码实现异步接口的时候，要避免使用任何形式的阻塞操作。在异步方法之中进行阻塞操作，然后返回一个完成的 <code>Task</code> 对象，这种方法并不可取。作为一个反例，我们来看一下 .NET Framework 4.5 之中 <code>Console</code> 类的文本读取器。<code>Console.In.ReadLineAsync</code> 一定会阻塞调用它的线程，直到它读取完一行文字，然后回返回一个已经完成的 <code>Task</code> 对象。这种实现并不直观，很多开发人员也觉得很奇怪。一旦异步方法阻塞，调用它的线程就无法启动其它任务，这会干扰程序的并发性，甚至可能产生死锁。</p>
+<p><code>Task.FromResult</code> 只能提供结果正确的同步 <code>Task</code> 对象。如果要让返回的 <code>Task</code> 对象有一个其它类型的结果（例如以 <code>NotImplementedException</code> 结束的 <code>Task</code> 对象），就得自行创建使用 <code>TaskCompletionSource</code> 的辅助方法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Task&lt;T&gt; NotImplementedAsync&lt;T&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> tcs = <span class="keyword">new</span> TaskCompletionSource&lt;T&gt;();</span><br><span class="line">    tcs.SetException(<span class="keyword">new</span> NotImplementedException());</span><br><span class="line">    <span class="keyword">return</span> tcs.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从概念上讲，<code>Task.FromResult</code> 只不过是 <code>TaskCompletionSource</code> 的一个简化版本，它与上面的代码非常类似。</p>
+<p>如果用 <code>Task.FromResult</code> 反复调用同一个参数，则可考虑用一个实际的 <code>task</code> 变量。例如，可以一次性建立一个结果为 0 的 <code>Task&lt;int&gt;</code> 对象，在以后的调用之中就不需要创建额外的实例了，这样可减少垃圾回收的次数。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Task&lt;<span class="keyword">int</span>&gt; zeroTask = Task.FromResult(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">static</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zeroTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%B9%B6%E5%8F%91/">C♯.并发</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/并发/">并发</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/10/clang-02-operator/" title="C 语言语法系列（2）：运算符和表达式" itemprop="url">C 语言语法系列（2）：运算符和表达式</a>
     
   </h1>
@@ -1208,99 +1292,6 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/08/csharp-common-01-nvt/" title="C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;" itemprop="url">C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-08T07:25:57.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>从本文开始，我们将探究 C# 里常见的一些内置类型，并详细分析这些类型的使用方式和原理（当然，如果有的话）。</p>
-<h2 id="可空值类型是什么？"><a href="#可空值类型是什么？" class="headerlink" title="可空值类型是什么？"></a>可空值类型是什么？</h2><p>在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：<code>byte</code>、<code>int</code>、<code>short</code>、<code>long</code>、<code>float</code>、<code>double</code>、<code>char</code>、<code>boolean</code>，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都是我们 Java 里提供好的一些特殊的类型，它们分别都是 <code>Byte</code>、<code>Integer</code>、<code>Short</code>、<code>Long</code>、<code>Float</code>、<code>Double</code>、<code>Character</code> 和 <code>Boolean</code> 类型的一个特殊实例。之所以这么说，是因为在泛型语法里，我们无法把那些以关键字作为类型的所谓的类型，作为泛型参数，即我们无法使用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">int</span>&gt; l = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">// Wrong.</span></span><br></pre></td></tr></table></figure>
-<p>这种写法。但是，对应的这些类类型，由于都是类，所以它们反而可以被赋值为 <code>null</code> 值，即我们完全可以租到下面的操作：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="keyword">null</span>;   <span class="comment">// Allow.</span></span><br><span class="line">Character c = <span class="keyword">null</span>; <span class="comment">// Allow.</span></span><br><span class="line"><span class="comment">//int i = null;     // Disallow.</span></span><br></pre></td></tr></table></figure>
-<p>所以，Java 里拥有这种特殊的机制。那么，今天探讨的 C# 里，跟这个有什么关系呢？</p>
-<p>在 C# 的世界里，所有的内置类型关键字 <code>int</code>、<code>short</code>、<code>long</code>、<code>uint</code>、<code>ulong</code>、<code>ushort</code>、<code>byte</code>、<code>sbyte</code>、<code>char</code>、<code>string</code>、<code>float</code>、<code>double</code>、<code>decimal</code> 和 <code>bool</code> 等类型都是 BCL 体系规定的那些名称的别名。所谓的 BCL，就是规定的体系，比如 <code>int</code> 和 <code>System.Int32</code> 等价，即</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Omitted the namespace, class statements...</span></span><br><span class="line"><span class="keyword">int</span> i;   <span class="comment">// Allow.</span></span><br><span class="line">Int32 j; <span class="comment">// Also allow.</span></span><br></pre></td></tr></table></figure>
-<p>甚至为其初始化。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Omitted the namespace, class statements...</span></span><br><span class="line"><span class="keyword">int</span> i = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">3</span>);     <span class="comment">// Allow.</span></span><br><span class="line">Int32 j = <span class="keyword">new</span> Int32(<span class="number">3</span>); <span class="comment">// Also allow.</span></span><br><span class="line">Int32 k = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">3</span>);   <span class="comment">// Allow still.</span></span><br></pre></td></tr></table></figure>
-<p>或是</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="keyword">new</span> System.Int32(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
-<p>等等。由于是别名，所以我们完全可以尝试着把它用作泛型的参数上：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IList&lt;<span class="keyword">int</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
-<p>所以，这一点和 Java 不同。</p>
-<p>当然，开篇内容说得太多了。我们现在看看，今天要说的内容：<strong>可空类型</strong>（Nullable Types）。可空类型是一种类型，这种类型允许为 <code>null</code> 值。在 C# 的机制里，<code>null</code> 无法赋值给一个值类型变量，因为所有的值类型，都是通过直接创建对象，然后在栈内分配空间并直接赋值的，而引用类型，则在堆里分配。由于在单独的内存块里，所以引用类型往往在分配好后，会得到一个引用，这个引用便是一个地址的信息，即一个指针信息。而指针，是可以为 <code>null</code> 的，所以引用类型才允许为 <code>null</code>。C# 不能让值类型为 <code>null</code>，但这种机制会为我们带来诸多不便，比如我们迫不得已需要一个特殊数值来表示一些特有信息时，就显得很不好搞定。</p>
-<p>举个例子，假如我们需要表示一个数据库里可为空值的数据信息，这怎么办呢？最早的方式是，通过“牺牲”一个特殊数值来表示空值，比如我们拿出 <code>0x3f3f3f3f</code> 来表达这里存储的数值为空。但这带来一个不便是，如果真有一个数据非得等于 <code>0x3f3f3f3f</code>，这怎么办呢？所以就不方便解决了。于是，在 C# 2 里，我们带来了一个新的数据类型，<strong>可空值类型</strong>（Nullable Value Types），一般被简称为 NVT。</p>
-<blockquote>
-<p>上述内容里提到了泛型，我们在此处不作过多阐述，因为这里的重点并非泛型。</p>
-</blockquote>
-<h2 id="可空值类型"><a href="#可空值类型" class="headerlink" title="可空值类型"></a>可空值类型</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>可空值类型的用法是，在类型后加上一个后缀符号“?”来表示这个类型可以赋 <code>null</code> 值，如</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>它在内存之中的写法是</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable&lt;<span class="keyword">int</span>&gt; ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>意思就是，这两种写法是等价的，唯一的区别是，后者需要引用 <code>System</code> 命名空间，就像 <code>Int32</code> 和 <code>int</code> 的唯一区别就是引用命名空间一样。</p>
-<p>显然，我们这样写是非常简单的，所以语法层面基本上就说完了。不过！</p>
-<h3 id="可空值类型和普通值类型的转换"><a href="#可空值类型和普通值类型的转换" class="headerlink" title="可空值类型和普通值类型的转换"></a>可空值类型和普通值类型的转换</h3><p>有些时候，我们会使用条件运算符 <code>?:</code> 来表达赋值行为，但如果带有可空类型，比如下面这样</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : p;</span><br></pre></td></tr></table></figure>
-<p>乍一看，这个写法是没啥毛病的，因为我们当 <code>p</code> 为空的时候，赋值为默认数值 0，而当它不为空的时候，赋值则是 <code>p</code> 的原始数值。所以看起来好像没有问题，但你写成代码后，就会得到一个语法错误，大概说“你的条件表达式的两边的返回值类型不一样”。可以看到，0 显然是 <code>int</code> 类型的，而 <code>p</code> 呢？这里的 <code>p</code> 可是 <code>int?</code> 类型的啊，条件运算符的两侧返回的必须得是完全一样的类型的结果，但这里一个是 <code>int</code>，而另外一个则是 <code>int?</code>。这显然是不对的。所以，我们只能这么做：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : (<span class="keyword">int</span>)p;</span><br></pre></td></tr></table></figure>
-<p>即为 <code>p</code> 做一次强制转换，把它改为 <code>int</code> 类型。可能你会问了。那么这种转换的行为是合理的，但为什么可以这么写呢？在 C# 2 里，可空值类型提供了这样一个语法：允许可空值类型强制转换为不可空的值类型，即取出它的值。但如果当这个类型此时为 <code>null</code> 值的时候，它将抛出一个 <code>InvalidOperationException</code> 异常。一般来说，提示信息都是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable object must have a value.</span><br></pre></td></tr></table></figure>
-<p>即“可空对象必须拥有数值（才能进行转换）”。所以，请万分注意。比如下面这个代码，就会产生一个错误。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">int</span> q = (<span class="keyword">int</span>)p + <span class="number">3</span>;</span><br><span class="line">Console.WriteLine(q);</span><br></pre></td></tr></table></figure>
-<p>这是显然的。我哦们尝试直接把 <code>null</code> 值的对象加上 3，这显然是不合适的。</p>
-<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B/">C♯.内置类型</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/4/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/">下一页 ↓</a>
@@ -1332,7 +1323,7 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>15</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>16</sup></a></li>
 			
 		
 			

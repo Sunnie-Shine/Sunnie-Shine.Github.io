@@ -82,6 +82,136 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/14/linq-07-aggregate-functions/" title="LINQ 教程（7）：聚合函数" itemprop="url">LINQ 教程（7）：聚合函数</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-14T12:55:42.000Z" itemprop="datePublished"> 发表于 2019-11-14</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="什么是聚合函数？"><a href="#什么是聚合函数？" class="headerlink" title="什么是聚合函数？"></a>什么是聚合函数？</h2><p>在 LINQ 的使用过程之中，我们肯定会用到 <code>Select</code>、<code>SelectMany</code>、<code>Where</code> 等方法。不过，这些方法是可以允许串联使用的，也就是说，这些方法可以一直往下通过方法链的方式，往下延伸到想要的地方结束。</p>
+<p>不过，有一些 LINQ 提供的函数并不支持这种用途，而它们仅仅用来获取这些数据里的属性信息，例如求得一个整数集合 <code>IEnumerable&lt;int&gt;</code> 的最大值、平均值，或是获取总个数等等。这些函数在调用后，就无法继续往下调用其它的 LINQ 函数，而且它们往往都表示集合内部的属性。我们把这种函数称为<strong>聚合函数</strong>（Aggregate Function）。</p>
+<blockquote>
+<p>请记住，C# 在一般情况下都会把可执行的操作集称为方法（Method），而不是函数（Function）。但在一些特殊术语词汇和用途上，它们更被习惯性地称为函数。例如构造函数、析构函数以及聚合函数等，这些词汇一般不用“方法”一词。</p>
+</blockquote>
+<p>那么，LINQ 为我们提供了哪一些聚合函数呢？我们下面就来看看它们。</p>
+<h2 id="聚合函数使用一览"><a href="#聚合函数使用一览" class="headerlink" title="聚合函数使用一览"></a>聚合函数使用一览</h2><p>先假设我们有一个集合：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> <span class="keyword">value</span> <span class="keyword">in</span> values</span><br><span class="line">                <span class="keyword">where</span> <span class="keyword">value</span> &gt;= <span class="number">6</span></span><br><span class="line">                <span class="keyword">select</span> <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
+<p>当然了，这个集合下面用不用都无关紧要，仅仅是为了表达出一些常见的聚合函数的用法。</p>
+<h3 id="Max-和-Min-方法"><a href="#Max-和-Min-方法" class="headerlink" title="Max 和 Min 方法"></a><code>Max</code> 和 <code>Min</code> 方法</h3><p>显然，这两个方法用来求 <code>IEnumerable&lt;数值类型&gt;</code> 的最大值的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> max = selection.Max(); <span class="comment">// Get the maximum value.</span></span><br><span class="line"><span class="keyword">int</span> min = selection.Min(); <span class="comment">// Get the minimum one.</span></span><br></pre></td></tr></table></figure>
+<p>它还有一堆重载方法。都是看的集合内元素的类型，进而去确定与之匹配的重载方法。</p>
+<h3 id="Average-方法"><a href="#Average-方法" class="headerlink" title="Average 方法"></a><code>Average</code> 方法</h3><p>这个用法和求最大最小值没有差别。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> result = selection.Average();</span><br></pre></td></tr></table></figure>
+<p>当然，请注意，这个返回值一定是 <code>double</code> 类型的。虽然 C# 提供了 <code>decimal</code> 类型，会更加精确，但 LINQ 里的求平均值用的是 <code>double</code>。</p>
+<p>另外，它也有一堆重载方法。也是和上面的思路一样。</p>
+<h3 id="Count-方法和-Any-无参方法"><a href="#Count-方法和-Any-无参方法" class="headerlink" title="Count 方法和 Any 无参方法"></a><code>Count</code> 方法和 <code>Any</code> 无参方法</h3><p>这个方法用于获取一个 <code>IEnumerable&lt;T&gt;</code> 集合里到底有多少个元素。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> count = selection.Count();</span><br></pre></td></tr></table></figure>
+<p>注意，由于 LINQ 的实现用的是扩展方法，所以 <code>Count</code> 在这里是一个方法名，而不是属性，所以必须要加上这一对小括号。另外，如果你需要使用这个数值来判断一个集合是否有元素的话，一般可以写成</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Count() != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>不过，我建议你使用 <code>Any</code> 方法（无参的这个重载），来判断集合是否有元素。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Any();</span><br></pre></td></tr></table></figure>
+<h3 id="存在量词-Any-函数和全称量词-All函数"><a href="#存在量词-Any-函数和全称量词-All函数" class="headerlink" title="存在量词 Any 函数和全称量词 All函数"></a>存在量词 <code>Any</code> 函数和全称量词 <code>All</code>函数</h3><p>接着是两个比较常用的聚合函数，它们用于判断集合里是否有元素满足指定条件，或者是全部元素都满足指定条件。</p>
+<p>举个例子。我们要查询集合里是否所有元素都小于 7，它的写法是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> allLessThanEight = selection.All(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
+<p>而如果查找集合里是否存在任意一个元素，它的数值小于 8，那么写作</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> anyValueLessThanEight = selection.Any(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意不要把 Lambda 运算符 <code>=&gt;</code> 和小于等于符号 <code>&lt;=</code> 以及大于等于符号 <code>&gt;=</code> 看混了。</p>
+</blockquote>
+<p>刚才也说过，<code>Any</code> 的无参重载表示的是这个集合是否包含元素。所以这里就不提及了。</p>
+<h3 id="Concat-函数"><a href="#Concat-函数" class="headerlink" title="Concat 函数"></a><code>Concat</code> 函数</h3><p>这个函数用于拼接两个元素类型一致的 <code>IEnumerable&lt;T&gt;</code> 集合。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; l1 = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span> &#125;;</span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; l2 = <span class="keyword">new</span> Stack&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Concat`.</span></span><br><span class="line"><span class="keyword">var</span> result = l1.Concat(l2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use the result.</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> v <span class="keyword">in</span> result)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>需要注意的是，两个集合即使类型不是一致的，但如果都实现了 <code>IEnumerable&lt;T&gt;</code> 接口的话，那么第 1、2 行给出的写法就一定奏效（隐式转换），然后调用 <code>Concat</code> 方法一定是可以的。但是，迭代器将会取决于具体类型的实现。比如例子给出的实现里，第二个则用的是一个栈（先进后出集合），所以最终拼接并遍历出来的结果顺序必然是 3、8、1、6、5、0、9、2、7、4，即后五个新加入的元素的顺序应倒过来。</p>
+</blockquote>
+<h3 id="Cast-函数"><a href="#Cast-函数" class="headerlink" title="Cast 函数"></a><code>Cast</code> 函数</h3><p>如果我们有一个 <code>IEnumerable</code> 集合，知道它的元素的类型，却发现我们无法使用 LINQ 函数，怎么办？我们可以调用该方法将其转换为泛型集合 <code>IEnumerable&lt;T&gt;</code> 对象。例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable helloStr = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"Hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Cast`.</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">string</span>&gt; result = helloStr.Cast&lt;<span class="keyword">string</span>&gt;();</span><br></pre></td></tr></table></figure>
+<p>注意，为这个方法添加泛型参数，来表示这个集合需要转换为这个类型。当然，如果你尝试把它转换为其它类型，那么只会出现报错，提示转换失败；而且，<code>IEnumerable</code> 接口在迭代的时候，每一个元素都是 <code>object</code> 类型。如果内部存放的是值类型的话，将会产生拆箱操作。</p>
+<h3 id="Distinct-函数"><a href="#Distinct-函数" class="headerlink" title="Distinct 函数"></a><code>Distinct</code> 函数</h3><p>这个函数类似于 SQL 语句里的 <code>distinct</code> 关键字，它用来筛选集合里的重复数据。重复的项将会只保留一个，但前提是，这个集合的元素类型必须是可以比较相等操作的（即要么它本身实现了 <code>IEquatable&lt;T&gt;</code> 或 <code>IEquatable</code> 接口，要么就手动规定比较规则，即使用 <code>IEqualityComparer&lt;T&gt;</code> 或 <code>IEqualityComparer</code> 接口）。</p>
+<p>例如，我们要对一个集合去重，那么写法如下。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call the function `Distinct`.</span></span><br><span class="line"><span class="comment">// `result` will include only three values: 3, 2 and 1.</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; result = values.Distinct();</span><br></pre></td></tr></table></figure>
+<h3 id="Range-函数（静态函数）"><a href="#Range-函数（静态函数）" class="headerlink" title="Range 函数（静态函数）"></a><code>Range</code> 函数（静态函数）</h3><p>这个函数用于生成一个 <code>IEnumerable&lt;int&gt;</code> 集合，且集合从指定数值增大，一次一个单位。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = Enumerable.Range(<span class="number">0</span>, <span class="number">9</span>);</span><br></pre></td></tr></table></figure>
+<p>这样将会获取 0 到 8，一共 9 个元素。第一个参数表示起始数值，第二个参数表示一共要取出多少个元素。</p>
+<p>注意，这个函数是静态函数，所以调用的时候，请使用 <code>Enumerable.Range</code> 的方式调用。</p>
+<h3 id="Repeat-函数（静态函数）"><a href="#Repeat-函数（静态函数）" class="headerlink" title="Repeat 函数（静态函数）"></a><code>Repeat</code> 函数（静态函数）</h3><p><code>Repeat</code> 函数和 <code>Range</code> 不同，它虽然也是静态函数，但生成的集合并不是按序增大的，而是重复的。比如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">string</span>&gt; strings = Enumerable.Repeat(<span class="string">"I like programming."</span>, <span class="number">15</span>);</span><br></pre></td></tr></table></figure>
+<p>这样将会生成一个拥有 15 个元素的、且元素全都是 <code>I like programming</code> 字符串的字符串列表。</p>
+<h3 id="Take-和-Skip-函数"><a href="#Take-和-Skip-函数" class="headerlink" title="Take 和 Skip 函数"></a><code>Take</code> 和 <code>Skip</code> 函数</h3><p><code>Take</code> 函数用于获取集合的前多少个元素（类似于 SQL 的 <code>top</code> 关键字），而 <code>Skip</code> 函数则用于跳过指定个数的元素。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span> &#125;;</span><br><span class="line"></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; r1 = values.Take(<span class="number">3</span>); <span class="comment">// 3, 2, 1</span></span><br><span class="line">IEnumerable&lt;<span class="keyword">int</span>&gt; r2 = values.Skip(<span class="number">3</span>).Take(<span class="number">2</span>); <span class="comment">// 1, 2</span></span><br></pre></td></tr></table></figure>
+<p>需要注意的是，<code>Skip</code> 函数返回值依然是 <code>IEnumerable&lt;int&gt;</code> 类型，这样做的好处是可以继续使用成员访问运算符向下继续串联代码，而使用它所得到的集合，一定是从跳过了指定个数的元素后，作为第一项开始的新集合 <code>IEnumerable&lt;int&gt;</code>。换句话说，<code>values.Skip(3)</code> 将会返回的是 1、2、2、2、3、3、1、2、2 序列。</p>
+<h3 id="ToArray-和-ToList-函数"><a href="#ToArray-和-ToList-函数" class="headerlink" title="ToArray 和 ToList 函数"></a><code>ToArray</code> 和 <code>ToList</code> 函数</h3><p>这两个函数用于将集合转换为数组 <code>T[]</code> 和列表集合 <code>List&lt;T&gt;</code>。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> Queue&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span>[] r1 = values.ToArray();</span><br><span class="line">List&lt;<span class="keyword">string</span>&gt; r2 = values.ToList();</span><br></pre></td></tr></table></figure>
+<p>当然，LINQ 还提供了 <code>ToDictionary</code> 和 <code>ToHashSet</code> 函数，用于转字典和哈希表对象。这种转换就不在这里提及了，因为用得比较少，而且学习起来不太难。</p>
+<p>还有一个 <code>ToLookUp</code> 方法，用于生成仅用于 LINQ 的类似于字典的分组表集合，这种集合专门用来存放分组数据，表示一对多的映射关系。</p>
+<h3 id="First、FirstOrDefault、Single-和-SingleOrDefault-函数"><a href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数" class="headerlink" title="First、FirstOrDefault、Single 和 SingleOrDefault 函数"></a><code>First</code>、<code>FirstOrDefault</code>、<code>Single</code> 和 <code>SingleOrDefault</code> 函数</h3><p><code>First</code> 方法有两个重载。一个是无参的，表示取出集合的第一个元素；第二个是有一个 Lambda 表达式参数的，表示获取满足指定条件的第一个元素。但是，这两个方法都有一个问题。当元素全部不满足要求的时候，运行将会抛出 <code>InvalidOperationException</code> 异常。</p>
+<p>显然，这样做是容易出错的，于是我们提供了新方法：<code>FirstOrDefault</code>，它的操作和上一个一样，但当找不到元素的时候的行为不同。<code>FirstOrDefault</code> 方法在找不到满足要求的元素的时候，将会返回和元素的类型完全一样的这个类型的默认数值。比如一个集合是 <code>int</code> 类型的元素构成的，那么当找不到元素时，将会返回 <code>default(int)</code>，即 0。</p>
+<p><code>Single</code> 和 <code>SingleOrDefault</code> 方法的行为则不同。它们除了计算整个集合满足要求的元素以外，还要要求整个集合只能有一个元素满足要求。<code>Single</code> 方法调用时，如果集合有超过一个元素满足该要求，则会直接抛出异常，而 <code>SingleOrDefault</code> 方法被调用时，如何有集合超过一个元素满足要求时，则会返回和集合元素类型一致的类型的默认值 <code>default(T)</code>。</p>
+<h3 id="Last-和-LastOrDefault-函数"><a href="#Last-和-LastOrDefault-函数" class="headerlink" title="Last 和 LastOrDefault 函数"></a><code>Last</code> 和 <code>LastOrDefault</code> 函数</h3><p>当然了，这两个函数和上述用法基本一样，只是用来获取集合最后一个满足要求的元素。当然，找不到的话，<code>Last</code> 会产生 <code>InvalidOperationException</code>，而 <code>LastOrDefault</code> 将会返回默认数值 <code>default(T)</code>。</p>
+<h3 id="ElementAt-函数"><a href="#ElementAt-函数" class="headerlink" title="ElementAt 函数"></a><code>ElementAt</code> 函数</h3><p>这个函数你完全可以理解为 <code>IEnumerable&lt;T&gt;</code> 集合类型的索引器。这里就不举例子了。</p>
+<h3 id="Aggregate-函数"><a href="#Aggregate-函数" class="headerlink" title="Aggregate 函数"></a><code>Aggregate</code> 函数</h3><p>最后讲一个比较常见的聚合函数。把 aggregate 这个单词直译过来，实际上就是“聚合”的意思。真·聚合函数！</p>
+<p>这个函数将每一次集合遍历过程的时候，通过指定的公式进行计算和处理，并得到最终的结果的行为就是这个函数的使用方式了。它有三个重载。</p>
+<p>第一个重载是非常简单的，除了扩展方法的 <code>IEnumerable&lt;T&gt;</code> 集合自己，只需要给出一个额外参数，这个参数是一个 Lambda 表达式，表示一个聚合公式，把所有元素按照这个公式计算的结果聚合起来。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> values = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; <span class="string">"hello"</span>, <span class="string">","</span>, <span class="string">" "</span>, <span class="string">"world"</span>, <span class="string">"!"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> result = values.Aggregate((s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>);</span><br><span class="line">Console.WriteLine(result);</span><br></pre></td></tr></table></figure>
+<p>可以看懂这个聚合函数的意义吗？这个函数将字符串序列按照顺序依次拼接，得到字符串结果。Lambda 表达式里的 <code>s</code> 表示临时变量，用于积累元素处理期间的数据的，而这个 <code>v</code> 就是集合在每一次遍历过程之中的元素。我们把用来积累的变量 <code>s</code> 往后添加 <code>v</code>，就凑成了字符串拼接后的新字符串，然后再往后添加下一个字符串，直到集合遍历完成。当然最终这个结果就是一个完整的字符串了。</p>
+<p>第二个重载需要加入一个初始值 <code>seed</code> 参数。即可以改写一下上面的写法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = values.Aggregate(<span class="string">"Sunnie, "</span>, (s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>);</span><br></pre></td></tr></table></figure>
+<p>第三个重载，则在最后增加一个参数，用于指定聚合的处理情况。如下代码所示。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = values.Aggregate(<span class="string">"Sunnie, "</span>, (s, v) =&gt; <span class="string">$"<span class="subst">&#123;s&#125;</span><span class="subst">&#123;v&#125;</span>"</span>, v =&gt; v.ToUpper());</span><br></pre></td></tr></table></figure>
+<p>这个聚合操作，将会把所有聚合的元素全部先转为大写，然后输出。自然结果就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUNNIE, HELLO, WORLD!</span><br></pre></td></tr></table></figure>
+<p>是不是很神奇呢？</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/SQL/">SQL</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/14/linq-06-phase-exercises/" title="LINQ 教程（6）：阶段性练习" itemprop="url">LINQ 教程（6）：阶段性练习</a>
     
   </h1>
@@ -794,90 +924,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/10/csharp-concurrent-examples-01-elementary-async/" title="C# 并发编程实例系列（1）：异步编程基础" itemprop="url">C# 并发编程实例系列（1）：异步编程基础</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-10T13:30:29.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>从现在开始，我们将使用 C# 语言为大家介绍并发编程期间遇到了大量可能会遇到的经典实例。本部分内容完全参照自《C# 并发编程经典实例》（<em>Concurrency in C# Cookbook</em>）。</p>
-<p>本部分介绍异步操作之中使用 <code>async</code> 和 <code>await</code> 的基础知识。本部分只会涉及本质上适合异步的操作，例如 HTTP 请求、数据库指令、Web 服务调用等。</p>
-<blockquote>
-<p>当然，有些代码会尝试用 C# 8 的描述模式进行描述，比如变量模式的 <code>using</code> 声明、可空引用类型等，原本的书里是用的较老的语法，所以在此会被重写翻译为较新的代码。</p>
-</blockquote>
-<h3 id="暂停一段时间"><a href="#暂停一段时间" class="headerlink" title="暂停一段时间"></a>暂停一段时间</h3><h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>需要让程序以异步方式等待一段时间。这在进行单元测试或者实现重试延迟时非常有用。本解决方案也能用于实现简单的超时。</p>
-<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>Task</code> 类里有一个返回 <code>Task</code> 对象的静态函数 <code>Task.Delay</code>，这个 <code>Task</code> 对象会在指定的时间后完成。</p>
-<p>下面的这个例子用于单元测试，定义了一个异步完成的任务。在模拟一个异步操作时，至少要测试“同步成功”、“异步成功”和“异步失败”三种情况，这一点很重要。下面的例子返回一个 <code>Task</code> 对象，用于“异步成功”测试。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;T&gt; DelayResult&lt;T&gt;(T result, TimeSpan delay)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Delay(delay);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>下一个例子实现了一个简单的指数退避。指数退避是一种重试策略，重试的延迟时间会逐次增加。在访问 Web 服务时，最好的方式就是采用指数退避，它可以防止服务器呗太多的重试阻塞。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt; DownloadStringWithRetries(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> nextDelay = TimeSpan.FromSeconds(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i != <span class="number">3</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> &#123; &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">await</span> Task.Delay(nextDelay);</span><br><span class="line">        nextDelay += nextDelay;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> client.GetStriingAsync(uri);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>最后的例子用 <code>Task.Delay</code> 实现一个简单的超时功能。本例子中代码的目的是，如果服务在 3 秒内没有相应，就返回 <code>null</code>。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>?&gt;? DownloadStringWithTimeout(<span class="keyword">string</span> uri)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> downloadTask = client.GetStringAsync(uri);</span><br><span class="line">    <span class="keyword">var</span> timeoutTask = Task.Delay(<span class="number">3000</span>); <span class="comment">// Delay 3s.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> Task.WhenAny(downloadTask, timeoutTask) == timeoutTask</span><br><span class="line">        ? <span class="literal">null</span></span><br><span class="line">        : <span class="keyword">await</span> downloadTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h4><p><code>Task.Delay</code> 适合用于对异步代码进行单元测试或实现重试逻辑。如果要实现超时功能的话，最好还是使用取消令牌对象（<code>CancellationToken</code>），这一点将在后续内容说明。</p>
-<p>另外，前文用到的 <code>Task.WhenAny</code> 方法可以传入一系列 <code>Task</code> 对象，当其中任意一个完成，就会返回一个 <code>Task</code>，表示该完成的任务对象。</p>
-<h3 id="返回完成的任务"><a href="#返回完成的任务" class="headerlink" title="返回完成的任务"></a>返回完成的任务</h3><h4 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h4><p>如何实现一个具有异步签名的同步方法。如果从异步接口或基类继承代码，但希望用同步的方法来实现它，就会出现这种情况。对异步代码做单元测试，以及用简单的生成方法存根（stub）或者模拟对象（mock）来产生异步接口，这两种情况下都可使用这种技术。</p>
-<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>可以使用 <code>Task.FromResult</code> 方法创建并返回一个新的 <code>Task&lt;T&gt;</code> 对象，这个 <code>Task</code> 对象是已经完成的，并由具体的值。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">MySyncImplementation</span> : <span class="title">IMyAsyncInterface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span> =&gt; Task.FromResult(<span class="number">13</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>如果你使用了 <code>Microsoft.Bcl.Async</code>，那么 <code>FromResult</code> 方法就在 <code>TaskEx</code> 类之中。</p>
-</blockquote>
-<h4 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h4><p>在用同步代码实现异步接口的时候，要避免使用任何形式的阻塞操作。在异步方法之中进行阻塞操作，然后返回一个完成的 <code>Task</code> 对象，这种方法并不可取。作为一个反例，我们来看一下 .NET Framework 4.5 之中 <code>Console</code> 类的文本读取器。<code>Console.In.ReadLineAsync</code> 一定会阻塞调用它的线程，直到它读取完一行文字，然后回返回一个已经完成的 <code>Task</code> 对象。这种实现并不直观，很多开发人员也觉得很奇怪。一旦异步方法阻塞，调用它的线程就无法启动其它任务，这会干扰程序的并发性，甚至可能产生死锁。</p>
-<p><code>Task.FromResult</code> 只能提供结果正确的同步 <code>Task</code> 对象。如果要让返回的 <code>Task</code> 对象有一个其它类型的结果（例如以 <code>NotImplementedException</code> 结束的 <code>Task</code> 对象），就得自行创建使用 <code>TaskCompletionSource</code> 的辅助方法。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Task&lt;T&gt; NotImplementedAsync&lt;T&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> tcs = <span class="keyword">new</span> TaskCompletionSource&lt;T&gt;();</span><br><span class="line">    tcs.SetException(<span class="keyword">new</span> NotImplementedException());</span><br><span class="line">    <span class="keyword">return</span> tcs.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从概念上讲，<code>Task.FromResult</code> 只不过是 <code>TaskCompletionSource</code> 的一个简化版本，它与上面的代码非常类似。</p>
-<p>如果用 <code>Task.FromResult</code> 反复调用同一个参数，则可考虑用一个实际的 <code>task</code> 变量。例如，可以一次性建立一个结果为 0 的 <code>Task&lt;int&gt;</code> 对象，在以后的调用之中就不需要创建额外的实例了，这样可减少垃圾回收的次数。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Task&lt;<span class="keyword">int</span>&gt; zeroTask = Task.FromResult(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">static</span> Task&lt;<span class="keyword">int</span>&gt; <span class="title">GetValueAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zeroTask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%B9%B6%E5%8F%91/">C♯.并发</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/并发/">并发</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/3/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/">下一页 ↓</a>
@@ -909,7 +955,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>15</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>16</sup></a></li>
 			
 		
 			
