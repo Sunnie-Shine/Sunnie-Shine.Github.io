@@ -1,0 +1,732 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C 语言语法系列（16）：指针和字符 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="前文我们提到了近乎所有的指针的用法，不过指针和数组用起来确实挺难的，今天要说到的知识点是字符串、字符数组和指针三者的关系。 什么是字符？在之前，我们对字符提到的内容很少，所以我们这里统一为大家介绍它们。 字符是以一个单引号包含起来，以区分数值字面量的存在。比如下面的这个写法： 1char c = &amp;apos;1&amp;apos;; 这样就表示 c 变量是一个字符类型的变量，存储的元素是一个字符 1。这个字符 1 和普通的">
+<meta name="keywords" content="C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言语法系列（16）：指针和字符">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;24&#x2F;clang-16-pointer-and-character&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="前文我们提到了近乎所有的指针的用法，不过指针和数组用起来确实挺难的，今天要说到的知识点是字符串、字符数组和指针三者的关系。 什么是字符？在之前，我们对字符提到的内容很少，所以我们这里统一为大家介绍它们。 字符是以一个单引号包含起来，以区分数值字面量的存在。比如下面的这个写法： 1char c = &amp;apos;1&amp;apos;; 这样就表示 c 变量是一个字符类型的变量，存储的元素是一个字符 1。这个字符 1 和普通的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-24T07:29:58.839Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/24/clang-16-pointer-and-character/" title="C 语言语法系列（16）：指针和字符" itemprop="url">C 语言语法系列（16）：指针和字符</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-24T06:11:13.000Z" itemprop="datePublished"> 发表于 2019-11-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是字符？"><span class="toc-number">1.</span> <span class="toc-text">什么是字符？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用字符和数字进行输出"><span class="toc-number">2.</span> <span class="toc-text">使用字符和数字进行输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串"><span class="toc-number">3.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#字面量字符串"><span class="toc-number">3.1.</span> <span class="toc-text">字面量字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字符数组"><span class="toc-number">3.2.</span> <span class="toc-text">字符数组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串的使用"><span class="toc-number">4.</span> <span class="toc-text">字符串的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见字符串函数"><span class="toc-number">5.</span> <span class="toc-text">常见字符串函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#求字符串长度"><span class="toc-number">5.1.</span> <span class="toc-text">求字符串长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取出字符串的一部分字符"><span class="toc-number">5.2.</span> <span class="toc-text">取出字符串的一部分字符</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>前文我们提到了近乎所有的指针的用法，不过指针和数组用起来确实挺难的，今天要说到的知识点是字符串、字符数组和指针三者的关系。</p>
+<h2 id="什么是字符？"><a href="#什么是字符？" class="headerlink" title="什么是字符？"></a>什么是字符？</h2><p>在之前，我们对字符提到的内容很少，所以我们这里统一为大家介绍它们。</p>
+<p>字符是以一个单引号包含起来，以区分数值字面量的存在。比如下面的这个写法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> c = <span class="string">'1'</span>;</span><br></pre></td></tr></table></figure>
+<p>这样就表示 <code>c</code> 变量是一个字符类型的变量，存储的元素是一个字符 <code>1</code>。这个字符 <code>1</code> 和普通的 1 不同，字符 <code>1</code> 一般用于输出才用到，而数字 1 则可以操作和计算。</p>
+<p>在 C 语言里，用单引号把这些符号引起来可以和数字作出区分。但为了灵活使用，字符有时候也可以和数字进行转换，转换关系是通过一个叫做 ASCII 码表来搞定的。比如，在这个表里规定字符 <code>A</code> 的对应整数是 65，<code>a</code> 是 97，而字符 <code>1</code> 对应数值则是 49。</p>
+<p>这样定义，来区分字符是有意义的。在计算机处理这些字符的时候，为了可以明确表达数字的行为是计算，而字符的行为是输出，所以 C 语言发明了类型这个体系，来区分字符和整数，所以字符 <code>1</code> 和数字 1 具有截然不同的用法，所以写法和声明（定义）语句上的赋值也是有不同的地方的。</p>
+<p>如果你书写的方式是这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="string">'1'</span>;</span><br></pre></td></tr></table></figure>
+<p>这样只能表达 <code>i</code> 变量的数值是 49，反之，如果你书写成</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> c = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>这样只能表达 <code>c</code> 变量表示的字符是 ASCII 码表里编号为 1 的那个字符。</p>
+<h2 id="使用字符和数字进行输出"><a href="#使用字符和数字进行输出" class="headerlink" title="使用字符和数字进行输出"></a>使用字符和数字进行输出</h2><p>在前文里，我们提到过数字的输出模式。如果是整数，输出则使用 <code>%d</code> 的格式化字符串，它会自动帮我们改为字符串的形式书写出来：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, <span class="number">012</span>);</span><br></pre></td></tr></table></figure>
+<p>比如上面的这个写法，显然第一个 0 是没有意义的，但用整数输出的时候，你也就看不到这个 0 了，而只有 <code>12</code> 这个字符串。这就是数字的输出模式。</p>
+<p>字符的输出使用的是 <code>%c</code> 这个格式化字符串。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%c"</span>, <span class="string">'1'</span>);</span><br></pre></td></tr></table></figure>
+<p>这样你就可以在输出里得到一个 <code>1</code>。不过，如果你把这个单引号去掉了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%c"</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p>它就好比是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> c = <span class="number">1</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%c"</span>, c);</span><br></pre></td></tr></table></figure>
+<p>所以，输出的内容其实是 ASCII 码表里编号为 1 的那个字符，而并不是 <code>1</code>，因为 <code>1</code> 在编号第 49 号的地方，所以如果想输出 49，你还必须得写成</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%c"</span>, <span class="number">49</span>);</span><br></pre></td></tr></table></figure>
+<p>这样才可以得到一个字符 <code>1</code>。</p>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p><strong>字符串</strong>（也经常被简称为<strong>串</strong>，string），是字符的一组序列，即由多个字符构成的这个序列，称为字符串。它的表现形式有两种，一种是字面量字符串，一种是字符数组。我们都来说一下，以及它们的使用。</p>
+<h3 id="字面量字符串"><a href="#字面量字符串" class="headerlink" title="字面量字符串"></a>字面量字符串</h3><p>字符可以用字面量的形式呈现，也可以用数字呈现，这表现出字符的两种形态。字符串也是这样。第一种呈现形式是通过双引号的形式出现的。比如 <code>&quot;Hello, world!\n&quot;</code> 就是一个合格的字面量字符串写法，用双引号把所有原封不动的字符序列包括起来。</p>
+<p>不过，字面量字符串如何赋值和输出呢？赋值的话，它的类型应该是什么呢？</p>
+<p>之前说过，字符串是一系列字符，所以它肯定不是单纯的 <code>char</code> 类型了。实际上，它可以使用字符指针来表示，也可以用字符数组表示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *charPointer = <span class="string">"Hello, world!"</span>;</span><br><span class="line"><span class="keyword">char</span> charArray[] = <span class="string">"Hello, world!"</span>;</span><br></pre></td></tr></table></figure>
+<p>C 语言允许第一种写法，让 <code>char</code> 类型的指针（干脆就叫 <code>char *</code> 类型）来“接收”这个字符串，这样的话，这个指针将会指向这个字符串的首地址（和数组一致，指向数组的第 0 号元素，即 <code>charPointer</code> 本身就等价于 <code>&amp;charPointer[0]</code>）。这种表示方式的优势是，不用去数和关心字符串到底有多长。</p>
+<p>第二种写法也是允许的，C 语言会自动把这个字符串拆解为一个字符数组，然后挨个存放进去，最后得到这个数组的首地址。所以第二种写法下，<code>charArray</code> 变量名依旧等价于数组的首地址。</p>
+<p>不过，需要你额外注意一点。它和普通元素类型的数组不同，字符串会被处理成字符数组的形式存储，然后返回的首地址可以用字符指针变量名或字符数组变量名接收。但是，字符串会自动为末尾添加一个结束标记字符 <code>\0</code>。这个字符是计算机内表达这个字符的写法，输出并非是一个反斜杠和一个数字 0，而是啥都没有。</p>
+<p><code>\0</code> 这个字符仅用于标记字符串的结尾用，没有其它的功能。而如果你非要把它当整数形式表示的话，它在 ASCII 码表里对应的整数也就是 0。所以 0 对应 <code>\0</code> 这个字符。</p>
+<p>所以，这个知识点告诉我们，<code>Hello, world!</code> 这个字符串整体长度是 14，除了字面量给定的 10 个英文字母、2 个符号、一个空格以外，还默认在末尾带有一个字符 <code>\0</code> 标记，所以这个字符串长度是 14，并不是 13；而在第二种赋值格式里，这个中括号里就应该是 14，而不是 13。</p>
+<p>输出字面量字符串的方式可以用 <code>%s</code> 的方式输出：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *s = <span class="string">"Hello, world!\n"</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%s"</span>, s);</span><br></pre></td></tr></table></figure>
+<p>这样就可以完整输出 <code>s</code> 这个字符串的所有内容。另外，这样书写每次都必须写上 <code>%s</code>，所以你可以改写为这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *s = <span class="string">"Hello, world!\n"</span>;</span><br><span class="line"><span class="built_in">puts</span>(s);</span><br></pre></td></tr></table></figure>
+<p>即直接使用 <code>puts</code> 函数来输出一个字符串。</p>
+<h3 id="字符数组"><a href="#字符数组" class="headerlink" title="字符数组"></a>字符数组</h3><p>显然，字面量字符串会被处理为字符数组，所以其实还可以书写为字符数组。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> s[] =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">'H'</span>, <span class="string">'e'</span>, <span class="string">'l'</span>, <span class="string">'l'</span>, <span class="string">'o'</span>, <span class="string">','</span>, <span class="string">' '</span>,</span><br><span class="line">    <span class="string">'w'</span>, <span class="string">'o'</span>, <span class="string">'r'</span>, <span class="string">'l'</span>, <span class="string">'d'</span>, <span class="string">'!'</span>, <span class="string">'\0'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>但请注意，如果写成字符数组，系统就不会自己给你补充 <code>\0</code> 字符了。所以这种写法必须自己补充一个 <code>\0</code> 符号在字符数组的末尾。</p>
+<p>当然，你把 <code>\0</code> 写在字符数组的中间某处也可以，不过这个字符串就会从这个地方截断：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> s[] =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">'H'</span>, <span class="string">'e'</span>, <span class="string">'l'</span>, <span class="string">'l'</span>, <span class="string">'o'</span>, <span class="string">','</span>, <span class="string">'\0'</span>,</span><br><span class="line">    <span class="string">'w'</span>, <span class="string">'o'</span>, <span class="string">'r'</span>, <span class="string">'l'</span>, <span class="string">'d'</span>, <span class="string">'!'</span>, <span class="string">'\0'</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样的话，这个字符数组长度就是 7 而不是原本的 13 或者 14 了。也就是说，这个 <code>s</code> 接收到的完整的字符数组序列到第一个 <code>\0</code> 就结束了，后面的内容都不在 <code>s</code> 里。不过在内存里，这些字符确实是挨着存储的，不过你必须通过语法的 bug 越界访问数组，才看得到它们了。</p>
+<p>同样地，字符数组也具有退化赋值的特性，所以我们依旧可以使用这一点，把字符数组赋值给一个指针。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *s =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">'H'</span>, <span class="string">'e'</span>, <span class="string">'l'</span>, <span class="string">'l'</span>, <span class="string">'o'</span>, <span class="string">','</span>, <span class="string">' '</span>,</span><br><span class="line">    <span class="string">'w'</span>, <span class="string">'o'</span>, <span class="string">'r'</span>, <span class="string">'l'</span>, <span class="string">'d'</span>, <span class="string">'!'</span>, <span class="string">'\0'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="字符串的使用"><a href="#字符串的使用" class="headerlink" title="字符串的使用"></a>字符串的使用</h2><p>讲完了两种字符串的书写格式后，我们来说明一下字符串的基本使用。</p>
+<p>考虑如下实例。假设我们在写一个代码，输出一个数字是否是质数，代码大部分已经写好：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> digit = <span class="number">17</span>, n = <span class="number">2</span>, remainder;</span><br><span class="line"><span class="keyword">bool</span> isPrime = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">while</span> (n &lt;= digit - <span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    remainder = digit % n;</span><br><span class="line">    <span class="keyword">if</span> (remainder == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        isPrime = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    n++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (isPrime)</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d is a prime.\n"</span>, digit);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d is not a prime.\n"</span>, digit);</span><br></pre></td></tr></table></figure>
+<p>这就是前面的例子，只是我为了逻辑清晰，把 <code>isPrime</code> 从 <code>int</code> 改为了 <code>bool</code> 类型（只是这么做就只能让代码运行在允许 C99 标准的地方了）。</p>
+<p>现在，考虑输出语句。可以从输出语句里看到，它们大部分输出信息都是相同的，只是多了一个 <code>not</code>。现在我们可以考虑把代码写成一个三目运算符的方式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%d is %sa prime.\n"</span>, digit, isPrime ? <span class="string">""</span> : <span class="string">"not "</span>);</span><br></pre></td></tr></table></figure>
+<p>注意输出语句里有一个 <code>%sa</code>，其实它是 <code>%s</code> 和一个字符 <code>a</code> 而已。它想要表示的是，某某数字，是（或不是）一个质数，这样的输出格式。当 <code>isPrime</code> 为 <code>true</code> 的时候，我们就不需要 <code>not</code> 这个单词的修饰，所以这个输出一个空的字符串（只有一个 <code>\0</code>，反正里面其它东西都没有，到时候计算机会帮我们作出处理）；否则加一个 <code>not</code> 修饰符来表示它”不是“质数。</p>
+<h2 id="常见字符串函数"><a href="#常见字符串函数" class="headerlink" title="常见字符串函数"></a>常见字符串函数</h2><p>我们经常要使用到一些字符串的处理模式，比如提取字符串里其中一部分字符、求长度等等。下面就来看看它们。</p>
+<h3 id="求字符串长度"><a href="#求字符串长度" class="headerlink" title="求字符串长度"></a>求字符串长度</h3><p>我们需要实现一个函数 <code>strlen</code>，获取一个字符串的长度。这个算法比较容易实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">strlen</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *<span class="keyword">const</span> str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">char</span> *cur = &amp;str[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">while</span> (*cur != <span class="string">'\0'</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        cur++; <span class="comment">// Move to the next character.</span></span><br><span class="line">        count++;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以从代码里看到，这就是一个基本的计算方式。首先我们定义一个结果 <code>count</code> 变量来表示一共多少字符，然后一个指针变量指向它的第一个元素，这样一会儿我们就可以使用 <code>++</code> 将变量移动指向，让其指向下一个字符信息。然后最终当 <code>cur</code> 指向 <code>\0</code> 的时候，表示字符统计完毕，跳出 <code>while</code> 循环，返回结果 <code>count</code> 即可。</p>
+<blockquote>
+<p>另外，参数 <code>str</code> 在过程里都不用修改变量的本身指向和指向的内容，所以我们可以对 <code>str</code> 使用 <code>const</code> 修饰。</p>
+</blockquote>
+<p>这个算法可以改写为这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">strlen</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *<span class="keyword">const</span> str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">char</span> cur;</span><br><span class="line">    <span class="keyword">for</span> (count = <span class="number">0</span>, cur = str; *cur; cur++, count++);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 <code>for</code> 循环就会简单不少。另外，<code>cur</code> 指针如果不是指向 <code>\0</code> 字符就一直遍历，这个条件是 <code>*cur != &#39;\0&#39;</code>，而前文说过 <code>\0</code> 的 ASCII 码表编码数值是 0，所以就相当于 <code>*cur != 0</code>，而这种写法在条件判断一节的时候说过，它等价于不写 <code>!= 0</code> 部分，所以最终可以直接写成 <code>*cur</code> 来表示 <code>*cur != &#39;\0&#39;</code>。另外，<code>str</code> 就等价于 <code>&amp;str[0]</code>，所以初始赋值也可以不要地址符号和索引器部分 <code>[0]</code>。</p>
+<h3 id="取出字符串的一部分字符"><a href="#取出字符串的一部分字符" class="headerlink" title="取出字符串的一部分字符"></a>取出字符串的一部分字符</h3><p>尝试写出一个 <code>strstr</code> 函数，来获取某个字符串里指定起始点和长度的其中一部分字符。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">strstr</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *str, <span class="keyword">const</span> <span class="keyword">int</span> startIndex, <span class="keyword">const</span> <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (length &lt; <span class="number">0</span> || length &gt;= <span class="built_in">strlen</span>(str)</span><br><span class="line">        || startIndex &lt; <span class="number">0</span> || startIndex &gt;= <span class="built_in">strlen</span>(str))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// The argument is invalid.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">char</span> *ptr = &amp;str[startIndex];</span><br><span class="line">    <span class="keyword">int</span> last = length;</span><br><span class="line">    <span class="keyword">while</span> (last != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ptr++; <span class="comment">// Move to next.</span></span><br><span class="line">        last--;</span><br><span class="line">    &#125;</span><br><span class="line">    *ptr = <span class="string">'\0'</span>; <span class="comment">// Set the last character '\0'.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> &amp;str[startIndex];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先判断输入的所有参数是否都符合条件。如果取出的长度 <code>length</code> 比 0 还小，或者比字符串长度还大，是不满足要求的；同时，如果获取元素的起始索引 <code>startIndex</code> 比 0 小，或超过字符串长度，也依然是无效的。所以这个时候我们给用户输出一个空字符串，来表示错误（当然你也可以给它另外的东西，或者执行指定的某个行为来表示输入信息错误）。</p>
+<p>否则，我们尝试让 <code>ptr</code> 指向 <code>str[startIndex]</code> 处的元素，然后不断更新 <code>last</code> 和 <code>ptr</code> 的数值。当 <code>last</code> 减到 0 的时候就是获取结束的时候。</p>
+<p>最后得到结果后，我们把 <code>ptr</code> 指向的字符改写为 <code>\0</code> 表示从这里截断，表示这里是字符串的结束。最后返回 <code>str[startIndex]</code> 的地址就可以了。</p>
+<p>当然你也可以改写一下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">char</span> *<span class="keyword">const</span> <span class="title">strstr</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *str, <span class="keyword">const</span> <span class="keyword">int</span> startIndex, <span class="keyword">const</span> <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// To protect variable `len`.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">int</span> len = <span class="built_in">strlen</span>(str);</span><br><span class="line">        <span class="keyword">if</span> (length &lt; <span class="number">0</span> || length &gt;= len || startIndex &lt; <span class="number">0</span> || startIndex &gt;= len)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> *ptr;</span><br><span class="line">    <span class="keyword">int</span> last;</span><br><span class="line">    <span class="keyword">for</span> (ptr = str + startIndex, last = length; last; ptr++, last--);</span><br><span class="line">    *ptr = <span class="string">'\0'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> str + startIndex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，返回值也可以使用 <code>const</code> 修饰符来表示不可以修改。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/24/clang-16-pointer-and-character/" data-title="C 语言语法系列（16）：指针和字符 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/11/24/clang-17-pointer-and-function/"  title="C 语言语法系列（17）：指针和函数">
+ <strong>下一篇：</strong><br/> 
+ <span>C 语言语法系列（17）：指针和函数
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是字符？"><span class="toc-number">1.</span> <span class="toc-text">什么是字符？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用字符和数字进行输出"><span class="toc-number">2.</span> <span class="toc-text">使用字符和数字进行输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串"><span class="toc-number">3.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#字面量字符串"><span class="toc-number">3.1.</span> <span class="toc-text">字面量字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字符数组"><span class="toc-number">3.2.</span> <span class="toc-text">字符数组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串的使用"><span class="toc-number">4.</span> <span class="toc-text">字符串的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见字符串函数"><span class="toc-number">5.</span> <span class="toc-text">常见字符串函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#求字符串长度"><span class="toc-number">5.1.</span> <span class="toc-text">求字符串长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取出字符串的一部分字符"><span class="toc-number">5.2.</span> <span class="toc-text">取出字符串的一部分字符</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>25</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>18</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
