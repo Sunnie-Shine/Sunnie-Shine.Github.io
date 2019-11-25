@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="这是最为头疼的 C 语言专题，比起之前的内容来说，指针确实较难理解一些。更别说使用了。不过，看一下讲解，应该会比较清楚一些它的基本用途。 指针的定义指针（Pointer），就像是一个桌面上的“快捷方式”。你打开程序为了不去每一个盘找到对应的应用程序然后打开，就建立了一个桌面快捷方式，这样统一管理这些东西，会比较轻松一些。 我们可以将指针理解为一个变量的快捷方式。为了统一管理数据，所以建立起了这些指">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-23T04:32:57.155Z">
+<meta property="og:updated_time" content="2019-11-25T07:08:30.276Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的定义"><span class="toc-number">1.</span> <span class="toc-text">指针的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的赋值和使用"><span class="toc-number">2.</span> <span class="toc-text">指针的赋值和使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的用途"><span class="toc-number">3.</span> <span class="toc-text">指针的用途</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#引用参数（ref-参数）"><span class="toc-number">3.1.</span> <span class="toc-text">引用参数（ref 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#输出参数（out-参数）"><span class="toc-number">3.2.</span> <span class="toc-text">输出参数（out 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的用法吗？"><span class="toc-number">3.3.</span> <span class="toc-text">还有其它的用法吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参数修饰符"><span class="toc-number">4.</span> <span class="toc-text">参数修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#const-修饰符"><span class="toc-number">4.1.</span> <span class="toc-text">const 修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数值变量的修饰"><span class="toc-number">4.1.1.</span> <span class="toc-text">数值变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的修饰"><span class="toc-number">4.1.2.</span> <span class="toc-text">指针变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的全只读"><span class="toc-number">4.1.3.</span> <span class="toc-text">指针变量的全只读</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#const-的位置"><span class="toc-number">4.1.4.</span> <span class="toc-text">const 的位置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#restrict-修饰符"><span class="toc-number">4.2.</span> <span class="toc-text">restrict 修饰符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的吗？"><span class="toc-number">4.3.</span> <span class="toc-text">还有其它的吗？</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的定义"><span class="toc-number">1.</span> <span class="toc-text">指针的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的赋值和使用"><span class="toc-number">2.</span> <span class="toc-text">指针的赋值和使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的用途"><span class="toc-number">3.</span> <span class="toc-text">指针的用途</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#引用参数（ref-参数）"><span class="toc-number">3.1.</span> <span class="toc-text">引用参数（ref 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#输出参数（out-参数）"><span class="toc-number">3.2.</span> <span class="toc-text">输出参数（out 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的用法吗？"><span class="toc-number">3.3.</span> <span class="toc-text">还有其它的用法吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参数修饰符"><span class="toc-number">4.</span> <span class="toc-text">参数修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#const-修饰符"><span class="toc-number">4.1.</span> <span class="toc-text">const 修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数值变量的修饰"><span class="toc-number">4.1.1.</span> <span class="toc-text">数值变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的修饰"><span class="toc-number">4.1.2.</span> <span class="toc-text">指针变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的全只读"><span class="toc-number">4.1.3.</span> <span class="toc-text">指针变量的全只读</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#const-的位置"><span class="toc-number">4.1.4.</span> <span class="toc-text">const 的位置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#restrict-修饰符"><span class="toc-number">4.2.</span> <span class="toc-text">restrict 修饰符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的吗？"><span class="toc-number">4.3.</span> <span class="toc-text">还有其它的吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NULL-常量"><span class="toc-number">5.</span> <span class="toc-text">NULL 常量</span></a></li></ol>
 		
 		</div>
 		
@@ -194,6 +194,8 @@
 <p>这个关键字在 C99 标准后才可以用。</p>
 </blockquote>
 <h3 id="还有其它的吗？"><a href="#还有其它的吗？" class="headerlink" title="还有其它的吗？"></a>还有其它的吗？</h3><p>其实，还有 <code>static</code> 等等修饰符，但这里不作阐述，因为它们都超纲了。</p>
+<h2 id="NULL-常量"><a href="#NULL-常量" class="headerlink" title="NULL 常量"></a><code>NULL</code> 常量</h2><p>在 C 语言里甚至为我们规定了指针的默认值。之前学到的很多数据类型都具有自己的默认数值，比如 <code>int</code> 的默认数值是 0，而 <code>bool</code> 类型的默认数值是 <code>false</code>，字符的默认数值是 <code>\0</code>（讲解字符和指针一节的时候会说明这一点）。指针也具有默认数值。不过，因为指针都是一个地址信息，所以不论指针的指向元素类型，它们统一都有一个默认数值是 <code>NULL</code>。注意，这个默认数值是全部字母都大写的，而且它的意义是指向 0 号内存的地址数值。好比是把数值进行“数值变指针的强制转换”。</p>
+<p>而具体如何使用它，我们将在内存分配里才会讲到。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -365,7 +367,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的定义"><span class="toc-number">1.</span> <span class="toc-text">指针的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的赋值和使用"><span class="toc-number">2.</span> <span class="toc-text">指针的赋值和使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的用途"><span class="toc-number">3.</span> <span class="toc-text">指针的用途</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#引用参数（ref-参数）"><span class="toc-number">3.1.</span> <span class="toc-text">引用参数（ref 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#输出参数（out-参数）"><span class="toc-number">3.2.</span> <span class="toc-text">输出参数（out 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的用法吗？"><span class="toc-number">3.3.</span> <span class="toc-text">还有其它的用法吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参数修饰符"><span class="toc-number">4.</span> <span class="toc-text">参数修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#const-修饰符"><span class="toc-number">4.1.</span> <span class="toc-text">const 修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数值变量的修饰"><span class="toc-number">4.1.1.</span> <span class="toc-text">数值变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的修饰"><span class="toc-number">4.1.2.</span> <span class="toc-text">指针变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的全只读"><span class="toc-number">4.1.3.</span> <span class="toc-text">指针变量的全只读</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#const-的位置"><span class="toc-number">4.1.4.</span> <span class="toc-text">const 的位置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#restrict-修饰符"><span class="toc-number">4.2.</span> <span class="toc-text">restrict 修饰符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的吗？"><span class="toc-number">4.3.</span> <span class="toc-text">还有其它的吗？</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的定义"><span class="toc-number">1.</span> <span class="toc-text">指针的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的赋值和使用"><span class="toc-number">2.</span> <span class="toc-text">指针的赋值和使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针的用途"><span class="toc-number">3.</span> <span class="toc-text">指针的用途</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#引用参数（ref-参数）"><span class="toc-number">3.1.</span> <span class="toc-text">引用参数（ref 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#输出参数（out-参数）"><span class="toc-number">3.2.</span> <span class="toc-text">输出参数（out 参数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的用法吗？"><span class="toc-number">3.3.</span> <span class="toc-text">还有其它的用法吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参数修饰符"><span class="toc-number">4.</span> <span class="toc-text">参数修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#const-修饰符"><span class="toc-number">4.1.</span> <span class="toc-text">const 修饰符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数值变量的修饰"><span class="toc-number">4.1.1.</span> <span class="toc-text">数值变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的修饰"><span class="toc-number">4.1.2.</span> <span class="toc-text">指针变量的修饰</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指针变量的全只读"><span class="toc-number">4.1.3.</span> <span class="toc-text">指针变量的全只读</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#const-的位置"><span class="toc-number">4.1.4.</span> <span class="toc-text">const 的位置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#restrict-修饰符"><span class="toc-number">4.2.</span> <span class="toc-text">restrict 修饰符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#还有其它的吗？"><span class="toc-number">4.3.</span> <span class="toc-text">还有其它的吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NULL-常量"><span class="toc-number">5.</span> <span class="toc-text">NULL 常量</span></a></li></ol>
  
   </div>
 
@@ -392,7 +394,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>18</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>19</sup></a></li>
 			
 		
 			
@@ -428,6 +430,10 @@
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -436,15 +442,7 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
@@ -453,6 +451,10 @@
 		
 			
 				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			

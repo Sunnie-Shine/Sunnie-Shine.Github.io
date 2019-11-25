@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="前文我们提到了指针的很多用法，比如指针和普通变量的使用，利用指针来指向变量，以间接操作变量的方式来控制程序的行为。我们还讲到了指针和数组的方式，以及把数组传入函数的参数的时候，会退化为指针的形式，因此数组当参数传递到函数里的时候，是以指针形式存在的，所以我们需要单独为其添加一个参数表示数组的长度。我们甚至还讨论了字符串（字符数组）和普通数组的表现方式。 今天我们要谈论一种新型语法，这种语法不多见，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-24T15:30:55.775Z">
+<meta property="og:updated_time" content="2019-11-25T07:39:57.728Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -90,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-24T06:07:25.000Z" itemprop="datePublished"> 发表于 2019-11-24</time>
+    <time datetime="2019-11-24T06:11:13.000Z" itemprop="datePublished"> 发表于 2019-11-24</time>
     
   </p>
 </header>
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组有指针，那么函数呢？"><span class="toc-number">1.</span> <span class="toc-text">数组有指针，那么函数呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针的用法"><span class="toc-number">2.</span> <span class="toc-text">函数指针的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本用法的实现流程"><span class="toc-number">2.1.</span> <span class="toc-text">基本用法的实现流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#函数指针构成的数组？"><span class="toc-number">2.2.</span> <span class="toc-text">函数指针构成的数组？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针作参数"><span class="toc-number">3.</span> <span class="toc-text">函数指针作参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针传参时的函数的声明"><span class="toc-number">4.</span> <span class="toc-text">函数指针传参时的函数的声明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组有指针，那么函数呢？"><span class="toc-number">1.</span> <span class="toc-text">数组有指针，那么函数呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针的用法"><span class="toc-number">2.</span> <span class="toc-text">函数指针的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本用法的实现流程"><span class="toc-number">2.1.</span> <span class="toc-text">基本用法的实现流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#函数指针构成的数组？"><span class="toc-number">2.2.</span> <span class="toc-text">函数指针构成的数组？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针作参数"><span class="toc-number">3.</span> <span class="toc-text">函数指针作参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针传参时的函数的声明"><span class="toc-number">4.</span> <span class="toc-text">函数指针传参时的函数的声明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速排序-qsort-函数"><span class="toc-number">5.</span> <span class="toc-text">快速排序 qsort 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#先来看看使用"><span class="toc-number">5.1.</span> <span class="toc-text">先来看看使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#void-类型"><span class="toc-number">5.2.</span> <span class="toc-text">void * 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么-NULL-常量？"><span class="toc-number">5.3.</span> <span class="toc-text">那么 NULL 常量？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
 		
 		</div>
 		
@@ -155,6 +155,26 @@
 <p>答案就是</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExecuteAllFuncs</span><span class="params">(<span class="keyword">int</span> (*[])(<span class="keyword">int</span>, <span class="keyword">int</span>), <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="comment">// Or</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExecuteAllFuncs</span><span class="params">(<span class="keyword">int</span> (**)(<span class="keyword">int</span>, <span class="keyword">int</span>), <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>为什么可以写作 <code>int (*[])(int, int)</code> 或 <code>int (**)(int, int)</code> 呢？这是因为，去掉函数指针的部分 <code>int (*)(int, int)</code> 外，这两种写法就剩下一个 <code>[]</code> 和一个指针定义符 <code>*</code> 了，这不就恰好是一个数组的意思吗？所以，这种写法恰好就表示了一个函数指针变量的数组。</p>
+<h2 id="快速排序-qsort-函数"><a href="#快速排序-qsort-函数" class="headerlink" title="快速排序 qsort 函数"></a>快速排序 <code>qsort</code> 函数</h2><p>在 C 语言里甚至为我们贴心地提供了为数值序列排序的函数 <code>qsort</code>，不过这个函数用起来非常复杂，需要函数指针。</p>
+<h3 id="先来看看使用"><a href="#先来看看使用" class="headerlink" title="先来看看使用"></a>先来看看使用</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Comparison function.</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *a, <span class="keyword">const</span> <span class="keyword">void</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> *(<span class="keyword">int</span> *)a - *(<span class="keyword">int</span> *)b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a[] = &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span> &#125;;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">9</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, a[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    qsort(a, <span class="number">9</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), &amp;cmp); <span class="comment">// Note here.</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">9</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, a[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    system(<span class="string">"pause"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样调用它就可以立马得到排序后的数组，和上面自己实现的冒泡排序的操作基本上一样，不过差别是需要添加的函数指针，有一些奇怪。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qsort(a, <span class="number">9</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), &amp;cmp);</span><br></pre></td></tr></table></figure>
+<p>这个函数第一个参数传入的是数组名（即数组的首地址），而第二个参数传入的是数组的长度 9。</p>
+<p>第三个参数和第四个参数比较麻烦。第三个参数传入的是数组的每一个元素的内存大小，显然这个数组是 <code>int</code> 类型的，所以需要指定这个数组的元素大小是 <code>sizeof(int)</code>，而第四个参数传入的是比较函数。这里是在上面实现的 <code>cmp</code> 函数，所以这里写 <code>&amp;cmp</code> 或直接写 <code>cmp</code>。</p>
+<p>下面来分析一下自己实现的函数 <code>cmp</code> 到底为什么参数这么奇怪。</p>
+<h3 id="void-类型"><a href="#void-类型" class="headerlink" title="void * 类型"></a><code>void *</code> 类型</h3><p><code>const</code> 是一个关键字，表示指向不可修改，所以这里我们先可以忽略掉。那么，<code>void *</code> 是什么类型呢？<code>void *</code> 往往被称为无类型指针，这种类型允许你在传入的时候传入任何指针类型（<code>int *</code>、<code>char *</code> 等都可以）。不过在使用取值的时候，由于指针无法确定指向的元素类型，所以需要你自己给出强制转换，它就会把这个类型转换为指定的类型的指针。例如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">void</span> *p = &amp;a; <span class="comment">// Okay.</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%p "</span>, (<span class="keyword">int</span> *)p); <span class="comment">// Will print the address of `p`.</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, *(<span class="keyword">int</span> *)p); <span class="comment">// Will print the value of pointee of `p`.</span></span><br></pre></td></tr></table></figure>
+<p>第 3 行将会输出这个 <code>p</code> 指针的地址数值，而第 4 行将在取出地址的前提下，使用 <code>*</code> 间接取出数值，得到 3 这个结果。注意，<code>*(int *)p</code> 和 <code>*((int *)p)</code> 是等价的，你无需为后面这一坨内容添加括号。</p>
+<p>那么，我们转回 <code>qsort</code> 函数就可以看到，整个函数的声明是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">qsort</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">void</span> *, <span class="comment">// An array to compare and sort. The elements of array can be any type.</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span>, <span class="comment">// The count of the array.</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span>, <span class="comment">// The size of each element.</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> (*)(<span class="keyword">const</span> <span class="keyword">void</span> *, <span class="keyword">const</span> <span class="keyword">void</span> *) <span class="comment">// A comparison function pointer which</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// used for compare two values.</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// The type of the parameter is `const void *`</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// because the element type is unknown</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// from `void *` type array.</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>从注释里就可以看到，第四个参数里为什么传入的两个参数是 <code>const void *</code> 类型了：因为两个参数都指向元素，而这两个元素的类型我们是无法从第一个参数 <code>void *</code> 类型而确定下来的，所以我们不得不推后到调用时候才能确定，所以这个时候，我们不得不为其设置 <code>void *</code> 类型来表示这个指向的元素是无类型（未知类型）的。</p>
+<p>那么，从实现角度上说，<code>cmp</code> 函数里给定的代码是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *a, <span class="keyword">const</span> <span class="keyword">void</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> *(<span class="keyword">int</span> *)a - *(<span class="keyword">int</span> *)b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由此可以看出，我们如果需要强制得到元素的类型，需要把指针 <code>a</code> 和 <code>b</code> 转换为 <code>int *</code> 类型才可以去使用和取值。然后，我们转换后，把地址数值再使用 <code>*</code> 运算符取出元素数值，将两者相减就可以得到它们俩的大小关系了。当然，如果需要降序排序，只需要把被减数和减数换一下位置，即改为 <code>*(int *)b - *(int *)a</code> 即可。</p>
+<p>总的来说，<code>void *</code> 类型是一个可以指向任何类型变量的指针，但需要确定指向元素的数值时，需要自己给定指针的类型，并通过间接取值的运算符 <code>*</code> 来取值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">void</span> *p = &amp;a;</span><br><span class="line"><span class="keyword">int</span> *pointer = (<span class="keyword">int</span> *)p;</span><br><span class="line"><span class="keyword">int</span> value = *pointer;</span><br></pre></td></tr></table></figure>
+<p>即强制转换 <code>void *</code> 为其它类型的指针 <code>T *</code>。</p>
+<h3 id="那么-NULL-常量？"><a href="#那么-NULL-常量？" class="headerlink" title="那么 NULL 常量？"></a>那么 <code>NULL</code> 常量？</h3><p>前文提到了一个 <code>NULL</code> 常量，这个常量表示为所有指针类型的默认数值，即指向 0 号内存的指针。当我们现在已经学会了 <code>void *</code> 类型后，就可以知道 <code>NULL</code> 的本面目：<code>(void *)0</code>，它直接把 0 强制转换为一个地址，而这个地址还是无类型的。所以这允许了所有的类型都可以用。所以，<code>NULL</code> 和 <code>(void *)0</code> 等价。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>那么至此，我们就把所有关于指针的内容就介绍完了。现在我们作出总结。</p>
 <div class="table-container">
 <table>
@@ -269,18 +289,18 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2019/11/24/clang-16-pointer-and-character/" title="C 语言语法系列（16）：指针和字符">
+ <a href="/2019/11/25/clang-18-memory-allocation/" title="C 语言语法系列（18）：堆内存和栈内存">
   <strong>上一篇：</strong><br/>
   <span>
-  C 语言语法系列（16）：指针和字符</span>
+  C 语言语法系列（18）：堆内存和栈内存</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2019/11/23/clang-15-pointer-and-array/"  title="C 语言语法系列（15）：指针和数组">
+<a href="/2019/11/24/clang-16-pointer-and-character/"  title="C 语言语法系列（16）：指针和字符">
  <strong>下一篇：</strong><br/> 
- <span>C 语言语法系列（15）：指针和数组
+ <span>C 语言语法系列（16）：指针和字符
 </span>
 </a>
 </div>
@@ -404,7 +424,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组有指针，那么函数呢？"><span class="toc-number">1.</span> <span class="toc-text">数组有指针，那么函数呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针的用法"><span class="toc-number">2.</span> <span class="toc-text">函数指针的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本用法的实现流程"><span class="toc-number">2.1.</span> <span class="toc-text">基本用法的实现流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#函数指针构成的数组？"><span class="toc-number">2.2.</span> <span class="toc-text">函数指针构成的数组？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针作参数"><span class="toc-number">3.</span> <span class="toc-text">函数指针作参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针传参时的函数的声明"><span class="toc-number">4.</span> <span class="toc-text">函数指针传参时的函数的声明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组有指针，那么函数呢？"><span class="toc-number">1.</span> <span class="toc-text">数组有指针，那么函数呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针的用法"><span class="toc-number">2.</span> <span class="toc-text">函数指针的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本用法的实现流程"><span class="toc-number">2.1.</span> <span class="toc-text">基本用法的实现流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#函数指针构成的数组？"><span class="toc-number">2.2.</span> <span class="toc-text">函数指针构成的数组？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针作参数"><span class="toc-number">3.</span> <span class="toc-text">函数指针作参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针传参时的函数的声明"><span class="toc-number">4.</span> <span class="toc-text">函数指针传参时的函数的声明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速排序-qsort-函数"><span class="toc-number">5.</span> <span class="toc-text">快速排序 qsort 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#先来看看使用"><span class="toc-number">5.1.</span> <span class="toc-text">先来看看使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#void-类型"><span class="toc-number">5.2.</span> <span class="toc-text">void * 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么-NULL-常量？"><span class="toc-number">5.3.</span> <span class="toc-text">那么 NULL 常量？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
  
   </div>
 
@@ -431,7 +451,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>18</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>19</sup></a></li>
 			
 		
 			
@@ -467,6 +487,10 @@
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -475,15 +499,7 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
@@ -492,6 +508,10 @@
 		
 			
 				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			

@@ -82,6 +82,109 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/11/linq-03-orderby-clause/" title="LINQ 教程（3）：orderby 从句" itemprop="url">LINQ 教程（3）：orderby 从句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-11T03:04:11.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="orderby-从句"><a href="#orderby-从句" class="headerlink" title="orderby 从句"></a><code>orderby</code> 从句</h2><p>下面我们继续来看一个新的从句：<code>orderby</code> 从句。需要注意的是，这里的 <code>orderby</code> 是连体的，也就意味着两个单词不能拆开书写，中间没有任何空白字符。</p>
+<p>我们依旧使用上一节的关键字实例给大家讲解。今天我们来讲的从句是用来排序的。虽说原来给出的关键字已经以字母顺序排序了，但如果想要实现我们自己定义的排序行为，就需要这个从句了。</p>
+<p>比如，我们假设前文给出的序列是乱序的，我们尝试进行单词的升序排序。那么代码可以这么写。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>可以从代码看到，它实际上就是先对 <code>words</code> 进行遍历，对每一个单词进行升序排序，然后按排序后的结果进行按序摆放，构成一个集合。</p>
+<p>注意，<code>orderby</code> 从句的写法有三种：</p>
+<ul>
+<li><code>orderby xxx ascending</code></li>
+<li><code>orderby xxx</code></li>
+<li><code>orderby xxx descending</code></li>
+</ul>
+<p>三种写法都是合适的写法，但都必须位于 <code>select</code> 从句之前。和 SQL 不同，<code>orderby</code> 从句并不能作为语句的结束。其中第一种和第二种是等价写法，即省略 <code>ascending</code> 关键字，将会按照给定的键值进行升序排序，而如果给定 <code>descending</code> 关键字，则进行降序排序。另外请注意，当一次排序的思路完成后，还可以继续执行排序操作。比如给出一个新的问题：我们想要按照单词长度进行升序排序后，再按照每一个单词的字母表顺序进行排序。那么，我们可以这么写：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">orderby</span> word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>或不写 <code>ascending</code> 关键字。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length</span><br><span class="line">                <span class="keyword">orderby</span> word</span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>或写成一行。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length <span class="keyword">ascending</span>, word <span class="keyword">ascending</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>甚至写成一行后也可以不要 <code>ascending</code> 关键字。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">orderby</span> word.Length, word</span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
+<p>那么，现在肯定会留下一个问题。两次 <code>orderby</code> 进行排序，是否表示着如此操作会执行两次 <code>foreach</code> 遍历集合，进而会影响性能呢？下面我们就来分析它的原理和方法链的写法。</p>
+<h2 id="原理和方法链调用模式"><a href="#原理和方法链调用模式" class="headerlink" title="原理和方法链调用模式"></a>原理和方法链调用模式</h2><h3 id="单条件排序"><a href="#单条件排序" class="headerlink" title="单条件排序"></a>单条件排序</h3><p>在前文里，我们尝试着使用了多个排序操作，不过我们从入门角度开始，先从排一次序来看它的方法链的写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.OrderBy(w =&gt; w)</span><br><span class="line">                     .Select(w =&gt; w);</span><br></pre></td></tr></table></figure>
+<p>简单的一句话。我们先不去关心 <code>Select</code> 的部分，因为它仅仅是用于强制执行排序，所以我们暂时先只关心前面的部分。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.OrderBy(w =&gt; w);</span><br></pre></td></tr></table></figure>
+<p>排序的过程非常简单，直接把每一个单词作为键值进行排序。而由于每一个键值本身就是一个 <code>string</code> 类型，它是实现了 <code>IComparable&lt;T&gt;</code> 接口的，所以在排序的时候，我们完全可以不用关心内部是如何实现排序的；反之，如果你给出的对象没有实现可比较接口 <code>IComparable&lt;T&gt;</code> 或 <code>IComparable</code> 的话，对象就不可能排序了，除非你在外部定义一个排序过程，自定义这种类型的排序模式是如何的，不过这一点我们将后面再来说明。</p>
+<p>我们先关心内部的实现。我们来看下官网给出的源代码实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IOrderedEnumerable&lt;TSource&gt; OrderBy&lt;TSource, TKey&gt;</span><br><span class="line">    (<span class="keyword">this</span> IEnumerable&lt;TSource&gt; source, Func&lt;TSource, TKey&gt; keySelector)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> OrderedEnumerable&lt;TSource, TKey&gt;(</span><br><span class="line">        source, keySelector, <span class="literal">null</span>, <span class="literal">false</span>, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>看起来名字挺长的，这里就把代码重新该写成一行能看完的样式。</p>
+</blockquote>
+<p>看下代码，它压根没有给我们实现排序的功能，而是转去创建了一个新的数据集合类型 <code>OrderedEnumerable&lt;T&gt;</code>。这是在搞什么飞机呢？实际上，这样也就是为了能够实现推迟执行的效果而搞的，就是为了保证，万一后续要执行很多的排序，那岂不是每一次排序都得立马执行，就相当于多执行了很多次无用功，所以它尽量快捷一些，于是创建了一个可排序的可迭代对象。</p>
+<p>具体的代码就不扒出来了，因为太长了，挨个理解非常耗时，我们提一下最终的结论。首先，它的排序操作是推后执行的，而且执行排序的算法使用的是快速排序。</p>
+<p>如果这个需要排序的对象执行 <code>IComparable</code> 或 <code>IComparable&lt;T&gt;</code> 的实现的话，你必须提供比较接口 <code>IComparer&lt;T&gt;</code>。这个接口更类似于静态比较操作，它好比是 Java 里的匿名内部类。比如，我们可能会对一个自己设计的 <code>Person</code> 类实现比较操作，那么我们可以实现 <code>IComparer&lt;Person&gt;</code> 接口，写在这个对象里作为嵌套类类型（当然，嵌套的内部结构类型也可以，不过会产生装箱操作）。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Person</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> PersonComparer : IComparer&lt;Person&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Explicit implementation of `IComparer&lt;T&gt;`.</span></span><br><span class="line">        <span class="keyword">int</span> IComparer&lt;Person&gt;.Compare(Person x, Person y)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> result = x.Age.CompareTo(y.Age);</span><br><span class="line">            <span class="keyword">return</span> result != <span class="number">0</span> ? result : x.Name.CompareTo(y.Name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后创建出这个类型的对象出来：<code>var comparer = new Person.PersonComparer();</code>，这样的比较器就可以传入到排序方法 <code>OrderBy</code> 里的第二个参数了，所以完整的写法是：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> comparer = <span class="keyword">new</span> Person.PersonComparer();</span><br><span class="line"><span class="keyword">var</span> selection = persons.OrderBy(person =&gt; person, comparer)</span><br><span class="line">                       .Select(person =&gt; person);</span><br></pre></td></tr></table></figure>
+<p>这样，就可以在没有实现比较接口的情况下，自己实现出一个排序操作了。</p>
+<p>另外，如果是降序排序，调用的方法则是 <code>OrderByDescending</code>，参数的传递模式是一样的，所以就不多赘述了。</p>
+<h3 id="多条件排序"><a href="#多条件排序" class="headerlink" title="多条件排序"></a>多条件排序</h3><p>那么，两个排序项，怎么办呢？实际上，两个排序项的行为也会被逐个拆分，其中第一个排序项将作为 <code>OrderedEnumerable&lt;T&gt;</code> 对象创建出来，然后后续的排序项，都会调用另外一个方法，即 <code>ThenBy</code> 和 <code>ThenByDescending</code>，而不是刚才学到的 <code>OrderBy</code> 和 <code>OrderByDescending</code> 了。</p>
+<p>仔细思考一下，后续的操作是不是就直接往创建好的 <code>OrderedEnumerable&lt;T&gt;</code> 对象里加比较条件就行了啊？实际上就是如此，所以 <code>ThenBy</code> 和 <code>ThenByDescending</code> 的执行操作也很简单：为前文创建好的对象继续“挂”新的比较条件上去，然后返回原对象，这样就可以串联起来了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IOrderedEnumerable&lt;TSource&gt; ThenBy&lt;TSource, TKey&gt;(</span><br><span class="line">    <span class="keyword">this</span> IOrderedEnumerable&lt;TSource&gt; source, Func&lt;TSource, TKey&gt; keySelector)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (source == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> source.CreateOrderedEnumerable(keySelector, <span class="literal">null</span>, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上可以看出，它的判断方式确实就是如此简单的。直接往原本的对象上挂条件即可。当然，它也没忘记判断对象是否为 <code>null</code>。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/OrderBy.cs,e449fbc07f49dc52" target="_blank" rel="noopener">Enumerable.OrderBy 方法</a></li>
+<li><a href="https://source.dot.net/#System.Linq/System/Linq/OrderBy.cs,5fc6f26f82dec7e7" target="_blank" rel="noopener">Enumerable.ThenBy 方法</a></li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/11/linq-02-let-clause/" title="LINQ 教程（2）：let 从句" itemprop="url">LINQ 教程（2）：let 从句</a>
     
   </h1>
@@ -886,75 +989,6 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/windoku-da-rule/" title="窗口数独的潜规则" itemprop="url">窗口数独的潜规则</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T09:47:50.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="窗口数独的简单介绍"><a href="#窗口数独的简单介绍" class="headerlink" title="窗口数独的简单介绍"></a>窗口数独的简单介绍</h2><p>除了需要满足标准数独的规则外，还需要使得四个涂色粗线的“窗口”内的数字也都要包括数字1到9各一个。</p>
-<p><img src="Windoku.png" alt=""></p>
-<p>它的解答如下。</p>
-<p><img src="WindokuSolution.png" alt=""></p>
-<h2 id="潜规则——窗口-18-宫"><a href="#潜规则——窗口-18-宫" class="headerlink" title="潜规则——窗口 18 宫"></a>潜规则——窗口 18 宫</h2><p>窗口数独题有一个潜规则。</p>
-<p><img src="18Wins.png" alt=""></p>
-<p>如图所示，除了基本的9个宫不重复和4个窗口也满足以外，相同涂色的9个单元格所构成的一个区域内，也不能包括重复。</p>
-<p>数数看，恰好有18个“宫”呢！9个基本宫，外加4个窗口宫，再加5个额外“宫”！</p>
-<p>原因是，任意观察一组非粉红色的涂色区域。找到这些涂色单元格夹住的两个窗口宫，它们一起所处的三行（或三列）应该包含三组数字1到9。比如我们观察红色涂色区域。算上中间夹住的两个窗口宫，它们所处的三列，一定是三组数字1到9。</p>
-<p><img src="18Wins_Detail.png" alt=""></p>
-<p>不过这27个单元格去掉2个窗口宫后，剩下9格就一定也是一组1到9。</p>
-<p>所以，其他的三个非粉红色区域也是这样类似的推导方式。而最终粉红色区域，则是将盘面上所有的涂色区域和4个窗口宫得到的8组数字1到9后，最终剩下来的9格。它们自成一组。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数独/">数独</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/4/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/">下一页 ↓</a>
@@ -986,7 +1020,7 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>18</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>19</sup></a></li>
 			
 		
 			
@@ -1022,6 +1056,10 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -1030,15 +1068,7 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
@@ -1047,6 +1077,10 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 		
 			
 				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			

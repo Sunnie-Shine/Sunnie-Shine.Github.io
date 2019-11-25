@@ -82,6 +82,105 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/19/clang-07-for-loop/" title="C 语言语法系列（7）：for 语句" itemprop="url">C 语言语法系列（7）：for 语句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-19T12:35:56.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="for-（循环）语句"><a href="#for-（循环）语句" class="headerlink" title="for （循环）语句"></a><code>for</code> （循环）语句</h2><h3 id="for-语句的标准写法"><a href="#for-语句的标准写法" class="headerlink" title="for 语句的标准写法"></a><code>for</code> 语句的标准写法</h3><p>变量循环其实就是 <code>while</code> 和 <code>do-while</code> 语句的一种特别写法，为了方便人的理解，才创立的这样的循环操作，它是 <code>while</code> 的语法糖。</p>
+<p>写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i; <span class="comment">// Note here, `i` is not `i++`.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>for</code> 的括号里有三个语句，并且分别使用<strong>分号</strong>分开。原因在于它的写法会被编译为 <code>while</code> 语句，所以其实这些语句在 <code>while</code> 之中也都是需要加分号的，所以用分号隔开。两个分号把括号内的内容分隔成了三个部分，按顺序分别叫做<strong>初始值</strong>、<strong>条件</strong>、<strong>增量</strong>，即按变量来看的初始情况值，变量作循环需要满足的条件（或叫每做完一次循环后的判断条件），和每一次循环完成后变量需要变化的量。</p>
+<p>它的解释是这样的：先赋初始值、然后判断条件、条件成立时执行循环里面的操作、然后对变量增加增量、然后判断条件、然后条件成立时只需循环里面的操作、然后对变量增加增量、然后判断条件，这样的操作。</p>
+<p>比如上面的写法就是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sum = 0</span><br><span class="line">i = 1</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">sum += i: sum = 1</span><br><span class="line">i++: i = 2</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">sum += i: sum = 3</span><br><span class="line">i++: i = 3</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">sum += i: sum = 6</span><br><span class="line">i++: i = 4</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>另外，<code>sum = 0</code> 语句还可以直接写在 <code>for</code> 里。这也是可以的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过，变量赋初始值的时候，多个变量得用逗号隔开了。而且，标准 C 语言规定，变量的声明是不能写在 <code>for</code> 的里面的，比如这样是不可以的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这种写法在 C99 标准里可以使用，而基本的 ANSI C 标准（C89）则不允许这么使用。</p>
+</blockquote>
+<h3 id="残缺-for"><a href="#残缺-for" class="headerlink" title="残缺 for"></a>残缺 <code>for</code></h3><p><code>for</code> 循环的分号内的东西可有可无，比如不需要的时候就可以不写，不过呢，分号不能省略。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样和上面的语句是等价的。毕竟赋初值可以在前面写，也可以后面写。</p>
+<p>还可以这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(; i &lt; <span class="number">100</span>;)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样还是等效的。</p>
+<h3 id="带有逗号表达式的-for"><a href="#带有逗号表达式的-for" class="headerlink" title="带有逗号表达式的 for"></a>带有逗号表达式的 <code>for</code></h3><p>在说这一点前，就不得不讲一个东西：逗号表达式。</p>
+<h4 id="逗号表达式"><a href="#逗号表达式" class="headerlink" title="逗号表达式"></a>逗号表达式</h4><p>逗号表达式发明出来的唯一用途就只是放在 <code>for</code> 里，因为 <code>for</code> 需要用分号分隔所有部分（初值、条件和增量），所以如果想要同时给多个变量赋初始值的时候，或者是给多个变量设定增量的时候，就可以使用它，而不影响分号。</p>
+<p>但是，因为它是在 C 语言里存在的语法点，所以也可以使用在其他场合，虽然这一点并不多大意义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line">b = (a = <span class="number">3</span> * <span class="number">5</span>, a * <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+<p>在赋值操作后，<code>a = 3 * 5, a * 4</code> 就是一个逗号表达式。它由两个部分构成：<code>a = 3 * 5</code> 和 <code>a * 4</code>。逗号表达式的计算是放在所有操作都执行完了才会执行的地方，这里是因为它有括号，所以会执行。</p>
+<p>运算法则是这样的，从左到右依次计算，逗号表达式里面每一个用逗号分开的部分都会计算一次，并取最后一个部分，作为整体表达式的数值。比如这里，从左至右，先让 <code>a</code> 获得一个数值是 15，然后计算 <code>a * 4</code>，得到 60，这个 60 就是整体表达式的数值，最后赋值给 <code>b</code>，所以 <code>a = 15</code>、<code>b = 60</code>。</p>
+<p>不过，由于它最后才会被计算，所以如果没有括号的话，就得小心了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>, b = <span class="number">1</span>, c;</span><br><span class="line">c = a++, ++b, b++;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d%d%d"</span>, a, b, c);</span><br></pre></td></tr></table></figure>
+<p>答案竟然是 <code>231</code>！你敢信？我们来看看为什么。</p>
+<p>首先，C 语言规定，它的计算顺序是放在最后的，换句话说，赋值啥的所有操作全部在它前面。所以赋值会被先执行，也就是这句话等于是以下三句话的简写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c = a++;</span><br><span class="line">++b;</span><br><span class="line">b++;</span><br></pre></td></tr></table></figure>
+<p>只是合并了而已。而这句话你也看得出，逗号表达式虽然要取出最后一个逗号部分作为表达式的数值，但因为运算的关系，<code>a++</code> 已经先被赋值给 <code>c</code> 了，所以最终逗号表达式整体数值结果其实并没有什么用途，故这里其实只是相当于合并书写的一种操作罢了。</p>
+<p>那么，<code>c = a++</code> 得到 <code>c</code> 的值应为 1，因为 <code>++</code> 在后。而 <code>a</code> 最终是会变为 2 的。然后 <code>b</code> 则会因为后面两句话，而增大两个单位。所以 <code>b</code> 应为 3。所以 $a = 2$、$b = 3$、$c = 1$。</p>
+<h4 id="逗号表达式嵌套到-for-里"><a href="#逗号表达式嵌套到-for-里" class="headerlink" title="逗号表达式嵌套到 for 里"></a>逗号表达式嵌套到 <code>for</code> 里</h4><p>知道这一点之后，我们来看怎么嵌套。</p>
+<p>我们知道，为 1 到 100 求和时，除了为作为循环的变量 <code>i</code> 赋值外，还需要为 <code>sum</code> 给定初始值，否则 <code>sum</code> 从一个根本就不知道是多少的数开始增加，是错误的。</p>
+<p>所以我们可以这么写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然了，简化写法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt;= <span class="number">100</span>; sum += i++);</span><br></pre></td></tr></table></figure>
+<p>也是 OK 的。注意，这次 <code>for</code> 因为没有大括号的关系，循环的部分就只有 <code>for</code> 带上这个小括号这一部分而已。所以加上了分号，表示它在这里截断，<code>for</code> 的语句只能到这里。</p>
+<h2 id="为什么经常把-for-里用的变量命名为-i？"><a href="#为什么经常把-for-里用的变量命名为-i？" class="headerlink" title="为什么经常把 for 里用的变量命名为 i？"></a>为什么经常把 <code>for</code> 里用的变量命名为 <code>i</code>？</h2><p>这是一个很好的问题。你记住一点，它诞生自人们的习惯。之前就说过，变量名称只会受到标识符命名规则的约束，所以取名这一点才是关键。我们最初经常使用到 <code>int</code> 类型来表示整数，除非万不得已才会调整类型。而在 <code>for</code> 循环里，我们常常使用 <code>int</code> 类型的变量作为循环的成员。而这个变量一般表示循环的量，所以它不太好取名。为了简单化处理，我们一般使用它的类型名称的首字母就直接作为了这个变量的名字。比如这里的 <code>int</code> 变量就直接叫做 <code>i</code>。包括后续会介绍到的嵌套循环，那么里面的变量就叫做 <code>j</code>，按着顺序排下来，从 <code>i</code> 开始，<code>i</code>、<code>j</code>、<code>k</code>、……。</p>
+<p>当然，如果是一个字符类型的变量作为初始变量，那么一般就叫做 <code>c</code> 或者 <code>ch</code>，其它的变量按类型取名也都是一样的规则。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/19/csharp-default-interface/" title="C# 8 里的默认接口实现" itemprop="url">C# 8 里的默认接口实现</a>
     
   </h1>
@@ -793,291 +892,6 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/15/linear-algebra-operations/" title="矩阵操作" itemprop="url">矩阵操作</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-15T06:30:13.000Z" itemprop="datePublished"> 发表于 2019-11-15</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>回顾一下矩阵都有哪些基本操作吧！</p>
-<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="矩阵的加法"><a href="#矩阵的加法" class="headerlink" title="矩阵的加法"></a>矩阵的加法</h3><p>加法就是把两个矩阵直接对应位置求和即可。</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-    1 & 2 & 3\\
-    4 & 5 & 6
-    \end{matrix}
-\right) + \left(
-    \begin{matrix}
-    2 & 3 & -1\\
-    0 & -1 & 5
-    \end{matrix}
-\right) = \left(
-    \begin{matrix}
-    3 & 5 & 2\\
-    4 & 4 & 11
-    \end{matrix}
-\right)</script><h3 id="矩阵的减法"><a href="#矩阵的减法" class="headerlink" title="矩阵的减法"></a>矩阵的减法</h3><p>减法类似于加法，只是对应位置用减法罢了。</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-    1 & 2 & 3\\
-    4 & 5 & 6
-    \end{matrix}
-\right) - \left(
-    \begin{matrix}
-    2 & 3 & -1\\
-    0 & -1 & 5
-    \end{matrix}
-\right) = \left(
-    \begin{matrix}
-    -1 & -1 & 4\\
-    4 & 6 & 1
-    \end{matrix}
-\right)</script><h3 id="矩阵的点乘法（内乘法）"><a href="#矩阵的点乘法（内乘法）" class="headerlink" title="矩阵的点乘法（内乘法）"></a>矩阵的点乘法（内乘法）</h3><p>矩阵乘法必须要求两个矩阵 $A_{m \times n}$ 和 $B_{n \times p}$ 的矩阵规格，第一个矩阵的列数必须等于第二个矩阵的行数。这是因为求值的过程是按整行和整列的内乘积（对应位相乘，再相加）。</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \left(
-        \begin{matrix}
-        1 & 2 & 3\\
-        4 & 5 & 6
-        \end{matrix}
-    \right) \cdot \left(
-        \begin{matrix}
-        1 & 2\\
-        3 & 4\\
-        5 & 6
-        \end{matrix}
-    \right) &= \left(
-        \begin{matrix}
-        1 \times 1 + 2 \times 3 + 3 \times 5 & 1 \times 2 + 2 \times 4 + 3 \times 6\\
-        4 \times 1 + 5 \times 3 + 3 \times 6 & 4 \times 2 + 5 \times 4 + 6 \times 6
-        \end{matrix}
-    \right)\\
-    &= \left(
-        \begin{matrix}
-        22 & 28\\
-        37 & 64
-        \end{matrix}
-    \right)
-\end{align}</script><h3 id="方阵的行列式"><a href="#方阵的行列式" class="headerlink" title="方阵的行列式"></a>方阵的行列式</h3><p>获取方阵的行列式，是采用降阶实现的。</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \left|
-        \begin{matrix}
-        1 & 3\\
-        2 & 4
-        \end{matrix}
-    \right|
-    &= 1 \times 4 - 2 \times 3\\
-    &= -2
-\end{align}</script><p>三阶：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \left|
-        \begin{matrix}
-        1 & 2 & 3\\
-        4 & 5 & 6\\
-        7 & 8 & 9
-        \end{matrix}
-    \right| &= 1 \times (-1) ^ {1 + 1} \cdot \left|
-        \begin{matrix}
-        5 & 6\\
-        8 & 9
-        \end{matrix}
-    \right| + 2 \times (-1) ^ {1 + 2} \cdot \left|
-        \begin{matrix}
-        4 & 6\\
-        7 & 9
-        \end{matrix}
-    \right| + 3 \times (-1) ^ {1 + 3} \cdot \left|
-        \begin{matrix}
-        4 & 5\\
-        7 & 8
-        \end{matrix}
-    \right|\\
-    &= 1 \times 1 \times (-3) + 2 \times (-1) \times (-6) +3 \times 1 \times (-3)\\
-    &= -3 + 12 - 9\\
-    &=0
-\end{align}</script><h3 id="矩阵的转置矩阵"><a href="#矩阵的转置矩阵" class="headerlink" title="矩阵的转置矩阵"></a>矩阵的转置矩阵</h3><p>将矩阵转置就是行列交换。</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-    1 & 2 & 3\\
-    4 & 5 & 6
-    \end{matrix}
-\right) ^ T = \left(
-    \begin{matrix}
-    1 & 4\\
-    2 & 5\\
-    3 & 6
-    \end{matrix}
-\right)</script><h3 id="方阵的伴随矩阵"><a href="#方阵的伴随矩阵" class="headerlink" title="方阵的伴随矩阵"></a>方阵的伴随矩阵</h3><p>获取矩阵的伴随矩阵很简单，求得每一个位置上的代数余子式，并挨个写到矩阵里，再转置即可。</p>
-<p>例如矩阵</p>
-<script type="math/tex; mode=display">
-A = \left(
-    \begin{matrix}
-    0 & 3 & -1\\
-    1 & -1 & 1\\
-    3 & -1 & 2
-    \end{matrix}
-\right)</script><p>它的每一个代数余子式如下所示：</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-    A_{11} = (-1) ^ {1 + 1} \left|
-        \begin{matrix}
-        -1 & 1\\
-        -1 & 2
-        \end{matrix}
-    \right| = -1, & A_{12} = (-1) ^ {1 + 2} \left|
-        \begin{matrix}
-        1 & 1\\
-        3 & 2
-        \end{matrix}
-    \right| = 1, & A_{13} = (-1) ^ {1 + 3} \left|
-        \begin{matrix}
-        1 & -1\\
-        3 & -1
-        \end{matrix}
-    \right| = 2,\\
-    A_{21} = (-1) ^ {2 + 1} \left|
-        \begin{matrix}
-        3 & 1\\
-        -1 & 2
-        \end{matrix}
-    \right| = -7, & A_{22} = (-1) ^ {2 + 2} \left|
-        \begin{matrix}
-        0 & 1\\
-        3 & 2
-        \end{matrix}
-    \right| = -3, & A_{23} = (-1) ^ {2 + 3} \left|
-        \begin{matrix}
-        0 & 3\\
-        3 & -1
-        \end{matrix}
-    \right| = 9,\\
-    A_{31} = (-1) ^ {3 + 1} \left|
-        \begin{matrix}
-        3 & 1\\
-        -1 & 1
-        \end{matrix}
-    \right| = 4, & A_{32} = (-1) ^ {3 + 2} \left|
-        \begin{matrix}
-        0 & 1\\
-        1 & 1
-        \end{matrix}
-    \right| = 1, & A_{33} = (-1) ^ {3 + 3} \left|
-        \begin{matrix}
-        0 & 3\\
-        1 & -1
-        \end{matrix}
-    \right| = -3.\\
-\end{matrix}</script><p>所以</p>
-<script type="math/tex; mode=display">
-\text{adj} \ A = \left(
-    \begin{matrix}
-    -1 & -7 & 4\\
-    1 & -3 & 1\\
-    2 & 9 & -3
-    \end{matrix}
-\right)</script><h3 id="方阵的逆矩阵"><a href="#方阵的逆矩阵" class="headerlink" title="方阵的逆矩阵"></a>方阵的逆矩阵</h3><p>矩阵的除法的主要思路就是求逆矩阵。逆矩阵可以通过矩阵拼接一个同型单位矩阵 $E$ 并执行初等变换后得到。当然，能得到矩阵具有逆矩阵的前提是，这个矩阵的行列式不等于 0，记作 $\det A \neq 0$（中国的高等数学和线性代数的教材里多使用 $|A|$ 来表示 $A$ 的行列式，而不是用 $\det A$）。</p>
-<p>矩阵如果能有它的逆矩阵，那么可以通过如下公式得到：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \text{inv} \ A &= \frac{\text{adj} \ A}{\det A}\\
-    &= \frac1{\det A} \ \text{adj} \ A
-\end{align}</script><p>或写作</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    A^{-1} &= \frac{A^*}{|A|}\\
-    &= \frac1{|A|} \ A^*
-\end{align}</script><p>例如上面的题目</p>
-<script type="math/tex; mode=display">
-A = \left(
-    \begin{matrix}
-    0 & 3 & -1\\
-    1 & -1 & 1\\
-    3 & -1 & 2
-    \end{matrix}
-\right)</script><p>它的行列式经过计算可得 $\det A = 5 \neq 0$，可逆，然后得到它的伴随矩阵为</p>
-<script type="math/tex; mode=display">
-\text{adj} \ A = \left(
-    \begin{matrix}
-    -1 & -7 & 4\\
-    1 & -3 & 1\\
-    2 & 9 & -3
-    \end{matrix}
-\right)</script><p>所以，根据公式可以得到</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \text{inv} \ A &= \frac15 \left(
-        \begin{matrix}
-        -1 & -7 & 4\\
-        1 & -3 & 1\\
-        2 & 9 & -3
-        \end{matrix}
-    \right)\\
-    &= \left(
-        \begin{matrix}
-        -\frac15 & -\frac75 & \frac45\\
-        \frac15 & -\frac35 & \frac15\\
-        \frac25 & \frac95 & -\frac35
-        \end{matrix}
-    \right)
-\end{align}</script><h3 id="方阵的除法"><a href="#方阵的除法" class="headerlink" title="方阵的除法"></a>方阵的除法</h3><p>如果我们可以得到结果，那么我们可以定义出方阵的除法运算：</p>
-<script type="math/tex; mode=display">
-A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script><p>当然，这种用法显然是不太方便的。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数学/">数学</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/2/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/">下一页 ↓</a>
@@ -1109,7 +923,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>18</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>19</sup></a></li>
 			
 		
 			
@@ -1145,6 +959,10 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -1153,15 +971,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
@@ -1170,6 +980,10 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 		
 			
 				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
