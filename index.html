@@ -82,6 +82,200 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/25/clang-20-unions/" title="C 语言语法系列（20）：联合体" itemprop="url">C 语言语法系列（20）：联合体</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-25T13:35:07.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>前文我们描述了结构体的内容，我们知道了结构体需要堆内存的分配模式才可以正常分配变量，记得 <code>free</code> 函数释放，记得判断是否分配成功，还学习了如何使用 <code>sizeof</code> 关键字来获取变量（或结构体类型）的所占内存大小。下面我们来看另外一种模型：<strong>联合体</strong>（Union）。</p>
+<h2 id="不要尝试用联合体"><a href="#不要尝试用联合体" class="headerlink" title="不要尝试用联合体"></a>不要尝试用联合体</h2><p>可以通过名字看出，它就是并集的英文名，它和结构体非常相近，但它可能更加奇怪：它的元素储存机制并不是挨着放的，而是从同一点开始。</p>
+<p>加入，我们依旧使用 <code>student</code> 作为类型名，不够把关键字改为 <code>union</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> student</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如果我们定义一个变量，并为其分配好内存：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> student *a = (<span class="keyword">union</span> student *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">union</span> student));</span><br></pre></td></tr></table></figure>
+<p>这样就可以了。现在我们按照类似的方式来为联合体的字段赋值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(*a).age = <span class="number">63</span>;</span><br><span class="line">(*a).name[<span class="number">0</span>] = <span class="string">'A'</span>;</span><br></pre></td></tr></table></figure>
+<p>我们并没有为其把所有字段都赋好值，而仅为 <code>age</code> 字段赋值 63，而把 <code>name</code> 的第一个字符位置赋值我 <code>A</code> 字符。这已经足以说明问题。现在我们尝试重新输出 <code>age</code> 字段结果，你就会发现奇怪的地方。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, (*a).age);</span><br></pre></td></tr></table></figure>
+<p>此时，你会发现输出结果一定不会是 63，而是一个非常大的数。这很奇怪，因为我们在赋值了 63 后再也没动过 <code>age</code> 字段的信息，就简单为 <code>name</code> 的第一个字符位置赋值了一下，竟然修改了 <code>age</code> 字段的结果。</p>
+<p>联合体在分配内存的时候，是全部都在头部对齐的，这也就意味着，如果我们分配的 <code>a</code> 指针指向内存假设为 <code>0x123</code> 的位置上的话，那么 <code>0x123</code> 就是所有四个字段的起始点。这样一来，修改一处字段，自然就会同时影响到其它字段的结果。</p>
+<p><img src="union-in-memory.png" alt=""></p>
+<p>所以，不要尝试使用联合体。</p>
+<h2 id="既然这样，联合体有什么样的用途呢？"><a href="#既然这样，联合体有什么样的用途呢？" class="headerlink" title="既然这样，联合体有什么样的用途呢？"></a>既然这样，联合体有什么样的用途呢？</h2><p>在非常罕见的情况下，我们需要节约内存。当我们不得不把多个信息点都放在同一个地方存储来节约内容，而且这些信息仅在调用时有效，其它时候根本不用的情况下，可以考虑使用联合体。</p>
+<p>不过，这种情况实在是太少了。</p>
+<h2 id="联合体的内存大小"><a href="#联合体的内存大小" class="headerlink" title="联合体的内存大小"></a>联合体的内存大小</h2><p>前文讲述了结构体的内存大小的计算。联合体的内存大小其实也很好求得。前文已经完全描述了所有有关联合体定义分配内存时候的模式：同时对齐在开头地址。所以它的总大小，取决于所有字段里最“长”的那一个，所以，<code>sizeof(union student)</code> = 20。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/25/clang-19-structs/" title="C 语言语法系列（19）：结构体" itemprop="url">C 语言语法系列（19）：结构体</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-25T12:14:35.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="何为结构体？"><a href="#何为结构体？" class="headerlink" title="何为结构体？"></a>何为结构体？</h2><p>前文我们学习了非常多的数据类型，比如基本的数据类型 <code>int</code>、<code>float</code> 等等，也学习了指针类型 <code>int *</code>、<code>char *</code> 类型，以及无类型指针类型 <code>void *</code>，数组 <code>[]</code> 和函数 <code>()</code>。不过，这些基础数据类型并不能够满足我们的所有需求。比如，我们把“学生”看作一种类型，这个类型里包含一些基本信息，诸如成绩，学号姓名等等。这可能吗？</p>
+<p>当然，今天要讲到的<strong>结构体</strong>（Structure）就是为了解决这种复合结构类型的基本知识点。</p>
+<p>结构体的声明格式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> 结构体名</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>比如，学生类型的书写格式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">char</span> *name; <span class="comment">// Or write as `char name[20]`.</span></span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">    <span class="keyword">int</span> score;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>也可以简写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样就定义好了一个结构体，这个结构体类型是 <code>student</code> 类型的。</p>
+<p>请注意，这种特殊类型和函数一样，需要放在独立的位置上，而不是嵌套到函数里，这样全局级别才能访问到，否则我们就无法在想要的位置使用它们。当然，C 语言确实不允许把结构体的声明（定义）语句（上面那一坨）放进函数之中。</p>
+<h2 id="结构体的使用"><a href="#结构体的使用" class="headerlink" title="结构体的使用"></a>结构体的使用</h2><p>我们尝试为结构体里的每一个成员赋值，并输出它们。不过，我们需要开始复杂一点的逻辑了。前文学过了如何声明堆内存，所以这里我们也可以使用这种东西来在堆内存里创建结构体变量。不过请注意，结构体是无法在栈内存里分配的，所以我们必须为其赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> *<span class="title">xiaoMing</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (xiaoMing)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Allocated successfully.</span></span><br><span class="line">        <span class="keyword">char</span> gender;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Input them.</span></span><br><span class="line">        gets((*xiaoMing).name); <span class="comment">// Input a string that can contain space character.</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).age);</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%c"</span>, &amp;gender);</span><br><span class="line">        (*xiaoMing).isGirl = gender == <span class="string">'f'</span>;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Output them.</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s's Data:\n"</span>, (*xiaoMing).name);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    IsGirl: %s\n"</span>, (*xiaoMing).isGirl ? <span class="string">"Yes"</span> : <span class="string">"No"</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Age: %d\n"</span>, (*xiaoMing).age);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Score: %d\n"</span>, (*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">free</span>(xiaoMing); <span class="comment">// Dispose resource.</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>变量类型是 <code>student</code> 类型，而这里作为一种结构体类型，我们需要书写的格式是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">a</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br></pre></td></tr></table></figure>
+<p>首先为堆内存里分配 <code>student</code> 类型足够使用的内存空间，然后把这块内存的地址返回给变量 <code>a</code>。注意，返回的类型是 <code>void *</code>，所以需要经过一次强制转换。</p>
+<p>在完成分配后，判断一下它是否为 <code>NULL</code> 是一个好习惯。如果不为 <code>NULL</code> 则说明分配内存是成功的，于是我们开始为内部的所有信息点进行赋值。</p>
+<p>它和数组不同，数组分配的空间是连续的，但由于数组内的所有元素的类型全是一样的，所以有索引这种东西的存在；而结构体里，我们不能保证所有自己写的字段的类型一样，所以我们确实没有办法通过索引器 <code>[]</code> 来获取每一个成员的信息，而是通过<strong>成员访问运算符</strong> <code>.</code>（Member Access Operator）来取得它们。</p>
+<p>不过，请注意，前文使用的是堆内存分配的模式，所以得到的分配结果显然是指针类型的，于是要将指针“拆解”为普通类型（取得内容），需要使用间接访问运算符 <code>*</code> 对指针变量加以修饰：<code>*xiaoMing</code>，这才是真正的“内容”。然后，我们对这个具体的结果再次使用成员访问运算符来取值：<code>(*xiaoMing).age</code>。请注意，这种取值需要为变量名和取内容运算符用小括号括起来。如果不括起来，C 语言将认为执行内容是先获取 <code>xiaoMing.age</code>，然后再对这个变量取内容（执行 <code>*</code> 取内容），而显然取内容是针对于指针变量而言的，但此时就算 <code>xiaoMing.age</code> 奏效，没有语法问题，而 <code>age</code> 字段是我们规定的数值类型的，而不是指针，所以 C 语言会为此报错，提示你“<code>xiaoMing.age</code> 不是一个指针类型”。</p>
+<p>同理，其它的元素都可以使用这种方式进行赋值，但需要注意的是，字符串的赋值方式，一般我们不要去使用 <code>scanf(&quot;%s&quot;, &amp;字符指针或字符数组变量)</code> 的模式，因为 <code>scanf</code> 函数向来都是不处理空格的，所以它遇到空格直接就认为是输入结束了；而名字里可能是英文名，所以此时是可能含有空格的，故我们需要使用 <code>gets</code> 函数来输入。</p>
+<p>另外，<code>gets</code> 函数需要给定一个参数，这个参数必须是一个字符数组变量，而不是指针。指针并不能保证这个指向的内存块是可以被修改的，甚至不能保证这一块内存是可以被修改的。字符数组在声明期间就已经创建好了一系列内存空间，所以我们完全可以对其进行修改和使用。所以字符指针和字符数组的区别在于这一点：字符数组可修改内部元素，而字符指针不一定表示的是一个数组，而可能仅仅是一个普通的指针变量。前文说过，<strong>数组可以在赋值的时候退化为指针，但反之不然</strong>。</p>
+<p>记得最后添加 <code>free</code> 函数释放资源，否则会造成内存泄漏的 bug。</p>
+<h2 id="我觉得-v-f-的访问模式太难写代码了，有没有简化版？"><a href="#我觉得-v-f-的访问模式太难写代码了，有没有简化版？" class="headerlink" title="我觉得 (*v).f 的访问模式太难写代码了，有没有简化版？"></a>我觉得 <code>(*v).f</code> 的访问模式太难写代码了，有没有简化版？</h2><p>我也这么觉得，我们每次为字段赋值都得“无情地”加入小括号，然后才能往后加字段信息。这样写确实麻烦了。所以，C 语言提供了一个语法糖（简化版书写格式），叫<strong>指针成员访问成员运算符</strong> <code>-&gt;</code>（Pointer Member Access Operator）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age1 = (*xiaoMing).age;</span><br><span class="line"><span class="keyword">int</span> age2 = xiaoMing-&gt;age;</span><br></pre></td></tr></table></figure>
+<p>仔细体会两种写法，这两种写法是等价的。由于 <code>-&gt;</code> 符号和 <code>.</code> 符号都是访问运算符，所以这两个运算符挨着两边的英文单词（标识符），而不用在中间添加额外的空格。</p>
+<h2 id="一些烧脑的结构体使用模型"><a href="#一些烧脑的结构体使用模型" class="headerlink" title="一些烧脑的结构体使用模型"></a>一些烧脑的结构体使用模型</h2><h3 id="来一个可能会犯错的用法"><a href="#来一个可能会犯错的用法" class="headerlink" title="来一个可能会犯错的用法"></a>来一个可能会犯错的用法</h3><p>我们尝试不为变量赋值，就开始为字段里放数据，看看会怎么样。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">variable</span>;</span></span><br><span class="line">    variable.age = <span class="number">12</span>;</span><br><span class="line">    variable.isGirl = <span class="literal">false</span>;</span><br><span class="line">    variable.name = <span class="string">"Sunnie"</span>;</span><br><span class="line">    variable.score = <span class="number">99</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意，这种用法是错误的，而且很可能会引起报错。因为 <code>variable</code> 并没有赋值就开始用了，在 C 语言里规定，没有（成功）赋初始值的时候，变量都是不起作用的，即没有真正的内存可以对应上这个变量。于是我们对一个根本就不知道是哪里的对象进行赋值，或字段赋值，显然是不可能找到正确答案的。</p>
+<p>其实，不只是这种情况，就连普通的变量也是如此：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> arr[<span class="number">3</span>];</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, arr[<span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
+<p>这两种输出都不会得到你想要的结果。我知道你可能会认为这里的输出可能是 0，不过……</p>
+<p>确实不一定真的是 0，有时候是一个莫名其喵的数字，看得头皮发麻。</p>
+<h3 id="结构体的嵌套声明模式"><a href="#结构体的嵌套声明模式" class="headerlink" title="结构体的嵌套声明模式"></a>结构体的嵌套声明模式</h3><p>假设我们有两个结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">b</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>那么上文给出的 <code>b</code> 结构体类型是被允许的吗，即 <code>b</code> 结构体的某一个字段是别的结构体类型？</p>
+<p>答案是，是的。我们完全可以创建一个结构体，使得这个结构体的 <code>field</code> 字段是另外一个结构体的类型。从逻辑上讲，这完全是不矛盾的。</p>
+<p>不过，如果你创建这种类型的结构体，你需要注意初始化。假如我们现在有这样两个结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>并初始化一个 <code>second</code> 结构体类型的变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span> *<span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br></pre></td></tr></table></figure>
+<p>然后对其进行赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;c = <span class="number">12</span>;</span><br><span class="line">p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">p-&gt;d.b = <span class="string">'a'</span>;</span><br></pre></td></tr></table></figure>
+<p>首先，<code>p-&gt;d</code> 是为了取出 <code>p</code> 指针指向的字段 <code>d</code> 的信息，它是 <code>first</code> 结构体类型的，而且不是指针；然后，对这个得到的结果再使用 <code>.</code> 成员访问运算符来获取字段 <code>a</code> 和 <code>b</code> 的信息，或者说赋值。</p>
+<p>这样便可完成真正的赋值操作。</p>
+<h3 id="结构体的递归声明模式"><a href="#结构体的递归声明模式" class="headerlink" title="结构体的递归声明模式"></a>结构体的递归声明模式</h3><p>前文我们说到，结构体内部是可以存放指针，也可以放普通变量的。那么，是否存在一种可能，让结构体（假设为 <code>a</code> 类型）内部也有一个 <code>a</code> 类型的字段呢，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这种写法是可以的吗？显然，我们从逻辑上说不通，因为我们要创建好一个 <code>field</code> 字段，由于它是 <code>a</code> 类型的结构体类型，所以我们就不得不先为结构体 <code>a</code> 类型创建好。但显然此时还在创建其中的字段，整个结构体并未完成创建，所以这是相违背的。</p>
+<p>实际上确实如此。C 语言不允许递归声明：<strong>结构体类型内的字段不允许是当前结构体类型的</strong>，不过，你可以声明同样类型的结构体指针变量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> *<span class="title">ptr</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样书写和存储是没有问题的，因为从道理上讲，<code>ptr</code> 字段在这里仅仅表示的是一个可以指向这个类型的地址信息罢了，它是一个地址，所以并不和结构体类型的本身有关，所以这样的声明方式是被允许的。而且，这种声明模式广泛存在于一些复杂的结构里，例如<strong>链表</strong>（Linked List），它具有一个数据字段（data）和一个下一节点地址的字段（next）；而这里的 <code>data</code> 字段就是指向下一个链表节点的，它依然是当前类型的，只不过是指针。</p>
+<p>下面代码可以展示这一点：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">second</span>* <span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span>*)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (p)</span><br><span class="line">    &#123;</span><br><span class="line">        p-&gt;c = <span class="number">12</span>;</span><br><span class="line">        p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">        p-&gt;d.b = <span class="string">'a'</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;c: %d\n"</span>, p-&gt;c);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.a: %d\n"</span>, p-&gt;d.a);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.b: %c\n"</span>, p-&gt;d.b);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">free</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出的结果如下：</p>
+<p><img src="output-nested-struct.png" alt=""></p>
+<h2 id="结构体的内存大小"><a href="#结构体的内存大小" class="headerlink" title="结构体的内存大小"></a>结构体的内存大小</h2><p>对一个结构体变量使用 <code>sizeof</code> 会如何呢？前文不是就用到堆内存分配了吗？</p>
+<p>这个数值实际上并不需要关心，但一般在考试题里会认为所有字段占据的内存空间的总和。但实际上并不一定是这样，结果可能比这个数值大一些，当然也可能是一样的。</p>
+<p>举个例子。就前文的学生类型结构体，它由四个字段构成：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在内存里，很有可能存储的方式是这样的：</p>
+<p><img src="struct-in-memory.png" alt=""></p>
+<p>当然，我也只能说是“可能”，因为具体的分配模式是根据内存怎么样找起来快怎么分配的模式来分配的。如果这种分配方式，使得代码运算速度快的话，那么这种肯定就是内存里存储这个结构体的方式。也有可能把 <code>age</code> 拿到下面来，也可能把 <code>isGirl</code> 拿下来，等等。</p>
+<blockquote>
+<p>不过，按照基本考试的方法，把它们所占字节数加起来就是整个结构体所占大小了：4 + 4 + 1 + 20 = 29 字节，所以，<code>sizeof(struct student)</code> = <code>sizeof(variable)</code> = 29。</p>
+</blockquote>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/25/clang-18-memory-allocation/" title="C 语言语法系列（18）：堆内存和栈内存" itemprop="url">C 语言语法系列（18）：堆内存和栈内存</a>
     
   </h1>
@@ -978,209 +1172,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/22/clang-12-hi-dimension-array/" title="C 语言语法系列（12）：三维或更高维的数组" itemprop="url">C 语言语法系列（12）：三维或更高维的数组</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-22T12:46:11.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="有没有三维数组？"><a href="#有没有三维数组？" class="headerlink" title="有没有三维数组？"></a>有没有三维数组？</h2><p>前文已经描述了一维数组和二维数组的基本语法和使用方式。那么，按道理来说，三维数组或者更高维度的数组是存在的。确实如此。不过……</p>
-<h2 id="三维数组的定义"><a href="#三维数组的定义" class="headerlink" title="三维数组的定义"></a>三维数组的定义</h2><p>拿三维数组来说，我们要定义一个三维数组，并按照规范初始化赋值，就得是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cube[<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">0</span> &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>或</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cube[][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span> &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>都是允许的。具体的赋值原理和原因在前文已经阐述得非常详细了。但需要你注意两个地方。</p>
-<p>第一，不完全赋值是可以混用的，比如第一个示例里的赋值模式，在第一个大括号里给了一个 0，这表示会把第一个维度里的所有元素全部赋值为 0。那么第一个维度里包含哪些元素呢？或者说，元素一共多少个呢？</p>
-<p>可以从最上面的定义语句的行元素数、列元素数和竖元素数看出，这个三维数组一共有 2 行 3 列 4 竖。不过三维数组复杂的地方在于，它如何规划内存空间。我们依旧按照顺次来看。这个三维数组会分为两个大块来表示行，即这个是一个一维数组，而这个一维数组一共包含两个元素，都存放的是一个<strong>二维数组</strong>，而这个二维数组内存放着 3 行 4 列的元素，这么一个情况。</p>
-<p>不过，可以从分配内存空间来看，三维数组只能省略行元素个数这一个条件。</p>
-<h2 id="三维数组的存取数值"><a href="#三维数组的存取数值" class="headerlink" title="三维数组的存取数值"></a>三维数组的存取数值</h2><p>三维数组的存取数值的方式和二维数组雷同，不过还是希望你注意的是，每一个维度的索引都是从 0 开始的，所以不要忘了这一点，而超出了数组内存的范围。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> value = arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
-<p>将会取出这个数组的第二行、第三列的第四个元素。</p>
-<h2 id="更高维度的数组？"><a href="#更高维度的数组？" class="headerlink" title="更高维度的数组？"></a>更高维度的数组？</h2><p>是的，C 语言甚至允许你创建四维数组、五维数组等等。那么 C 语言创建数组的上限是多少呢？维度是没有上限一说的，但它受到电脑容量的制约。</p>
-<p>如果你尝试把数组元素总数定义得过大的话，就会出现这个错误信息：</p>
-<p><img src="c6262.png" alt=""></p>
-<p>这个错误信息意味着你的数组定义得太大了。具体的内容说的是：“函数在栈里使用了 ‘2147483644’ 字节，超出了原本定义的栈大小 ‘16384’，请尝试移动一些数据到堆里去”。</p>
-<p>按照 16384 而言，你只能定义一个小于这么多的所占内存的数组。而在外部定义也不可以超过 1073741823 个元素。</p>
-<p>所以，请你合理使用内存。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/22/clang-11-matrix-array/" title="C 语言语法系列（11）：二维数组" itemprop="url">C 语言语法系列（11）：二维数组</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-22T06:57:39.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前文我们讲到了一维数组的基本赋值方式和使用方式，但基本上我们可以看到，如果不是迫不得已的情况下，貌似一维数组已经够用了，不过为了教程的完整性，我们还是把一些其它情况，必须要更高维的数组的时候，它们的语法格式讲一下。今天说的是二维数组。</p>
-<h2 id="二维数组的定义"><a href="#二维数组的定义" class="headerlink" title="二维数组的定义"></a>二维数组的定义</h2><p>当我们在人为定义的情况下必须要使用两个维度（行和列）的时候，就不得不使用二维数组来定义，比如一个表格。比如，我们需要一个 3 行 4 列的表格，它的定义方式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[<span class="number">3</span>][<span class="number">4</span>];</span><br></pre></td></tr></table></figure>
-<p>此时，我们需要在定义语句里写上两个中括号，一个表示行，一个表示列。这个地方的定义就表示一个二维数组是 3 行 4 列的。同时请你继续注意的地方是，这里的中括号是定义语句里用的，所以它表示这个数组是多少行多少列的，而并非取出第 3 行第 4 列的数据。请你注意这一点。</p>
-<blockquote>
-<p>你也可以理解为，<code>table</code> 变量一共有三个元素构成，每一个元素都是一个需要 4 个元素的数组构成的一维数组序列。所以这种理解方式更类似于“是一个一维数组，只是每一个数据的类型是一个一维数组，即数组的数组”。</p>
-</blockquote>
-<h2 id="初始化赋值"><a href="#初始化赋值" class="headerlink" title="初始化赋值"></a>初始化赋值</h2><p>在二维数组里，初始化赋值就比较麻烦了。比如，一种简单的赋值方式是采取“数组的数组”的理解方式来赋值的，比如这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span> &#125;,</span><br><span class="line">    &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span> &#125;,</span><br><span class="line">    &#123; <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>即存放了三个元素，且每一个元素都是一个<strong>存四个 <code>int</code> 类型元素的一维数组</strong>的二维数组。和前文一样，二维数组当完整赋值后，可以不写出元素个数。但在二维数组里，只能省略行元素总数 3，而不可以省略列元素的总个数 4，即：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span> &#125;,</span><br><span class="line">    &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span> &#125;,</span><br><span class="line">    &#123; <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>注意，这种设计是为了保证后续可以完整取出具体位置的元素而设计的。</p>
-<blockquote>
-<p>数组在内存里的表达实际上都是一个一维数组。显然，内存是一个长条分布的形状，所以不管多少维度的数组，哪怕后面用到的更高维度的数组，在内存里都只可能表示成一个一维的数组形式，而一个二维数组需要列元素的个数这一个信息来正确分割整个数组，来保证二维数组的成立。如果你省略了列元素的个数，我们就无法在正确的地方断开这个数组，进而得不到正确结果。比如，一个数组拥有 12 个元素（3 行 4 列），那么它在内存里只能表示成这样：</p>
-<p><img src="2d-array.png" alt=""></p>
-<p>这个表达形式可以看到，我们为一个一维数组进行正确的定界是必须要<strong>列元素数</strong>这个信息的。所以列元素总数这个数字是不可以省略的。</p>
-</blockquote>
-<p>另外，二维数组也可以省略一些元素的赋值，此时将会默认赋值 0：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">1</span> &#125;,</span><br><span class="line">    &#123; <span class="number">2</span>, <span class="number">3</span> &#125;,</span><br><span class="line">    &#123; <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这样的话，整个数组的赋值的情况就是</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th>第 0 列</th>
-<th>第 1 列</th>
-<th>第 2 列</th>
-<th>第 3 列</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>第 0 行</strong></td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td><strong>第 1 行</strong></td>
-<td>2</td>
-<td>3</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td><strong>第 2 行</strong></td>
-<td>4</td>
-<td>5</td>
-<td>6</td>
-<td>7</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>当然，内部的大括号都可以被省略，但这个时候就不能省略中间的元素了：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[][<span class="number">4</span>] = &#123; <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>和上面的逻辑一样，这个赋值方式依然是满足要求的，这样就可以看出赋值语句里<strong>列元素数</strong>这个信息的重要性了。</p>
-<p>当然，它也可以不完全赋值：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[][<span class="number">4</span>] = &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">5</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>那么，从第十个元素开始（从 0 开始算就是第 9 号元素）都被赋值为 0。</p>
-<h2 id="二维数组存取数值"><a href="#二维数组存取数值" class="headerlink" title="二维数组存取数值"></a>二维数组存取数值</h2><p>按照 C 语言的规定，数组的索引从 0 开始（所谓的索引，就是取值和存值的那个中括号里的数值，它可以表示这个数组的第几个元素，这个数就是<strong>索引</strong>，有时候也称为<strong>下标</strong>，Index），所以二维数组的两个维度都是从 0 开始。</p>
-<p>不过，二维数组需要两个索引，一个行索引，一个列索引：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> table[][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">1</span> &#125;,</span><br><span class="line">    &#123; <span class="number">2</span>, <span class="number">3</span> &#125;,</span><br><span class="line">    &#123; <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>那么，要取出第 10 个元素 5，应如何写呢？</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> value = table[<span class="number">2</span>][<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
-<p>即第 2 行第 1 列的元素（注意，这个索引数值是从 0 开始，所以第 2 行就是我们人为理解的第三行，而第 1 列就是我们理解的第二列），第三行第二列就是 5 了。</p>
-<p>另外，初始化赋值可以这么写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, j;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; <span class="number">4</span>; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        table[i][j] = i * <span class="number">4</span> + j + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样，整个数组的元素就被赋值为从 1 到 12 了，依然请你注意 <code>for</code> 循环的条件 <code>i &lt; 3</code> 和 <code>j &lt; 4</code>。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -1212,7 +1203,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>19</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>21</sup></a></li>
 			
 		
 			

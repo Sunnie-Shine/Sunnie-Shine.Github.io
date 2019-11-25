@@ -1,0 +1,734 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C 语言语法系列（19）：结构体 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="何为结构体？前文我们学习了非常多的数据类型，比如基本的数据类型 int、float 等等，也学习了指针类型 int *、char * 类型，以及无类型指针类型 void *，数组 [] 和函数 ()。不过，这些基础数据类型并不能够满足我们的所有需求。比如，我们把“学生”看作一种类型，这个类型里包含一些基本信息，诸如成绩，学号姓名等等。这可能吗？ 当然，今天要讲到的结构体（Structure）就是为">
+<meta name="keywords" content="C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言语法系列（19）：结构体">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-19-structs&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="何为结构体？前文我们学习了非常多的数据类型，比如基本的数据类型 int、float 等等，也学习了指针类型 int *、char * 类型，以及无类型指针类型 void *，数组 [] 和函数 ()。不过，这些基础数据类型并不能够满足我们的所有需求。比如，我们把“学生”看作一种类型，这个类型里包含一些基本信息，诸如成绩，学号姓名等等。这可能吗？ 当然，今天要讲到的结构体（Structure）就是为">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-19-structs&#x2F;output-nested-struct.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-19-structs&#x2F;struct-in-memory.png">
+<meta property="og:updated_time" content="2019-11-25T14:50:39.251Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-19-structs&#x2F;output-nested-struct.png">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/11/25/clang-19-structs/" title="C 语言语法系列（19）：结构体" itemprop="url">C 语言语法系列（19）：结构体</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-25T12:14:35.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#何为结构体？"><span class="toc-number">1.</span> <span class="toc-text">何为结构体？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构体的使用"><span class="toc-number">2.</span> <span class="toc-text">结构体的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#我觉得-v-f-的访问模式太难写代码了，有没有简化版？"><span class="toc-number">3.</span> <span class="toc-text">我觉得 (*v).f 的访问模式太难写代码了，有没有简化版？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些烧脑的结构体使用模型"><span class="toc-number">4.</span> <span class="toc-text">一些烧脑的结构体使用模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#来一个可能会犯错的用法"><span class="toc-number">4.1.</span> <span class="toc-text">来一个可能会犯错的用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结构体的嵌套声明模式"><span class="toc-number">4.2.</span> <span class="toc-text">结构体的嵌套声明模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结构体的递归声明模式"><span class="toc-number">4.3.</span> <span class="toc-text">结构体的递归声明模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构体的内存大小"><span class="toc-number">5.</span> <span class="toc-text">结构体的内存大小</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="何为结构体？"><a href="#何为结构体？" class="headerlink" title="何为结构体？"></a>何为结构体？</h2><p>前文我们学习了非常多的数据类型，比如基本的数据类型 <code>int</code>、<code>float</code> 等等，也学习了指针类型 <code>int *</code>、<code>char *</code> 类型，以及无类型指针类型 <code>void *</code>，数组 <code>[]</code> 和函数 <code>()</code>。不过，这些基础数据类型并不能够满足我们的所有需求。比如，我们把“学生”看作一种类型，这个类型里包含一些基本信息，诸如成绩，学号姓名等等。这可能吗？</p>
+<p>当然，今天要讲到的<strong>结构体</strong>（Structure）就是为了解决这种复合结构类型的基本知识点。</p>
+<p>结构体的声明格式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> 结构体名</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>比如，学生类型的书写格式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">char</span> *name; <span class="comment">// Or write as `char name[20]`.</span></span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">    <span class="keyword">int</span> score;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>也可以简写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样就定义好了一个结构体，这个结构体类型是 <code>student</code> 类型的。</p>
+<p>请注意，这种特殊类型和函数一样，需要放在独立的位置上，而不是嵌套到函数里，这样全局级别才能访问到，否则我们就无法在想要的位置使用它们。当然，C 语言确实不允许把结构体的声明（定义）语句（上面那一坨）放进函数之中。</p>
+<h2 id="结构体的使用"><a href="#结构体的使用" class="headerlink" title="结构体的使用"></a>结构体的使用</h2><p>我们尝试为结构体里的每一个成员赋值，并输出它们。不过，我们需要开始复杂一点的逻辑了。前文学过了如何声明堆内存，所以这里我们也可以使用这种东西来在堆内存里创建结构体变量。不过请注意，结构体是无法在栈内存里分配的，所以我们必须为其赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> *<span class="title">xiaoMing</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (xiaoMing)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Allocated successfully.</span></span><br><span class="line">        <span class="keyword">char</span> gender;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Input them.</span></span><br><span class="line">        gets((*xiaoMing).name); <span class="comment">// Input a string that can contain space character.</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).age);</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%c"</span>, &amp;gender);</span><br><span class="line">        (*xiaoMing).isGirl = gender == <span class="string">'f'</span>;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Output them.</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s's Data:\n"</span>, (*xiaoMing).name);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    IsGirl: %s\n"</span>, (*xiaoMing).isGirl ? <span class="string">"Yes"</span> : <span class="string">"No"</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Age: %d\n"</span>, (*xiaoMing).age);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Score: %d\n"</span>, (*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">free</span>(xiaoMing); <span class="comment">// Dispose resource.</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>变量类型是 <code>student</code> 类型，而这里作为一种结构体类型，我们需要书写的格式是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">a</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br></pre></td></tr></table></figure>
+<p>首先为堆内存里分配 <code>student</code> 类型足够使用的内存空间，然后把这块内存的地址返回给变量 <code>a</code>。注意，返回的类型是 <code>void *</code>，所以需要经过一次强制转换。</p>
+<p>在完成分配后，判断一下它是否为 <code>NULL</code> 是一个好习惯。如果不为 <code>NULL</code> 则说明分配内存是成功的，于是我们开始为内部的所有信息点进行赋值。</p>
+<p>它和数组不同，数组分配的空间是连续的，但由于数组内的所有元素的类型全是一样的，所以有索引这种东西的存在；而结构体里，我们不能保证所有自己写的字段的类型一样，所以我们确实没有办法通过索引器 <code>[]</code> 来获取每一个成员的信息，而是通过<strong>成员访问运算符</strong> <code>.</code>（Member Access Operator）来取得它们。</p>
+<p>不过，请注意，前文使用的是堆内存分配的模式，所以得到的分配结果显然是指针类型的，于是要将指针“拆解”为普通类型（取得内容），需要使用间接访问运算符 <code>*</code> 对指针变量加以修饰：<code>*xiaoMing</code>，这才是真正的“内容”。然后，我们对这个具体的结果再次使用成员访问运算符来取值：<code>(*xiaoMing).age</code>。请注意，这种取值需要为变量名和取内容运算符用小括号括起来。如果不括起来，C 语言将认为执行内容是先获取 <code>xiaoMing.age</code>，然后再对这个变量取内容（执行 <code>*</code> 取内容），而显然取内容是针对于指针变量而言的，但此时就算 <code>xiaoMing.age</code> 奏效，没有语法问题，而 <code>age</code> 字段是我们规定的数值类型的，而不是指针，所以 C 语言会为此报错，提示你“<code>xiaoMing.age</code> 不是一个指针类型”。</p>
+<p>同理，其它的元素都可以使用这种方式进行赋值，但需要注意的是，字符串的赋值方式，一般我们不要去使用 <code>scanf(&quot;%s&quot;, &amp;字符指针或字符数组变量)</code> 的模式，因为 <code>scanf</code> 函数向来都是不处理空格的，所以它遇到空格直接就认为是输入结束了；而名字里可能是英文名，所以此时是可能含有空格的，故我们需要使用 <code>gets</code> 函数来输入。</p>
+<p>另外，<code>gets</code> 函数需要给定一个参数，这个参数必须是一个字符数组变量，而不是指针。指针并不能保证这个指向的内存块是可以被修改的，甚至不能保证这一块内存是可以被修改的。字符数组在声明期间就已经创建好了一系列内存空间，所以我们完全可以对其进行修改和使用。所以字符指针和字符数组的区别在于这一点：字符数组可修改内部元素，而字符指针不一定表示的是一个数组，而可能仅仅是一个普通的指针变量。前文说过，<strong>数组可以在赋值的时候退化为指针，但反之不然</strong>。</p>
+<p>记得最后添加 <code>free</code> 函数释放资源，否则会造成内存泄漏的 bug。</p>
+<h2 id="我觉得-v-f-的访问模式太难写代码了，有没有简化版？"><a href="#我觉得-v-f-的访问模式太难写代码了，有没有简化版？" class="headerlink" title="我觉得 (*v).f 的访问模式太难写代码了，有没有简化版？"></a>我觉得 <code>(*v).f</code> 的访问模式太难写代码了，有没有简化版？</h2><p>我也这么觉得，我们每次为字段赋值都得“无情地”加入小括号，然后才能往后加字段信息。这样写确实麻烦了。所以，C 语言提供了一个语法糖（简化版书写格式），叫<strong>指针成员访问成员运算符</strong> <code>-&gt;</code>（Pointer Member Access Operator）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age1 = (*xiaoMing).age;</span><br><span class="line"><span class="keyword">int</span> age2 = xiaoMing-&gt;age;</span><br></pre></td></tr></table></figure>
+<p>仔细体会两种写法，这两种写法是等价的。由于 <code>-&gt;</code> 符号和 <code>.</code> 符号都是访问运算符，所以这两个运算符挨着两边的英文单词（标识符），而不用在中间添加额外的空格。</p>
+<h2 id="一些烧脑的结构体使用模型"><a href="#一些烧脑的结构体使用模型" class="headerlink" title="一些烧脑的结构体使用模型"></a>一些烧脑的结构体使用模型</h2><h3 id="来一个可能会犯错的用法"><a href="#来一个可能会犯错的用法" class="headerlink" title="来一个可能会犯错的用法"></a>来一个可能会犯错的用法</h3><p>我们尝试不为变量赋值，就开始为字段里放数据，看看会怎么样。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">variable</span>;</span></span><br><span class="line">    variable.age = <span class="number">12</span>;</span><br><span class="line">    variable.isGirl = <span class="literal">false</span>;</span><br><span class="line">    variable.name = <span class="string">"Sunnie"</span>;</span><br><span class="line">    variable.score = <span class="number">99</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意，这种用法是错误的，而且很可能会引起报错。因为 <code>variable</code> 并没有赋值就开始用了，在 C 语言里规定，没有（成功）赋初始值的时候，变量都是不起作用的，即没有真正的内存可以对应上这个变量。于是我们对一个根本就不知道是哪里的对象进行赋值，或字段赋值，显然是不可能找到正确答案的。</p>
+<p>其实，不只是这种情况，就连普通的变量也是如此：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> arr[<span class="number">3</span>];</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, arr[<span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
+<p>这两种输出都不会得到你想要的结果。我知道你可能会认为这里的输出可能是 0，不过……</p>
+<p>确实不一定真的是 0，有时候是一个莫名其喵的数字，看得头皮发麻。</p>
+<h3 id="结构体的嵌套声明模式"><a href="#结构体的嵌套声明模式" class="headerlink" title="结构体的嵌套声明模式"></a>结构体的嵌套声明模式</h3><p>假设我们有两个结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">b</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>那么上文给出的 <code>b</code> 结构体类型是被允许的吗，即 <code>b</code> 结构体的某一个字段是别的结构体类型？</p>
+<p>答案是，是的。我们完全可以创建一个结构体，使得这个结构体的 <code>field</code> 字段是另外一个结构体的类型。从逻辑上讲，这完全是不矛盾的。</p>
+<p>不过，如果你创建这种类型的结构体，你需要注意初始化。假如我们现在有这样两个结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>并初始化一个 <code>second</code> 结构体类型的变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span> *<span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br></pre></td></tr></table></figure>
+<p>然后对其进行赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;c = <span class="number">12</span>;</span><br><span class="line">p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">p-&gt;d.b = <span class="string">'a'</span>;</span><br></pre></td></tr></table></figure>
+<p>首先，<code>p-&gt;d</code> 是为了取出 <code>p</code> 指针指向的字段 <code>d</code> 的信息，它是 <code>first</code> 结构体类型的，而且不是指针；然后，对这个得到的结果再使用 <code>.</code> 成员访问运算符来获取字段 <code>a</code> 和 <code>b</code> 的信息，或者说赋值。</p>
+<p>这样便可完成真正的赋值操作。</p>
+<h3 id="结构体的递归声明模式"><a href="#结构体的递归声明模式" class="headerlink" title="结构体的递归声明模式"></a>结构体的递归声明模式</h3><p>前文我们说到，结构体内部是可以存放指针，也可以放普通变量的。那么，是否存在一种可能，让结构体（假设为 <code>a</code> 类型）内部也有一个 <code>a</code> 类型的字段呢，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这种写法是可以的吗？显然，我们从逻辑上说不通，因为我们要创建好一个 <code>field</code> 字段，由于它是 <code>a</code> 类型的结构体类型，所以我们就不得不先为结构体 <code>a</code> 类型创建好。但显然此时还在创建其中的字段，整个结构体并未完成创建，所以这是相违背的。</p>
+<p>实际上确实如此。C 语言不允许递归声明：<strong>结构体类型内的字段不允许是当前结构体类型的</strong>，不过，你可以声明同样类型的结构体指针变量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> *<span class="title">ptr</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样书写和存储是没有问题的，因为从道理上讲，<code>ptr</code> 字段在这里仅仅表示的是一个可以指向这个类型的地址信息罢了，它是一个地址，所以并不和结构体类型的本身有关，所以这样的声明方式是被允许的。而且，这种声明模式广泛存在于一些复杂的结构里，例如<strong>链表</strong>（Linked List），它具有一个数据字段（data）和一个下一节点地址的字段（next）；而这里的 <code>data</code> 字段就是指向下一个链表节点的，它依然是当前类型的，只不过是指针。</p>
+<p>下面代码可以展示这一点：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">second</span>* <span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span>*)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (p)</span><br><span class="line">    &#123;</span><br><span class="line">        p-&gt;c = <span class="number">12</span>;</span><br><span class="line">        p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">        p-&gt;d.b = <span class="string">'a'</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;c: %d\n"</span>, p-&gt;c);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.a: %d\n"</span>, p-&gt;d.a);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.b: %c\n"</span>, p-&gt;d.b);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">free</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出的结果如下：</p>
+<p><img src="output-nested-struct.png" alt=""></p>
+<h2 id="结构体的内存大小"><a href="#结构体的内存大小" class="headerlink" title="结构体的内存大小"></a>结构体的内存大小</h2><p>对一个结构体变量使用 <code>sizeof</code> 会如何呢？前文不是就用到堆内存分配了吗？</p>
+<p>这个数值实际上并不需要关心，但一般在考试题里会认为所有字段占据的内存空间的总和。但实际上并不一定是这样，结果可能比这个数值大一些，当然也可能是一样的。</p>
+<p>举个例子。就前文的学生类型结构体，它由四个字段构成：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在内存里，很有可能存储的方式是这样的：</p>
+<p><img src="struct-in-memory.png" alt=""></p>
+<p>当然，我也只能说是“可能”，因为具体的分配模式是根据内存怎么样找起来快怎么分配的模式来分配的。如果这种分配方式，使得代码运算速度快的话，那么这种肯定就是内存里存储这个结构体的方式。也有可能把 <code>age</code> 拿到下面来，也可能把 <code>isGirl</code> 拿下来，等等。</p>
+<blockquote>
+<p>不过，按照基本考试的方法，把它们所占字节数加起来就是整个结构体所占大小了：4 + 4 + 1 + 20 = 29 字节，所以，<code>sizeof(struct student)</code> = <code>sizeof(variable)</code> = 29。</p>
+</blockquote>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/11/25/clang-19-structs/" data-title="C 语言语法系列（19）：结构体 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2019/11/25/clang-20-unions/" title="C 语言语法系列（20）：联合体">
+  <strong>上一篇：</strong><br/>
+  <span>
+  C 语言语法系列（20）：联合体</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/11/25/clang-18-memory-allocation/"  title="C 语言语法系列（18）：堆内存和栈内存">
+ <strong>下一篇：</strong><br/> 
+ <span>C 语言语法系列（18）：堆内存和栈内存
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#何为结构体？"><span class="toc-number">1.</span> <span class="toc-text">何为结构体？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构体的使用"><span class="toc-number">2.</span> <span class="toc-text">结构体的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#我觉得-v-f-的访问模式太难写代码了，有没有简化版？"><span class="toc-number">3.</span> <span class="toc-text">我觉得 (*v).f 的访问模式太难写代码了，有没有简化版？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些烧脑的结构体使用模型"><span class="toc-number">4.</span> <span class="toc-text">一些烧脑的结构体使用模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#来一个可能会犯错的用法"><span class="toc-number">4.1.</span> <span class="toc-text">来一个可能会犯错的用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结构体的嵌套声明模式"><span class="toc-number">4.2.</span> <span class="toc-text">结构体的嵌套声明模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结构体的递归声明模式"><span class="toc-number">4.3.</span> <span class="toc-text">结构体的递归声明模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构体的内存大小"><span class="toc-number">5.</span> <span class="toc-text">结构体的内存大小</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>25</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>21</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

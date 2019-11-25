@@ -4,25 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C 语言语法系列（5）：while 语句 | 向向的博客</title>
+    <title>C 语言语法系列（20）：联合体 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="循环是什么？在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：  S_n = \frac{n(n - 1)}2显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我">
+    <meta name="description" content="前文我们描述了结构体的内容，我们知道了结构体需要堆内存的分配模式才可以正常分配变量，记得 free 函数释放，记得判断是否分配成功，还学习了如何使用 sizeof 关键字来获取变量（或结构体类型）的所占内存大小。下面我们来看另外一种模型：联合体（Union）。 不要尝试用联合体可以通过名字看出，它就是并集的英文名，它和结构体非常相近，但它可能更加奇怪：它的元素储存机制并不是挨着放的，而是从同一点开">
 <meta name="keywords" content="C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C 语言语法系列（5）：while 语句">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;index.html">
+<meta property="og:title" content="C 语言语法系列（20）：联合体">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-20-unions&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="循环是什么？在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：  S_n = \frac{n(n - 1)}2显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我">
+<meta property="og:description" content="前文我们描述了结构体的内容，我们知道了结构体需要堆内存的分配模式才可以正常分配变量，记得 free 函数释放，记得判断是否分配成功，还学习了如何使用 sizeof 关键字来获取变量（或结构体类型）的所占内存大小。下面我们来看另外一种模型：联合体（Union）。 不要尝试用联合体可以通过名字看出，它就是并集的英文名，它和结构体非常相近，但它可能更加奇怪：它的元素储存机制并不是挨着放的，而是从同一点开">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;while-loop-example.png">
-<meta property="og:updated_time" content="2019-11-19T12:42:28.041Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-20-unions&#x2F;union-in-memory.png">
+<meta property="og:updated_time" content="2019-11-25T14:31:47.068Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;19&#x2F;clang-05-while-loop&#x2F;while-loop-example.png">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;clang-20-unions&#x2F;union-in-memory.png">
 
     
     
@@ -84,7 +84,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/19/clang-05-while-loop/" title="C 语言语法系列（5）：while 语句" itemprop="url">C 语言语法系列（5）：while 语句</a>
+      <a href="/2019/11/25/clang-20-unions/" title="C 语言语法系列（20）：联合体" itemprop="url">C 语言语法系列（20）：联合体</a>
     
   </h1>
   <p class="article-author">By
@@ -92,7 +92,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-19T00:21:22.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
+    <time datetime="2019-11-25T13:35:07.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
     
   </p>
 </header>
@@ -101,38 +101,27 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-（循环）语句"><span class="toc-number">2.</span> <span class="toc-text">while （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#不要尝试用联合体"><span class="toc-number">1.</span> <span class="toc-text">不要尝试用联合体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#既然这样，联合体有什么样的用途呢？"><span class="toc-number">2.</span> <span class="toc-text">既然这样，联合体有什么样的用途呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#联合体的内存大小"><span class="toc-number">3.</span> <span class="toc-text">联合体的内存大小</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="循环是什么？"><a href="#循环是什么？" class="headerlink" title="循环是什么？"></a>循环是什么？</h2><p>在我们写代码的时候，难免遇到重复的操作。例如我想尝试从 1 到 100 求和。但显然，数学公式可以解决这一点：</p>
-<script type="math/tex; mode=display">
-S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个问题。不过，从代码的角度来看，我们也可以尝试让电脑计算 100 次求和的操作，这样依然可以解决，而且电脑运算得很快，所以我们完全可以忽略 100 次重复计算和一次计算公式得到结果的时间差。这个时间差我们完全感觉不到。</p>
-<p>那么，如何进行重复性的运算呢？我们先理清楚执行思路：</p>
-<p><img src="while-loop-example.png" alt=""></p>
-<p>如图所示，我们首先为 <code>i</code> 和 <code>S</code> 赋值，这些数值在后续都会使用到，这个称为初始值。然后，我们尝试先判断一次是否这个数字 <code>i</code> 超过了 100。如果没有超过，我们就执行第一次把 <code>i</code> 累加到 <code>S</code> 之中。可见 <code>S</code> 表示整个计算的和值结果。接着，<code>i</code> 增大一个单位。于是，我们重新作一次判断，看此时的 <code>i</code> 是否超过了 100（超过 100 就不计算在内了）。如果没有超过，就重复操作，继续把 <code>i</code> 的新数值累加到 <code>S</code> 之中，并再次增大 <code>i</code> 一个单位；如果 <code>i</code> 已经超过了 100，整个计算的活动行为就结束了。于是我们此时输出 <code>S</code> 的结果，并退出程序，整个程序执行完毕。</p>
-<p>看得出来，这个逻辑是比较清楚的。</p>
-<h2 id="while-（循环）语句"><a href="#while-（循环）语句" class="headerlink" title="while （循环）语句"></a><code>while</code> （循环）语句</h2><p>说完基本的计算思路，下面我们来说说它的代码的语法格式。</p>
-<h3 id="基本写法"><a href="#基本写法" class="headerlink" title="基本写法"></a>基本写法</h3><p><code>while</code> 语句可以解决上述的写法。我们尝试来看一下整体的逻辑。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        S += i;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, S);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先我们依旧尝试为 <code>i</code> 和 <code>S</code> 进行初始赋值，然后直接进入循环部分。当 <code>i</code> 不超过 100 的时候，就进行累加，并且要增大 <code>i</code> 变量的数值。最后执行完毕后，输出 <code>S</code> 的结果即可。</p>
-<p>由此可见，这个类型的执行逻辑还是比较清晰的。有一点看起来像是瑕疵的地方在于，我们明明知道 <code>i</code> 此时初始数值是 1，没有超过 100，而为什么非要在最开始就写上判断条件 <code>i &lt;= 100</code> 来判断是否小于等于 100 呢？这不是废话吗？</p>
-<p>实际上，这个程序当你输入了一个无效的数值时，比如 107，这个时候根本不可能计算从 107 到 100 的和（我们的目的是从 1 增大到 100，而 107 超过了 100），所以直接就退出了循环。另外，<code>while</code> 语句的格式要求把条件放到最开始，所以我们不得不这么做。</p>
-<p>所以，总的来说，<code>while</code> 语句的写法是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (condition)</span><br><span class="line">&#123;</span><br><span class="line">    loopExecutingSentence;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 <code>while</code> 旁边写执行的元素的判断条件，然后在大括号里写上执行反复操作的语句。</p>
-<blockquote>
-<p><code>while</code> 语句也经常被称为 <code>while</code> 循环。</p>
-</blockquote>
-<h3 id="作出优化"><a href="#作出优化" class="headerlink" title="作出优化"></a>作出优化</h3><p>显然，在前文我们学习了自增自减运算符的前后缀书写方式的计算问题。当 <code>++</code> 写在变量之后，则表示变量在使用完成后最后增大一个单位。这使得我们原本需要写成两句话的语句可以写成一句话：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S += i++;</span><br></pre></td></tr></table></figure>
-<p>这个写法等价于先执行 <code>sum += i;</code> 语句，然后执行 <code>i++;</code> 语句增大 <code>i</code> 变量一个单位。</p>
-<p>所以，<code>while</code> 语句和 <code>if</code> 执行的模式完全一样，如果重复执行的语句只有一个语句，则可以省略大括号，所以上述写法融入到 <code>while</code> 里则可以写成这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (i &lt;= <span class="number">100</span>)</span><br><span class="line">    S += i++;</span><br></pre></td></tr></table></figure>
-<h2 id="另外一个示例"><a href="#另外一个示例" class="headerlink" title="另外一个示例"></a>另外一个示例</h2><p>下面我们来看另外一则示例。我们还是用求和的思路来讲解，不过我们稍作改动。如果我们要计算从 1 到某个数的和，不过问题变为了”请求出从 1 到 $n$ 的所有整数的和 $S$ 在<strong>第一次</strong>超过 2400 的时候，此时的 $n$ 的值“。这个问题怎么解决呢？</p>
-<p>实际上，可能你想得很复杂。我们知道，<code>while</code> 语句的写法是一个条件加上重复运算的语句，所以这个题目完全可以只修改执行的条件：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (S &lt;= <span class="number">2400</span>) <span class="comment">// Note here.</span></span><br><span class="line">    S += i++;</span><br></pre></td></tr></table></figure>
-<p>注意条件改为了 <code>S &lt;= 2400</code>，其它的地方都没变化。最后只需要输出 <code>i</code> 的结果就可以了。</p>
+		<p>前文我们描述了结构体的内容，我们知道了结构体需要堆内存的分配模式才可以正常分配变量，记得 <code>free</code> 函数释放，记得判断是否分配成功，还学习了如何使用 <code>sizeof</code> 关键字来获取变量（或结构体类型）的所占内存大小。下面我们来看另外一种模型：<strong>联合体</strong>（Union）。</p>
+<h2 id="不要尝试用联合体"><a href="#不要尝试用联合体" class="headerlink" title="不要尝试用联合体"></a>不要尝试用联合体</h2><p>可以通过名字看出，它就是并集的英文名，它和结构体非常相近，但它可能更加奇怪：它的元素储存机制并不是挨着放的，而是从同一点开始。</p>
+<p>加入，我们依旧使用 <code>student</code> 作为类型名，不够把关键字改为 <code>union</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> student</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如果我们定义一个变量，并为其分配好内存：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> student *a = (<span class="keyword">union</span> student *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">union</span> student));</span><br></pre></td></tr></table></figure>
+<p>这样就可以了。现在我们按照类似的方式来为联合体的字段赋值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(*a).age = <span class="number">63</span>;</span><br><span class="line">(*a).name[<span class="number">0</span>] = <span class="string">'A'</span>;</span><br></pre></td></tr></table></figure>
+<p>我们并没有为其把所有字段都赋好值，而仅为 <code>age</code> 字段赋值 63，而把 <code>name</code> 的第一个字符位置赋值我 <code>A</code> 字符。这已经足以说明问题。现在我们尝试重新输出 <code>age</code> 字段结果，你就会发现奇怪的地方。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, (*a).age);</span><br></pre></td></tr></table></figure>
+<p>此时，你会发现输出结果一定不会是 63，而是一个非常大的数。这很奇怪，因为我们在赋值了 63 后再也没动过 <code>age</code> 字段的信息，就简单为 <code>name</code> 的第一个字符位置赋值了一下，竟然修改了 <code>age</code> 字段的结果。</p>
+<p>联合体在分配内存的时候，是全部都在头部对齐的，这也就意味着，如果我们分配的 <code>a</code> 指针指向内存假设为 <code>0x123</code> 的位置上的话，那么 <code>0x123</code> 就是所有四个字段的起始点。这样一来，修改一处字段，自然就会同时影响到其它字段的结果。</p>
+<p><img src="union-in-memory.png" alt=""></p>
+<p>所以，不要尝试使用联合体。</p>
+<h2 id="既然这样，联合体有什么样的用途呢？"><a href="#既然这样，联合体有什么样的用途呢？" class="headerlink" title="既然这样，联合体有什么样的用途呢？"></a>既然这样，联合体有什么样的用途呢？</h2><p>在非常罕见的情况下，我们需要节约内存。当我们不得不把多个信息点都放在同一个地方存储来节约内容，而且这些信息仅在调用时有效，其它时候根本不用的情况下，可以考虑使用联合体。</p>
+<p>不过，这种情况实在是太少了。</p>
+<h2 id="联合体的内存大小"><a href="#联合体的内存大小" class="headerlink" title="联合体的内存大小"></a>联合体的内存大小</h2><p>前文讲述了结构体的内存大小的计算。联合体的内存大小其实也很好求得。前文已经完全描述了所有有关联合体定义分配内存时候的模式：同时对齐在开头地址。所以它的总大小，取决于所有字段里最“长”的那一个，所以，<code>sizeof(union student)</code> = 20。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -155,7 +144,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/19/clang-05-while-loop/" data-title="C 语言语法系列（5）：while 语句 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/25/clang-20-unions/" data-title="C 语言语法系列（20）：联合体 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -168,19 +157,11 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法系列（6）：do-while 语句">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C 语言语法系列（6）：do-while 语句</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/18/csharplang-complement-04-enum/"  title="C# 语法查漏补缺系列（4）：枚举类型">
+<a href="/2019/11/25/clang-19-structs/"  title="C 语言语法系列（19）：结构体">
  <strong>下一篇：</strong><br/> 
- <span>C# 语法查漏补缺系列（4）：枚举类型
+ <span>C 语言语法系列（19）：结构体
 </span>
 </a>
 </div>
@@ -304,7 +285,7 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#循环是什么？"><span class="toc-number">1.</span> <span class="toc-text">循环是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#while-（循环）语句"><span class="toc-number">2.</span> <span class="toc-text">while （循环）语句</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本写法"><span class="toc-number">2.1.</span> <span class="toc-text">基本写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#作出优化"><span class="toc-number">2.2.</span> <span class="toc-text">作出优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#另外一个示例"><span class="toc-number">3.</span> <span class="toc-text">另外一个示例</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#不要尝试用联合体"><span class="toc-number">1.</span> <span class="toc-text">不要尝试用联合体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#既然这样，联合体有什么样的用途呢？"><span class="toc-number">2.</span> <span class="toc-text">既然这样，联合体有什么样的用途呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#联合体的内存大小"><span class="toc-number">3.</span> <span class="toc-text">联合体的内存大小</span></a></li></ol>
  
   </div>
 
