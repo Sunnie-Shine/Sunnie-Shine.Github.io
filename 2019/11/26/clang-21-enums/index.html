@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>使用 LINQ 解数独题 | 向向的博客</title>
+    <title>C 语言语法系列（21）：枚举类型 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="LINQ 解数独你见过吗？啥也不说了，本文就只有一整篇的代码。 1234567891011121314151617181920212223242526static List&amp;lt;string&amp;gt; Solve(string puzzle)&amp;#123;    const string values = &quot;123456789&quot;;    var result = new List&amp;lt;string">
-<meta name="keywords" content="C♯,数独,LINQ">
+    <meta name="description" content="前文解决了两种需要带关键字的自定义类型：结构体和共用体，它们的用法也是各有各的好处和奇特之处。今天我们来看一种新的带关键字的类型：枚举类型（Enumerations）。 什么是枚举类型？枚举类型一般用于列举一些特殊情况时，特别这些情况的范围仅仅只有可以数出来的几种情况的时候，我们就可以使用这种类型，例如星期。 我们可以使用枚举类型为星期定义一个枚举类型，写法是这样的： 12345678910enu">
+<meta name="keywords" content="C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用 LINQ 解数独题">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;solving-sudoku-using-linq&#x2F;index.html">
+<meta property="og:title" content="C 语言语法系列（21）：枚举类型">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;26&#x2F;clang-21-enums&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="LINQ 解数独你见过吗？啥也不说了，本文就只有一整篇的代码。 1234567891011121314151617181920212223242526static List&amp;lt;string&amp;gt; Solve(string puzzle)&amp;#123;    const string values = &quot;123456789&quot;;    var result = new List&amp;lt;string">
+<meta property="og:description" content="前文解决了两种需要带关键字的自定义类型：结构体和共用体，它们的用法也是各有各的好处和奇特之处。今天我们来看一种新的带关键字的类型：枚举类型（Enumerations）。 什么是枚举类型？枚举类型一般用于列举一些特殊情况时，特别这些情况的范围仅仅只有可以数出来的几种情况的时候，我们就可以使用这种类型，例如星期。 我们可以使用枚举类型为星期定义一个枚举类型，写法是这样的： 12345678910enu">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-11T05:36:40.084Z">
+<meta property="og:updated_time" content="2019-11-26T02:58:02.215Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -82,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/08/solving-sudoku-using-linq/" title="使用 LINQ 解数独题" itemprop="url">使用 LINQ 解数独题</a>
+      <a href="/2019/11/26/clang-21-enums/" title="C 语言语法系列（21）：枚举类型" itemprop="url">C 语言语法系列（21）：枚举类型</a>
     
   </h1>
   <p class="article-author">By
@@ -90,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-08T03:10:50.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    <time datetime="2019-11-26T02:43:27.000Z" itemprop="datePublished"> 发表于 2019-11-26</time>
     
   </p>
 </header>
@@ -99,13 +99,25 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LINQ-解数独你见过吗？"><span class="toc-number">1.</span> <span class="toc-text">LINQ 解数独你见过吗？</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是枚举类型？"><span class="toc-number">1.</span> <span class="toc-text">什么是枚举类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用"><span class="toc-number">2.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#枚举类型的内存大小"><span class="toc-number">3.</span> <span class="toc-text">枚举类型的内存大小</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="LINQ-解数独你见过吗？"><a href="#LINQ-解数独你见过吗？" class="headerlink" title="LINQ 解数独你见过吗？"></a>LINQ 解数独你见过吗？</h2><p>啥也不说了，本文就只有一整篇的代码。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> List&lt;<span class="keyword">string</span>&gt; <span class="title">Solve</span>(<span class="params"><span class="keyword">string</span> puzzle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">string</span> values = <span class="string">"123456789"</span>;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; puzzle &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (result.Count &gt; <span class="number">0</span> &amp;&amp; result[<span class="number">0</span>].IndexOf(<span class="string">'0'</span>, StringComparison.OrdinalIgnoreCase) != <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        result = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;(</span><br><span class="line">            <span class="keyword">from</span> solution <span class="keyword">in</span> result</span><br><span class="line">            <span class="keyword">let</span> index = solution.IndexOf(<span class="string">'0'</span>, StringComparison.OrdinalIgnoreCase)</span><br><span class="line">            <span class="keyword">let</span> column = index % <span class="number">9</span></span><br><span class="line">            <span class="keyword">let</span> block = index - index % <span class="number">27</span> + column - index % <span class="number">3</span></span><br><span class="line">            <span class="keyword">from</span> <span class="keyword">value</span> <span class="keyword">in</span> values</span><br><span class="line">            <span class="keyword">where</span> !(</span><br><span class="line">                <span class="keyword">from</span> i <span class="keyword">in</span> Values.DigitRange</span><br><span class="line">                <span class="keyword">let</span> inRow = solution[index - column + i] == <span class="keyword">value</span></span><br><span class="line">                <span class="keyword">let</span> inColumn = solution[column + i * <span class="number">9</span>] == <span class="keyword">value</span></span><br><span class="line">                <span class="keyword">let</span> inBlock = solution[block + i % <span class="number">3</span> + (<span class="keyword">int</span>)Floor(i / <span class="number">3f</span>) * <span class="number">9</span>] == <span class="keyword">value</span></span><br><span class="line">                <span class="keyword">where</span> inRow || inColumn || inBlock</span><br><span class="line">                <span class="keyword">select</span> i</span><br><span class="line">            ).Any()</span><br><span class="line">            <span class="keyword">select</span> <span class="string">$"<span class="subst">&#123;solution.Substring(<span class="number">0</span>, index)&#125;</span><span class="subst">&#123;<span class="keyword">value</span>&#125;</span><span class="subst">&#123;solution.Substring(index + <span class="number">1</span>)&#125;</span>"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不过后续我们倒是可能会根据源代码进行原理性质的分析的更新。</p>
+		<p>前文解决了两种需要带关键字的自定义类型：结构体和共用体，它们的用法也是各有各的好处和奇特之处。今天我们来看一种新的带关键字的类型：<strong>枚举类型</strong>（Enumerations）。</p>
+<h2 id="什么是枚举类型？"><a href="#什么是枚举类型？" class="headerlink" title="什么是枚举类型？"></a>什么是枚举类型？</h2><p>枚举类型一般用于列举一些特殊情况时，特别这些情况的范围仅仅只有可以数出来的几种情况的时候，我们就可以使用这种类型，例如星期。</p>
+<p>我们可以使用枚举类型为星期定义一个枚举类型，写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> week</span><br><span class="line">&#123;</span><br><span class="line">    monday = <span class="number">1</span>,</span><br><span class="line">    tuesday = <span class="number">2</span>,</span><br><span class="line">    wednesday = <span class="number">3</span>,</span><br><span class="line">    thursday = <span class="number">4</span>,</span><br><span class="line">    friday = <span class="number">5</span>,</span><br><span class="line">    saturday = <span class="number">6</span>,</span><br><span class="line">    sunday = <span class="number">7</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们把枚举的每一个数值放到枚举的大括号里，然后把每一个枚举数值写进去就可以了。枚举类型一般是需要对应数值使用的，否则我们无法做到灵活使用枚举的效果。所以我们一般都会配合整数使用，为每一个枚举数值赋一个整数值；当然，如果不赋值，那么从第一个元素开始，就以 0 为起始点开始往下顺序默认赋值；如果为其某一个数值赋值，那么后面的元素不赋值也可以得到默认数值，这些数值就从赋值的数值开始自动递增 1 个单位。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> week</span><br><span class="line">&#123;</span><br><span class="line">    monday = <span class="number">1</span>,</span><br><span class="line">    tuesday,</span><br><span class="line">    wednesday,</span><br><span class="line">    thursday,</span><br><span class="line">    friday,</span><br><span class="line">    saturday,</span><br><span class="line">    sunday</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个写法等价于前者。</p>
+<p>当然，如果 <code>monday</code> 字段不赋值的话，那么整体就会从 0 开始计算，即 <code>monday</code> 赋值为 0、<code>tuesday</code> 赋值为 1、<code>wednesday</code> 赋值为 2，等等。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>枚举类型出乎意料得好用。为什么这么说呢？因为枚举类型一般都不会用类型名称（即这里的 <code>enum week</code>，当然有时候也可以用上），而大多直接把里面的数值代入到指定位置上去就完成了使用。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> w;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;w);</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span>(w)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">case</span> monday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Monday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> tuesday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Tuesday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> wednesday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Wednesday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> thursday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Thursday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> friday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Friday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> saturday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Saturday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> sunday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Sunday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Default\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从代码里可以发现，每一个 <code>case</code> 标签处跟的直接是枚举字段，而且不需要使用成员访问运算符这种奇怪的东西，也不需要类型名称来作为辅助操作。</p>
+<p>实际上，我们也可以从这种角度认为，<code>bool</code> 是一种枚举类型，因为它的声明语句可以是这样的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="keyword">bool</span> &#123; <span class="literal">false</span>, <span class="literal">true</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>这样 <code>false</code> 字段就赋值为 0，而 <code>true</code> 自动赋值为 1。</p>
+<h2 id="枚举类型的内存大小"><a href="#枚举类型的内存大小" class="headerlink" title="枚举类型的内存大小"></a>枚举类型的内存大小</h2><p>当然，<code>bool</code> 类型并不是这么简单，因为 <code>bool</code> 仅仅占据一个字节，而枚举类型需要整数的依托，所以枚举类型的大小一般是 4 个字节（即 <code>int</code> 占据多大，枚举就多大）。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -113,13 +125,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/数独/">数独</a><a href="/tags/LINQ/">LINQ</a>
+  <span></span> <a href="/tags/C/">C</a>
   </div>
 
 </div>
@@ -128,7 +140,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/08/solving-sudoku-using-linq/" data-title="使用 LINQ 解数独题 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/11/26/clang-21-enums/" data-title="C 语言语法系列（21）：枚举类型 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -142,18 +154,18 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2019/11/08/android-permissions/" title="安卓权限设置">
+ <a href="/2019/11/26/clang-22-typedef/" title="C 语言语法系列（22）：typedef 的艺术">
   <strong>上一篇：</strong><br/>
   <span>
-  安卓权限设置</span>
+  C 语言语法系列（22）：typedef 的艺术</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2019/11/07/csharplang-complement-03-trivalue-boolean/"  title="C# 语法查漏补缺系列（3）：三值布尔运算表">
+<a href="/2019/11/25/clang-20-unions/"  title="C 语言语法系列（20）：联合体">
  <strong>下一篇：</strong><br/> 
- <span>C# 语法查漏补缺系列（3）：三值布尔运算表
+ <span>C 语言语法系列（20）：联合体
 </span>
 </a>
 </div>
@@ -277,7 +289,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LINQ-解数独你见过吗？"><span class="toc-number">1.</span> <span class="toc-text">LINQ 解数独你见过吗？</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是枚举类型？"><span class="toc-number">1.</span> <span class="toc-text">什么是枚举类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用"><span class="toc-number">2.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#枚举类型的内存大小"><span class="toc-number">3.</span> <span class="toc-text">枚举类型的内存大小</span></a></li></ol>
  
   </div>
 

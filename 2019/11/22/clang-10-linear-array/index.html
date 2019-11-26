@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="数组是什么？在前文的知识点里，我们描述了很多有关重复性的内容，例如 C 语言提供的三大循环语句：while、do-while 和 for 循环，还谈论了 for 的各种“奇葩”用法。今天要讲的重复性内容，并非针对执行操作，而是针对于数值存储。 试想一下，如果我们需要大量信息，而且它们需要的内容的类型近乎一致。比如我们要存储 50 个学生的数学成绩，如果我们单纯使用 50 个变量的话，显然是不好读也">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-22T13:50:45.028Z">
+<meta property="og:updated_time" content="2019-11-26T03:11:12.507Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组是什么？"><span class="toc-number">1.</span> <span class="toc-text">数组是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的定义"><span class="toc-number">2.</span> <span class="toc-text">数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的赋值"><span class="toc-number">3.</span> <span class="toc-text">数组的赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化赋值"><span class="toc-number">3.1.</span> <span class="toc-text">初始化赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续赋值"><span class="toc-number">3.2.</span> <span class="toc-text">后续赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组内元素的存取"><span class="toc-number">4.</span> <span class="toc-text">数组内元素的存取</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组是什么？"><span class="toc-number">1.</span> <span class="toc-text">数组是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的定义"><span class="toc-number">2.</span> <span class="toc-text">数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的赋值"><span class="toc-number">3.</span> <span class="toc-text">数组的赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化赋值"><span class="toc-number">3.1.</span> <span class="toc-text">初始化赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续赋值"><span class="toc-number">3.2.</span> <span class="toc-text">后续赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数组初始化的长度是否可以用变量表示？"><span class="toc-number">3.3.</span> <span class="toc-text">数组初始化的长度是否可以用变量表示？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组内元素的存取"><span class="toc-number">4.</span> <span class="toc-text">数组内元素的存取</span></a></li></ol>
 		
 		</div>
 		
@@ -136,6 +136,10 @@
 <p>中括号里的数值，就等于后面大括号里元素的总个数 10 个。</p>
 </blockquote>
 <h3 id="后续赋值"><a href="#后续赋值" class="headerlink" title="后续赋值"></a>后续赋值</h3><p>你也可以借用循环语句赋值，但需要讲解存取数组的元素的语法才可以。现在我们来说一下，如何取出数组里的元素，和修改这些元素的值。</p>
+<h3 id="数组初始化的长度是否可以用变量表示？"><a href="#数组初始化的长度是否可以用变量表示？" class="headerlink" title="数组初始化的长度是否可以用变量表示？"></a>数组初始化的长度是否可以用变量表示？</h3><p>思考一个问题。我们是否可以用一个变量来表示数组的长度呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line"><span class="keyword">int</span> arr[i]; <span class="comment">// Does it work?</span></span><br></pre></td></tr></table></figure>
+<p>这么书写，是否表示输入的数值是多少，数组初始化的时候长度就是多少呢？</p>
+<p>在 C99 标准之前，这种写法一直都是不被允许的。在考试过程时，一般也不允许这种写法，不过 C99 标准开始允许你这么声明数组，即<strong>可变长数组</strong>（Variable Length Array，简称 <strong>VLA</strong>）。VLA 这种特性是在 C99 标准才引入的，所以如果你需要使用 VLA，考试里则是肯定不允许的。</p>
 <h2 id="数组内元素的存取"><a href="#数组内元素的存取" class="headerlink" title="数组内元素的存取"></a>数组内元素的存取</h2><p>前文讲述了如何使用数组进行定义和初始化，它采用的是中括号的方式，写在数组名称的后面，中括号里写上总元素个数来表达。</p>
 <p>在存取元素的时候，我们依旧用的是中括号，而且稍微在使用上和初始化里的中括号有一点区别：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">82</span>, <span class="number">100</span>, <span class="number">96</span>, <span class="number">57</span>, <span class="number">14</span>, <span class="number">99</span>, <span class="number">90</span>, <span class="number">60</span>, <span class="number">68</span>, <span class="number">77</span> &#125;;</span><br></pre></td></tr></table></figure>
@@ -324,7 +328,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组是什么？"><span class="toc-number">1.</span> <span class="toc-text">数组是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的定义"><span class="toc-number">2.</span> <span class="toc-text">数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的赋值"><span class="toc-number">3.</span> <span class="toc-text">数组的赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化赋值"><span class="toc-number">3.1.</span> <span class="toc-text">初始化赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续赋值"><span class="toc-number">3.2.</span> <span class="toc-text">后续赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组内元素的存取"><span class="toc-number">4.</span> <span class="toc-text">数组内元素的存取</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组是什么？"><span class="toc-number">1.</span> <span class="toc-text">数组是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的定义"><span class="toc-number">2.</span> <span class="toc-text">数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组的赋值"><span class="toc-number">3.</span> <span class="toc-text">数组的赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化赋值"><span class="toc-number">3.1.</span> <span class="toc-text">初始化赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后续赋值"><span class="toc-number">3.2.</span> <span class="toc-text">后续赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数组初始化的长度是否可以用变量表示？"><span class="toc-number">3.3.</span> <span class="toc-text">数组初始化的长度是否可以用变量表示？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组内元素的存取"><span class="toc-number">4.</span> <span class="toc-text">数组内元素的存取</span></a></li></ol>
  
   </div>
 
@@ -351,7 +355,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>21</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>23</sup></a></li>
 			
 		
 			
