@@ -82,6 +82,93 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/06/csharplang-complement-01-is-as-operator/" title="C# 语法查漏补缺系列（1）：is 和 as 运算符" itemprop="url">C# 语法查漏补缺系列（1）：is 和 as 运算符</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-06T09:17:04.000Z" itemprop="datePublished"> 发表于 2019-11-06</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 <code>is</code> 和 <code>as</code> 运算符。</p>
+<h2 id="is-运算符"><a href="#is-运算符" class="headerlink" title="is 运算符"></a><code>is</code> 运算符</h2><h3 id="关键字介绍"><a href="#关键字介绍" class="headerlink" title="关键字介绍"></a>关键字介绍</h3><p><code>is</code> 就好比 Java 语言里的 <code>instanceof</code>，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 <code>true</code>；而否则返回 <code>false</code>，如下示例。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> hello = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> <span class="keyword">object</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result3 = hello <span class="keyword">is</span> IEnumerable&lt;<span class="keyword">char</span>&gt;; <span class="comment">// also true</span></span><br></pre></td></tr></table></figure>
+<p>可以看到的是，只要兼容的类型，它都能测试出来。例如，字符串实现了 <code>IEnumerable&lt;char&gt;</code> 接口，那么它就完全可以转换为这个类型。在 OOP 的世界里，一个类型就好比是一个角色。你实现（或继承）了什么类型，就拥有了什么角色，你就可以转换过去。</p>
+<p>一切皆对象（object），那么我们所有人，所有事都可以被转换为 <code>object</code> 类型。包括值类型，它会迂回地转换，先隐式转换（派生自）<code>ValueType</code> 类类型，而这个类型又是派生自 <code>object</code> 的；而指针，则隐式继承自 <code>IntPtr</code> 结构类型，而这个类型依然派生自 <code>object</code>。</p>
+<p>不过，哪怕你的数据数值为 <code>null</code>，也不会报错：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? hello = <span class="literal">null</span>; <span class="comment">// C# 8 uses `T?` to tell us the referenced type may be null.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> IDisposable; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<p>它并不会抛出异常。</p>
+<p>当我们转换到指定类型时，可以使用强制转换语法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> s = <span class="string">"hello"</span>; <span class="comment">// Define a variable.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (s <span class="keyword">is</span> <span class="keyword">string</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">string</span> p = (<span class="keyword">string</span>)s;</span><br><span class="line">    <span class="comment">// And then do what you want to do...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"Oh no, I don't know what the type of <span class="subst">&#123;<span class="keyword">nameof</span>(s)&#125;</span> is."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="is-null-和-is-constant-模式"><a href="#is-null-和-is-constant-模式" class="headerlink" title="is null 和 is constant 模式"></a><code>is null</code> 和 <code>is constant</code> 模式</h3><p>现如今，C# 语法支持 <code>is null</code> 模式来指定判断对象是否为 <code>null</code>，来避免操作符重载没有判断 <code>null</code> 的情况时尴尬报错的情况。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = (<span class="keyword">object</span>?)obj == <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+<p>即相当于先隐式转换回最终类 <code>object</code>，并在可空情况下，判断它是否为 <code>null</code>。当然，如果你不是高版本的话，<code>object?</code> 里的问号就可以不写了。</p>
+<p>C# 还支持 <code>is constant</code> 模式来判断对象是否是指定常量数值，写法是这样的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="string">"Hello"</span></span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">string</span> comparer &amp;&amp; comparer == <span class="string">"Hello"</span></span><br></pre></td></tr></table></figure>
+<p>即，<code>obj</code> 是字符串类型，且它在转换后，要是跟 <code>Hello</code> 的写法一样的字符串。当然，值类型也可以用。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i &amp;&amp; i == <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>当然，注意此时是可能拆箱的，因为从引用类型转为值类型是必须拆箱的。当然，<code>obj</code> 如果被你假设为不是引用类型，就另当别论了。</p>
+</blockquote>
+<p>可见，<code>is</code> 的进化是非常明显的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> r1 = obj <span class="keyword">is</span> <span class="keyword">int</span>;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r3 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="as-运算符"><a href="#as-运算符" class="headerlink" title="as 运算符"></a><code>as</code> 运算符</h2><p><code>as</code> 运算符是 <code>is</code> 的转换模式升级版，当我们需要转换的时候，能够安全转换，并不报错的话，请采用 <code>as</code>，它的写法是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> s1 = (<span class="keyword">string</span>)o; <span class="comment">// Elder style.</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// New style (in C# 7 or lower)</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，代码直接用类似于 <code>is</code> 的写法，就转换了，但是需要注意的是，使用 <code>as</code> 和强制转换可能转换失败。当强制转换失败时，将会直接报错，因为它会提示“无法转换”；而 <code>as</code> 在无法转换时，对象的数值将为 <code>null</code>，即等价于如下写法</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">is</span> <span class="keyword">string</span> result ? result : <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+<p>不过请注意，不论何时，<code>as</code> 运算符都能带来 <code>null</code> 数值。当你使用 C# 8 的时候，它将提示警告。如果你能保证该写法是合法转换的话，就在转换语句的末尾加上后缀 <code>!</code>，让编译器去掉对该所谓的“错误”进行报错处理。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// var is string?</span></span><br><span class="line"><span class="keyword">var</span> s2 = (o <span class="keyword">as</span> <span class="keyword">string</span>)!; <span class="comment">// var is string</span></span><br></pre></td></tr></table></figure>
+<p>但请注意，<code>null</code> 包容运算符（有时候也叫 <code>null</code> 禁用运算符，null-suppress operator）作用的内容是转换结果，而不是类型，所以感叹号应加在整体上，故需要打小括号。</p>
+<p>但是，如果你不小心，错把 <code>o</code> 变量认为是“一定为 <code>string</code>”，而为其加上了该符号后，后续的执行语句在报错时会显得很隐蔽。即如果代码报错，显示 <code>NullReferenceException</code> 时，有可能你发现该对象的类型并没有带 <code>?</code> 后缀，而显得非常迷惑。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/C%E2%99%AF-%E8%AF%AD%E6%B3%95-%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">C♯.语法.查漏补缺</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/06/hexo-hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
     
   </h1>
@@ -176,7 +263,7 @@
 			
 		
 			
-				<li><a href="/tags/C/" title="C">C<sup>23</sup></a></li>
+				<li><a href="/tags/C/" title="C">C<sup>24</sup></a></li>
 			
 		
 			
@@ -188,11 +275,11 @@
 			
 		
 			
-				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
 			
 		
 			
