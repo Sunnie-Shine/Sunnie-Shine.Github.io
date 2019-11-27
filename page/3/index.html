@@ -82,6 +82,176 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/22/clang-08-nested-loop/" title="C 语言语法系列（8）：嵌套的循环" itemprop="url">C 语言语法系列（8）：嵌套的循环</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-22T04:43:34.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="嵌套？"><a href="#嵌套？" class="headerlink" title="嵌套？"></a>嵌套？</h2><p>什么是<strong>嵌套</strong>（Nest）？嵌套是 C 语言和其它众多编程语言里的一个重要的语法术语，它表示执行的控制流语句（<code>if</code>、<code>switch</code>、<code>while</code>、<code>do-while</code> 和 <code>for</code> 语句统称控制流语句，它们控制着整个程序的执行流程：是条件判断来走不同分支，还是反复执行相同的执行语句）的内部继续使用这些控制流语句的写法。比如前文介绍的 <code>if</code> 内还有 <code>if</code> 的情况：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> j;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (i == <span class="number">2</span>)</span><br><span class="line">&#123;</span><br><span class="line">    j = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (i &lt; <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        j = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        j = <span class="number">3</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如这个写法格式里的 <code>j</code> 的结果是 3，它先走了 <code>i == 2</code> 这个 <code>if</code> 条件的 <code>else</code> 部分，然后发现它也不满足 <code>i &lt; 2</code> 的情况，所以它最终走了 <code>i &lt; 2</code> 这个 <code>if</code> 条件里的 <code>else</code> 部分，获得了 <code>j = 3</code> 的赋值。</p>
+<p>很有意思的是，循环也是可以嵌套使用的。正因为如此，循环和条件判断的各种语句才会产生各种不同的组合模式，产生不同的代码书写技巧，比如<strong>枚举法</strong>（Enumeration）。不过，我们先要介绍，代码到底是怎么运算执行嵌套循环的。</p>
+<h2 id="实例：质数的判断"><a href="#实例：质数的判断" class="headerlink" title="实例：质数的判断"></a>实例：质数的判断</h2><p>最好理解的、最基础的例子就是求质数了。</p>
+<p>质数的定义是，在把一个大于等于 2 的整数分解为多个正整数的乘积时，如果只能分解为 <code>1 × 自己</code> 的话，这个数就是<strong>质数</strong>（也称<strong>素数</strong>，Prime），一般常见的质数有 2、3、5、7、11、13、17、19 等。</p>
+<p>现在我们尝试输出所有 100 以内的所有质数。我们的代码怎么写呢？</p>
+<h3 id="先实现判别质数的功能"><a href="#先实现判别质数的功能" class="headerlink" title="先实现判别质数的功能"></a>先实现判别质数的功能</h3><p>首先，我们尝试用爆破的方式，对一个整数尝试进行挨个数字的试除。如果这个整数无法被整除掉，说明它只能被 1 整除掉，故这个数肯定就是质数了。比如，我们要计算 17 是否是质数（即使我们背了表，知道它是质数），逻辑大致就是从 2 开始，一直计算到 16（17 除以 17 显然等于 1，所以这个除法已经没有意义了，所以我们只要求计算到 16 即可），让 17 挨个去除以这个数，如果每一次除法得到的结果都不能被整除，说明这个数肯定就是质数了）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> digit = <span class="number">17</span>, n = <span class="number">2</span>, remainder;</span><br><span class="line"><span class="keyword">int</span> isPrime = <span class="number">1</span>; <span class="comment">// 1 means `digit` is a prime, 0 means not.</span></span><br><span class="line"><span class="keyword">while</span> (n &lt;= digit - <span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    remainder = digit % n;</span><br><span class="line">    <span class="keyword">if</span> (remainder == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// This is not a prime number.</span></span><br><span class="line">        isPrime = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    n++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (isPrime) <span class="comment">// Equi to condition `isPrime != 0`</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d is a prime.\n"</span>, digit);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d is not a prime.\n"</span>, digit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们来大致看下逻辑。首先，我们为需要用到的条件进行变量的声明（定义），然后设置一个结果量 <code>isPrime</code>，来表示它是否是质数（1 表示这个数是质数，0 表示这个数不是质数）。</p>
+<p>然后考虑 <code>while</code> 循环里的内容。我们肯定要让 <code>n</code> 从 2 计算到 <code>digit - 1</code>，然后尝试记录每一次试除得到的余数 <code>remainder</code>。记录余数有什么用呢？在 C 语言里，判断一个数是否能被整除，用的方法是得到余数，看余数是否为 0。比如 <code>12 % 2</code> 的结果为 0，因为 12 是可以整除 2 的。</p>
+<p>如果 <code>remainder</code> 为 0，说明被整除了。在除法过程里得到完全整除的现象，就标志着这个数肯定就不是质数了。比如在计算 15（<code>digit</code> 是 15）的时候，如果 <code>n</code> 此时是 3，那么 <code>remainder</code> 就是 0 了，所以 <code>digit</code> 不是质数，我们需要将结果量 <code>isPrime</code> 改为 0。 标志着这个数肯定不是质数了。</p>
+<blockquote>
+<p>不过，如果在得到 <code>remainder</code> 为 0 的情况时，就标志着这个数不是质数了。既然它已经肯定不是质数了，所以此时就不必再往下算了，所以我们此时想要尝试跳到循环外面，继续执行下面的语句。不过，我们目前还没有讲解这一点，所以我们先不考虑这一点的优化。哪怕后面再次遇到余数 0 的情况，因为循环里只有对 <code>isPrime = 0</code> 的赋值，所以局面完全不可能被反转，即 <code>isPrime</code> 完全不可能被重新改为 1，所以大不了多几次被赋值为 0 罢了。</p>
+<p>另外，循环条件其实也可以优化，不过为了逻辑的清晰易懂，所以这里我们不提及任何有关优化的部分。</p>
+</blockquote>
+<p>当试除循环执行完毕，发现 <code>isPrime</code> 还是为初始赋值的情况 1，就说明在我们试除的循环里完全没有遇到余数为 0，即被整除的情况。所以这个数 <code>digit</code> 应为质数，所以我们认为这个数就是质数，输出 <code>digit</code> 是一个质数的信息，反之输出不是质数的信息。</p>
+<p>所以，前面给出的算法逻辑是完整的、正确的。</p>
+<h3 id="为遍历-2-到-100-写一层循环"><a href="#为遍历-2-到-100-写一层循环" class="headerlink" title="为遍历 2 到 100 写一层循环"></a>为遍历 2 到 100 写一层循环</h3><p>那么，我们既然做出了这个模块，那么，要想输出所有质数的信息，只需要把最后 <code>isPrime</code> 的判断的 <code>if</code> 条件去掉 <code>else</code> 部分，然后把输出语句改为直接输出这个数字，最后再在整个执行流程的外部加入一个 <code>while</code> 循环，计算 2 到 100 的所有数字即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> digit = <span class="number">2</span>, n, remainder;</span><br><span class="line"><span class="keyword">int</span> isPrime; <span class="comment">// 1 means `digit` is a prime, 0 means not.</span></span><br><span class="line"><span class="keyword">while</span> (digit &lt;= <span class="number">100</span>) <span class="comment">// Add this while-loop.</span></span><br><span class="line">&#123;</span><br><span class="line">    n = <span class="number">2</span>; <span class="comment">// Re-assign this variable.</span></span><br><span class="line">    isPrime = <span class="number">1</span>; <span class="comment">// Re-assign this variable.</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> region Old code</span></span><br><span class="line">    <span class="keyword">while</span> (n &lt;= digit - <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        remainder = digit % n;</span><br><span class="line">        <span class="keyword">if</span> (remainder == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// This is not a prime number.</span></span><br><span class="line">            isPrime = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        n++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (isPrime)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, digit);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">#<span class="meta-keyword">pragma</span> endregion</span></span><br><span class="line"></span><br><span class="line">    digit++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>Old code</code> 代码块里面的这一大堆代码都是前文用过的代码，被我原封不动地复制过来了。我们把 <code>digit</code> 从 17 改为了 2。因为我们这个题目的真正目的是为了遍历前面 100 个正整数，而 0 和 1 既不是质数也不是合数，所以我们直接从 2 开始计算。</p>
+<p>然后，程序执行到 <code>digit &lt;= 100</code> 时，显然满足条件，所以进入到循环里。然后为 <code>n</code> 和 <code>isPrime</code> 进行初始化的赋值。然后进入之前的判断质数的代码块里。如果 <code>digit</code> 是质数，则肯定会进入到上述代码第 23 行代码里，并输出这个数字，然后紧跟一个空格，为了保证后面可能会输出的数字会和这个当前数字之间有一个空格的分隔。</p>
+<p>然后，最后到达第 27 行代码，<code>digit</code> 会增大一个单位，比如 <code>digit</code> 从 2 变为 3，整个循环执行完毕。接着，倒回 <code>digit &lt;= 100</code> 的条件处判断。显然，它还是满足要求，所以重新进入到循环里。然后又一次对 <code>n</code> 和 <code>isPrime</code> 执行初始化的赋值。</p>
+<blockquote>
+<p>实际上，从这里就可以看出来，把这两句初始赋值写在循环里的原因。因为每一个不同的数字判断是否是质数的时候，都采用的是 <code>n</code> 和 <code>isPrime</code> 两个变量。重新赋值初始值是为了避免计算过后，更改了这两个变量的数值，而我们没有重新修正数值，就会影响到程序执行，并出现没有达到预期结果的 bug。</p>
+</blockquote>
+<p>可以看到，这一则实例用到了两层 <code>while</code> 循环，外层 <code>while</code> 循环表示的意思是，想要从 2 计算到 100，把每一个数字都判断一遍，它们是否是质数；而内层的 <code>while</code> 循环在这里表示的意思是，尝试把外层循环得到的当前需要计算的数字 <code>digit</code> 去逐个用 2 开始试除，看看这个数是否能被内层循环得到的这个数字所除尽。</p>
+<h2 id="其它循环的嵌套"><a href="#其它循环的嵌套" class="headerlink" title="其它循环的嵌套"></a>其它循环的嵌套</h2><h3 id="for-循环的嵌套"><a href="#for-循环的嵌套" class="headerlink" title="for 循环的嵌套"></a><code>for</code> 循环的嵌套</h3><p><code>while</code> 循环的嵌套还是很简单的，不过 <code>for</code> 循环嵌套的理解难点就在于它的小括号的三个部分的执行顺序。只要你不要忘了 <code>for</code> 循环的执行顺序：初始值、条件、循环体、增量、条件、循环体、增量、条件、循环体、增量……</p>
+<p>例如上述逻辑，就可以改写为如下的代码格式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> digit = <span class="number">2</span>, n, remainder;</span><br><span class="line"><span class="keyword">int</span> isPrime; <span class="comment">// 1 means `digit` is a prime, 0 means not.</span></span><br><span class="line"><span class="keyword">for</span> (digit = <span class="number">2</span>; digit &lt;= <span class="number">100</span>; digit++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (n = <span class="number">2</span>, isPrime = <span class="number">1</span>; n &lt;= digit - <span class="number">1</span>; n++)</span><br><span class="line">    &#123;</span><br><span class="line">        remainder = digit % n;</span><br><span class="line">        <span class="keyword">if</span> (remainder == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// This is not a prime number.</span></span><br><span class="line">            isPrime = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (isPrime)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, digit);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上，改写代码后，代码量更少了，逻辑也清晰了，只是代码可能会稍微难理解一些。但只要你每一步按部就班地来，就不会出现逻辑执行的顺序错误。</p>
+<h3 id="do-while-循环的嵌套"><a href="#do-while-循环的嵌套" class="headerlink" title="do-while 循环的嵌套"></a><code>do-while</code> 循环的嵌套</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, j;</span><br><span class="line"></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">    j = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"*"</span>);</span><br><span class="line">        j++;</span><br><span class="line">    &#125; <span class="keyword">while</span> (j &lt;= i);</span><br><span class="line">    </span><br><span class="line">    i++;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125; <span class="keyword">while</span> (i &lt;= <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+<p>用得最少的就是 <code>do-while</code> 循环了，所以它的嵌套很多时候，虽然简单，但难理解。不过一般我们都用不上，所以这里就随便举了个例，然后改写成 <code>do-while</code> 循环书写。</p>
+<p>这个例子的输出结果是</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+\text{*}\\
+\text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\end{matrix}</script><h2 id="循环语句的大括号省略"><a href="#循环语句的大括号省略" class="headerlink" title="循环语句的大括号省略"></a>循环语句的大括号省略</h2><p>和 <code>if</code> 语句一样，当执行循环的语句部分只有一句话的时候，我们可以去掉大括号不写，比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">    sum += i;</span><br></pre></td></tr></table></figure>
+<p>它等价于</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，一个大括号也被视为一句话，所以如果 <code>for</code> 循环嵌套了例如 <code>if</code> 和大括号，或者 <code>if-else</code> 语句的话，这种形式也可以不要外层的大括号。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (i % <span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        sum += i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以简写为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">    <span class="keyword">if</span> (i % <span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">        sum += i;</span><br></pre></td></tr></table></figure>
+<p>只要你觉得看起来条理清晰的时候，就可以这么书写。</p>
+<h2 id="编码技巧：枚举法"><a href="#编码技巧：枚举法" class="headerlink" title="编码技巧：枚举法"></a>编码技巧：枚举法</h2><p>枚举法就是采用大量循环的嵌套，来枚举出每一个循环的执行逻辑的一种情况，然后挨个判断条件是否满足的逻辑。这种逻辑虽然很暴力，但枚举出的所有情况保证了程序执行的正确性。</p>
+<p>想必很多人听说过水仙花数字，它是一个三位数，每一个位置的数字的三次方的和，等于它自己的数字。我们既然找不到解决方式，就干脆枚举每一个情况，让每一个变量表示这个数的每一个位置，大不了用三个变量 <code>a</code>、<code>b</code> 和 <code>c</code> 表示百位、十位和个位。不过要注意，<code>a</code> 作为百位数，是不可能为 0 的，否则它就不是一个合理的三位数了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (a = <span class="number">1</span>; a &lt;= <span class="number">9</span>; a++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (b = <span class="number">0</span>; b &lt;= <span class="number">9</span>; b++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (c = <span class="number">0</span>; c &lt;= <span class="number">9</span>; c++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> digit = a * <span class="number">100</span> + b * <span class="number">10</span> + c;</span><br><span class="line">            <span class="keyword">if</span> (a * a * a + b + b * b + c * c * c == digit)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Okay.</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"%d "</span>, digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我相信，这样的书写模式一定会让你对多重循环有一个更好的认知：首先进入 <code>a = 1</code> 的初始值赋值，然后显然满足条件，进入 <code>b = 0</code> 的初始赋值，显然满足条件，所以进入最内层的循环，<code>c = 0</code> 的初始值和条件。</p>
+<p>然后全部满足，所以我们开始整合这个整数，把每一个整数合并起来变为一个整数。然后尝试对这三个数字 <code>a</code>、<code>b</code> 和 <code>c</code> 执行三次方计算再求和。如果它等于 <code>digit</code>，便满足条件，所以此时就算满足了水仙花数的要求，输出它即可。否则，我们就计算下一次循环。注意，此时循环还在最内层，所以执行完毕这一次循环的时候，应该走增量 <code>c++</code> 的这个部分，此时 <code>c</code> 表示的个位变为 1。然后再判断条件 <code>c &lt;= 9</code>。满足条件，进入循环，再一次判断条件是否满足。</p>
+<p>直到 <code>c</code> 计算到 9 的时候，增量使得 <code>c</code> 变为 10，此时条件不满足。于是整个最内层的 <code>for</code> 循环执行完毕，发现它被包含在 <code>b</code> 计算的循环的这坨循环里，而这坨循环里只有关于 <code>c</code> 变量的循环一个部分，所以这便意味着 <code>b</code> 循环执行完一次操作，此时 <code>b</code> 才会增大一个单位（进入 <code>b++</code> 增量，使之变为 1）。然后再次进入 <code>c = 0</code> 的初始赋值处。</p>
+<p>如果用人为的逻辑理解的话，就是把它们三个整理为 100、101、102、103、……、109、110、111、……、999 的顺序执行每一个数字。</p>
+<p>大致逻辑如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (第一个维度)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (第二个维度)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (第三个维度)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 还可以有更多层次的循环。</span></span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">if</span> (条件)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 条件满足。</span></span><br><span class="line">                调用 <span class="built_in">printf</span> 函数输出结果。</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="一些练习"><a href="#一些练习" class="headerlink" title="一些练习"></a>一些练习</h2><p>嵌套循环还需要多多练习和巩固，因为它看起来简单，实际上每一步执行起来还是费工夫的。所以我们来一些练习，希望你们能够明白和看懂它们的执行。</p>
+<h3 id="方阵"><a href="#方阵" class="headerlink" title="方阵"></a>方阵</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= <span class="number">5</span>; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"* "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将会输出一个星星矩阵：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}
+\end{matrix}</script><h3 id="左上三角"><a href="#左上三角" class="headerlink" title="左上三角"></a>左上三角</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= <span class="number">6</span> - i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"* "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将会是一个左上三角：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*}\\
+\text{*}
+\end{matrix}</script><h3 id="左下三角"><a href="#左下三角" class="headerlink" title="左下三角"></a>左下三角</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"* "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将会是一个左下三角：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+\text{*} &\\
+\text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}
+\end{matrix}</script><h3 id="右上三角"><a href="#右上三角" class="headerlink" title="右上三角"></a>右上三角</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt; i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"  "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= <span class="number">6</span> - i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"* "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将会是一个右上三角：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+& \text{*} & \text{*} & \text{*} & \text{*}\\
+& & \text{*} & \text{*} & \text{*}\\
+& & & \text{*} & \text{*}\\
+& & & & \text{*}
+\end{matrix}</script><h3 id="九九乘法表"><a href="#九九乘法表" class="headerlink" title="九九乘法表"></a>九九乘法表</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">9</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%2d * %2d = %2d"</span>, j, i, i * j);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样便会输出一个九九乘法表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1*1= 1</span><br><span class="line">1*2= 2 2*2= 4</span><br><span class="line">1*3= 3 2*3= 6 3*3= 9</span><br><span class="line">1*4= 4 2*4= 8 3*4=12 4*4=16</span><br><span class="line">1*5= 5 2*5=10 3*5=15 4*5=20 5*5=25</span><br><span class="line">1*6= 6 2*6=12 3*6=18 4*6=24 5*6=30 6*6=36</span><br><span class="line">1*7= 7 2*7=14 3*7=21 4*7=28 5*7=35 6*7=42 7*7=49</span><br><span class="line">1*8= 8 2*8=16 3*8=24 4*8=32 5*8=40 6*8=48 7*8=56 8*8=64</span><br><span class="line">1*9= 9 2*9=18 3*9=27 4*9=36 5*9=45 6*9=54 7*9=63 8*9=72 9*9=81</span><br></pre></td></tr></table></figure>
+<h3 id="菱形"><a href="#菱形" class="headerlink" title="菱形"></a>菱形</h3><p>最难的就是这个例子了。我们尝试输出一个菱形图案。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> <span class="built_in">size</span> = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="built_in">size</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= <span class="built_in">size</span> - i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"  "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= <span class="number">2</span> * i - <span class="number">1</span>; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"* "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; <span class="built_in">size</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= i; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"  "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">1</span>; j &lt;= <span class="number">2</span> * (<span class="built_in">size</span> - i) - <span class="number">1</span>; j++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"* "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将会得到一个菱形图案：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+& & & & \text{*}\\
+& & & \text{*} & \text{*} & \text{*}\\
+& & \text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+& \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+\text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*} &\\
+& \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+& & \text{*} & \text{*} & \text{*} & \text{*} & \text{*}\\
+& & & \text{*} & \text{*} & \text{*}\\
+& & & & \text{*}
+\end{matrix}</script>
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/20/regex-learning/" title="正则表达式基础" itemprop="url">正则表达式基础</a>
     
   </h1>
@@ -1028,81 +1198,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/19/clang-06-do-while-loop/" title="C 语言语法系列（6）：do-while 语句" itemprop="url">C 语言语法系列（6）：do-while 语句</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-19T01:13:18.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="改下上一个例子的代码"><a href="#改下上一个例子的代码" class="headerlink" title="改下上一个例子的代码"></a>改下上一个例子的代码</h2><p>在求得 1 到 100 的和的计算结果的时候，我们明显知道 <code>i</code> 第一次的初始数值（即 1）是不可能超过 100 的，所以第一次完全不必判断这个条件。</p>
-<p>正是因为这样，我们便产生了 <code>do-while</code> 语句。在提及代码的写法格式之前，我们先来看一下它的执行逻辑，如下图所示。</p>
-<p><img src="do-while-loop-example.png" alt=""></p>
-<h2 id="do-while-（循环）语句"><a href="#do-while-（循环）语句" class="headerlink" title="do-while （循环）语句"></a><code>do-while</code> （循环）语句</h2><p>下面我们来看一下 <code>do-while</code> 语句的执行逻辑和代码规范。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">    S += i++;</span><br><span class="line">&#125; <span class="keyword">while</span> (i &lt;= <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
-<p>这种写法把条件进行了后置处理，所以执行 <code>S += i++;</code> 操作是无条件都会执行至少一次的。然后执行后才会判断数值 <code>i</code> 是否不超过 100。</p>
-<p>不过，此时的大括号最好就不要省略了，虽然编译器依旧允许你这么写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    S += i++;</span><br><span class="line"><span class="keyword">while</span> (i &lt;= <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
-<p>甚至</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">do</span> S += i++;</span><br><span class="line"><span class="keyword">while</span> (i &lt;= <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
-<p>和</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, S = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">do</span> S += i++; <span class="keyword">while</span> (i &lt;= <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
-<p>这两种写法虽然没什么问题，不过不建议这么书写是因为代码不太好看。</p>
-<p>一定要注意，语法格式</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">    loopExecutingSentence;</span><br><span class="line">&#125; <span class="keyword">while</span> (condition);</span><br></pre></td></tr></table></figure>
-<p>里面的末端，写了括号和条件 <code>condition</code> 后，还要加上分号，标记整体是一个语句的结束。</p>
-<h2 id="while-和-do-while-的异同"><a href="#while-和-do-while-的异同" class="headerlink" title="while 和 do-while 的异同"></a><code>while</code> 和 <code>do-while</code> 的异同</h2><p>从两种书写格式来看，<code>while</code> 的条件是前置的，而 <code>do-while</code> 的条件则是后置的，这使得条件判断的位置不同。C 语言的执行是从上到下的，所以遇到这些条件的机会和方式不同，<code>while</code> 是不论如何都会先判断条件，当条件成立的时候执行对应大括号里的内容，但条件如果不满足，则不会执行内部的语句。所以 <code>while</code> 语句的重复执行部分很有可能一次都不会去执行；但 <code>do-while</code> 不一样，它的条件被放到后面，这使得重复执行的代码不论如何都会先被执行一次，然后才会判断条件。所以 <code>do-while</code> 语句的重复执行部分最少都会执行一次。</p>
-<p>除此之外，它们并无什么不同。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/2/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">下一页 ↓</a>
@@ -1130,7 +1225,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>25</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>26</sup></a></li>
 			
 		
 			
@@ -1142,11 +1237,11 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>3</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
 			
 		
 			
@@ -1158,19 +1253,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -1186,6 +1277,10 @@
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
 			
 		
@@ -1194,15 +1289,19 @@
 			
 		
 			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>
