@@ -219,7 +219,10 @@
 <p>即“可空对象必须拥有数值（才能进行转换）”。所以，请万分注意。比如下面这个代码，就会产生一个错误。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">int</span> q = (<span class="keyword">int</span>)p + <span class="number">3</span>;</span><br><span class="line">Console.WriteLine(q);</span><br></pre></td></tr></table></figure>
 <p>这是显然的。我哦们尝试直接把 <code>null</code> 值的对象加上 3，这显然是不合适的。</p>
-<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型。</p>
+<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? i = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">double</span> d = (<span class="keyword">double</span>)(<span class="keyword">int</span>)i;</span><br></pre></td></tr></table></figure>
+<p>先调用 <code>(int)i</code> 将 <code>i</code> 强制转换为 <code>int</code> 类型后，然后再根据 <code>int</code> 转换为 <code>double</code> 类型的转换方式继续进行一次强制转换。</p>
+<p>是的，我们很少这么书写代码，不过事实上确实需要这么做。</p>
 
         
         
@@ -502,7 +505,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/数独/">数独</a><a href="/tags/LINQ/">LINQ</a>
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a><a href="/tags/数独/">数独</a>
   </div>
 
 </div>
@@ -971,11 +974,11 @@
 			
 		
 			
-				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
@@ -1011,15 +1014,15 @@
 			
 		
 			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>

@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="从本文开始，我们将探究 C# 里常见的一些内置类型，并详细分析这些类型的使用方式和原理（当然，如果有的话）。 可空值类型是什么？在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：byte、int、short、long、float、double、char、boolean，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-19T12:51:54.711Z">
+<meta property="og:updated_time" content="2019-11-29T12:43:46.219Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -138,7 +138,10 @@
 <p>即“可空对象必须拥有数值（才能进行转换）”。所以，请万分注意。比如下面这个代码，就会产生一个错误。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">int</span> q = (<span class="keyword">int</span>)p + <span class="number">3</span>;</span><br><span class="line">Console.WriteLine(q);</span><br></pre></td></tr></table></figure>
 <p>这是显然的。我哦们尝试直接把 <code>null</code> 值的对象加上 3，这显然是不合适的。</p>
-<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型。</p>
+<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? i = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">double</span> d = (<span class="keyword">double</span>)(<span class="keyword">int</span>)i;</span><br></pre></td></tr></table></figure>
+<p>先调用 <code>(int)i</code> 将 <code>i</code> 强制转换为 <code>int</code> 类型后，然后再根据 <code>int</code> 转换为 <code>double</code> 类型的转换方式继续进行一次强制转换。</p>
+<p>是的，我们很少这么书写代码，不过事实上确实需要这么做。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -361,11 +364,11 @@
 			
 		
 			
-				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
@@ -401,15 +404,15 @@
 			
 		
 			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>
