@@ -11,15 +11,15 @@
     
 
     
-    <meta name="description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add th">
+    <meta name="description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言的语义层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add">
 <meta name="keywords" content="C♯,LINQ">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LINQ 教程（1）：from 和 select 从句">
 <meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;linq-01-from-and-select-clause&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add th">
+<meta property="og:description" content="什么是 LINQ？LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为集成语言查询），指的是它从 C# 语言的语义层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。 1234567891011121314151617181920using System.Linq; &#x2F;&#x2F; Add">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-14T10:12:07.684Z">
+<meta property="og:updated_time" content="2019-12-07T12:02:33.584Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -103,7 +103,7 @@
 		
 		</div>
 		
-		<h2 id="什么是-LINQ？"><a href="#什么是-LINQ？" class="headerlink" title="什么是 LINQ？"></a>什么是 LINQ？</h2><p>LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为<strong>集成语言查询</strong>），指的是它从 C# 语言层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。</p>
+		<h2 id="什么是-LINQ？"><a href="#什么是-LINQ？" class="headerlink" title="什么是 LINQ？"></a>什么是 LINQ？</h2><p>LINQ，全称 Language Integrated Query，即语言层面集成好了的查询（官方翻译为<strong>集成语言查询</strong>），指的是它从 C# 语言的语义层面实现了 SQL 的那一套查询语句机制。举个例子，我们下面有这样的一个数组，我们需要查询所有大于等于 8 的数据信息。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// Add this using.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">LinqTest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> array = <span class="keyword">new</span>[] &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span> &#125;;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Selecting the value when value is no less than 8.</span></span><br><span class="line">            IEnumerable&lt;<span class="keyword">int</span>&gt; selection = array.Where(d =&gt; d &gt;= <span class="number">8</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">int</span> digit <span class="keyword">in</span> selection)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Output each value we selected.</span></span><br><span class="line">                Console.WriteLine(digit);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>你就会从控制台上获取到 8 和 9 两个数值。</p>
 <p>看起来似乎不太像是 SQL 哈，除了方法名 <code>Where</code> 用的是 SQL 的条件判断的名词。下面我们改写为等价的写法：</p>
@@ -173,7 +173,7 @@
 <blockquote>
 <p>最后顺带说一下，在 IDE 的重构代码里，方法链这种书写格式被称为 <strong>LINQ (Call Form)</strong>。</p>
 </blockquote>
-<h3 id="有没有-Select-d-gt-d-很重要吗？"><a href="#有没有-Select-d-gt-d-很重要吗？" class="headerlink" title="有没有 Select(d =&gt; d) 很重要吗？"></a>有没有 <code>Select(d =&gt; d)</code> 很重要吗？</h3><p>回到前文给出的代码，我们发现最后有一个 <code>Select(d =&gt; d)</code> 这样写法的方法。我们知道，<code>Select</code> 方法执行的是一种映射关系，在 <code>foreach</code> 循环的每一次迭代过程上，临时变量 <code>d</code> 都会被映射到 Lambda  表达式后给出的结果上来。但实际上，这样写貌似一点映射也没变，对每一个元素 <code>d</code> 进行迭代，然后返回的依然还是它自己。那写这个和不写这个有没有区别呢？</p>
+<h3 id="有没有-Select-d-gt-d-很重要吗？"><a href="#有没有-Select-d-gt-d-很重要吗？" class="headerlink" title="有没有 Select(d =&gt; d) 很重要吗？"></a>有没有 <code>Select(d =&gt; d)</code> 很重要吗？</h3><p>回到前文给出的代码，我们发现最后有一个 <code>Select(d =&gt; d)</code> 这样写法的方法。我们知道，<code>Select</code> 方法执行的是一种映射关系，在 <code>foreach</code> 循环的每一次迭代过程上，临时变量 <code>d</code> 都会被映射到 Lambda 表达式后给出的结果上来。但实际上，这样写貌似一点映射也没变，对每一个元素 <code>d</code> 进行迭代，然后返回的依然还是它自己。那写这个和不写这个有没有区别呢？</p>
 <p>实际上是有的。不写的话，就不会执行 <code>foreach</code> 的迭代过程，也就意味着这个列表并没有在此时就开始执行，并得到结果。由于 LINQ 有推迟执行的特效，导致如果不写 <code>Select</code> 的话，执行就不会在这个时候开始，而是推后到你后面的某处 <code>foreach</code> 代码，或是调用聚合函数，才会触发 <code>foreach</code> 的调用。否则，这里就只是一个可迭代对象。</p>
 <p>如果你想在这里就给出结果，请添加上 <code>Select(d =&gt; d)</code> 方法；而如果后续你一定能保证会执行 <code>foreach</code> 循环，那么就不用写了。</p>
 <h3 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h3><p>在前文我们提到了 <code>where</code> 从句的并联和嵌套查询语句，那么你能否根据上面给出的逻辑，思考出这两种情况的执行逻辑呢？</p>
@@ -440,15 +440,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			

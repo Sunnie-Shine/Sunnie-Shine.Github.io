@@ -905,11 +905,11 @@
 <p>我们尝试取出首字母，判断首字母位于 <code>m</code> 字符之前的所有单词。为了题目简单，我们暂时不管第一个字符不是字母的关键字。</p>
 <p>那么我们的筛选模式是，先尝试用 <code>let</code> 从句把首字母取出，然后判断该字母是否是 <code>m</code> 之前即可。所以写法如下：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">let</span> Capital = word[<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">where</span> Capital &gt;= <span class="string">'a'</span> &amp;&amp; Capital &lt;= <span class="string">'m'</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>下面来阐述一下 <code>let</code> 从句在内存里操作的原理。</p>
+<h2 id="原理：匿名类型"><a href="#原理：匿名类型" class="headerlink" title="原理：匿名类型"></a>原理：匿名类型</h2><p>下面来阐述一下 <code>let</code> 从句在内存里操作的原理。</p>
 <p><code>let</code> 从句的赋值行为并非实际上写法这样，也就是说，它并不是一种直接的赋值行为。在内存里，它会创建出一个<strong>匿名类型</strong>（Anonymous Type）。在 C# 的设计里，匿名类型使用的是创建一个类的模式来搞定，只是这个类的类名我们不关心，于是这个类就让 C# 的编译器来创建了，而不需要我们创建。</p>
 <p>当我们声明了 <code>let Capital = word[0]</code> 的时候，系统就会为我们创建一个匿名类型。这个类型使用 IDE 来查看，你将看到它叫做 <code>&#39;a</code> 类（把鼠标放到 <code>Capital</code> 上就会看到这个 <code>&#39;a</code> 类）。在这个所谓的 <code>&#39;a</code> 里，它包含一个属性，这个属性是 <code>Capital</code>。</p>
 <blockquote>
-<p>可以看到，匿名类型会自动创建的成员是属性，而并非字段。于是我们使用的时候，实际上应当按照命名格式，为这个使用 <code>let</code> 从句创建出来的所谓的临时变量用 PascalCase（帕斯卡）命名法，而不是 camelCase（驼峰）命名法。</p>
+<p>可以看到，匿名类型会自动创建的成员是属性，而并非字段。于是我们使用的时候，实际上应当按照命名格式，<strong>为使用 <code>let</code> 从句创建出来的所谓的临时变量用 PascalCase（帕斯卡）命名法，而不是 camelCase（驼峰）命名法</strong>。</p>
 </blockquote>
 <p>于是，我们就可以通过整个语句环境下，可以任意操作整个 <code>&#39;a</code> 匿名类型。</p>
 <h2 id="方法链写法"><a href="#方法链写法" class="headerlink" title="方法链写法"></a>方法链写法</h2><p>下面提一下方法链的写法。</p>
@@ -1056,15 +1056,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
