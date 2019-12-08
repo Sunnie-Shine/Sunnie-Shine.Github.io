@@ -854,13 +854,33 @@
 </header>
     <div class="article-content">
         
-        <h2 id="可空引用类型"><a href="#可空引用类型" class="headerlink" title="可空引用类型"></a>可空引用类型</h2><p>在前文里，我们介绍过<a href="https://sunnie-shine.github.io/2019/11/08/csharp-common-01-nvt/">可空值类型 <code>Nullable&lt;T&gt;</code></a> 的相关内容，可以发现值类型是可以使用 <code>Nullable&lt;T&gt;</code> 使之为 <code>null</code> 的，不过引用类型基于指针这一点来说，肯定是需要 <code>null</code> 这种机制的。</p>
+        <h2 id="可空引用类型简介"><a href="#可空引用类型简介" class="headerlink" title="可空引用类型简介"></a>可空引用类型简介</h2><p>在前文里，我们介绍过<a href="https://sunnie-shine.github.io/2019/11/08/csharp-common-01-nvt/">可空值类型 <code>Nullable&lt;T&gt;</code></a> 的相关内容，可以发现值类型是可以使用 <code>Nullable&lt;T&gt;</code> 使之为 <code>null</code> 的，不过引用类型基于指针这一点来说，肯定是需要 <code>null</code> 这种机制的。</p>
 <p>不过……是的，你没有看错，从 C# 8 开始，引用类型也开始支持可空了。但是，引用类型不是一直都可以为 <code>null</code> 吗？它默认数值不就是为 <code>null</code> 吗？是的，但 C# 8 “暴力地”破坏了这一个要求，为了防止尽可能少出现 <code>NullReferenceException</code> 这种可怕的异常，我们产生了一个新的语法规则：强制引用类型不可空。然后如果非得让引用类型为空的话，请采用 <code>T?</code> 的写法，和值类型可空的写法一样，比如：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>但需要你注意的是，这种写法需要基于可空引用类型的环境。你需要先打开你的项目配置文件 <code>.csproj</code>，然后添加一项：<code>&lt;Nullable&gt;Enable&lt;/Nullable&gt;</code> 即可使用这个特性。</p>
 <blockquote>
-<p>类似地，<strong>可空引用类型</strong>（Nullable Reference Type）一般被简称为 NRT。</p>
+<p><strong>可空引用类型</strong>（Nullable Reference Type）一般被简称为 NRT。</p>
 </blockquote>
+<h2 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h2><p>启用这种特性需要额外的配置。这是因为，在 C# 8 之前，所有的引用类型的默认数值为 <code>null</code>，而 <code>null</code> 在今天的新特性里，不可空引用类型是不允许出现这个数值的，所以我们应当为其额外添加指定的内容，以保证编译器在编译代码期间能够分辨和查询到所有隐藏的 <code>null</code> 传递的错误。</p>
+<p>现在，我们具有两种配置方式：项目的全局配置方式和文件配置方式。项目整体的配置可以作用于整个项目，而如果你只希望其中部分文件启用这个特性，则只需要在执行文件的最开头写上 <code>#nullable enable</code> 即可，这种配置方式是文件配置，稍后会详细介绍。</p>
+<h3 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h3><p>但需要你注意的是，这种写法需要基于可空引用类型的环境。你需要先打开你的项目配置文件 <code>.csproj</code>，然后添加一项：<code>&lt;Nullable&gt;Enable&lt;/Nullable&gt;</code> 即可使用这个特性。</p>
+<p>例如，找到项目的解决方案资源管理器，并双击项目，如图所示：</p>
+<p><img src="1.png" alt=""></p>
+<p>然后修改即可。</p>
+<p><img src="2.png" alt=""></p>
+<h3 id="文件配置"><a href="#文件配置" class="headerlink" title="文件配置"></a>文件配置</h3><p>文件配置则不需要你打开项目文件，而是直接打开你需要启用的文件，然后在最开头输入 <code>#nullable enable</code> 即可：</p>
+<p><img src="3.png" alt=""></p>
+<p>另外，如果你针对于全局启用了不可空的选项的话，那么相反地，如果你需要禁用可空提示的话，请使用 <code>#nullable disable</code> 来禁用：</p>
+<p><img src="4.png" alt=""></p>
+<p>这样就可以看到，比如上文给出的禁用，就使得文件从禁用处往下的所有位置都会得到提示信息，大致内容说的是，你尝试在没有启用可空引用类型的特性的环境下去使用可空引用类型，这是不允许的。</p>
+<p>当然，如果你需要重新加载和启用，则使用 <code>#nullable restore</code> 即可。</p>
+<p><img src="5.png" alt=""></p>
+<p>可以在文件配置这些预处理指令：</p>
+<ul>
+<li><code>#nullable enable</code>：启用文件对可空引用类型特性的支持。</li>
+<li><code>#nullable disable</code>：禁用文件对可空引用类型的支持（如果支持的话）。如果不支持而使用它的话，则相当于啥也没写。</li>
+<li><code>#nullable restore</code>：在全局启用的情况下使用该指令来重新启用（如果之前某处禁用了特性的话）。</li>
+</ul>
+<p>它还可以在这三个预处理指令之后添加 <code>annotations</code> 和 <code>warnings</code> 两个预处理器关键字，来单独控制报错的对象是警告还是那个问号记号（比如 <code>string?</code> 里的 <code>?</code>）。不过这一点用得比较少，所以就不再多说了。</p>
 <h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>我们通过和可空值类型完全一样的语法 <code>T?</code> 来声明一个类型可空：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? s = <span class="literal">null</span>; <span class="comment">// A string can be null.</span></span><br><span class="line">s = <span class="string">"Hello"</span>; <span class="comment">// Okay.</span></span><br><span class="line">s = <span class="literal">null</span>; <span class="comment">// Okay.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> t = <span class="literal">null</span>; <span class="comment">// Will get a complier warning.</span></span><br></pre></td></tr></table></figure>
 <p>但请注意，可空引用类型仅仅是语法上看起来和可空值类型一样，但实际上，可空引用类型并没有类似于 <code>Nullable&lt;T&gt;</code> 的类型，它在运行时是和原本的类型完全一样的，只是从编译器层面约束和限制了我们无法赋 <code>null</code> 值的要求。说白了，<code>string?</code> 和 <code>string</code> 依旧用的是同一个数据类型，只是编译器在看到你的类型后带 <code>?</code> 后会被判定为“可空”，于是这个类型你就可以放 <code>null</code> 进去；但没有这个符号，你就没办法赋 <code>null</code> 值，否则将会产生 CS86 系列警告。</p>
@@ -903,10 +923,16 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Parse</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">string</span> str, [NotNullWhen(returnValue: <span class="literal">true</span></span>)] <span class="keyword">out</span> Point? result)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Same as before.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们在第二个参数前面加上特性：<code>[NotNullWhen(returnValue: true)]</code>，那么这个 <code>result</code> 在编译器层面就会认为，当返回值为 <code>true</code> 时，这个参数值一定不会为空。所以，我们一旦用了这个模式书写代码，那么调用方就不用写 <code>!</code> 了：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Point p;</span><br><span class="line"><span class="keyword">if</span> (TryParse(<span class="string">"(1, 3)"</span>, <span class="keyword">out</span> <span class="keyword">var</span> result))</span><br><span class="line">    p = result; <span class="comment">// Correct now.</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    p = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可见，这个特性用于保证<strong>输出</strong>的数据信息。如果你把它拿来用到赋值的上面，那么这个特性将会什么用都没有。</p>
+</blockquote>
 <h4 id="AllowNullAttribute-和-DisallowNullAttribute"><a href="#AllowNullAttribute-和-DisallowNullAttribute" class="headerlink" title="AllowNullAttribute 和 DisallowNullAttribute"></a><code>AllowNullAttribute</code> 和 <code>DisallowNullAttribute</code></h4><p>下面我们来看另外一个特性。这个特性表示我们给的数值是允许为 <code>null</code> 的。它一般用在属性的 setter，或参数上。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">string</span> Name</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">get</span> &#123; <span class="keyword">return</span> name; &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">AllowNull</span>]</span><br><span class="line">    <span class="keyword">set</span> &#123; name = Name ?? <span class="string">"DefaultName"</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样的话，这个 setter 原本应该赋值为 <code>string</code> 的，但编译器此时允许你为其赋 <code>null</code> 进去。</p>
 <p>当然了，<code>DisallowNull</code> 就是反过来的，不为 <code>null</code>。</p>
+<blockquote>
+<p>这个特性也用来保证<strong>输入</strong>的数据信息可空或不可空。如果你把它用在返回值上，它将什么效果都没有，因为它保证的是输入，而非输出。</p>
+</blockquote>
 <h4 id="MaybeNullAttribute"><a href="#MaybeNullAttribute" class="headerlink" title="MaybeNullAttribute"></a><code>MaybeNullAttribute</code></h4><p>思考一下，当我们使用一个泛型是很普通的类型时，如果它为 <code>null</code> 了怎么办？</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> T FirstOrDefault&lt;T&gt;(<span class="keyword">this</span> IEnumerable&lt;T&gt; source, Precicate&lt;T&gt; predicate)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>比如这个例子，它是 <a href="https://source.dot.net/#System.Linq/System/Linq/First.cs,8087366974af11d2,references" target="_blank" rel="noopener">Linq</a> 代码里的一个部分。这个方法是用于查找一个类型为 <code>T</code> 的集合 <code>source</code> 里，第一个满足 <code>predicate</code> 给定条件的项。当找到结果后，返回值为这个值；但没有找到结果的时候，返回值将为这个类型的默认值：值类型则是对应的默认结果，而引用类型则默认为 <code>null</code>。</p>
@@ -916,16 +942,26 @@
 <p>这样的话，编译器就能明白，此处的这个泛型返回值对应的类型，会依据值类型和引用类型分情况处理。引用类型下，就会产生警告。实际上，这个方法调用的是另外一个方法：<code>TryGetFirst</code>。它的源代码我也复制出来。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: MaybeNull</span>]</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> TSource TryGetFirst&lt;T&gt;(</span><br><span class="line">    <span class="keyword">this</span> IEnumerable&lt;T&gt;? source, Predicate&lt;T&gt;? predicate, <span class="keyword">out</span> <span class="keyword">bool</span> found)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">is</span> <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (predicate <span class="keyword">is</span> <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ThrowHelper.ThrowArgumentNullException(ExceptionArgument.predicate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">is</span> OrderedEnumerable&lt;T&gt; ordered)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Check the type is OrderedEnumerable&lt;T&gt; or not.</span></span><br><span class="line">        <span class="comment">// If so, the code will be simplified a bit.</span></span><br><span class="line">        <span class="keyword">return</span> ordered.TryGetFirst(predicate, <span class="keyword">out</span> found);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Iterate on source.</span></span><br><span class="line">    <span class="keyword">foreach</span> (T element <span class="keyword">in</span> source)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// If satisfying the predicate...</span></span><br><span class="line">        <span class="keyword">if</span> (predicate(element))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Return the result.</span></span><br><span class="line">            found = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">return</span> element;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Failed to find.</span></span><br><span class="line">    found = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">default</span>!; <span class="comment">// The value may be null when the value is a reference type.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>希望你能感受一下，这个特性在代码里起到的作用。</p>
+<blockquote>
+<p>这个特性用来保证<strong>输出</strong>的数值是可能为空的。</p>
+</blockquote>
 <h4 id="NotNullAttribute"><a href="#NotNullAttribute" class="headerlink" title="NotNullAttribute"></a><code>NotNullAttribute</code></h4><p>下面来介绍一个用法和刚才这个差不多的特性。这个特性一般用在 <code>ref</code> 参数上，表示参数在传参时不可以赋值为 <code>null</code>，虽然它此时是可以为 <code>null</code> 的类型。</p>
 <p>在 .NET 提供的数据结构的代码里，某个数据结构需要进行扩容，此时为了保证容量，会调用下面这样的代码：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Messages has the default value (null) when EnsureCapacity is called:</span></span><br><span class="line">EnsureCapacity&lt;<span class="keyword">string</span>&gt;(<span class="keyword">ref</span> storage, <span class="number">10</span>);</span><br><span class="line"><span class="comment">// Messages is not null.</span></span><br><span class="line">EnsureCapacity&lt;<span class="keyword">string</span>&gt;(storage, <span class="number">50</span>);</span><br></pre></td></tr></table></figure>
 <p>如果原本是一个数组的话，我们可以为 API 设计为这样：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> EnsureCapacity&lt;T&gt;([NotNull] <span class="keyword">ref</span> T[]? storage, <span class="keyword">int</span> size)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>此时来告诉编译器，在传参时，是不允许为 <code>null</code> 赋值过去的，但最后 <code>storage</code> 可以为 <code>null</code>，并是否为 <code>null</code> 将在 API 设计的代码里决定，而不是外界。</p>
+<blockquote>
+<p>这个特性用来保证<strong>输出</strong>类型的结果是不可空的，比如把它放在返回值上。</p>
+</blockquote>
 <h4 id="NotNullIfNotNullAttribute"><a href="#NotNullIfNotNullAttribute" class="headerlink" title="NotNullIfNotNullAttribute"></a><code>NotNullIfNotNullAttribute</code></h4><p>最后一个特性是最鬼畜的特性。这个特性其实和 <code>NotNullWhenAttribute</code> 的用法非常相似，只是有一点区别：<code>NotNullWhenAttribute</code> 依赖于返回值来决定是否为空，而这里说的这个特性，依赖于其它参数。其中参数是什么，那么它的可空性和返回值的可空性是一样的。</p>
 <p>考虑如下代码。我们假设要写一个 DNS 解析的服务。我们需要返回一个根域名服务器的地址，用字符串表示，而参数表示当前主机的地址。但如果参数为空，显然返回值就应为空，因为主机都没有，那么对应的根域名服务器肯定也就为空了，返回值此时的可空行为是和参数 <code>url</code> 是一样的，所以我们为返回值设定 <code>NotNullIfNotNullAttribute</code> 特性，来告诉编译器，返回值在参数 <code>url</code> 不为空的时候不为空。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">return: NotNullIfNotNull(<span class="meta-string">"url"</span>)</span>]</span><br><span class="line"><span class="keyword">string</span>? GetTopLevelDomainFromFullUrl(<span class="keyword">string</span>? url);</span><br></pre></td></tr></table></figure>
 <p>虽然有点绕，但意思应该是清晰的。</p>
+<blockquote>
+<p>很明显，这个也是用作<strong>输出</strong>的。</p>
+</blockquote>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>前文给出了很多有关可空特性的支持，来更加严谨地保证可空的情况，以减少使用 null 禁用运算符 <code>!</code>。除了 <code>AllowNull</code> 和 <code>DisallowNull</code> 外，所有的特性都用作输出；而只有它俩用作输入。</p>
 <h3 id="关于泛型的可空性"><a href="#关于泛型的可空性" class="headerlink" title="关于泛型的可空性"></a>关于泛型的可空性</h3><p>在前文我们提到了泛型的可空性。由于值类型和引用类型的可空行为不同，所以我们恐怕无法单纯添加一个问号就解决这一点。在 <a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/nullable-attributes#generic-definitions-and-nullability" target="_blank" rel="noopener">MSDN</a> 的原文里，原文是这么说的：</p>
 <blockquote>
 <p>Correctly communicating the null state of generic types and generic methods requires special care. This stems from the fact that a nullable value type and a nullable reference type are fundamentally different. An <code>int?</code> is a synonym for <code>Nullable&lt;int&gt;</code>, whereas <code>string?</code> is <code>string</code> with an attribute added by the compiler. The result is that the compiler can’t generate correct code for <code>T?</code> without knowing if <code>T</code> is a <code>class</code> or a <code>struct</code>.</p>
@@ -1273,11 +1309,15 @@
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
@@ -1289,15 +1329,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 			
