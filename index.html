@@ -149,7 +149,7 @@
 </ul>
 <p>第一句话是一句稍加思考就可以得到的废话，因为只要有一个 0，我们就不可能保证“两端操作数都是 1”，自然就不可能得到 1 的结果，所以结果必然是 0。不过这一点经常被用到，特别是对一些以 2 为指数的处理上。</p>
 <p>而第二句话，对照表格就可以看出来。不论 <code>x</code> 是 0 还是 1，只要它和 1 进行位与运算，结果一定就是它本身。不过，<code>x</code> 如果大于 1，或者小于 0，肯定就不是这么简单了。</p>
-<p>比如，计算一个数是否是偶数。显然这用到了对 2 求余数的操作，比如：</p>
+<h3 id="判断奇偶"><a href="#判断奇偶" class="headerlink" title="判断奇偶"></a>判断奇偶</h3><p>比如，计算一个数是否是偶数。显然这用到了对 2 求余数的操作，比如：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">bool</span> isEven = i % <span class="number">2</span> == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
 <p>当 <code>i % 2</code> 的结果为 0 的时候，我们就可以得到它是偶数的结果，自然 <code>isEven</code> 就应该为 <code>true</code>。不过，为了优化计算速度，我们有些时候不止使用这种方式判断它。</p>
 <p>试想一下，任意一个整数只可能是奇数或者偶数两种情况，而二进制正好完美地表达了这一点：末尾为 0 就肯定是偶数，而 1 则一定是奇数了。更直观地理解的话，可以这么去思考：所有整数均以 0 为分界点，而 0 是偶数，它的二进制表示肯定全部都是 0，而 1 的二进制是一大堆的 0 和末尾一个 1，而 2 则就会立马因为二进制的缘故进一位，使得末尾一位又变为 0 了。变为 3，则又一次使得末尾变为 1，再增大一个单位，末尾又是 0。</p>
@@ -164,7 +164,7 @@
 <p>另外，C 语言里，不等于 0 的判断可以不写，所以可以记作</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = !(i &amp; <span class="number">1</span>);</span><br><span class="line"><span class="keyword">bool</span> isOdd = i &amp; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
 <p><strong>推论 1：<code>x &amp; 1</code> 只有两个数值结果，当为 0 时，<code>x</code> 为偶数；当为 1 时，<code>x</code> 为奇数。</strong></p>
-<p>接下来，我们来看另外一种使用方式。既然 1 可以保留位次，那么我们为了保留末端若干二进制数位，想想看。</p>
+<h3 id="对特定值取模"><a href="#对特定值取模" class="headerlink" title="对特定值取模"></a>对特定值取模</h3><p>接下来，我们来看另外一种使用方式。既然 1 可以保留位次，那么我们为了保留末端若干二进制数位，想想看。</p>
 <p>假设，我们只需要保留二进制写法的末尾三位数，那么我们肯定是使用</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">0b00</span>..<span class="number">.00000111</span>;</span><br></pre></td></tr></table></figure>
 <p>这样的写法。</p>
@@ -172,8 +172,8 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
 <p>这样就可以得到末尾三个二进制位了。不过，这有什么用呢？</p>
 <p>我们经常碰到取模运算的操作，而有些时候不免遇到对 2、4、8、16 进行求模运算。对它们求模运算，得到的结果范围肯定是 0~1、0~3、0~7、0~15，这不就是恰好处于保留末尾若干二进制位的表示方式吗？所以，如果我们要计算一个数 <code>x</code> 对 2 的整数次幂 <code>n</code> 的余数，一般可以使用位与运算 <code>n - 1</code> 的方式得到。</p>
-<p><strong>推论 2：当 <code>n</code> 是 2 的整数次幂时，<code>x % n</code> 可以改写为 <code>x % (n - 1)</code>。</strong></p>
-<p>我们以这个推论为基础继续往下思考。既然这个 <code>n</code> 就是一个 2 的整数次幂，那么如果我们尝试把 <code>n</code> 替换为 <code>x</code> 自己会怎么样呢？公式就变为 <code>x &amp; (x - 1)</code> 了。</p>
+<p><strong>推论 2：当 <code>n</code> 是 2 的整数次幂时，<code>x % n</code> 可以改写为 <code>x &amp; (n - 1)</code>。</strong></p>
+<h3 id="验证是否是-2-的整数次幂"><a href="#验证是否是-2-的整数次幂" class="headerlink" title="验证是否是 2 的整数次幂"></a>验证是否是 2 的整数次幂</h3><p>我们以这个推论为基础继续往下思考。既然这个 <code>n</code> 就是一个 2 的整数次幂，那么如果我们尝试把 <code>n</code> 替换为 <code>x</code> 自己会怎么样呢？公式就变为 <code>x &amp; (x - 1)</code> 了。</p>
 <p>如果 <code>x</code> 和比自己小 1 个单位的数位与运算，而且此时这个 <code>x</code> 就是一个 2 的整数次幂的话，思考一下，既然是 2 的整数次幂，那么它的二进制表示必然就是 0b0、0b1、0b10、0b100、0b1000……这样的序列。而可以从序列里直接看出，2 的整数次幂只可能在最高位次上是 1，而其余位置都是 0。</p>
 <p>比这个数小 1 个单位就意味着这个数要减去 1，而这意味着整个完美的二进制表达（只有一个 1，而其余数字位置都是 0）就会立马全盘变化：由于减去 1，所以所有低位次都会变为 1，而最高位此时因为类似于数学竖式计算的借位逻辑而变为 0。这就好比是把一个数字的所有位次全部翻转了。</p>
 <p>如果是全部翻转的话，位与运算对两个数的执行结果就必然肯定是每一二进制位都是 0（因为不论是 1 &amp; 0 还是 0 &amp; 1，因为必然有 0 的缘故，所以结果肯定是 0）。</p>
