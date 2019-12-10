@@ -82,6 +82,86 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/25/clang-18-memory-allocation/" title="C 语言语法系列（18）：堆内存和栈内存" itemprop="url">C 语言语法系列（18）：堆内存和栈内存</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-25T06:43:20.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>前文我们已经说了很多有关 C 语言的语法了。今天我们来讲一点不同的理论：<strong>堆内存</strong>（Heap Memory）和<strong>栈内存</strong>（Stack Memory）。</p>
+<h2 id="堆内存和栈内存的定义"><a href="#堆内存和栈内存的定义" class="headerlink" title="堆内存和栈内存的定义"></a>堆内存和栈内存的定义</h2><p>堆内存和栈内存是两个不同的存储空间，由于名称不同，所以它们各自的功能也不同。堆内存专门用来管理我们程序使用的大量数据信息，当程序员不用的时候，可以自己手动释放掉（具体我们稍后再说）。不过前文我们都没有用过堆内存。</p>
+<p>栈内存指的是，当一个函数在生成的时候，就会在栈内存上分配指定的函数执行信息，以及参数、变量信息。当函数执行完毕后，这些信息会跟着函数销毁而自动销毁。这些内容是程序为我们直接完成的，无需我们手动去搞。举个例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> <span class="keyword">int</span> z = <span class="number">3</span>; <span class="comment">// Keyword `auto` can be omitted.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, z + x);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们调用 <code>f</code> 函数时，系统就会为我们自动生成一个函数栈，分配其中需要用到的 <code>x</code>、<code>z</code> 变量的空间以可以存放它们，然后生成足够的空间可以让我们去执行这些内容。</p>
+<p>当执行完毕整个函数（调用返回语句 <code>return z;</code>）后，<code>f</code> 函数被销毁，此时，<code>f</code> 函数栈使用的空间就会被立刻释放掉，留给其它程序或下一次执行某处的时候用，这样就可以节约内容使用。不然一直占用着，程序的使用内存就会越来越大。</p>
+<p>当 <code>f</code> 执行完后，里面的变量的内存就会一起被释放，因为这些变量所处的内存的地方，就在这个函数栈里。这就是栈内存的方式。C 语言确实也默认所有在函数内定义的默认类型变量都是这样的生命周期。这些自动化处理的变量也就是前文提到过的 <code>auto</code> 类型变量。比如上文实例给出的 <code>auto int z = 3</code> 就是一个自动化处理的变量，而且一般我们都不写这个 <code>auto</code> 关键字。</p>
+<h2 id="使用堆内存"><a href="#使用堆内存" class="headerlink" title="使用堆内存"></a>使用堆内存</h2><p>既然栈内存这么不方便，那么可以自定义使用堆内存吗？是的，这也是我们接下来要提到的话题。C 语言为我们贴心地搞了一个堆内存的体系，让我们可以更加灵活处理很多复杂的内存分配的机制，也可以同时去避免函数栈销毁后同时销毁变量本身的方式。</p>
+<p>下面我们将开始尝试使用堆内存分配内存空间，并手动释放它们。不过我们需要介绍几个常用函数，它们在使用的时候都需要在前文 <code>#include</code> 指令处添加 <code>#include &lt;malloc.h&gt;</code> 头文件导入指令。</p>
+<h3 id="malloc-函数"><a href="#malloc-函数" class="headerlink" title="malloc 函数"></a><code>malloc</code> 函数</h3><p>考虑如下代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (p != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *p = <span class="number">3</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d"</span>, *p);</span><br><span class="line">        <span class="built_in">free</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们尝试在堆内存里分配了一个足够存放 <code>int</code> 的空间，而这坨空间的地址就是 <code>malloc</code> 函数的返回值。请注意，<code>malloc</code> 函数是具有通用性的，所以它可以为任何其它类型进行分配内存空间，所以此时我们需要把得到的地址强制转换为 <code>int *</code> 类型后赋值给 <code>p</code>，于是 <code>p</code> 就指向了这块内存了。</p>
+<p>然后我们尝试去比较 <code>p</code>。如果 <code>p</code> 不为 <code>NULL</code> 则继续往下执行。这是因为 <code>malloc</code> 函数在分配内存失败时将会返回 <code>NULL</code> 值。当它不为 <code>NULL</code>，就说明了变量被成功分配内存。另外，由于 <code>NULL</code> 和 <code>(void *)0</code> 等价，所以它实际上也是 0 的特殊写法。所以 <code>p != NULL</code> 依然可以认为是在和 0 进行比较，所以可以省略 <code>!= 0</code> 部分，即改写为 <code>p</code> 即可：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (p) <span class="comment">// p != NULL</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="free-函数"><a href="#free-函数" class="headerlink" title="free 函数"></a><code>free</code> 函数</h3><p>这个函数用于释放掉用完的内存。上文里如果我们已经完成了使用 <code>p</code> 的操作，那么我们就可以直接释放掉它了，所以我们把这个指针变量写到 <code>free</code> 函数里当参数就可以完成释放了。</p>
+<h3 id="realloc-函数"><a href="#realloc-函数" class="headerlink" title="realloc 函数"></a><code>realloc</code> 函数</h3><p>可以从单词上看出，<code>realloc</code> 就是 re-alloc。re- 前缀表示“反复”，“又”、“再一次”的意思，而 alloc 是 allocation，即分配的简写。所以这个函数的用法是将已经分配过的内存空间再一次重新分配一下，这一次可以更改内存分配的大小。如果你对这块内存目前的大小不满意，你可以调大这个内存空间，当然你也可以调小。它的写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> *pn = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">5</span> * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        pn[i] = i + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pn = (<span class="keyword">int</span> *)<span class="built_in">realloc</span>(pn, <span class="number">10</span> * <span class="keyword">sizeof</span>(<span class="keyword">int</span>)); <span class="comment">// Note here.</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">5</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        pn[i] = i + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, pn[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(pn);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>写法很简单，第一个参数传入需要扩容和缩容的内存块指针，第二个参数传入的则是新的分配大小。在内存里，<code>realloc</code> 会为我们自动往后扩容和缩容空间。当扩容的时候，如果发现后续连续空间不能使用的时候，它就会自动把数据拷贝到可以连续分配到足够内存空间的某处上，然后把这些刚才拷贝后的备份放到相对对应好的位置上，并返回新内存块的首地址。这里是 <code>pn</code> 得到的内存块重新分配后，再次赋值给 <code>pn</code>。</p>
+<p>请注意，这种赋值格式是存在严重的内存 bug 的：</p>
+<blockquote>
+<p>C6308: ‘realloc’ might return null pointer: assigning null pointer to ‘pn’, which is passed as an argument to ‘realloc’, will cause the original memory block to be leaked.</p>
+</blockquote>
+<p>这段话的意思是，如果你要使用 <code>realloc</code> 函数，就最好不要使用同一个变量来接受分配的地址。<code>realloc</code> 是可能返回 <code>NULL</code> 的，如果你用同一个变量接收的话，就可能导致新得到的地址是 <code>NULL</code>，这样你原本的内存块就找不到了，此时出现内存泄漏的 bug。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/24/clang-17-pointer-and-function/" title="C 语言语法系列（17）：指针和函数" itemprop="url">C 语言语法系列（17）：指针和函数</a>
     
   </h1>
@@ -1101,117 +1181,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/22/clang-10-linear-array/" title="C 语言语法系列（10）：一维数组" itemprop="url">C 语言语法系列（10）：一维数组</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-22T06:46:35.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="数组是什么？"><a href="#数组是什么？" class="headerlink" title="数组是什么？"></a>数组是什么？</h2><p>在前文的知识点里，我们描述了很多有关重复性的内容，例如 C 语言提供的三大循环语句：<code>while</code>、<code>do-while</code> 和 <code>for</code> 循环，还谈论了 <code>for</code> 的各种“奇葩”用法。今天要讲的重复性内容，并非针对执行操作，而是针对于数值存储。</p>
-<p>试想一下，如果我们需要大量信息，而且它们需要的内容的类型近乎一致。比如我们要存储 50 个学生的数学成绩，如果我们单纯使用 50 个变量的话，显然是不好读也不好取。那么，有没有办法解决呢？有，这便是我们今天要说到的新的知识点：<strong>数组</strong>（Array）。</p>
-<h2 id="数组的定义"><a href="#数组的定义" class="headerlink" title="数组的定义"></a>数组的定义</h2><p>数组有<strong>类型</strong>（Type）一说，有<strong>维度</strong>（Rank）一说，也有<strong>长度</strong>（Length）一说，这是在初始定义的时候为其决定的，这类似于变量的定义。语法约定是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">50</span>];</span><br></pre></td></tr></table></figure>
-<p>这样便定义了一个数组（有时候也把数组直接叫做数组变量），这个数组一共存放 50 个元素，且全部都是 <code>int</code> 类型的元素。</p>
-<p>数组一共具有三大属性：类型、维度和长度，那么针对于这个数组变量而言，它的类型是 <code>int</code>，维度是一维的，而长度是 50（即总元素个数）。所谓的维度，就是数组整体呈现几个维度的形式。我们今天讲的内容都是一维数组，即只有一个维度。</p>
-<h2 id="数组的赋值"><a href="#数组的赋值" class="headerlink" title="数组的赋值"></a>数组的赋值</h2><p>数组赋值有两种操作，一种是自定义数据，在初始化的方式赋值，还有一种是后续赋值，后续赋值就需要借助循环语句来实现，因为它是采用的逐个元素的赋值的逻辑。</p>
-<h3 id="初始化赋值"><a href="#初始化赋值" class="headerlink" title="初始化赋值"></a>初始化赋值</h3><p>初始化赋值方式是在定义语句上直接使用赋值符号 <code>=</code> 和一个大括号表示的集合序列来赋值的。</p>
-<blockquote>
-<p>下面为了简化赋值，这里把 50 个元素更改为 10 个元素的数组，进行赋值。</p>
-</blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>这样的赋值操作是逐个对应的。这个 <code>scores</code> 数组的第一个元素数值是 1，第二个元素是 2，第三个是 4，第四个是 8，以此类推。</p>
-<p>如果你赋值的数值过多，编译器层面就会报错，提示你不遵循语法规则，exe 的文件都不会让你成功生成。</p>
-<p>不过，元素如果不够 10 个的话，赋值是成功的，也是不会出错的，但是剩余的元素都会被默认赋值为 0。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">3</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">12</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>这表示 <code>scores</code> 数组里最后 6 个元素全部为 0。</p>
-<p>但请注意。如果初始化不给出大括号的赋值语句，这个数组就是空的，即没有赋值的状态。如果在没有初始化的情况就在使用这个数组的话，就会容易出现程序崩溃的错误。所以请尽量避免这个操作。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>]; <span class="comment">// Non-assigned state.</span></span><br></pre></td></tr></table></figure>
-<p>如果你想把数组全部赋值为 0，可以采用下面两种方式赋值：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">memset</span>(scores, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>) * <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
-<p>这是第一种赋值方式，小括号第一个部分写上数组名称，第二个部分写上赋值的初始值（这里是 0，其它数值需要非常复杂的转换得到，这里不作出讲解），第三个部分写上数组整体占的内存大小。</p>
-<p>第二种是用大括号这种熟悉的方式赋值，只需要在大括号里写一个元素 0 即可。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">0</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>这样就可以了，因为其它没有赋值的部分都会默认赋值为 0，而此时给了第一个元素也赋值为 0，所以相当于就是全部为 0 了。</p>
-<blockquote>
-<p>在明确赋值元素足够的时候，中括号里的数值可以不写。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>就等价于</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>中括号里的数值，就等于后面大括号里元素的总个数 10 个。</p>
-</blockquote>
-<h3 id="后续赋值"><a href="#后续赋值" class="headerlink" title="后续赋值"></a>后续赋值</h3><p>你也可以借用循环语句赋值，但需要讲解存取数组的元素的语法才可以。现在我们来说一下，如何取出数组里的元素，和修改这些元素的值。</p>
-<h3 id="数组初始化的长度是否可以用变量表示？"><a href="#数组初始化的长度是否可以用变量表示？" class="headerlink" title="数组初始化的长度是否可以用变量表示？"></a>数组初始化的长度是否可以用变量表示？</h3><p>思考一个问题。我们是否可以用一个变量来表示数组的长度呢？</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line"><span class="keyword">int</span> arr[i]; <span class="comment">// Does it work?</span></span><br></pre></td></tr></table></figure>
-<p>这么书写，是否表示输入的数值是多少，数组初始化的时候长度就是多少呢？</p>
-<p>在 C99 标准之前，这种写法一直都是不被允许的。在考试过程时，一般也不允许这种写法，不过 C99 标准开始允许你这么声明数组，即<strong>可变长数组</strong>（Variable Length Array，简称 <strong>VLA</strong>）。VLA 这种特性是在 C99 标准才引入的，所以如果你需要使用 VLA，考试里则是肯定不允许的。</p>
-<h2 id="数组内元素的存取"><a href="#数组内元素的存取" class="headerlink" title="数组内元素的存取"></a>数组内元素的存取</h2><p>前文讲述了如何使用数组进行定义和初始化，它采用的是中括号的方式，写在数组名称的后面，中括号里写上总元素个数来表达。</p>
-<p>在存取元素的时候，我们依旧用的是中括号，而且稍微在使用上和初始化里的中括号有一点区别：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> scores[<span class="number">10</span>] = &#123; <span class="number">82</span>, <span class="number">100</span>, <span class="number">96</span>, <span class="number">57</span>, <span class="number">14</span>, <span class="number">99</span>, <span class="number">90</span>, <span class="number">60</span>, <span class="number">68</span>, <span class="number">77</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>我们要取出上述第三个元素的话，请使用 <code>[第几个元素 - 1]</code> 的方式来取值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> thirdOne = scores[<span class="number">2</span>]; <span class="comment">// thirdOne is assigned 96</span></span><br></pre></td></tr></table></figure>
-<p>在 C 语言里，取值是从 0 开始的，并非 1 开始，所以需要你注意数组取值的时候，中括号里写的数值是多少。比如取出第三个元素，则写的是 <code>array[2]</code>，而非 <code>array[3]</code>。</p>
-<p>那么，整体使用的格式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> scores[] = &#123; <span class="number">82</span>, <span class="number">100</span>, <span class="number">96</span>, <span class="number">57</span>, <span class="number">14</span>, <span class="number">99</span>, <span class="number">90</span>, <span class="number">60</span>, <span class="number">68</span>, <span class="number">77</span> &#125;;</span><br><span class="line">    <span class="keyword">int</span> thirdOne = scores[<span class="number">2</span>]; <span class="comment">// thirdOne is assigned 96</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, thirdOne);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个程序将会输出 96。</p>
-<p>下面就可以说下后续赋值的方式了。</p>
-<p>由于我们学习了循环语句，所以我们可以采用方便 <code>for</code> 循环为其赋值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    arr[i] = i + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>请注意，数组赋值用到了 <code>for</code> 循环，而我们之前说过，取值的中括号里写的数字是从 0 开始算的，所以最大的元素值是 9（因为 0 到 9 一共是 10 个元素了），所以初始化赋值的时候 <code>i = 0</code> 而不是 <code>i = 1</code>，因为这个 <code>i</code> 就是表示这个中括号里的数值的；而条件写的是 <code>i &lt; 10</code> 而不是 <code>i &lt;= 10</code>。</p>
-<p>而上述逻辑里的 <code>arr[i]</code> 就表示 <code>arr</code> 数组的第 <code>i + 1</code> 个元素。比如 <code>i</code> 是 6，则 <code>arr[i]</code> 就表示的是第七个元素，因为从 0 开始计算。而最终执行完毕这个 <code>for</code> 后，整个数组的数值就是 1、2、3、4、5、6、7、8、9、10 了。</p>
-<p>当然，你还可以为其进行手动赋值：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="number">10</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">arr[<span class="number">1</span>] = <span class="number">3</span>;</span><br><span class="line">arr[<span class="number">6</span>] = <span class="number">8</span>;</span><br><span class="line">arr[<span class="number">9</span>] = <span class="number">14</span>;</span><br></pre></td></tr></table></figure>
-<p>这样就可以为这个数组的第 2、7、10 个元素赋值 3、8 和 14，而其余元素的数值都会被默认初始化为 0。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
@@ -1267,6 +1236,10 @@
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
@@ -1275,11 +1248,7 @@
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1291,7 +1260,7 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
 			
 		
 			
@@ -1307,15 +1276,15 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

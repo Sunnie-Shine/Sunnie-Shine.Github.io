@@ -628,10 +628,14 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GreetingFor</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>它不是一句话构成，所以 Lambda 表达式是这样的</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">string</span> name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果表示一个无参的函数的话，由于参数表列没有东西，所以小括号里没有东西：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">Sign</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">return</span> i &gt; <span class="number">0</span> ? <span class="number">1</span> : i &lt; <span class="number">0</span> ? <span class="number">-1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>则改写为</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">() =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">return</span> i &gt; <span class="number">0</span> ? <span class="number">1</span> : i &lt; <span class="number">0</span> ? <span class="number">-1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>另外，一般来说参数的类型都是可以省略不写的。即上述的所有 Lambda 表达式就变为</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">(val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">(number) =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">(name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">(val) =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">(number) =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">(name) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 4</span></span><br><span class="line">() =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">return</span> i &gt; <span class="number">0</span> ? <span class="number">1</span> : i &lt; <span class="number">0</span> ? <span class="number">-1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>甚至当参数只有一个且类型没有写出来的时候，还可以不写参数外围的小括号。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">val =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">number =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">name =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Eg. No. 1</span></span><br><span class="line">val =&gt; val % <span class="number">2</span> == <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 2</span></span><br><span class="line">number =&gt; Console.WriteLine(number)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 3</span></span><br><span class="line">name =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(<span class="string">"Hello"</span>);</span><br><span class="line">    Console.Write(name);</span><br><span class="line">    Console.WriteLine(<span class="string">"!"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eg. No. 4</span></span><br><span class="line">() =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">return</span> i &gt; <span class="number">0</span> ? <span class="number">1</span> : i &lt; <span class="number">0</span> ? <span class="number">-1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>那么，为什么可以不写呢？这是因为 Lambda 表达式的发明出来就是为了把小型函数“参数化”，即利用一种简单的语法机制，把一个不是那么大型的函数直接写到参数上，就免得我们每一次仅仅为了某个特定的操作去单独书写一个函数出来。发明了这样的机制后，我们就可以直接把这种东西写到参数上面去。</p>
 <p>比如排序操作，我们经常会遇到升序和降序排序的形式，所以开发人员在写开发应有的 API 的时候，为了你方便使用，它不会提前单独实现两个函数，一个升序一个降序，而是留给你，把排序的中间行为写出来，然后自己执行对应操作，达到排序的效果。这种时候就可以用上参数化了的 Lambda 表达式了。</p>
 <p>比如，前文的 <code>Where</code> 方法里传入了一个 <code>d =&gt; d &gt;= 8</code> 的 Lambda 表达式，它表示，提供筛选的条件是 <code>d &gt;= 8</code>，其中的 <code>d</code> 变量就是需要逐个遍历的时候的临时变量，你目前可以理解为参与 <code>foreach</code> 循环的循环变量。</p>
@@ -1010,6 +1014,10 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
@@ -1018,11 +1026,7 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1034,7 +1038,7 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
 			
 		
 			
@@ -1050,15 +1054,15 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

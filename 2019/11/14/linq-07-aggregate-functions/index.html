@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="什么是聚合函数？在 LINQ 的使用过程之中，我们肯定会用到 Select、SelectMany、Where 等方法。不过，这些方法是可以允许串联使用的，也就是说，这些方法可以一直往下通过方法链的方式，往下延伸到想要的地方结束。 不过，有一些 LINQ 提供的函数并不支持这种用途，而它们仅仅用来获取这些数据里的属性信息，例如求得一个整数集合 IEnumerable&amp;lt;int&amp;gt; 的最大值、">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-19T01:28:48.633Z">
+<meta property="og:updated_time" content="2019-12-10T03:55:39.699Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是聚合函数？"><span class="toc-number">1.</span> <span class="toc-text">什么是聚合函数？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#聚合函数使用一览"><span class="toc-number">2.</span> <span class="toc-text">聚合函数使用一览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Max-和-Min-方法"><span class="toc-number">2.1.</span> <span class="toc-text">Max 和 Min 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Average-方法"><span class="toc-number">2.2.</span> <span class="toc-text">Average 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Count-方法和-Any-无参方法"><span class="toc-number">2.3.</span> <span class="toc-text">Count 方法和 Any 无参方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存在量词-Any-函数和全称量词-All函数"><span class="toc-number">2.4.</span> <span class="toc-text">存在量词 Any 函数和全称量词 All函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concat-函数"><span class="toc-number">2.5.</span> <span class="toc-text">Concat 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cast-函数"><span class="toc-number">2.6.</span> <span class="toc-text">Cast 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Distinct-函数"><span class="toc-number">2.7.</span> <span class="toc-text">Distinct 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Range-函数（静态函数）"><span class="toc-number">2.8.</span> <span class="toc-text">Range 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeat-函数（静态函数）"><span class="toc-number">2.9.</span> <span class="toc-text">Repeat 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Take-和-Skip-函数"><span class="toc-number">2.10.</span> <span class="toc-text">Take 和 Skip 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ToArray-和-ToList-函数"><span class="toc-number">2.11.</span> <span class="toc-text">ToArray 和 ToList 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数"><span class="toc-number">2.12.</span> <span class="toc-text">First、FirstOrDefault、Single 和 SingleOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-和-LastOrDefault-函数"><span class="toc-number">2.13.</span> <span class="toc-text">Last 和 LastOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElementAt-函数"><span class="toc-number">2.14.</span> <span class="toc-text">ElementAt 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Aggregate-函数"><span class="toc-number">2.15.</span> <span class="toc-text">Aggregate 函数</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是聚合函数？"><span class="toc-number">1.</span> <span class="toc-text">什么是聚合函数？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#聚合函数使用一览"><span class="toc-number">2.</span> <span class="toc-text">聚合函数使用一览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Max-和-Min-方法"><span class="toc-number">2.1.</span> <span class="toc-text">Max 和 Min 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Average-方法"><span class="toc-number">2.2.</span> <span class="toc-text">Average 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Count-方法和-Any-无参方法"><span class="toc-number">2.3.</span> <span class="toc-text">Count 方法和 Any 无参方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存在量词-Any-函数和全称量词-All-函数"><span class="toc-number">2.4.</span> <span class="toc-text">存在量词 Any 函数和全称量词 All 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concat-函数"><span class="toc-number">2.5.</span> <span class="toc-text">Concat 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cast-函数"><span class="toc-number">2.6.</span> <span class="toc-text">Cast 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Distinct-函数"><span class="toc-number">2.7.</span> <span class="toc-text">Distinct 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Range-函数（静态函数）"><span class="toc-number">2.8.</span> <span class="toc-text">Range 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeat-函数（静态函数）"><span class="toc-number">2.9.</span> <span class="toc-text">Repeat 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Take-和-Skip-函数"><span class="toc-number">2.10.</span> <span class="toc-text">Take 和 Skip 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ToArray-和-ToList-函数"><span class="toc-number">2.11.</span> <span class="toc-text">ToArray 和 ToList 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数"><span class="toc-number">2.12.</span> <span class="toc-text">First、FirstOrDefault、Single 和 SingleOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-和-LastOrDefault-函数"><span class="toc-number">2.13.</span> <span class="toc-text">Last 和 LastOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElementAt-函数"><span class="toc-number">2.14.</span> <span class="toc-text">ElementAt 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Aggregate-函数"><span class="toc-number">2.15.</span> <span class="toc-text">Aggregate 函数</span></a></li></ol></li></ol>
 		
 		</div>
 		
@@ -125,7 +125,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Count() != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
 <p>不过，我建议你使用 <code>Any</code> 方法（无参的这个重载），来判断集合是否有元素。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> existAnyElement = selection.Any();</span><br></pre></td></tr></table></figure>
-<h3 id="存在量词-Any-函数和全称量词-All函数"><a href="#存在量词-Any-函数和全称量词-All函数" class="headerlink" title="存在量词 Any 函数和全称量词 All函数"></a>存在量词 <code>Any</code> 函数和全称量词 <code>All</code>函数</h3><p>接着是两个比较常用的聚合函数，它们用于判断集合里是否有元素满足指定条件，或者是全部元素都满足指定条件。</p>
+<h3 id="存在量词-Any-函数和全称量词-All-函数"><a href="#存在量词-Any-函数和全称量词-All-函数" class="headerlink" title="存在量词 Any 函数和全称量词 All 函数"></a>存在量词 <code>Any</code> 函数和全称量词 <code>All</code> 函数</h3><p>接着是两个比较常用的聚合函数，它们用于判断集合里是否有元素满足指定条件，或者是全部元素都满足指定条件。</p>
 <p>举个例子。我们要查询集合里是否所有元素都小于 7，它的写法是这样的：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> allLessThanEight = selection.All(v =&gt; v &lt;= <span class="number">8</span>);</span><br></pre></td></tr></table></figure>
 <p>而如果查找集合里是否存在任意一个元素，它的数值小于 8，那么写作</p>
@@ -347,7 +347,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是聚合函数？"><span class="toc-number">1.</span> <span class="toc-text">什么是聚合函数？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#聚合函数使用一览"><span class="toc-number">2.</span> <span class="toc-text">聚合函数使用一览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Max-和-Min-方法"><span class="toc-number">2.1.</span> <span class="toc-text">Max 和 Min 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Average-方法"><span class="toc-number">2.2.</span> <span class="toc-text">Average 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Count-方法和-Any-无参方法"><span class="toc-number">2.3.</span> <span class="toc-text">Count 方法和 Any 无参方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存在量词-Any-函数和全称量词-All函数"><span class="toc-number">2.4.</span> <span class="toc-text">存在量词 Any 函数和全称量词 All函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concat-函数"><span class="toc-number">2.5.</span> <span class="toc-text">Concat 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cast-函数"><span class="toc-number">2.6.</span> <span class="toc-text">Cast 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Distinct-函数"><span class="toc-number">2.7.</span> <span class="toc-text">Distinct 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Range-函数（静态函数）"><span class="toc-number">2.8.</span> <span class="toc-text">Range 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeat-函数（静态函数）"><span class="toc-number">2.9.</span> <span class="toc-text">Repeat 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Take-和-Skip-函数"><span class="toc-number">2.10.</span> <span class="toc-text">Take 和 Skip 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ToArray-和-ToList-函数"><span class="toc-number">2.11.</span> <span class="toc-text">ToArray 和 ToList 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数"><span class="toc-number">2.12.</span> <span class="toc-text">First、FirstOrDefault、Single 和 SingleOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-和-LastOrDefault-函数"><span class="toc-number">2.13.</span> <span class="toc-text">Last 和 LastOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElementAt-函数"><span class="toc-number">2.14.</span> <span class="toc-text">ElementAt 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Aggregate-函数"><span class="toc-number">2.15.</span> <span class="toc-text">Aggregate 函数</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是聚合函数？"><span class="toc-number">1.</span> <span class="toc-text">什么是聚合函数？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#聚合函数使用一览"><span class="toc-number">2.</span> <span class="toc-text">聚合函数使用一览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Max-和-Min-方法"><span class="toc-number">2.1.</span> <span class="toc-text">Max 和 Min 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Average-方法"><span class="toc-number">2.2.</span> <span class="toc-text">Average 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Count-方法和-Any-无参方法"><span class="toc-number">2.3.</span> <span class="toc-text">Count 方法和 Any 无参方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存在量词-Any-函数和全称量词-All-函数"><span class="toc-number">2.4.</span> <span class="toc-text">存在量词 Any 函数和全称量词 All 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concat-函数"><span class="toc-number">2.5.</span> <span class="toc-text">Concat 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cast-函数"><span class="toc-number">2.6.</span> <span class="toc-text">Cast 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Distinct-函数"><span class="toc-number">2.7.</span> <span class="toc-text">Distinct 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Range-函数（静态函数）"><span class="toc-number">2.8.</span> <span class="toc-text">Range 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeat-函数（静态函数）"><span class="toc-number">2.9.</span> <span class="toc-text">Repeat 函数（静态函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Take-和-Skip-函数"><span class="toc-number">2.10.</span> <span class="toc-text">Take 和 Skip 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ToArray-和-ToList-函数"><span class="toc-number">2.11.</span> <span class="toc-text">ToArray 和 ToList 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#First、FirstOrDefault、Single-和-SingleOrDefault-函数"><span class="toc-number">2.12.</span> <span class="toc-text">First、FirstOrDefault、Single 和 SingleOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Last-和-LastOrDefault-函数"><span class="toc-number">2.13.</span> <span class="toc-text">Last 和 LastOrDefault 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElementAt-函数"><span class="toc-number">2.14.</span> <span class="toc-text">ElementAt 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Aggregate-函数"><span class="toc-number">2.15.</span> <span class="toc-text">Aggregate 函数</span></a></li></ol></li></ol>
  
   </div>
 
@@ -398,6 +398,10 @@
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
@@ -406,11 +410,7 @@
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -422,7 +422,7 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
 			
 		
 			
@@ -438,15 +438,15 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

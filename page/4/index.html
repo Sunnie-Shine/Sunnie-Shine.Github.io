@@ -82,6 +82,105 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/19/clang-07-for-loop/" title="C 语言语法系列（7）：for 语句" itemprop="url">C 语言语法系列（7）：for 语句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-19T12:35:56.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="for-（循环）语句"><a href="#for-（循环）语句" class="headerlink" title="for （循环）语句"></a><code>for</code> （循环）语句</h2><h3 id="for-语句的标准写法"><a href="#for-语句的标准写法" class="headerlink" title="for 语句的标准写法"></a><code>for</code> 语句的标准写法</h3><p>变量循环其实就是 <code>while</code> 和 <code>do-while</code> 语句的一种特别写法，为了方便人的理解，才创立的这样的循环操作，它是 <code>while</code> 的语法糖。</p>
+<p>写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i; <span class="comment">// Note here, `i` is not `i++`.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>for</code> 的括号里有三个语句，并且分别使用<strong>分号</strong>分开。原因在于它的写法会被编译为 <code>while</code> 语句，所以其实这些语句在 <code>while</code> 之中也都是需要加分号的，所以用分号隔开。两个分号把括号内的内容分隔成了三个部分，按顺序分别叫做<strong>初始值</strong>、<strong>条件</strong>、<strong>增量</strong>，即按变量来看的初始情况值，变量作循环需要满足的条件（或叫每做完一次循环后的判断条件），和每一次循环完成后变量需要变化的量。</p>
+<p>它的解释是这样的：先赋初始值、然后判断条件、条件成立时执行循环里面的操作、然后对变量增加增量、然后判断条件、然后条件成立时只需循环里面的操作、然后对变量增加增量、然后判断条件，这样的操作。</p>
+<p>比如上面的写法就是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sum = 0</span><br><span class="line">i = 1</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">sum += i: sum = 1</span><br><span class="line">i++: i = 2</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">sum += i: sum = 3</span><br><span class="line">i++: i = 3</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">sum += i: sum = 6</span><br><span class="line">i++: i = 4</span><br><span class="line">i &lt; 100: 真</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>另外，<code>sum = 0</code> 语句还可以直接写在 <code>for</code> 里。这也是可以的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过，变量赋初始值的时候，多个变量得用逗号隔开了。而且，标准 C 语言规定，变量的声明是不能写在 <code>for</code> 的里面的，比如这样是不可以的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这种写法在 C99 标准里可以使用，而基本的 ANSI C 标准（C89）则不允许这么使用。</p>
+</blockquote>
+<h3 id="残缺-for"><a href="#残缺-for" class="headerlink" title="残缺 for"></a>残缺 <code>for</code></h3><p><code>for</code> 循环的分号内的东西可有可无，比如不需要的时候就可以不写，不过呢，分号不能省略。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样和上面的语句是等价的。毕竟赋初值可以在前面写，也可以后面写。</p>
+<p>还可以这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(; i &lt; <span class="number">100</span>;)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样还是等效的。</p>
+<h3 id="带有逗号表达式的-for"><a href="#带有逗号表达式的-for" class="headerlink" title="带有逗号表达式的 for"></a>带有逗号表达式的 <code>for</code></h3><p>在说这一点前，就不得不讲一个东西：逗号表达式。</p>
+<h4 id="逗号表达式"><a href="#逗号表达式" class="headerlink" title="逗号表达式"></a>逗号表达式</h4><p>逗号表达式发明出来的唯一用途就只是放在 <code>for</code> 里，因为 <code>for</code> 需要用分号分隔所有部分（初值、条件和增量），所以如果想要同时给多个变量赋初始值的时候，或者是给多个变量设定增量的时候，就可以使用它，而不影响分号。</p>
+<p>但是，因为它是在 C 语言里存在的语法点，所以也可以使用在其他场合，虽然这一点并不多大意义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line">b = (a = <span class="number">3</span> * <span class="number">5</span>, a * <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+<p>在赋值操作后，<code>a = 3 * 5, a * 4</code> 就是一个逗号表达式。它由两个部分构成：<code>a = 3 * 5</code> 和 <code>a * 4</code>。逗号表达式的计算是放在所有操作都执行完了才会执行的地方，这里是因为它有括号，所以会执行。</p>
+<p>运算法则是这样的，从左到右依次计算，逗号表达式里面每一个用逗号分开的部分都会计算一次，并取最后一个部分，作为整体表达式的数值。比如这里，从左至右，先让 <code>a</code> 获得一个数值是 15，然后计算 <code>a * 4</code>，得到 60，这个 60 就是整体表达式的数值，最后赋值给 <code>b</code>，所以 <code>a = 15</code>、<code>b = 60</code>。</p>
+<p>不过，由于它最后才会被计算，所以如果没有括号的话，就得小心了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>, b = <span class="number">1</span>, c;</span><br><span class="line">c = a++, ++b, b++;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d%d%d"</span>, a, b, c);</span><br></pre></td></tr></table></figure>
+<p>答案竟然是 <code>231</code>！你敢信？我们来看看为什么。</p>
+<p>首先，C 语言规定，它的计算顺序是放在最后的，换句话说，赋值啥的所有操作全部在它前面。所以赋值会被先执行，也就是这句话等于是以下三句话的简写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c = a++;</span><br><span class="line">++b;</span><br><span class="line">b++;</span><br></pre></td></tr></table></figure>
+<p>只是合并了而已。而这句话你也看得出，逗号表达式虽然要取出最后一个逗号部分作为表达式的数值，但因为运算的关系，<code>a++</code> 已经先被赋值给 <code>c</code> 了，所以最终逗号表达式整体数值结果其实并没有什么用途，故这里其实只是相当于合并书写的一种操作罢了。</p>
+<p>那么，<code>c = a++</code> 得到 <code>c</code> 的值应为 1，因为 <code>++</code> 在后。而 <code>a</code> 最终是会变为 2 的。然后 <code>b</code> 则会因为后面两句话，而增大两个单位。所以 <code>b</code> 应为 3。所以 $a = 2$、$b = 3$、$c = 1$。</p>
+<h4 id="逗号表达式嵌套到-for-里"><a href="#逗号表达式嵌套到-for-里" class="headerlink" title="逗号表达式嵌套到 for 里"></a>逗号表达式嵌套到 <code>for</code> 里</h4><p>知道这一点之后，我们来看怎么嵌套。</p>
+<p>我们知道，为 1 到 100 求和时，除了为作为循环的变量 <code>i</code> 赋值外，还需要为 <code>sum</code> 给定初始值，否则 <code>sum</code> 从一个根本就不知道是多少的数开始增加，是错误的。</p>
+<p>所以我们可以这么写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然了，简化写法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i, sum;</span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">1</span>, sum = <span class="number">0</span>; i &lt;= <span class="number">100</span>; sum += i++);</span><br></pre></td></tr></table></figure>
+<p>也是 OK 的。注意，这次 <code>for</code> 因为没有大括号的关系，循环的部分就只有 <code>for</code> 带上这个小括号这一部分而已。所以加上了分号，表示它在这里截断，<code>for</code> 的语句只能到这里。</p>
+<h2 id="为什么经常把-for-里用的变量命名为-i？"><a href="#为什么经常把-for-里用的变量命名为-i？" class="headerlink" title="为什么经常把 for 里用的变量命名为 i？"></a>为什么经常把 <code>for</code> 里用的变量命名为 <code>i</code>？</h2><p>这是一个很好的问题。你记住一点，它诞生自人们的习惯。之前就说过，变量名称只会受到标识符命名规则的约束，所以取名这一点才是关键。我们最初经常使用到 <code>int</code> 类型来表示整数，除非万不得已才会调整类型。而在 <code>for</code> 循环里，我们常常使用 <code>int</code> 类型的变量作为循环的成员。而这个变量一般表示循环的量，所以它不太好取名。为了简单化处理，我们一般使用它的类型名称的首字母就直接作为了这个变量的名字。比如这里的 <code>int</code> 变量就直接叫做 <code>i</code>。包括后续会介绍到的嵌套循环，那么里面的变量就叫做 <code>j</code>，按着顺序排下来，从 <code>i</code> 开始，<code>i</code>、<code>j</code>、<code>k</code>、……。</p>
+<p>当然，如果是一个字符类型的变量作为初始变量，那么一般就叫做 <code>c</code> 或者 <code>ch</code>，其它的变量按类型取名也都是一样的规则。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/19/csharp-default-interface/" title="C# 8 里的默认接口实现" itemprop="url">C# 8 里的默认接口实现</a>
     
   </h1>
@@ -468,141 +567,6 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
   <div class="article-tags">
   
   <span></span> <a href="/tags/C♯/">C♯</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/17/async-await-fundamental/" title="Async/await 关键字原理" itemprop="url">Async/await 关键字原理</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-17T08:59:40.000Z" itemprop="datePublished"> 发表于 2019-11-17</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="async-和-await-是什么？"><a href="#async-和-await-是什么？" class="headerlink" title="async 和 await 是什么？"></a><code>async</code> 和 <code>await</code> 是什么？</h2><p>在我们平时 C# 的使用之中，总会遇到很多超时和耗时操作，比如获取网页的 HTTP 源代码。</p>
-<blockquote>
-<p>可能你会问：获取源代码有什么用吗？其实获取这个源代码，可以用来解析并生成模板，来处理这个源代码内部的文字信息，可以达到爬虫的效果。比如我想要联网查英语单词的意思，因为没有提供数据库，所以我们可以使用页面自带的返回的效果来找到所有查到的单词都用得到的 div 块，然后去看它们的共同之处，进而通过代码，来获取单词的释义，然后反馈回来。</p>
-</blockquote>
-<p>那么，这些操作显然都有可能出现，而如果我们在使用 UI 设计的时候调用它们，就很容易出现卡死、导致 UI 无法响应，并卡死的操作。于是，我们出现了这个模式。这个模式用于异步处理这些耗时操作，会在线程池里取出一个空闲的后台线程，并执行这个操作；执行完毕后，将会默认回到主线程继续执行，这样一来，你就会发现，由于单独开了一个线程处理，所以 UI 不卡了。这就是这两个关键字带给我们的使用效果。</p>
-<blockquote>
-<p>上述说法还有点细节的问题，不要当杠精，我们在下文里会慢慢阐述原理，并重新解释这些内容。</p>
-</blockquote>
-<h2 id="书写格式"><a href="#书写格式" class="headerlink" title="书写格式"></a>书写格式</h2><p>来看一下，我们如何对一个方法使用 <code>async</code> 和 <code>await</code> 模式。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Project</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到，这个写法便是使用了 <code>async</code> 和 <code>await</code> 模式。首先，我们将耗时的操作写到方法名前面。一般按照规范，<code>async</code> 将放到类型前面，挨着类型名称。其次，类型请使用 <code>Task&lt;T&gt;</code> 方式，其中的泛型参数 <code>T</code> 使用这个类型的本应该返回的返回值类型。比如，这个实例想要通过这个模式来获取 HTTP 文件的内容，那么我们将可以使用这个模式来获取。</p>
-<h2 id="编译器处理后的样子"><a href="#编译器处理后的样子" class="headerlink" title="编译器处理后的样子"></a>编译器处理后的样子</h2><p>上述的短短十多行代码将会生成下面的编译器处理后的代码。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Project</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">StructLayout(LayoutKind.Auto)</span>]</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">struct</span> &lt;FetchHttpFile&gt;d__0 : IAsyncStateMachine</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TaskAwaiter&lt;<span class="keyword">string</span>&gt; &lt;&gt;u__1;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">int</span> num = &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line">            <span class="keyword">string</span> result;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                TaskAwaiter&lt;<span class="keyword">string</span>&gt; awaiter;</span><br><span class="line">                <span class="keyword">if</span> (num != <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    awaiter = <span class="keyword">new</span> HttpClient().GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>)).GetAwaiter();</span><br><span class="line">                    <span class="keyword">if</span> (!awaiter.IsCompleted)</span><br><span class="line">                    &#123;</span><br><span class="line">                        num = (&lt;&gt;<span class="number">1</span>__state = <span class="number">0</span>);</span><br><span class="line">                        &lt;&gt;u__1 = awaiter;</span><br><span class="line">                        &lt;&gt;t__builder.AwaitUnsafeOnCompleted(<span class="keyword">ref</span> awaiter, <span class="keyword">ref</span> <span class="keyword">this</span>);</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    awaiter = &lt;&gt;u__1;</span><br><span class="line">                    &lt;&gt;u__1 = <span class="keyword">default</span>(TaskAwaiter&lt;<span class="keyword">string</span>&gt;);</span><br><span class="line">                    num = (&lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                result = awaiter.GetResult();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception exception)</span><br><span class="line">            &#123;</span><br><span class="line">                &lt;&gt;<span class="number">1</span>__state = <span class="number">-2</span>;</span><br><span class="line">                &lt;&gt;t__builder.SetException(exception);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            &lt;&gt;<span class="number">1</span>__state = <span class="number">-2</span>;</span><br><span class="line">            &lt;&gt;t__builder.SetResult(result);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> IAsyncStateMachine.MoveNext()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">            <span class="keyword">this</span>.MoveNext();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetStateMachine</span>(<span class="params">IAsyncStateMachine stateMachine</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            &lt;&gt;t__builder.SetStateMachine(stateMachine);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine</span></span><br><span class="line">            <span class="keyword">this</span>.SetStateMachine(stateMachine);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">AsyncStateMachine(typeof(&lt;FetchHttpFile&gt;d__0))</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        &lt;FetchHttpFile&gt;d__0 stateMachine = <span class="keyword">default</span>(&lt;FetchHttpFile&gt;d__0);</span><br><span class="line">        stateMachine.&lt;&gt;t__builder = AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt;.Create();</span><br><span class="line">        stateMachine.&lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>;</span><br><span class="line">        AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder = stateMachine.&lt;&gt;t__builder;</span><br><span class="line">        &lt;&gt;t__builder.Start(<span class="keyword">ref</span> stateMachine);</span><br><span class="line">        <span class="keyword">return</span> stateMachine.&lt;&gt;t__builder.Task;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以仔细看看，这个代码一下就陡增到 90 多行了。我们下面来分析一下它们。</p>
-<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>下面我们来看下这个生成的代码，到底内部执行了哪些操作，又处理了什么。</p>
-<h3 id="原方法部分"><a href="#原方法部分" class="headerlink" title="原方法部分"></a>原方法部分</h3><p>先来看原本的方法部分，虽然它会调用内部的执行操作，不过我们先看它是为了逻辑框架上更清晰。</p>
-<p>这一部分有点难搞的地方在于，它的类型全部都是没办法看的，因为这些内容基本上都是被编译器自动生成了，所以我们只能翻译一下。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">AsyncStateMachine(typeof(StateMachine))</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> stateMachine = <span class="keyword">default</span>(StateMachine); <span class="comment">// StateMachine</span></span><br><span class="line">    stateMachine.builder = AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt;.Create();</span><br><span class="line">    stateMachine.state = <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">var</span> builder = stateMachine.builder; <span class="comment">// AsyncTaskMethodBuilder&lt;string&gt;</span></span><br><span class="line">    builder.Start(<span class="keyword">ref</span> stateMachine);</span><br><span class="line">    <span class="keyword">return</span> stateMachine.builder.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样就比较清晰了。首先，它在原本的代码方法体里插入了一个状态机。什么是状态机呢？这一点的详细内容我们稍后再说，这里先大致认为是一个专门记录执行获取 HTTP 文件操作状态的一个对象。然后，</p>
-<h3 id="状态机部分"><a href="#状态机部分" class="headerlink" title="状态机部分"></a>状态机部分</h3><p>这段代码稍微困难一些，因为内容非常多。我们只能一块一块地进行解读。</p>
-<h4 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h4><p>首先是三个字段：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"><span class="keyword">public</span> AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder;</span><br><span class="line"><span class="keyword">private</span> TaskAwaiter&lt;<span class="keyword">string</span>&gt; &lt;&gt;u__1;</span><br></pre></td></tr></table></figure>
-<p>第一个字段是一个整数类型的变量，它在编译期间生成，用来表示一会儿执行状态机期间的状态；第二个字段叫 <code>builder</code>，是异步任务方法的生成器对象，它带有一个泛型参数 <code>string</code>，就是我们最初异步返回任务类型的方法里那个泛型参数；第三个字段表示一个 awaiter。awaiter 这个词到现在都不好翻译，你只需要知道 await 是异步等待的关键字，那么加入 -er 后缀就是表示这个任务需要异步等待的那一个对象。</p>
-<blockquote>
-<p>注意，awaiter 是一个对象，它专门用于等待异步任务的完成。</p>
-</blockquote>
-<h4 id="MoveNext-方法"><a href="#MoveNext-方法" class="headerlink" title="MoveNext 方法"></a><code>MoveNext</code> 方法</h4><p>下面来看下 <code>MoveNext</code> 方法。让我们先把里面一些写起来诡异的字段名改一下写法。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">string</span> result;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        TaskAwaiter&lt;<span class="keyword">string</span>&gt; awaiter;</span><br><span class="line">        <span class="keyword">if</span> (num != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            awaiter = <span class="keyword">new</span> HttpClient().GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>)).GetAwaiter();</span><br><span class="line">            <span class="keyword">if</span> (!awaiter.IsCompleted)</span><br><span class="line">            &#123;</span><br><span class="line">                num = <span class="keyword">this</span>.state = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">this</span>.awaiter = awaiter;</span><br><span class="line">                <span class="keyword">this</span>.builder.AwaitUnsafeOnCompleted(<span class="keyword">ref</span> awaiter, <span class="keyword">ref</span> <span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            awaiter = <span class="keyword">this</span>.awaiter;</span><br><span class="line">            <span class="keyword">this</span>.awaiter = <span class="keyword">default</span>(TaskAwaiter&lt;<span class="keyword">string</span>&gt;);</span><br><span class="line">            num = (<span class="keyword">this</span>.state = <span class="number">-1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        result = awaiter.GetResult();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception exception)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="number">-2</span>;</span><br><span class="line">        <span class="keyword">this</span>.builder.SetException(exception);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.state = <span class="number">-2</span>;</span><br><span class="line">    <span class="keyword">this</span>.builder.SetResult(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先，它把状态机里生成的字段 <code>state</code> 取出来，赋值给 <code>num</code> 作为后面使用，然后创建了一个结果对象，就是我们需要提取的 HTTP 网页文件源代码的字符串变量 <code>result</code> 此时还没有赋值。</p>
-<p>然后，它尝试去执行获取操作，写在 <code>try</code> 块里。在 <code>try</code> 块里，有一个异步等待的对象 <code>awaiter</code>，在当前状态不为 0 的时候，进入 <code>if</code> 条件，然后去获取异步 <code>Task&lt;T&gt;</code> 对象的 awaiter。这个时候，就可以把这个 <code>Task&lt;T&gt;</code> 的 awaiter 获取出来，赋值给这个 <code>try</code> 块里的临时变量了。</p>
-<p>然后此时，立马判断这个执行任务是否已经完成。如果没有执行完毕，就会进入内部的 <code>if</code> 块，然后将当前状态和这个临时变量 <code>num</code> 改为 0，并把 awaiter 赋值给当前对象里的字段 <code>awaiter</code> 上去；接着，它会调用字段 <code>builder</code> 对象的 <code>AwaiteUnsafeOnCompleted</code> 方法，这个方法是用来做什么呢？查看资料就可以发现，它实际上是一个处理任务调度的方法，当指定的 awaiter 已经完成的时候，它就会调度任务，去执行处理下一个行为。</p>
-<p>不过，在外层条件判断里，还有一个 <code>else</code> 块，它表示当任务已经完成的时候的行为。当任务已经在此处都做完了，就会立马把这些基本的执行行为的信息（诸如 <code>awaiter</code>、<code>state</code> 等等信息）统统赋值一次。</p>
-<p>最后，不论是走 <code>if</code> 还是走 <code>else</code> 块，最终都会到 <code>result = awaiter.GetResult()</code> 操作，获取最终结果。注意，这个方法内部的实现较复杂，我们最终阐述一下结果：<strong>这个方法最终会阻塞程序执行，直到结果被得到</strong>。</p>
-<p>当然，如果执行期间出现了异常，<code>catch</code> 块就会捕捉到，然后把异常塞进 <code>builder</code> 里去，并且把此时执行状态置为 -2，表示退出。</p>
-<p>最后，除了 awaiter 尚未完成和抛出异常时，会立马退出程序之外，都会执行到最后，将状态改为 -2，表示退出，并且把结果塞进 <code>builder</code> 里，状态机的行为便执行完毕。可以从代码里看到，整个行为好像并没有体现出启动后台线程的操作，这些都在 <code>builder</code> 里为我们做好了一切，就在 <code>AwaitUnsafeOnCompleted</code> 方法的执行里。另外，状态机本身是不会抛出不被处理的异常的，哪怕出现异常，都是都被 <code>catch</code> 块处理，然后塞进 <code>builder</code> 里，推后到后续的某个位置才会抛出。</p>
-<p>总的来说：<strong><code>async</code>/<code>await</code> 模式会在编译期生成一个状态机，记录当前操作执行状态。在执行过程之中，判断异步任务是否在此时此刻已经执行完毕。如果没有的话，就会把这个任务一并塞进 <code>builder</code> 里等待稍后的执行，但如果完成了的话，就会立马取出其结果，并塞进 <code>builder</code> 里，留着后续调用的时候获取结果；当最终没有完成的任务，将会立马放到最后开始执行，并阻塞当前线程</strong>。</p>
-<h4 id="剩下的三个方法"><a href="#剩下的三个方法" class="headerlink" title="剩下的三个方法"></a>剩下的三个方法</h4><p>那么，剩下的三个方法的实现其实就不难理解了。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> IAsyncStateMachine.MoveNext()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">    <span class="keyword">this</span>.MoveNext();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">DebuggerHidden</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetStateMachine</span>(<span class="params">IAsyncStateMachine stateMachine</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.builder.SetStateMachine(stateMachine);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine</span></span><br><span class="line">    <span class="keyword">this</span>.SetStateMachine(stateMachine);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里的<code>MoveNext</code> 方法用于实现接口对象，而它为什么非要单独用显式实现接口的模式来单独在外部创建对象，并在此实现呢？这是为了更好的封装性。这个方法一般不希望被外部调用，所以这里采用显式实现接口的方式，让外部必须知晓实现模型才能进行转换和调用；而内部调用到的 <code>MoveNext</code> 方法也是一个 <code>private</code> 的方法，这保证了完整的内部封装的模式。</p>
-<p>然后在 <code>SetStateMachine</code> 方法里，它直接调用 <code>builder</code> 字段的 <code>SetStateMachine</code> 方法来设置状态机，最后使用显式实现接口的模式达到封装性。</p>
-<h2 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h2><p>在前文里，我们完整描述了整个 <code>async</code> 方法在编译器里生成的所有内容的执行思路和操作，但依然存在一些逻辑上的漏洞。</p>
-<h3 id="1、异步方法真的是异步执行和被调用的吗？"><a href="#1、异步方法真的是异步执行和被调用的吗？" class="headerlink" title="1、异步方法真的是异步执行和被调用的吗？"></a>1、异步方法真的是异步执行和被调用的吗？</h3><p>在调用层面来看，你可以观察到 <code>FetchHttpFile</code> 方法本被标注了 <code>async</code> 关键字，后面被编译器生成代码之后，却不见了。这告诉了我们，<code>async</code> 关键字只是一个关键字，它用于标记方法是可能被异步执行的，但调用期间却是同步调用的，并没有产生任何的后台线程。</p>
-<p>不过，在执行的时候，系统会为其单独分配一个后台线程，执行内部“耗时”的操作。</p>
-<h3 id="2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？"><a href="#2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？" class="headerlink" title="2、讲了这么多，都在说 async 关键字了，那么 await 关键字呢？"></a>2、讲了这么多，都在说 <code>async</code> 关键字了，那么 <code>await</code> 关键字呢？</h3><p>在原本的写法里，我们使用 <code>await</code> 关键字，嵌入到 <code>FetchHttpFile</code> 方法里，最后它生成了一大堆东西。不过 <code>await</code> 在前文并没有得到很好的解释。实际上，在前文里我们是不是提到了一个 <code>Task&lt;T&gt;</code> 对象，来表达一个可能耗时的任务？是的，这便是这个地方执行的关键。<code>await</code> 关键字用于获取这个任务里的 awaiter，然后取出执行结果。注意，在此期间，程序是开了后台线程并执行了这一套工作的，所以只是你看不到罢了。</p>
-<p>当获取结果后，主线程才会继续向下执行，在前面没有执行完毕获取结果的操作前，主线程都是被阻塞的，而往往 UI 界面的线程都跑在主线程上，所以 UI 界面此时该卡死还卡死。后续我会介绍如何避免这样的情况发生。</p>
-<h3 id="3、异步操作会造成程序死锁吗？"><a href="#3、异步操作会造成程序死锁吗？" class="headerlink" title="3、异步操作会造成程序死锁吗？"></a>3、异步操作会造成程序死锁吗？</h3><p>当线程处理期间，就一定存在死锁的问题需要我们去解决。死锁指的是两个或更多线程在相互调用期间，各自由于都在等待对方执行完毕释放资源，导致程序使用的全部的线程都在等待，引起的卡死的现象。在异步操作里，我们为了保证程序能够完整执行下去，而且还不阻塞主线程，就会使用 <code>async</code> 关键字来让耗时的操作去单独跑在一个线程上（注意，此时依旧我们会等待线程执行完毕反馈结果），然后最后执行完毕后，把结果取出来并显示的行为。这涉及到两个线程了。如果是 UI 线程的话，如果像是上面这么简单的实现，会不会出现死锁呢？</p>
-<p>很遗憾，上述例子是会产生死锁的。它满足了整个项目产生死锁的两大充分不必要条件：</p>
-<ol>
-<li>调用 <code>Wait</code> 方法（一个用于阻塞任务执行的方法）或 <code>Result</code> 属性（相当于 <code>GetResult</code> 方法）的位置处于 UI 线程上；</li>
-<li>任务执行在其它的后台线程上，而并不在和 UI 一样的线程上。</li>
-</ol>
-<p>那么为什么是这两个条件就可能死锁呢？回顾一下线程死锁的四大必要条件：</p>
-<ol>
-<li><strong>互斥</strong>：资源只能被一个资源使用，其它资源必须等待释放后才能继续使用；</li>
-<li><strong>请求和保持</strong>：由于请求资源而阻塞时，对已获得的资源保持不放；</li>
-<li><strong>让权等待</strong>：在执行期间，已获得的资源在末使用完之前，都不能被强行剥夺；</li>
-<li><strong>循环等待</strong>：若干线程之间有循环的依赖关系。</li>
-</ol>
-<p>这四个条件是<strong>死锁的必要条件</strong>，只要系统发生死锁，这些条件必然成立，而只要上述条件之一不满足，就不会发生死锁。 观察上述两种说法就可以看出，<code>async</code> 执行模式是满足前三点的，而第四点到底是否满足呢？实际上是的，因为主线程（UI）会等待后台线程下载文件，而后台线程又会依赖主线程的执行（不然怎么可能单独跑一个后台线程呢），所以四大条件全部满足，必然是可能会存在死锁现象的发生的。</p>
-<h3 id="4、我们应该如何修改代码去阻止可能产生的死锁呢？"><a href="#4、我们应该如何修改代码去阻止可能产生的死锁呢？" class="headerlink" title="4、我们应该如何修改代码去阻止可能产生的死锁呢？"></a>4、我们应该如何修改代码去阻止可能产生的死锁呢？</h3><p>为了避免线程死锁的问题，我们拥有一些合理的解决方案。不过先要我们来看下下面的问题。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Task <span class="title">RunAsync1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">RunAsync2</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">RunAsync3</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;).ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面三个方法里，哪个（或哪些）方法会可能产生死锁？</p>
-<p>答案是，只有第 2 个会产生死锁，而第 1 个和第 3 个都不会。原因如下：</p>
-<p>第一个压根就没有使用 <code>async</code> 和 <code>await</code> 关键字，这使得编译器并不会给我们产生状态机和一大堆异步执行行为，所以好比任务是同步完成的。既然是在同一个线程上，为什么会死锁呢？</p>
-<p>第三个有 <code>async</code> 和 <code>await</code> 关键字，而后续我们配备了 <code>ConfigureAwait</code> 方法，以此来为这个任务的执行分配新的线程，并让后续的执行行为直接全跑在这个线程上。默认的话，<code>ConfigureAwait</code> 的参数是为 <code>true</code> 的，这意味着在后续执行的操作，会重新返回到主线程上。但刚才说过，返回主线程执行后续操作就必然存在死锁的问题，所以我们为其设置 <code>ConfigureAwait(false)</code> 的话，执行的操作就会跑到随机分配的新的线程里去搞定它们，这样一来，甚至 UI 线程都不用返回到主线程去做了，因为它们都在随机分配好的新线程里在做这些东西了。所以这个时候，它们在执行期间就不会产生死锁了。</p>
-<blockquote>
-<p>实际上，后续怎么返回到上一个执行调用方线程，是通过一个叫做 <code>SynchronizationContext</code> 对象来搞定的，直译就是同步上下文，它记录了线程执行的调用顺序：是谁调用了异步方法的执行，并在什么线程上执行的。这些信息都在这个同步上下文里可以找到。有了这个对象，我们就可以轻松反推找到原来的执行方的线程信息了，所以 C# 采用的是这种操作来返回到主线程。当然，UI 线程使用的是一个叫做 <code>DispatcherSynchronizationContext</code> 的对象来搞的，不过这一点你在初步学习的时候知道有这么一个东西存在就好了。</p>
-<p>由于指定了 <code>ConfigureAwait(false)</code>，这意味着通知异步状态机 <code>AsyncMethodStateMachine</code> 并不需要使用设置好的 <code>SynchronizationContext</code>（对于 UI 线程，是 <code>DispatcherSynchronizationContext</code>）执行线程同步，而是使用默认的 <code>SynchronizationContext</code>，而默认行为是随便找个线程执行后面的代码。于是，<code>await Task.Run</code> 后面的代码便不需要返回原线程，也就不会发生第 2 种情况里的死锁问题。 </p>
-</blockquote>
-<p>所以，当你安装了 <a href="https://www.nuget.org/packages/Microsoft.CodeAnalysis.FxCopAnalyzers/" target="_blank" rel="noopener">Microsoft.CodeAnalysis.FxCopAnalyzers</a> 编译器后，你就会发现，编译器自动会为你提出警告 CA2007，告诉你请你在使用异步行为的时候在其后面配置 <code>ConfigureAwait(false)</code> 来达到避免死锁的目的。如果你是类库的编写者，注意此问题能够一定程度上防止逗比使用者出现死锁问题后喷你的类库写得不好。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.compilerservices.iasyncstatemachine?view=netframework-4.8" target="_blank" rel="noopener">IAsyncStateMachine 接口</a></li>
-<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.compilerservices.asyncstatemachineattribute?view=netframework-4.8" target="_blank" rel="noopener">AsyncStateMachineAttribute 特性</a></li>
-<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.taskawaiter?view=netframework-4.8" target="_blank" rel="noopener">TaskAwaiter 结构</a></li>
-<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asynctaskmethodbuilder.awaitunsafeoncompleted?view=netframework-4.8" target="_blank" rel="noopener">AwaitUnsafeOnCompleted<TAwaiter, TStateMachine> 方法</a></li>
-<li><a href="https://blog.walterlv.com/post/deadlock-in-task-wait.html" target="_blank" rel="noopener">使用 Task.Wait()? 立即死锁</a>（博文）</li>
-<li><a href="https://blog.walterlv.com/post/using-configure-await-to-avoid-deadlocks.html" target="_blank" rel="noopener">使用 ConfigureAwait(bool) 避免死锁</a>（博文）</li>
-</ol>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%85%B3%E9%94%AE%E5%AD%97/">C♯.关键字</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a>
   </div>
 
 </div>
@@ -1133,6 +1097,10 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
@@ -1141,11 +1109,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1157,7 +1121,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
 			
 		
 			
@@ -1173,15 +1137,15 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/GDI/" title="GDI+">GDI+<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

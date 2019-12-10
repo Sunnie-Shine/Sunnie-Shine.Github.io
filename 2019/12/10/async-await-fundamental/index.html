@@ -1,0 +1,754 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Async/await 关键字原理 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="async 和 await 是什么？在我们平时 C# 的使用之中，总会遇到很多超时和耗时操作，比如获取网页的 HTTP 源代码。  可能你会问：获取源代码有什么用吗？其实获取这个源代码，可以用来解析并生成模板，来处理这个源代码内部的文字信息，可以达到爬虫的效果。比如我想要联网查英语单词的意思，因为没有提供数据库，所以我们可以使用页面自带的返回的效果来找到所有查到的单词都用得到的 div 块，然后去">
+<meta name="keywords" content="C♯,C♯.编译器生成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Async&#x2F;await 关键字原理">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;async-await-fundamental&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="async 和 await 是什么？在我们平时 C# 的使用之中，总会遇到很多超时和耗时操作，比如获取网页的 HTTP 源代码。  可能你会问：获取源代码有什么用吗？其实获取这个源代码，可以用来解析并生成模板，来处理这个源代码内部的文字信息，可以达到爬虫的效果。比如我想要联网查英语单词的意思，因为没有提供数据库，所以我们可以使用页面自带的返回的效果来找到所有查到的单词都用得到的 div 块，然后去">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-10T05:59:59.582Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/12/10/async-await-fundamental/" title="Async/await 关键字原理" itemprop="url">Async/await 关键字原理</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-10T05:59:20.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#async-和-await-是什么？"><span class="toc-number">1.</span> <span class="toc-text">async 和 await 是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#书写格式"><span class="toc-number">2.</span> <span class="toc-text">书写格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译器处理后的样子"><span class="toc-number">3.</span> <span class="toc-text">编译器处理后的样子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理分析"><span class="toc-number">4.</span> <span class="toc-text">原理分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原方法部分"><span class="toc-number">4.1.</span> <span class="toc-text">原方法部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#状态机部分"><span class="toc-number">4.2.</span> <span class="toc-text">状态机部分</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#字段"><span class="toc-number">4.2.1.</span> <span class="toc-text">字段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MoveNext-方法"><span class="toc-number">4.2.2.</span> <span class="toc-text">MoveNext 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#剩下的三个方法"><span class="toc-number">4.2.3.</span> <span class="toc-text">剩下的三个方法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#需要注意的问题"><span class="toc-number">5.</span> <span class="toc-text">需要注意的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、异步方法真的是异步执行和被调用的吗？"><span class="toc-number">5.1.</span> <span class="toc-text">1、异步方法真的是异步执行和被调用的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？"><span class="toc-number">5.2.</span> <span class="toc-text">2、讲了这么多，都在说 async 关键字了，那么 await 关键字呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、异步操作会造成程序死锁吗？"><span class="toc-number">5.3.</span> <span class="toc-text">3、异步操作会造成程序死锁吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、我们应该如何修改代码去阻止可能产生的死锁呢？"><span class="toc-number">5.4.</span> <span class="toc-text">4、我们应该如何修改代码去阻止可能产生的死锁呢？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多个-await-语句"><span class="toc-number">6.</span> <span class="toc-text">多个 await 语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="async-和-await-是什么？"><a href="#async-和-await-是什么？" class="headerlink" title="async 和 await 是什么？"></a><code>async</code> 和 <code>await</code> 是什么？</h2><p>在我们平时 C# 的使用之中，总会遇到很多超时和耗时操作，比如获取网页的 HTTP 源代码。</p>
+<blockquote>
+<p>可能你会问：获取源代码有什么用吗？其实获取这个源代码，可以用来解析并生成模板，来处理这个源代码内部的文字信息，可以达到爬虫的效果。比如我想要联网查英语单词的意思，因为没有提供数据库，所以我们可以使用页面自带的返回的效果来找到所有查到的单词都用得到的 div 块，然后去看它们的共同之处，进而通过代码，来获取单词的释义，然后反馈回来。</p>
+</blockquote>
+<p>那么，这些操作显然都有可能出现，而如果我们在使用 UI 设计的时候调用它们，就很容易出现卡死、导致 UI 无法响应，并卡死的操作。于是，我们出现了这个模式。这个模式用于异步处理这些耗时操作，会在线程池里取出一个空闲的后台线程，并执行这个操作；执行完毕后，将会默认回到主线程继续执行，这样一来，你就会发现，由于单独开了一个线程处理，所以 UI 不卡了。这就是这两个关键字带给我们的使用效果。</p>
+<blockquote>
+<p>上述说法还有点细节的问题，不要当杠精，我们在下文里会慢慢阐述原理，并重新解释这些内容。</p>
+</blockquote>
+<h2 id="书写格式"><a href="#书写格式" class="headerlink" title="书写格式"></a>书写格式</h2><p>来看一下，我们如何对一个方法使用 <code>async</code> 和 <code>await</code> 模式。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Project</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，这个写法便是使用了 <code>async</code> 和 <code>await</code> 模式。首先，我们将耗时的操作写到方法名前面。一般按照规范，<code>async</code> 将放到类型前面，挨着类型名称。其次，类型请使用 <code>Task&lt;T&gt;</code> 方式，其中的泛型参数 <code>T</code> 使用这个类型的本应该返回的返回值类型。比如，这个实例想要通过这个模式来获取 HTTP 文件的内容，那么我们将可以使用这个模式来获取。</p>
+<h2 id="编译器处理后的样子"><a href="#编译器处理后的样子" class="headerlink" title="编译器处理后的样子"></a>编译器处理后的样子</h2><p>上述的短短十多行代码将会生成下面的编译器处理后的代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Project</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">StructLayout(LayoutKind.Auto)</span>]</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">struct</span> &lt;FetchHttpFile&gt;d__0 : IAsyncStateMachine</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TaskAwaiter&lt;<span class="keyword">string</span>&gt; &lt;&gt;u__1;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">int</span> num = &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line">            <span class="keyword">string</span> result;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                TaskAwaiter&lt;<span class="keyword">string</span>&gt; awaiter;</span><br><span class="line">                <span class="keyword">if</span> (num != <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    awaiter = <span class="keyword">new</span> HttpClient().GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>)).GetAwaiter();</span><br><span class="line">                    <span class="keyword">if</span> (!awaiter.IsCompleted)</span><br><span class="line">                    &#123;</span><br><span class="line">                        num = (&lt;&gt;<span class="number">1</span>__state = <span class="number">0</span>);</span><br><span class="line">                        &lt;&gt;u__1 = awaiter;</span><br><span class="line">                        &lt;&gt;t__builder.AwaitUnsafeOnCompleted(<span class="keyword">ref</span> awaiter, <span class="keyword">ref</span> <span class="keyword">this</span>);</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    awaiter = &lt;&gt;u__1;</span><br><span class="line">                    &lt;&gt;u__1 = <span class="keyword">default</span>(TaskAwaiter&lt;<span class="keyword">string</span>&gt;);</span><br><span class="line">                    num = (&lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                result = awaiter.GetResult();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception exception)</span><br><span class="line">            &#123;</span><br><span class="line">                &lt;&gt;<span class="number">1</span>__state = <span class="number">-2</span>;</span><br><span class="line">                &lt;&gt;t__builder.SetException(exception);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            &lt;&gt;<span class="number">1</span>__state = <span class="number">-2</span>;</span><br><span class="line">            &lt;&gt;t__builder.SetResult(result);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> IAsyncStateMachine.MoveNext()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">            <span class="keyword">this</span>.MoveNext();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetStateMachine</span>(<span class="params">IAsyncStateMachine stateMachine</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            &lt;&gt;t__builder.SetStateMachine(stateMachine);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine</span></span><br><span class="line">            <span class="keyword">this</span>.SetStateMachine(stateMachine);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">AsyncStateMachine(typeof(&lt;FetchHttpFile&gt;d__0))</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        &lt;FetchHttpFile&gt;d__0 stateMachine = <span class="keyword">default</span>(&lt;FetchHttpFile&gt;d__0);</span><br><span class="line">        stateMachine.&lt;&gt;t__builder = AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt;.Create();</span><br><span class="line">        stateMachine.&lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>;</span><br><span class="line">        AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder = stateMachine.&lt;&gt;t__builder;</span><br><span class="line">        &lt;&gt;t__builder.Start(<span class="keyword">ref</span> stateMachine);</span><br><span class="line">        <span class="keyword">return</span> stateMachine.&lt;&gt;t__builder.Task;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以仔细看看，这个代码一下就陡增到 90 多行了。我们下面来分析一下它们。</p>
+<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>下面我们来看下这个生成的代码，到底内部执行了哪些操作，又处理了什么。</p>
+<h3 id="原方法部分"><a href="#原方法部分" class="headerlink" title="原方法部分"></a>原方法部分</h3><p>先来看原本的方法部分，虽然它会调用内部的执行操作，不过我们先看它是为了逻辑框架上更清晰。</p>
+<p>这一部分有点难搞的地方在于，它的类型全部都是没办法看的，因为这些内容基本上都是被编译器自动生成了，所以我们只能翻译一下。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">AsyncStateMachine(typeof(StateMachine))</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> stateMachine = <span class="keyword">default</span>(StateMachine); <span class="comment">// StateMachine</span></span><br><span class="line">    stateMachine.builder = AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt;.Create();</span><br><span class="line">    stateMachine.state = <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">var</span> builder = stateMachine.builder; <span class="comment">// AsyncTaskMethodBuilder&lt;string&gt;</span></span><br><span class="line">    builder.Start(<span class="keyword">ref</span> stateMachine);</span><br><span class="line">    <span class="keyword">return</span> stateMachine.builder.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就比较清晰了。首先，它在原本的代码方法体里插入了一个状态机。什么是状态机呢？这一点的详细内容我们稍后再说，这里先大致认为是一个专门记录执行获取 HTTP 文件操作状态的一个对象。然后，</p>
+<h3 id="状态机部分"><a href="#状态机部分" class="headerlink" title="状态机部分"></a>状态机部分</h3><p>这段代码稍微困难一些，因为内容非常多。我们只能一块一块地进行解读。</p>
+<h4 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h4><p>首先是三个字段：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"><span class="keyword">public</span> AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder;</span><br><span class="line"><span class="keyword">private</span> TaskAwaiter&lt;<span class="keyword">string</span>&gt; &lt;&gt;u__1;</span><br></pre></td></tr></table></figure>
+<p>第一个字段是一个整数类型的变量，它在编译期间生成，用来表示一会儿执行状态机期间的状态；第二个字段叫 <code>builder</code>，是异步任务方法的生成器对象，它带有一个泛型参数 <code>string</code>，就是我们最初异步返回任务类型的方法里那个泛型参数；第三个字段表示一个 awaiter。awaiter 这个词到现在都不好翻译，你只需要知道 await 是异步等待的关键字，那么加入 -er 后缀就是表示这个任务需要异步等待的那一个对象。</p>
+<blockquote>
+<p>注意，awaiter 是一个对象，它专门用于等待异步任务的完成。</p>
+</blockquote>
+<h4 id="MoveNext-方法"><a href="#MoveNext-方法" class="headerlink" title="MoveNext 方法"></a><code>MoveNext</code> 方法</h4><p>下面来看下 <code>MoveNext</code> 方法。让我们先把里面一些写起来诡异的字段名改一下写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">string</span> result;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        TaskAwaiter&lt;<span class="keyword">string</span>&gt; awaiter;</span><br><span class="line">        <span class="keyword">if</span> (num != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            awaiter = <span class="keyword">new</span> HttpClient().GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>)).GetAwaiter();</span><br><span class="line">            <span class="keyword">if</span> (!awaiter.IsCompleted)</span><br><span class="line">            &#123;</span><br><span class="line">                num = <span class="keyword">this</span>.state = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">this</span>.awaiter = awaiter;</span><br><span class="line">                <span class="keyword">this</span>.builder.AwaitUnsafeOnCompleted(<span class="keyword">ref</span> awaiter, <span class="keyword">ref</span> <span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            awaiter = <span class="keyword">this</span>.awaiter;</span><br><span class="line">            <span class="keyword">this</span>.awaiter = <span class="keyword">default</span>(TaskAwaiter&lt;<span class="keyword">string</span>&gt;);</span><br><span class="line">            num = (<span class="keyword">this</span>.state = <span class="number">-1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        result = awaiter.GetResult();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception exception)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="number">-2</span>;</span><br><span class="line">        <span class="keyword">this</span>.builder.SetException(exception);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.state = <span class="number">-2</span>;</span><br><span class="line">    <span class="keyword">this</span>.builder.SetResult(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先，它把状态机里生成的字段 <code>state</code> 取出来，赋值给 <code>num</code> 作为后面使用，然后创建了一个结果对象，就是我们需要提取的 HTTP 网页文件源代码的字符串变量 <code>result</code> 此时还没有赋值。</p>
+<p>然后，它尝试去执行获取操作，写在 <code>try</code> 块里。在 <code>try</code> 块里，有一个异步等待的对象 <code>awaiter</code>，在当前状态不为 0 的时候，进入 <code>if</code> 条件，然后去获取异步 <code>Task&lt;T&gt;</code> 对象的 awaiter。这个时候，就可以把这个 <code>Task&lt;T&gt;</code> 的 awaiter 获取出来，赋值给这个 <code>try</code> 块里的临时变量了。</p>
+<p>然后此时，立马判断这个执行任务是否已经完成。如果没有执行完毕，就会进入内部的 <code>if</code> 块，然后将当前状态和这个临时变量 <code>num</code> 改为 0，并把 awaiter 赋值给当前对象里的字段 <code>awaiter</code> 上去；接着，它会调用字段 <code>builder</code> 对象的 <code>AwaiteUnsafeOnCompleted</code> 方法，这个方法是用来做什么呢？查看资料就可以发现，它实际上是一个处理任务调度的方法，当指定的 awaiter 已经完成的时候，它就会调度任务，去执行处理下一个行为。</p>
+<p>不过，在外层条件判断里，还有一个 <code>else</code> 块，它表示当任务已经完成的时候的行为。当任务已经在此处都做完了，就会立马把这些基本的执行行为的信息（诸如 <code>awaiter</code>、<code>state</code> 等等信息）统统赋值一次。</p>
+<p>最后，不论是走 <code>if</code> 还是走 <code>else</code> 块，最终都会到 <code>result = awaiter.GetResult()</code> 操作，获取最终结果。注意，这个方法内部的实现较复杂，我们最终阐述一下结果：<strong>这个方法最终会阻塞程序执行，直到结果被得到</strong>。</p>
+<p>当然，如果执行期间出现了异常，<code>catch</code> 块就会捕捉到，然后把异常塞进 <code>builder</code> 里去，并且把此时执行状态置为 -2，表示退出。</p>
+<p>最后，除了 awaiter 尚未完成和抛出异常时，会立马退出程序之外，都会执行到最后，将状态改为 -2，表示退出，并且把结果塞进 <code>builder</code> 里，状态机的行为便执行完毕。可以从代码里看到，整个行为好像并没有体现出启动后台线程的操作，这些都在 <code>builder</code> 里为我们做好了一切，就在 <code>AwaitUnsafeOnCompleted</code> 方法的执行里。另外，状态机本身是不会抛出不被处理的异常的，哪怕出现异常，都是都被 <code>catch</code> 块处理，然后塞进 <code>builder</code> 里，推后到后续的某个位置才会抛出。</p>
+<p>总的来说：<strong><code>async</code>/<code>await</code> 模式会在编译期生成一个状态机，记录当前操作执行状态。在执行过程之中，判断异步任务是否在此时此刻已经执行完毕。如果没有的话，就会把这个任务一并塞进 <code>builder</code> 里等待稍后的执行，但如果完成了的话，就会立马取出其结果，并塞进 <code>builder</code> 里，留着后续调用的时候获取结果；当最终没有完成的任务，将会立马放到最后开始执行，并阻塞当前线程</strong>。</p>
+<h4 id="剩下的三个方法"><a href="#剩下的三个方法" class="headerlink" title="剩下的三个方法"></a>剩下的三个方法</h4><p>那么，剩下的三个方法的实现其实就不难理解了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> IAsyncStateMachine.MoveNext()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">    <span class="keyword">this</span>.MoveNext();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">DebuggerHidden</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetStateMachine</span>(<span class="params">IAsyncStateMachine stateMachine</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.builder.SetStateMachine(stateMachine);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine</span></span><br><span class="line">    <span class="keyword">this</span>.SetStateMachine(stateMachine);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的<code>MoveNext</code> 方法用于实现接口对象，而它为什么非要单独用显式实现接口的模式来单独在外部创建对象，并在此实现呢？这是为了更好的封装性。这个方法一般不希望被外部调用，所以这里采用显式实现接口的方式，让外部必须知晓实现模型才能进行转换和调用；而内部调用到的 <code>MoveNext</code> 方法也是一个 <code>private</code> 的方法，这保证了完整的内部封装的模式。</p>
+<p>然后在 <code>SetStateMachine</code> 方法里，它直接调用 <code>builder</code> 字段的 <code>SetStateMachine</code> 方法来设置状态机，最后使用显式实现接口的模式达到封装性。</p>
+<h2 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h2><p>在前文里，我们完整描述了整个 <code>async</code> 方法在编译器里生成的所有内容的执行思路和操作，但依然存在一些逻辑上的漏洞。</p>
+<h3 id="1、异步方法真的是异步执行和被调用的吗？"><a href="#1、异步方法真的是异步执行和被调用的吗？" class="headerlink" title="1、异步方法真的是异步执行和被调用的吗？"></a>1、异步方法真的是异步执行和被调用的吗？</h3><p>在调用层面来看，你可以观察到 <code>FetchHttpFile</code> 方法本被标注了 <code>async</code> 关键字，后面被编译器生成代码之后，却不见了。这告诉了我们，<code>async</code> 关键字只是一个关键字，它用于标记方法是可能被异步执行的，但调用期间却是同步调用的，并没有产生任何的后台线程。</p>
+<p>不过，在执行的时候，系统会为其单独分配一个后台线程，执行内部“耗时”的操作。</p>
+<h3 id="2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？"><a href="#2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？" class="headerlink" title="2、讲了这么多，都在说 async 关键字了，那么 await 关键字呢？"></a>2、讲了这么多，都在说 <code>async</code> 关键字了，那么 <code>await</code> 关键字呢？</h3><p>在原本的写法里，我们使用 <code>await</code> 关键字，嵌入到 <code>FetchHttpFile</code> 方法里，最后它生成了一大堆东西。不过 <code>await</code> 在前文并没有得到很好的解释。实际上，在前文里我们是不是提到了一个 <code>Task&lt;T&gt;</code> 对象，来表达一个可能耗时的任务？是的，这便是这个地方执行的关键。<code>await</code> 关键字用于获取这个任务里的 awaiter，然后取出执行结果。注意，在此期间，程序是开了后台线程并执行了这一套工作的，所以只是你看不到罢了。</p>
+<p>当获取结果后，主线程才会继续向下执行，在前面没有执行完毕获取结果的操作前，主线程都是被阻塞的，而往往 UI 界面的线程都跑在主线程上，所以 UI 界面此时该卡死还卡死。后续我会介绍如何避免这样的情况发生。</p>
+<h3 id="3、异步操作会造成程序死锁吗？"><a href="#3、异步操作会造成程序死锁吗？" class="headerlink" title="3、异步操作会造成程序死锁吗？"></a>3、异步操作会造成程序死锁吗？</h3><p>当线程处理期间，就一定存在死锁的问题需要我们去解决。死锁指的是两个或更多线程在相互调用期间，各自由于都在等待对方执行完毕释放资源，导致程序使用的全部的线程都在等待，引起的卡死的现象。在异步操作里，我们为了保证程序能够完整执行下去，而且还不阻塞主线程，就会使用 <code>async</code> 关键字来让耗时的操作去单独跑在一个线程上（注意，此时依旧我们会等待线程执行完毕反馈结果），然后最后执行完毕后，把结果取出来并显示的行为。这涉及到两个线程了。如果是 UI 线程的话，如果像是上面这么简单的实现，会不会出现死锁呢？</p>
+<p>很遗憾，上述例子是会产生死锁的。它满足了整个项目产生死锁的两大充分不必要条件：</p>
+<ol>
+<li>调用 <code>Wait</code> 方法（一个用于阻塞任务执行的方法）或 <code>Result</code> 属性（相当于 <code>GetResult</code> 方法）的位置处于 UI 线程上；</li>
+<li>任务执行在其它的后台线程上，而并不在和 UI 一样的线程上。</li>
+</ol>
+<p>那么为什么是这两个条件就可能死锁呢？回顾一下线程死锁的四大必要条件：</p>
+<ol>
+<li><strong>互斥</strong>：资源只能被一个资源使用，其它资源必须等待释放后才能继续使用；</li>
+<li><strong>请求和保持</strong>：由于请求资源而阻塞时，对已获得的资源保持不放；</li>
+<li><strong>让权等待</strong>：在执行期间，已获得的资源在末使用完之前，都不能被强行剥夺；</li>
+<li><strong>循环等待</strong>：若干线程之间有循环的依赖关系。</li>
+</ol>
+<p>这四个条件是<strong>死锁的必要条件</strong>，只要系统发生死锁，这些条件必然成立，而只要上述条件之一不满足，就不会发生死锁。 观察上述两种说法就可以看出，<code>async</code> 执行模式是满足前三点的，而第四点到底是否满足呢？实际上是的，因为主线程（UI）会等待后台线程下载文件，而后台线程又会依赖主线程的执行（不然怎么可能单独跑一个后台线程呢），所以四大条件全部满足，必然是可能会存在死锁现象的发生的。</p>
+<h3 id="4、我们应该如何修改代码去阻止可能产生的死锁呢？"><a href="#4、我们应该如何修改代码去阻止可能产生的死锁呢？" class="headerlink" title="4、我们应该如何修改代码去阻止可能产生的死锁呢？"></a>4、我们应该如何修改代码去阻止可能产生的死锁呢？</h3><p>为了避免线程死锁的问题，我们拥有一些合理的解决方案。不过先要我们来看下下面的问题。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Task <span class="title">RunAsync1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">RunAsync2</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">RunAsync3</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;).ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面三个方法里，哪个（或哪些）方法会可能产生死锁？</p>
+<p>答案是，只有第 2 个会产生死锁，而第 1 个和第 3 个都不会。原因如下：</p>
+<p>第一个压根就没有使用 <code>async</code> 和 <code>await</code> 关键字，这使得编译器并不会给我们产生状态机和一大堆异步执行行为，所以好比任务是同步完成的。既然是在同一个线程上，为什么会死锁呢？</p>
+<p>第三个有 <code>async</code> 和 <code>await</code> 关键字，而后续我们配备了 <code>ConfigureAwait</code> 方法，以此来为这个任务的执行分配新的线程，并让后续的执行行为直接全跑在这个线程上。默认的话，<code>ConfigureAwait</code> 的参数是为 <code>true</code> 的，这意味着在后续执行的操作，会重新返回到主线程上。但刚才说过，返回主线程执行后续操作就必然存在死锁的问题，所以我们为其设置 <code>ConfigureAwait(false)</code> 的话，执行的操作就会跑到随机分配的新的线程里去搞定它们，这样一来，甚至 UI 线程都不用返回到主线程去做了，因为它们都在随机分配好的新线程里在做这些东西了。所以这个时候，它们在执行期间就不会产生死锁了。</p>
+<blockquote>
+<p>实际上，后续怎么返回到上一个执行调用方线程，是通过一个叫做 <code>SynchronizationContext</code> 对象来搞定的，直译就是同步上下文，它记录了线程执行的调用顺序：是谁调用了异步方法的执行，并在什么线程上执行的。这些信息都在这个同步上下文里可以找到。有了这个对象，我们就可以轻松反推找到原来的执行方的线程信息了，所以 C# 采用的是这种操作来返回到主线程。当然，UI 线程使用的是一个叫做 <code>DispatcherSynchronizationContext</code> 的对象来搞的，不过这一点你在初步学习的时候知道有这么一个东西存在就好了。</p>
+<p>由于指定了 <code>ConfigureAwait(false)</code>，这意味着通知异步状态机 <code>AsyncMethodStateMachine</code> 并不需要使用设置好的 <code>SynchronizationContext</code>（对于 UI 线程，是 <code>DispatcherSynchronizationContext</code>）执行线程同步，而是使用默认的 <code>SynchronizationContext</code>，而默认行为是随便找个线程执行后面的代码。于是，<code>await Task.Run</code> 后面的代码便不需要返回原线程，也就不会发生第 2 种情况里的死锁问题。 </p>
+</blockquote>
+<p>所以，当你安装了 <a href="https://www.nuget.org/packages/Microsoft.CodeAnalysis.FxCopAnalyzers/" target="_blank" rel="noopener">Microsoft.CodeAnalysis.FxCopAnalyzers</a> 编译器后，你就会发现，编译器自动会为你提出警告 CA2007，告诉你请你在使用异步行为的时候在其后面配置 <code>ConfigureAwait(false)</code> 来达到避免死锁的目的。如果你是类库的编写者，注意此问题能够一定程度上防止逗比使用者出现死锁问题后喷你的类库写得不好。</p>
+<h2 id="多个-await-语句"><a href="#多个-await-语句" class="headerlink" title="多个 await 语句"></a>多个 <code>await</code> 语句</h2><p>有些时候，我们希望的 <code>async</code> 方法里不一定只有一个 <code>await</code>。比如，我们尝试将取出的网页文件再使用 <code>WriteAsync</code> 方法来挨个写到文件里。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">async</span> Task <span class="title">GetTextAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> text = <span class="keyword">await</span> client</span><br><span class="line">        .GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>))</span><br><span class="line">        .ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Write all text.</span></span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> sw = <span class="keyword">new</span> StreamWriter(<span class="string">@".\Helloworld.txt"</span>);</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">await</span> sw.WriteAsync(text).ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">        Console.WriteLine(<span class="string">"Success."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (IOException)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Failed to write"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时我们具有两处 <code>await</code> 操作。而此时它会被编译器拆分为多个部分。由于项目需要两次 <code>await</code> 操作，所以编译器最后编译出来的代码会先使用前面的封装逻辑创建状态机，然后把第一个 <code>await</code> 语句以及之前的这段代码放到一个 <code>try-catch</code> 里。而至于第二个 <code>await</code> 操作，系统会为其单独再次创建一个专门处理这里代码的 <code>try-catch</code>，然后放在上一个 <code>try-catch</code> 里，即嵌套 <code>try-catch</code>。那么为什么不用同一个 <code>try-catch</code> 呢？这是因为每一次 <code>await</code> 操作所抛出的异常类型都是不确定和不一定相同的，所以它们各自的处理的手段和方式不同，如果使用同一个 <code>try-catch</code> 的话，就不容易去找出两个不同异常对象的同一种异常处理类型和模式；另外，这样的话，编译器也比较好实现它。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当方法被标记为 <code>async</code> 方法后，会将其创建一个状态机。同时在执行期间，状态机检测到代码段里如果存在 <code>await</code> 语句，就会创建一个后台线程，并且拿该线程单独进行这段代码操作；如果有多个，就会每一次使用线程池的后台线程并执行，但 <code>async-await</code> 的机制保证了我们不必去关心执行线程操作的后台到底是如何处理的，线程的编号是多少，我们都不必知道，我们只需要关心执行的操作到底有没有语法、语义和运行时错误。</p>
+<p>如果代码段里包含 <code>await</code> 语句，它就会使用 <code>try-catch</code> 永不抛出异常的手段执行从这里往前的所有代码。如果有多个 <code>await</code>，就会以 <code>await</code> 语句作为分割，作为多个代码块，然后挨个执行它们。</p>
+<p>如果遇到错误，状态机会提前退出并得到该错误信息，它将在真正执行的语句处抛出。</p>
+<p>不过，<code>async</code> 只是一个关键字，它不会为其分配执行线程。我们可以从两方面来说明原因：</p>
+<ol>
+<li><code>async</code> 方法里可能有多个 <code>await</code> 执行语句，这会使得我们为其正确分配多次线程池的线程。而方法是以方法整体作为单位的，所以我们不可能从整体层面精确细分线程的分配方式。</li>
+<li><code>await</code> 代码段本身也具有推迟执行的特效，如果我们不用它的时候，由于整体的执行结果是一个 <code>Task</code> 或 <code>Task&lt;T&gt;</code> 对象，所以分配线程并不是针对于方法处理的，而是针对于这个 <code>Task</code> 或 <code>Task&lt;T&gt;</code> 的。如果我们把代码拆分，先使用 <code>var task = GetxxxAsync()</code> 时，得到的是一个 <code>Task</code>，但这个 <code>Task</code> 在这里并没有得到执行，而是推后到必须用 <code>await task</code> 时候才得到执行，才会分配线程。</li>
+</ol>
+<p>所以，我们如果不正确处理异步行为的话，需要异步执行代码段的方法即使被标记为 <code>async</code> 方法，也不代表就是真正正确的异步方法。如果把一个没有任何 <code>await</code> 语句的方法标记为 <code>async</code> 方法的话，由于前文提到的这些内容，我们也可以知道，迫不得已在执行 <code>await</code> 语句时候才会分配后台线程执行它，而由于没有 <code>await</code> 的关系，这个异步方法就仅仅有一个内部创建好的状态机，但这个状态机并没有用，然后整个没有 <code>await</code> 的假异步方法顺次执行完毕后，状态机都没有运行，而且也没有任何分配线程的迹象（除非你在代码段里自己写了其它的异步操作，比如 <code>Task.Run(() =&gt; SomeThing());</code>）。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.compilerservices.iasyncstatemachine?view=netframework-4.8" target="_blank" rel="noopener">IAsyncStateMachine 接口</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.compilerservices.asyncstatemachineattribute?view=netframework-4.8" target="_blank" rel="noopener">AsyncStateMachineAttribute 特性</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.taskawaiter?view=netframework-4.8" target="_blank" rel="noopener">TaskAwaiter 结构</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asynctaskmethodbuilder.awaitunsafeoncompleted?view=netframework-4.8" target="_blank" rel="noopener">AwaitUnsafeOnCompleted<TAwaiter, TStateMachine> 方法</a></li>
+<li><a href="https://blog.walterlv.com/post/deadlock-in-task-wait.html" target="_blank" rel="noopener">使用 Task.Wait()? 立即死锁</a>（博文）</li>
+<li><a href="https://blog.walterlv.com/post/using-configure-await-to-avoid-deadlocks.html" target="_blank" rel="noopener">使用 ConfigureAwait(bool) 避免死锁</a>（博文）</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%85%B3%E9%94%AE%E5%AD%97/">C♯.关键字</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/12/10/async-await-fundamental/" data-title="Async/await 关键字原理 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/12/10/bitwise-operations/"  title="位运算（1）：位运算的基本计算方法">
+ <strong>下一篇：</strong><br/> 
+ <span>位运算（1）：位运算的基本计算方法
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#async-和-await-是什么？"><span class="toc-number">1.</span> <span class="toc-text">async 和 await 是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#书写格式"><span class="toc-number">2.</span> <span class="toc-text">书写格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译器处理后的样子"><span class="toc-number">3.</span> <span class="toc-text">编译器处理后的样子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理分析"><span class="toc-number">4.</span> <span class="toc-text">原理分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原方法部分"><span class="toc-number">4.1.</span> <span class="toc-text">原方法部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#状态机部分"><span class="toc-number">4.2.</span> <span class="toc-text">状态机部分</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#字段"><span class="toc-number">4.2.1.</span> <span class="toc-text">字段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MoveNext-方法"><span class="toc-number">4.2.2.</span> <span class="toc-text">MoveNext 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#剩下的三个方法"><span class="toc-number">4.2.3.</span> <span class="toc-text">剩下的三个方法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#需要注意的问题"><span class="toc-number">5.</span> <span class="toc-text">需要注意的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、异步方法真的是异步执行和被调用的吗？"><span class="toc-number">5.1.</span> <span class="toc-text">1、异步方法真的是异步执行和被调用的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？"><span class="toc-number">5.2.</span> <span class="toc-text">2、讲了这么多，都在说 async 关键字了，那么 await 关键字呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、异步操作会造成程序死锁吗？"><span class="toc-number">5.3.</span> <span class="toc-text">3、异步操作会造成程序死锁吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、我们应该如何修改代码去阻止可能产生的死锁呢？"><span class="toc-number">5.4.</span> <span class="toc-text">4、我们应该如何修改代码去阻止可能产生的死锁呢？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多个-await-语句"><span class="toc-number">6.</span> <span class="toc-text">多个 await 语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">8.</span> <span class="toc-text">参考</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>26</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>24</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
