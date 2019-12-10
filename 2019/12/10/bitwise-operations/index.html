@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Hexo 使用教程 | 向向的博客</title>
+    <title>位运算（1）：位运算的基本计算方法 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="欢迎使用 Hexo！这是第一篇介绍的文章。请查看 该文档链接 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 问题解决列表 查找到对应的问题解决方案，或者是在我的 GitHub 上询问 Hexo 的作者本人哦！ 开始请先使用 bash 命令行切换到指定的本地仓库文件夹下。 1$ cd myblog 然后尝试如下的一些命令（操作集）。 生成你的第一篇文章你可以使用如下命">
-<meta name="keywords" content="Hexo">
+    <meta name="description" content="程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。 什么是位运算？位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。 常见的位运算有如下一些：  位与运算 &amp;amp;（and）； 位或运算 |（or）； 位取反运算 ~（not）； 位异或运算 ^ （xor）； 位左移运算 &amp;lt;&amp;lt; （shl">
+<meta name="keywords" content="位运算">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo 使用教程">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;06&#x2F;hexo-hello-world&#x2F;index.html">
+<meta property="og:title" content="位运算（1）：位运算的基本计算方法">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;bitwise-operations&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="欢迎使用 Hexo！这是第一篇介绍的文章。请查看 该文档链接 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 问题解决列表 查找到对应的问题解决方案，或者是在我的 GitHub 上询问 Hexo 的作者本人哦！ 开始请先使用 bash 命令行切换到指定的本地仓库文件夹下。 1$ cd myblog 然后尝试如下的一些命令（操作集）。 生成你的第一篇文章你可以使用如下命">
+<meta property="og:description" content="程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。 什么是位运算？位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。 常见的位运算有如下一些：  位与运算 &amp;amp;（and）； 位或运算 |（or）； 位取反运算 ~（not）； 位异或运算 ^ （xor）； 位左移运算 &amp;lt;&amp;lt; （shl">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-09T09:06:38.744Z">
+<meta property="og:updated_time" content="2019-12-10T02:21:06.023Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -82,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/06/hexo-hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
+      <a href="/2019/12/10/bitwise-operations/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
     
   </h1>
   <p class="article-author">By
@@ -90,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished"> 发表于 2019-11-06</time>
+    <time datetime="2019-12-10T01:47:17.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
     
   </p>
 </header>
@@ -99,36 +99,83 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开始"><span class="toc-number">1.</span> <span class="toc-text">开始</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#生成你的第一篇文章"><span class="toc-number">1.1.</span> <span class="toc-text">生成你的第一篇文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器上运行"><span class="toc-number">1.2.</span> <span class="toc-text">服务器上运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成静态的页面（写博客文章）"><span class="toc-number">1.3.</span> <span class="toc-text">生成静态的页面（写博客文章）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将本地内容发布到-GitHub-的同步仓库上"><span class="toc-number">1.4.</span> <span class="toc-text">将本地内容发布到 GitHub 的同步仓库上</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是位运算？"><span class="toc-number">1.</span> <span class="toc-text">什么是位运算？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本介绍"><span class="toc-number">2.</span> <span class="toc-text">基本介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#位与运算"><span class="toc-number">2.1.</span> <span class="toc-text">位与运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位或运算"><span class="toc-number">2.2.</span> <span class="toc-text">位或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位取反运算"><span class="toc-number">2.3.</span> <span class="toc-text">位取反运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位异或运算"><span class="toc-number">2.4.</span> <span class="toc-text">位异或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位左移运算"><span class="toc-number">2.5.</span> <span class="toc-text">位左移运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位右移运算"><span class="toc-number">2.6.</span> <span class="toc-text">位右移运算</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇介绍的文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
-<p>然后尝试如下的一些命令（操作集）。</p>
-<h3 id="生成你的第一篇文章"><a href="#生成你的第一篇文章" class="headerlink" title="生成你的第一篇文章"></a>生成你的第一篇文章</h3><p>你可以使用如下命令行来为你的本地仓库添加一篇新文章。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure></p>
-<p>更多内容请参考：<a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="服务器上运行"><a href="#服务器上运行" class="headerlink" title="服务器上运行"></a>服务器上运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>更多内容请参考：<a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="生成静态的页面（写博客文章）"><a href="#生成静态的页面（写博客文章）" class="headerlink" title="生成静态的页面（写博客文章）"></a>生成静态的页面（写博客文章）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate <span class="string">"My Blog post title"</span></span><br></pre></td></tr></table></figure>
-<p>更多内容请参考：<a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="将本地内容发布到-GitHub-的同步仓库上"><a href="#将本地内容发布到-GitHub-的同步仓库上" class="headerlink" title="将本地内容发布到 GitHub 的同步仓库上"></a>将本地内容发布到 GitHub 的同步仓库上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>更多内容请参考：<a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-  
+		<p>程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。</p>
+<h2 id="什么是位运算？"><a href="#什么是位运算？" class="headerlink" title="什么是位运算？"></a>什么是位运算？</h2><p>位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。</p>
+<p>常见的位运算有如下一些：</p>
+<ul>
+<li>位与运算 <code>&amp;</code>（and）；</li>
+<li>位或运算 <code>|</code>（or）；</li>
+<li>位取反运算 <code>~</code>（not）；</li>
+<li>位异或运算 <code>^</code> （xor）；</li>
+<li>位左移运算 <code>&lt;&lt;</code> （shl）；</li>
+<li>位右移运算 <code>&gt;&gt;</code> （shr）。</li>
+</ul>
+<p>下面我们逐个进行介绍。</p>
+<h2 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h2><h3 id="位与运算"><a href="#位与运算" class="headerlink" title="位与运算"></a>位与运算</h3><p>位与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+       & Binary   & Decimal\\
+       & 10101010 & 170\\
+    \& & 00110111 & 55\\
+       & \text{_________}\\
+       & 00100010 & 34
+\end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
+<p>那么你输出的结果一定是 34（0b00100010）。</p>
+<h3 id="位或运算"><a href="#位或运算" class="headerlink" title="位或运算"></a>位或运算</h3><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+      & Binary   & Decimal\\
+      & 10101010 & 170\\
+    | & 00110111 & 55\\
+      & \text{_________}\\
+      & 10111111 & 191
+\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
+<h3 id="位取反运算"><a href="#位取反运算" class="headerlink" title="位取反运算"></a>位取反运算</h3><p>位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+    \text{~} & 10101010 & 170\\
+             & \text{_________}\\
+             & 01010101 & 85
+\end{matrix}</script><h3 id="位异或运算"><a href="#位异或运算" class="headerlink" title="位异或运算"></a>位异或运算</h3><p>异或运算比较生疏，我们可以认为是“要么……要么……”。当且仅当两者里取了一个 1 的时候才是 1，都是 0 或都是 1 则都会得到 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+             & 10101010 & 170\\
+    \text{^} & 00110111 & 55\\
+             & \text{_________}\\
+             & 10011101 & 157
+\end{matrix}</script><h3 id="位左移运算"><a href="#位左移运算" class="headerlink" title="位左移运算"></a>位左移运算</h3><p>位左移运算会把所有二进制位往左移动若干比特单位，然后溢出的部分直接不要了；反之，移动的末端会补充 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+              & Binary        & Decimal\\
+    \text{<<} & 10101010      & 170\\
+              & \text{_________}\\
+              & 0101010\bold0 & 84
+\end{matrix}</script><blockquote>
+<p>注意，位左移运算是需要两个操作数的。第一个数就是需要移动二进制位的整数，而第二个数则是移动多少次（即左移动多少个比特单位），例如 <code>170 &lt;&lt; 2</code> 表示把 170 的二进制位向左移动两个比特单位，而不是上面这样只移动一个单位。</p>
+</blockquote>
+<h3 id="位右移运算"><a href="#位右移运算" class="headerlink" title="位右移运算"></a>位右移运算</h3><p>位右移运算和位左移运算相反，它的移动方向是向右的。它会把所有二进制位往右移动一个比特单位，然后溢出部分不要了；反之，在移动端的末尾补充 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+              & Binary        & Decimal\\
+    \text{>>} & 10101010      & 170\\
+              & \text{_________}\\
+              & \bold01010101 & 85
+\end{matrix}</script>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
-</div>
-
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Hexo/">Hexo</a>
+  <span></span> <a href="/tags/位运算/">位运算</a>
   </div>
 
 </div>
@@ -137,7 +184,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/06/hexo-hello-world/" data-title="Hexo 使用教程 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/12/10/bitwise-operations/" data-title="位运算（1）：位运算的基本计算方法 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -150,14 +197,14 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/06/csharplang-complement-01-is-as-operator/" title="C# 语法查漏补缺系列（1）：is 和 as 运算符">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C# 语法查漏补缺系列（1）：is 和 as 运算符</span>
+
+<div class="next">
+<a href="/2019/11/27/csharp-complier-generating-yield/"  title="yield 关键字生成的代码">
+ <strong>下一篇：</strong><br/> 
+ <span>yield 关键字生成的代码
+</span>
 </a>
 </div>
-
 
 </nav>
 
@@ -278,7 +325,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开始"><span class="toc-number">1.</span> <span class="toc-text">开始</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#生成你的第一篇文章"><span class="toc-number">1.1.</span> <span class="toc-text">生成你的第一篇文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器上运行"><span class="toc-number">1.2.</span> <span class="toc-text">服务器上运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成静态的页面（写博客文章）"><span class="toc-number">1.3.</span> <span class="toc-text">生成静态的页面（写博客文章）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将本地内容发布到-GitHub-的同步仓库上"><span class="toc-number">1.4.</span> <span class="toc-text">将本地内容发布到 GitHub 的同步仓库上</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是位运算？"><span class="toc-number">1.</span> <span class="toc-text">什么是位运算？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本介绍"><span class="toc-number">2.</span> <span class="toc-text">基本介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#位与运算"><span class="toc-number">2.1.</span> <span class="toc-text">位与运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位或运算"><span class="toc-number">2.2.</span> <span class="toc-text">位或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位取反运算"><span class="toc-number">2.3.</span> <span class="toc-text">位取反运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位异或运算"><span class="toc-number">2.4.</span> <span class="toc-text">位异或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位左移运算"><span class="toc-number">2.5.</span> <span class="toc-text">位左移运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位右移运算"><span class="toc-number">2.6.</span> <span class="toc-text">位右移运算</span></a></li></ol></li></ol>
  
   </div>
 

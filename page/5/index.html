@@ -82,6 +82,101 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/15/clang-03-if-statement/" title="C 语言语法系列（3）：if 语句" itemprop="url">C 语言语法系列（3）：if 语句</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-15T06:07:49.000Z" itemprop="datePublished"> 发表于 2019-11-15</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="if-关键字的用法"><a href="#if-关键字的用法" class="headerlink" title="if 关键字的用法"></a><code>if</code> 关键字的用法</h2><p>接下来，我将为你讲解的是一种新的执行语法模式：条件判断。</p>
+<p>在前文的介绍里，我们可以使用运算符和类型声明的表达式，来获取一些数据的数值，并输出。但整个程序的写法格式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a + b);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样仅仅能够写出一些简单的执行语句。今天我们来学习一种跳转模式的语句：<code>if</code> 条件判断。<code>if</code> 条件判断的用法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (condition)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Execution when condition is true.</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Execution when condition is false.</span></span><br><span class="line">    <span class="comment">// This block can be omitted when you don't need.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以根据注释内容看到，只要条件满足要求的，将会走第一个大括号的内容；如果不满足要求，将会走第二个大括号的内容。例如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">if</span> (a + b &gt; <span class="number">4</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        c = a + b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        c = a * b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以从这里看到，显然 <code>a + b</code> 结果是大于 4 的，所以满足条件，故 <code>c</code> 的结果应为 <code>a + b</code>，输出的结果就是 5。当然，这里就需要你学习一些语法约定和书写格式规范。当 <code>if</code> 和 <code>else</code> 块里只有一句话的时候，大括号是可以省略的，但最好使用缩进格式书写，分清楚层次，这样可以轻松辨别代码的逻辑和控制的部分，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="keyword">if</span> (a + b &gt; <span class="number">4</span>)</span><br><span class="line">        c = a + b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        c = a * b;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三目运算符：条件运算"><a href="#三目运算符：条件运算" class="headerlink" title="三目运算符：条件运算"></a>三目运算符：条件运算</h2><p>我们可以使用三目运算符 <code>?:</code> 来判别一个结果。类似上文的逻辑，在 <code>?</code> 前面写条件，在 <code>?</code> 和 <code>:</code> 之间写条件成立的时候的结果，而 <code>:</code> 后写条件为假的时候的结果。如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    c = a + b &gt; <span class="number">4</span> ? a + b : a * b;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就把之前的 <code>if-else</code> 判断模式简写为这样。它们是等价的。</p>
+<h2 id="嵌套-if"><a href="#嵌套-if" class="headerlink" title="嵌套 if"></a>嵌套 <code>if</code></h2><p>之所以之前叫大家将 <code>if</code> 内部的执行内容进行缩进，是因为 <code>if</code> 的执行逻辑是可以嵌套的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a + b == <span class="number">3</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (a - b == <span class="number">3</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        c = a * b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        c = a / b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类似于上述逻辑，我们可以先看条件判断。由于 <code>a + b</code> 的结果是 5 而不是 3，所以它只能走 <code>else</code> 这一部分的执行内容。于是得到 <code>c</code> 为 0，所以输出结果为 0。</p>
+<h2 id="串联-if"><a href="#串联-if" class="headerlink" title="串联 if"></a>串联 <code>if</code></h2><p>有时候，当分支不止一个的时候，我们可以使用把 <code>if</code> 的声明串联的模式来执行一些操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a == <span class="number">2</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="number">3</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        c = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (a == <span class="number">4</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            c = <span class="number">3</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>显然，这种写法太丑了。首先，我们认为一个分号就是一句话，现在引入了块的说法，所以一个大括号就是一句话。那么 <code>a == 2</code> 条件的 <code>else</code> 部分就只有一句话，我们可以省略这一个大括号；而且 <code>c == 3</code> 条件里的 <code>else</code> 分支的大括号也可以被省略，所以就变为这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a == <span class="number">2</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span> (a == <span class="number">3</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        c = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span> (a == <span class="number">4</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            c = <span class="number">3</span>;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>不过，还是很丑陋。不过我们发现，既然 <code>else</code> 和 <code>if</code> 语句还有 <code>else</code> 完全可以连起来，那么何不把它们直接串联起来呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a == <span class="number">2</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">3</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">4</span>)</span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样不就很好看了吗。这个写法就是 <code>if</code> 串联的写法。</p>
+<h2 id="嵌套-if-时的三目运算"><a href="#嵌套-if-时的三目运算" class="headerlink" title="嵌套 if 时的三目运算"></a>嵌套 <code>if</code> 时的三目运算</h2><p>前文用到的这个示例</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a + b == <span class="number">3</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (a - b == <span class="number">3</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        c = a * b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        c = a / b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    c = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以被简写为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c = a + b == <span class="number">3</span> ? (a - b == <span class="number">3</span> ? a * b : a / b) : <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, c);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意，三目运算符的查找逻辑是从右到左的。所以它会有先发现到 <code>(a - b == 3 ? a * b : a / b)</code> 表达式是完整的整体，所以这个括号是可以不要的，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c = a + b == <span class="number">3</span> ? a - b == <span class="number">3</span> ? a * b : a / b : <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="数值条件"><a href="#数值条件" class="headerlink" title="数值条件"></a>数值条件</h2><p>最后要说明一下的是，任意一个整数数值都可以作为条件使用，写在 <code>if</code> 语句的小括号里。在前文里，我们说到，一个整数数值，只要它不是 0，我们就认为这个数值表示的条件是“正确的”的意思，而是 0 则表示这个条件是“不成立的”、“错误的”的意思。所以，如果我们想要把一个数值作为真假两种情况的判断的话，我们可以这么写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> isPrime = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">if</span> (isPrime)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"17 is a prime.\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"17 is not a prime.\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，你就能得到 <code>17 is a prime</code> 的输出信息。当然，你甚至也可以为 <code>isPrime</code> 变量的条件处添加前缀取反符号 <code>!</code> 来表示逻辑取反。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> isPrime = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">if</span> (!isPrime) <span class="comment">// Note here.</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"34 is not a prime.\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"34 is a prime.\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过，从这个角度来看，<code>isPrime</code> 单独作为条件，可以等价用判断语句表示为 <code>isPrime != 0</code>，而 <code>!isPrime</code> 则可以等价表示为 <code>isPrime == 0</code>。所以推广到任意情况下：</p>
+<ul>
+<li><code>digit == 0</code> 简写作 <code>!digit</code>；</li>
+<li><code>digit != 0</code> 简写作 <code>digit</code>。</li>
+</ul>
+<p>当然，这两种说法仅用于 <code>if</code> 的条件断言（小括号）处。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/15/linq-08-relational-algrbra-in-linq/" title="LINQ 教程（8）：LINQ 里的关系代数" itemprop="url">LINQ 教程（8）：LINQ 里的关系代数</a>
     
   </h1>
@@ -879,92 +974,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/11/linq-02-let-clause/" title="LINQ 教程（2）：let 从句" itemprop="url">LINQ 教程（2）：let 从句</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-11T01:49:42.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="let-从句"><a href="#let-从句" class="headerlink" title="let 从句"></a><code>let</code> 从句</h2><p>今天来看一下 <code>let</code> 从句的使用模式和逻辑。<code>let</code> 从句一般写在 <code>from</code> 从句和 <code>select</code> 从句之间，用于临时创建变量行为。</p>
-<p>今天我们来换一个例子，后续都采用这个实例来讲解。在 C# 里，一共有大约 130 个关键字，它们已经全部被我写到程序里，并以字母表顺序排序。如下代码所示。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> words = <span class="keyword">new</span>[]</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"abstract"</span>, <span class="string">"as"</span>,</span><br><span class="line">    <span class="string">"base"</span>, <span class="string">"bool"</span>, <span class="string">"break"</span>, <span class="string">"byte"</span>,</span><br><span class="line">    <span class="string">"case"</span>, <span class="string">"catch"</span>, <span class="string">"char"</span>, <span class="string">"checked"</span>, <span class="string">"class"</span>, <span class="string">"const"</span>, <span class="string">"continue"</span>,</span><br><span class="line">    <span class="string">"decimal"</span>, <span class="string">"default"</span>, <span class="string">"delegate"</span>, <span class="string">"do"</span>, <span class="string">"double"</span>,</span><br><span class="line">    <span class="string">"else"</span>, <span class="string">"enum"</span>, <span class="string">"event"</span>, <span class="string">"explicit"</span>, <span class="string">"extern"</span>,</span><br><span class="line">    <span class="string">"false"</span>, <span class="string">"finally"</span>, <span class="string">"fixed"</span>, <span class="string">"float"</span>, <span class="string">"for"</span>, <span class="string">"foreach"</span>,</span><br><span class="line">    <span class="string">"goto"</span>,</span><br><span class="line">    <span class="string">"if"</span>, <span class="string">"implicit"</span>, <span class="string">"in (foreach)"</span>, <span class="string">"int"</span>, <span class="string">"interface"</span>, <span class="string">"internal"</span>, <span class="string">"is"</span>,</span><br><span class="line">    <span class="string">"lock"</span>, <span class="string">"long"</span>,</span><br><span class="line">    <span class="string">"namespace"</span>, <span class="string">"new"</span>, <span class="string">"null"</span>,</span><br><span class="line">    <span class="string">"object"</span>, <span class="string">"operator"</span>, <span class="string">"out (generic modifier)"</span>, <span class="string">"out (parameter)"</span>, <span class="string">"override"</span>,</span><br><span class="line">    <span class="string">"params"</span>, <span class="string">"private"</span>, <span class="string">"protected"</span>, <span class="string">"public"</span>,</span><br><span class="line">    <span class="string">"readonly"</span>, <span class="string">"ref"</span>, <span class="string">"return"</span>,</span><br><span class="line">    <span class="string">"sbyte"</span>, <span class="string">"sealed"</span>, <span class="string">"short"</span>, <span class="string">"sizeof"</span>, <span class="string">"stackalloc"</span>, <span class="string">"static"</span>, <span class="string">"string"</span>, <span class="string">"struct"</span>, <span class="string">"switch"</span>,</span><br><span class="line">    <span class="string">"this"</span>, <span class="string">"throw"</span>, <span class="string">"true"</span>, <span class="string">"try"</span>, <span class="string">"typeof"</span>,</span><br><span class="line">    <span class="string">"uint"</span>, <span class="string">"ulong"</span>, <span class="string">"unchecked"</span>, <span class="string">"unsafe"</span>, <span class="string">"ushort"</span>, <span class="string">"using"</span>,</span><br><span class="line">    <span class="string">"virtual"</span>, <span class="string">"void"</span>, <span class="string">"volatile"</span>,</span><br><span class="line">    <span class="string">"while"</span>,</span><br><span class="line">    <span class="string">"*add"</span>, <span class="string">"*alias"</span>, <span class="string">"*ascending"</span>, <span class="string">"*async"</span>, <span class="string">"*await"</span>,</span><br><span class="line">    <span class="string">"*by"</span>,</span><br><span class="line">    <span class="string">"*descending"</span>, <span class="string">"*dynamic"</span>,</span><br><span class="line">    <span class="string">"*equals"</span>,</span><br><span class="line">    <span class="string">"*from"</span>,</span><br><span class="line">    <span class="string">"*get"</span>, <span class="string">"*global"</span>, <span class="string">"*group"</span>,</span><br><span class="line">    <span class="string">"*in (generic modifier)"</span>, <span class="string">"*in (parameter)"</span>, <span class="string">"*in (query)"</span>, <span class="string">"*into"</span>,</span><br><span class="line">    <span class="string">"*join"</span>,</span><br><span class="line">    <span class="string">"*let"</span>,</span><br><span class="line">    <span class="string">"*nameof"</span>, <span class="string">"*notnull"</span>,</span><br><span class="line">    <span class="string">"*on"</span>, <span class="string">"*orderby"</span>,</span><br><span class="line">    <span class="string">"*partial (method)"</span>, <span class="string">"*partial (type)"</span>,</span><br><span class="line">    <span class="string">"*remove"</span>,</span><br><span class="line">    <span class="string">"*select"</span>, <span class="string">"*set"</span>, <span class="string">"*switch (expression)"</span>,</span><br><span class="line">    <span class="string">"*unmanaged"</span>, <span class="string">"*using static"</span>,</span><br><span class="line">    <span class="string">"*value"</span>, <span class="string">"*var"</span>,</span><br><span class="line">    <span class="string">"*when"</span>, <span class="string">"*where (generic constraint)"</span>, <span class="string">"*where (query)"</span>,</span><br><span class="line">    <span class="string">"*yield"</span>,</span><br><span class="line">    <span class="string">"#annotations"</span>,</span><br><span class="line">    <span class="string">"#checksum"</span>,</span><br><span class="line">    <span class="string">"#disable"</span>,</span><br><span class="line">    <span class="string">"#enable"</span>,</span><br><span class="line">    <span class="string">"#nullable"</span>,</span><br><span class="line">    <span class="string">"#restore"</span>,</span><br><span class="line">    <span class="string">"!#safeonly"</span>,</span><br><span class="line">    <span class="string">"#warning"</span>, <span class="string">"#warnings"</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>我们尝试取出首字母，判断首字母位于 <code>m</code> 字符之前的所有单词。为了题目简单，我们暂时不管第一个字符不是字母的关键字。</p>
-<p>那么我们的筛选模式是，先尝试用 <code>let</code> 从句把首字母取出，然后判断该字母是否是 <code>m</code> 之前即可。所以写法如下：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = <span class="keyword">from</span> word <span class="keyword">in</span> words</span><br><span class="line">                <span class="keyword">let</span> Capital = word[<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">where</span> Capital &gt;= <span class="string">'a'</span> &amp;&amp; Capital &lt;= <span class="string">'m'</span></span><br><span class="line">                <span class="keyword">select</span> word;</span><br></pre></td></tr></table></figure>
-<h2 id="原理：匿名类型"><a href="#原理：匿名类型" class="headerlink" title="原理：匿名类型"></a>原理：匿名类型</h2><p>下面来阐述一下 <code>let</code> 从句在内存里操作的原理。</p>
-<p><code>let</code> 从句的赋值行为并非实际上写法这样，也就是说，它并不是一种直接的赋值行为。在内存里，它会创建出一个<strong>匿名类型</strong>（Anonymous Type）。在 C# 的设计里，匿名类型使用的是创建一个类的模式来搞定，只是这个类的类名我们不关心，于是这个类就让 C# 的编译器来创建了，而不需要我们创建。</p>
-<p>当我们声明了 <code>let Capital = word[0]</code> 的时候，系统就会为我们创建一个匿名类型。这个类型使用 IDE 来查看，你将看到它叫做 <code>&#39;a</code> 类（把鼠标放到 <code>Capital</code> 上就会看到这个 <code>&#39;a</code> 类）。在这个所谓的 <code>&#39;a</code> 里，它包含一个属性，这个属性是 <code>Capital</code>。</p>
-<blockquote>
-<p>可以看到，匿名类型会自动创建的成员是属性，而并非字段。于是我们使用的时候，实际上应当按照命名格式，<strong>为使用 <code>let</code> 从句创建出来的所谓的临时变量用 PascalCase（帕斯卡）命名法，而不是 camelCase（驼峰）命名法</strong>。</p>
-</blockquote>
-<p>于是，我们就可以通过整个语句环境下，可以任意操作整个 <code>&#39;a</code> 匿名类型。</p>
-<h2 id="方法链写法"><a href="#方法链写法" class="headerlink" title="方法链写法"></a>方法链写法</h2><p>下面提一下方法链的写法。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> selection = words.Select(word =&gt; <span class="keyword">new</span> &#123; Word = word, Capital = word[<span class="number">0</span>] &#125;)</span><br><span class="line">                     .Where(pair =&gt; pair.Capital &gt;= <span class="string">'a'</span> &amp;&amp; pair.Capital &lt;= <span class="string">'m'</span>)</span><br><span class="line">                     .Select(pair =&gt; pair.Word);</span><br></pre></td></tr></table></figure>
-<p>我们来仔细分析一下它的实现原理。在上文之中，我们已经知道 <code>Select</code> 方法和 <code>Where</code> 方法的具体实现模式和逻辑。大致分为两个特点：</p>
-<ol>
-<li><strong>推迟执行</strong>（Deferring Execution）特点：<code>Where</code> 不会立马执行筛选，而是推后给出一个新的对象 <code>WhereEnumerableIterator&lt;T&gt;</code> 对象，而 <code>Select</code> 作为语句末端，才会执行。</li>
-<li>方法链调用顺序是类似于 <code>A.B().C().D()</code> 的方式，那么可以暗示 <code>A.B()</code> 得到的类型可以使用 <code>C</code> 方法，而执行 <code>C</code> 方法后得到的类型，可以调用 <code>D</code> 类型。</li>
-</ol>
-<p>第一个点是我们前文说到比较细节的地方，这里就不再详细说明了。而第二个点是什么意思呢？从上述代码上来看，执行逻辑是 <code>word.Select(...)</code>，得到一个类型，然后这个类型可以继续再调用 <code>.Where(...)</code> 方法，然后得到的类型再使用 <code>.Select(...)</code> 方法。</p>
-<p>第一个调用方法是</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">words.Select(word =&gt; <span class="keyword">new</span> &#123; Word = word, Capital = word[<span class="number">0</span>] &#125;)</span><br></pre></td></tr></table></figure>
-<p>可以发现，<code>Select</code> 方法实际上是得到一种对应的映射关系。我们把每一个单词提取出来，这里执行 <code>foreach</code> 循环的临时变量就是这里 Lambda 表达式运算符左侧的变量 <code>word</code>，而符号右侧的内容则是执行的结果。可以看到，这里的结果是一个匿名类型，匿名类型使用 <code>new { PropertyName = value }</code> 的方式书写。这样的话，根据 <code>Select</code> 方法的特性，最终我们得到的类型当然就是 <code>IEnumerable&lt;&#39;a&gt;</code> 的结果了，其中的 <code>&#39;a</code> 自然就是映射出来的这个匿名类型了。</p>
-<p>而 C# 语法支持扩展方法，这使得接口对象在没有内部实现一些特定操作的时候依然可以使用 <code>对象名.方法名()</code> 的模式调用一些我们外部实现的方法。所以，这个所谓的 <code>IEnumerable&lt;&#39;a&gt;</code> 就可以立马用作临时的变量，作为条件筛选，执行 <code>Where</code> 方法，获取一个可提供筛选的 <code>WhereEnumerableIterator&lt;&#39;a&gt;</code> 对象。最后，在最后的 <code>Select</code> 方法里，前文得到的结果又被得到 <code>foreach</code> 循环的执行，并开始执行筛选行为。</p>
-<p>那么，从方法链来看，它是否执行了两次 <code>foreach</code> 循环呢？是的。</p>
-<h2 id="值元组和匿名类型的对比"><a href="#值元组和匿名类型的对比" class="headerlink" title="值元组和匿名类型的对比"></a>值元组和匿名类型的对比</h2><p>还需要注意的是，C# 7 开始支持<strong>值元组</strong>（Value Tuple）类型，这种类型是 C# 4 提供的<strong>元组</strong>（Tuple）的轻量级版本。它采用值类型结构完成实现，使得生成这些类型都会相较于类快一些，而且支持任意时刻命名每一个创建好的字段。</p>
-<p>这就需要你注意两点内容了。值元组和匿名类型有非常相似的地方：它们最终都是操作内部的内容，并且它们的名称（类名和结构名）我们并不关心，这些都会交给编译器生成。但需要注意的地方是，匿名类型创建出来的成员是属性，而值元组创建出来的却是字段。这是我们第一个需要注意的地方。</p>
-<p>第二个需要注意的是，由于 LINQ 机制的问题，很遗憾的是，到 C# 8 都依然不支持在 <code>let</code> 语句里使用值元组的模式来创建更快捷更轻量级的值元组的模式。这并非意味着我们无法在 LINQ 里面使用值元组。这仅仅是想说明，值元组并不能用于 <code>let</code> 从句里的解构（即用于赋值语句的左侧，即左值表达式）。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/4/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/">下一页 ↓</a>
@@ -1020,15 +1029,19 @@
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
 			
 		
 			
@@ -1048,10 +1061,6 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
 			
 		
@@ -1064,7 +1073,7 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
