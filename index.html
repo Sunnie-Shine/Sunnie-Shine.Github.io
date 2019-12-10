@@ -82,6 +82,151 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/12/10/bitwise-operations-2-bitwise-and/" title="位运算（2）：位与运算" itemprop="url">位运算（2）：位与运算</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-10T11:22:33.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>为了讲述得比较清晰和实用，我们将把前文说到的六大运算挨个叙述一下，然后尝试把它们拿出来讲一下它们的实际用法。</p>
+<h2 id="回顾一下用法"><a href="#回顾一下用法" class="headerlink" title="回顾一下用法"></a>回顾一下用法</h2><p>与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+       & Binary   & Decimal\\
+       & 10101010 & 170\\
+    \& & 00110111 & 55\\
+       & \text{_________}\\
+       & 00100010 & 34
+\end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
+<p>那么你输出的结果一定是 34（0b00100010）。</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>下面我们来看看它的基本用法。我们把它的计算表格列出来：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>y</th>
+<th>x &amp; y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>列出表格后就会发现，当且仅当 <code>x</code> 和 <code>y</code> 同为 1 的时候才能得到 1 的结果数值。那么，我们可以反过来思考问题：如果我们尝试把它认为是有 0 必然变为 0 的话，那么位与运算就可以用来尝试清除掉 1 的二进制。</p>
+<ul>
+<li><strong>结论 1：当任何一个数和 0 进行位与运算（即 <code>x &amp; 0</code>）的时候，结果一定是 0。</strong></li>
+<li><strong>结论 2：当任何一个数 <code>x</code> 是 0 或 1 时，让它和 1 执行位与运算（即 <code>x &amp; 1</code>）的时候，结果一定是 <code>x</code>。</strong></li>
+</ul>
+<p>第一句话是一句稍加思考就可以得到的废话，因为只要有一个 0，我们就不可能保证“两端操作数都是 1”，自然就不可能得到 1 的结果，所以结果必然是 0。不过这一点经常被用到，特别是对一些以 2 为指数的处理上。</p>
+<p>而第二句话，对照表格就可以看出来。不论 <code>x</code> 是 0 还是 1，只要它和 1 进行位与运算，结果一定就是它本身。不过，<code>x</code> 如果大于 1，或者小于 0，肯定就不是这么简单了。</p>
+<p>比如，计算一个数是否是偶数。显然这用到了对 2 求余数的操作，比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">bool</span> isEven = i % <span class="number">2</span> == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>当 <code>i % 2</code> 的结果为 0 的时候，我们就可以得到它是偶数的结果，自然 <code>isEven</code> 就应该为 <code>true</code>。不过，为了优化计算速度，我们有些时候不止使用这种方式判断它。</p>
+<p>试想一下，任意一个整数只可能是奇数或者偶数两种情况，而二进制正好完美地表达了这一点：末尾为 0 就肯定是偶数，而 1 则一定是奇数了。更直观地理解的话，可以这么去思考：所有整数均以 0 为分界点，而 0 是偶数，它的二进制表示肯定全部都是 0，而 1 的二进制是一大堆的 0 和末尾一个 1，而 2 则就会立马因为二进制的缘故进一位，使得末尾一位又变为 0 了。变为 3，则又一次使得末尾变为 1，再增大一个单位，末尾又是 0。</p>
+<p>可以从规律上看到，末尾会因为二进制的缘故呈现周期性变化：0、1、0、1、……，这恰好满足奇偶数字出现的规律：偶数、奇数、偶数、奇数、……。</p>
+<p>所以，我们将 0 作为基准，认为二进制末尾为 0 的数字都是偶数。这样的话，我们只需要取出末尾这一个二进制位，看它是不是 0 就可以知道它是不是偶数了。</p>
+<p>取出末尾这一个二进制位的方式，就是让这个数字前面的所有二进制位全部都不要，只保留最后一位。</p>
+<p>通过结论 1 可以得到，我们利用 0 来把前面的二进制位全部变为 0，而用 1 保留最后一位。如果按照对应位计算的原则，这个计算的数字就很好想到了：1。我们把这个数字和 1 进行位与运算，那么结果必然就是它二进制位末尾的值。所以，这个判断可以改写为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = (i &amp; <span class="number">1</span>) == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>但需要你注意的是，位与运算 <code>&amp;</code> 比等号判断 <code>==</code> 优先级要低一点，所以需要你用括号把 <code>i &amp; 1</code> 括起来。</p>
+<p>同理，判断奇数就只需要把 <code>== 0</code> 改为 <code>== 1</code> 或者 <code>!= 0</code> 即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = (i &amp; <span class="number">1</span>) == <span class="number">0</span>;</span><br><span class="line"><span class="keyword">bool</span> isOdd = (i &amp; <span class="number">1</span>) != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>另外，C 语言里，不等于 0 的判断可以不写，所以可以记作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = !(i &amp; <span class="number">1</span>);</span><br><span class="line"><span class="keyword">bool</span> isOdd = i &amp; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>推论 1：<code>x &amp; 1</code> 只有两个数值结果，当为 0 时，<code>x</code> 为偶数；当为 1 时，<code>x</code> 为奇数。</strong></p>
+<p>接下来，我们来看另外一种使用方式。既然 1 可以保留位次，那么我们为了保留末端若干二进制数位，想想看。</p>
+<p>假设，我们只需要保留二进制写法的末尾三位数，那么我们肯定是使用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">0b00</span>..<span class="number">.00000111</span>;</span><br></pre></td></tr></table></figure>
+<p>这样的写法。</p>
+<p>显然可以从二进制数值看到，我们只要末尾三位数字是 1 就好，而这个数字的十进制写法是 7，故：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
+<p>这样就可以得到末尾三个二进制位了。不过，这有什么用呢？</p>
+<p>我们经常碰到取模运算的操作，而有些时候不免遇到对 2、4、8、16 进行求模运算。对它们求模运算，得到的结果范围肯定是 0~1、0~3、0~7、0~15，这不就是恰好处于保留末尾若干二进制位的表示方式吗？所以，如果我们要计算一个数 <code>x</code> 对 2 的整数次幂 <code>n</code> 的余数，一般可以使用位与运算 <code>n - 1</code> 的方式得到。</p>
+<p><strong>推论 2：当 <code>n</code> 是 2 的整数次幂时，<code>x % n</code> 可以改写为 <code>x % (n - 1)</code>。</strong></p>
+<p>我们以这个推论为基础继续往下思考。既然这个 <code>n</code> 就是一个 2 的整数次幂，那么如果我们尝试把 <code>n</code> 替换为 <code>x</code> 自己会怎么样呢？公式就变为 <code>x &amp; (x - 1)</code> 了。</p>
+<p>如果 <code>x</code> 和比自己小 1 个单位的数位与运算，而且此时这个 <code>x</code> 就是一个 2 的整数次幂的话，思考一下，既然是 2 的整数次幂，那么它的二进制表示必然就是 0b0、0b1、0b10、0b100、0b1000……这样的序列。而可以从序列里直接看出，2 的整数次幂只可能在最高位次上是 1，而其余位置都是 0。</p>
+<p>比这个数小 1 个单位就意味着这个数要减去 1，而这意味着整个完美的二进制表达（只有一个 1，而其余数字位置都是 0）就会立马全盘变化：由于减去 1，所以所有低位次都会变为 1，而最高位此时因为类似于数学竖式计算的借位逻辑而变为 0。这就好比是把一个数字的所有位次全部翻转了。</p>
+<p>如果是全部翻转的话，位与运算对两个数的执行结果就必然肯定是每一二进制位都是 0（因为不论是 1 &amp; 0 还是 0 &amp; 1，因为必然有 0 的缘故，所以结果肯定是 0）。</p>
+<p>所以，<code>(x &amp; (x - 1)) == 0</code> 是什么意思呢？这是不是就恰好表示一个数是否是 2 的整数次幂？实际上是的。我们随意找出一个不是 2 的整数次幂，代入公式进行计算：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = <span class="number">14</span> &amp; <span class="number">13</span>;</span><br></pre></td></tr></table></figure>
+<script type="math/tex; mode=display">
+\begin{matrix}
+       & Binary   & Decimal\\
+       & 00001110 & 14\\
+    \& & 00001011 & 13\\
+       & \text{_________}\\
+       & 00001010 & 10
+\end{matrix}</script><p>由于这个数不是 2 的整数次幂，所以这个数的二进制位最高位不会因为减去 1 的原因而从 1 更替为 0。这也就是在说，如果它不是 2 的整数次幂时，最高位是不会产生更替的，这样通过位与运算的结果会因为最高位都是 1 的原因，计算的结果一定不可能是 0。</p>
+<p><strong>推论 3：一个数 <code>x</code> 是 2 的整数次幂的充分必要条件是，<code>x</code> 一定满足 <code>(x &amp; (x - 1)) == 0</code> 的结论。</strong></p>
+<p>实际上，它还有更高级的用法，不过由于没有提到后面的知识点，所以我们这里暂不展开讨论。本节就结束了，希望你掌握上面的这些基本用法，并加以活用。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/位运算/">位运算</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/12/10/async-await-fundamental/" title="Async/await 关键字原理" itemprop="url">Async/await 关键字原理</a>
     
   </h1>
@@ -229,7 +374,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/12/10/bitwise-operations/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
+      <a href="/2019/12/10/bitwise-operations-1-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
     
   </h1>
   <p class="article-author">By
@@ -266,6 +411,10 @@
 \end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
 <p>那么你输出的结果一定是 34（0b00100010）。</p>
+<blockquote>
+<p>我们约定，把一个二进制位表示为 <code>0baaaa</code> 的方式，其中 <code>aaaa</code> 部分是二进制 0 和 1 的序列；<code>0oaaaa</code> 表示为八进制数，<code>0xaaaa</code> 表示为十六进制。</p>
+<p>注意二进制的开头是 0b 前缀（数字零和字母 b），八进制是 0o 前缀（数字零和字母 o），十六进制的开头是 0x 前缀（数字零和字母 x）。</p>
+</blockquote>
 <h3 id="位或运算"><a href="#位或运算" class="headerlink" title="位或运算"></a>位或运算</h3><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
@@ -293,20 +442,20 @@
 \end{matrix}</script><h3 id="位左移运算"><a href="#位左移运算" class="headerlink" title="位左移运算"></a>位左移运算</h3><p>位左移运算会把所有二进制位往左移动若干比特单位，然后溢出的部分直接不要了；反之，移动的末端会补充 0。</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
-              & Binary        & Decimal\\
-    \text{<<} & 10101010      & 170\\
+              & Binary   & Decimal\\
+    \text{<<} & 10101010 & 170\\
               & \text{_________}\\
-              & 0101010\bold0 & 84
+              & 01010100 & 84
 \end{matrix}</script><blockquote>
 <p>注意，位左移运算是需要两个操作数的。第一个数就是需要移动二进制位的整数，而第二个数则是移动多少次（即左移动多少个比特单位），例如 <code>170 &lt;&lt; 2</code> 表示把 170 的二进制位向左移动两个比特单位，而不是上面这样只移动一个单位。</p>
 </blockquote>
 <h3 id="位右移运算"><a href="#位右移运算" class="headerlink" title="位右移运算"></a>位右移运算</h3><p>位右移运算和位左移运算相反，它的移动方向是向右的。它会把所有二进制位往右移动一个比特单位，然后溢出部分不要了；反之，在移动端的末尾补充 0。</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
-              & Binary        & Decimal\\
-    \text{>>} & 10101010      & 170\\
+              & Binary   & Decimal\\
+    \text{>>} & 10101010 & 170\\
               & \text{_________}\\
-              & \bold01010101 & 85
+              & 01010101 & 85
 \end{matrix}</script>
         
         
@@ -750,126 +899,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/25/clang-19-structs/" title="C 语言语法系列（19）：结构体" itemprop="url">C 语言语法系列（19）：结构体</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-25T12:14:35.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="何为结构体？"><a href="#何为结构体？" class="headerlink" title="何为结构体？"></a>何为结构体？</h2><p>前文我们学习了非常多的数据类型，比如基本的数据类型 <code>int</code>、<code>float</code> 等等，也学习了指针类型 <code>int *</code>、<code>char *</code> 类型，以及无类型指针类型 <code>void *</code>，数组 <code>[]</code> 和函数 <code>()</code>。不过，这些基础数据类型并不能够满足我们的所有需求。比如，我们把“学生”看作一种类型，这个类型里包含一些基本信息，诸如成绩，学号姓名等等。这可能吗？</p>
-<p>当然，今天要讲到的<strong>结构体</strong>（Structure）就是为了解决这种复合结构类型的基本知识点。</p>
-<p>结构体的声明格式如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> 结构体名</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>比如，学生类型的书写格式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">char</span> *name; <span class="comment">// Or write as `char name[20]`.</span></span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">    <span class="keyword">int</span> score;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>也可以简写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这样就定义好了一个结构体，这个结构体类型是 <code>student</code> 类型的。</p>
-<p>请注意，这种特殊类型和函数一样，需要放在独立的位置上，而不是嵌套到函数里，这样全局级别才能访问到，否则我们就无法在想要的位置使用它们。当然，C 语言确实不允许把结构体的声明（定义）语句（上面那一坨）放进函数之中。</p>
-<h2 id="结构体的使用"><a href="#结构体的使用" class="headerlink" title="结构体的使用"></a>结构体的使用</h2><p>我们尝试为结构体里的每一个成员赋值，并输出它们。不过，我们需要开始复杂一点的逻辑了。前文学过了如何声明堆内存，所以这里我们也可以使用这种东西来在堆内存里创建结构体变量。不过请注意，结构体是无法在栈内存里分配的，所以我们必须为其赋值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> *<span class="title">xiaoMing</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (xiaoMing)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Allocated successfully.</span></span><br><span class="line">        <span class="keyword">char</span> gender;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Input them.</span></span><br><span class="line">        gets((*xiaoMing).name); <span class="comment">// Input a string that can contain space character.</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).age);</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%c"</span>, &amp;gender);</span><br><span class="line">        (*xiaoMing).isGirl = gender == <span class="string">'f'</span>;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Output them.</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s's Data:\n"</span>, (*xiaoMing).name);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    IsGirl: %s\n"</span>, (*xiaoMing).isGirl ? <span class="string">"Yes"</span> : <span class="string">"No"</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Age: %d\n"</span>, (*xiaoMing).age);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Score: %d\n"</span>, (*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">free</span>(xiaoMing); <span class="comment">// Dispose resource.</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>变量类型是 <code>student</code> 类型，而这里作为一种结构体类型，我们需要书写的格式是</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">a</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br></pre></td></tr></table></figure>
-<p>首先为堆内存里分配 <code>student</code> 类型足够使用的内存空间，然后把这块内存的地址返回给变量 <code>a</code>。注意，返回的类型是 <code>void *</code>，所以需要经过一次强制转换。</p>
-<p>在完成分配后，判断一下它是否为 <code>NULL</code> 是一个好习惯。如果不为 <code>NULL</code> 则说明分配内存是成功的，于是我们开始为内部的所有信息点进行赋值。</p>
-<p>它和数组不同，数组分配的空间是连续的，但由于数组内的所有元素的类型全是一样的，所以有索引这种东西的存在；而结构体里，我们不能保证所有自己写的字段的类型一样，所以我们确实没有办法通过索引器 <code>[]</code> 来获取每一个成员的信息，而是通过<strong>成员访问运算符</strong> <code>.</code>（Member Access Operator）来取得它们。</p>
-<p>不过，请注意，前文使用的是堆内存分配的模式，所以得到的分配结果显然是指针类型的，于是要将指针“拆解”为普通类型（取得内容），需要使用间接访问运算符 <code>*</code> 对指针变量加以修饰：<code>*xiaoMing</code>，这才是真正的“内容”。然后，我们对这个具体的结果再次使用成员访问运算符来取值：<code>(*xiaoMing).age</code>。请注意，这种取值需要为变量名和取内容运算符用小括号括起来。如果不括起来，C 语言将认为执行内容是先获取 <code>xiaoMing.age</code>，然后再对这个变量取内容（执行 <code>*</code> 取内容），而显然取内容是针对于指针变量而言的，但此时就算 <code>xiaoMing.age</code> 奏效，没有语法问题，而 <code>age</code> 字段是我们规定的数值类型的，而不是指针，所以 C 语言会为此报错，提示你“<code>xiaoMing.age</code> 不是一个指针类型”。</p>
-<p>同理，其它的元素都可以使用这种方式进行赋值，但需要注意的是，字符串的赋值方式，一般我们不要去使用 <code>scanf(&quot;%s&quot;, &amp;字符指针或字符数组变量)</code> 的模式，因为 <code>scanf</code> 函数向来都是不处理空格的，所以它遇到空格直接就认为是输入结束了；而名字里可能是英文名，所以此时是可能含有空格的，故我们需要使用 <code>gets</code> 函数来输入。</p>
-<p>另外，<code>gets</code> 函数需要给定一个参数，这个参数必须是一个字符数组变量，而不是指针。指针并不能保证这个指向的内存块是可以被修改的，甚至不能保证这一块内存是可以被修改的。字符数组在声明期间就已经创建好了一系列内存空间，所以我们完全可以对其进行修改和使用。所以字符指针和字符数组的区别在于这一点：字符数组可修改内部元素，而字符指针不一定表示的是一个数组，而可能仅仅是一个普通的指针变量。前文说过，<strong>数组可以在赋值的时候退化为指针，但反之不然</strong>。</p>
-<p>记得最后添加 <code>free</code> 函数释放资源，否则会造成内存泄漏的 bug。</p>
-<h2 id="我觉得-v-f-的访问模式太难写代码了，有没有简化版？"><a href="#我觉得-v-f-的访问模式太难写代码了，有没有简化版？" class="headerlink" title="我觉得 (*v).f 的访问模式太难写代码了，有没有简化版？"></a>我觉得 <code>(*v).f</code> 的访问模式太难写代码了，有没有简化版？</h2><p>我也这么觉得，我们每次为字段赋值都得“无情地”加入小括号，然后才能往后加字段信息。这样写确实麻烦了。所以，C 语言提供了一个语法糖（简化版书写格式），叫<strong>指针成员访问成员运算符</strong> <code>-&gt;</code>（Pointer Member Access Operator）。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age1 = (*xiaoMing).age;</span><br><span class="line"><span class="keyword">int</span> age2 = xiaoMing-&gt;age;</span><br></pre></td></tr></table></figure>
-<p>仔细体会两种写法，这两种写法是等价的。由于 <code>-&gt;</code> 符号和 <code>.</code> 符号都是访问运算符，所以这两个运算符挨着两边的英文单词（标识符），而不用在中间添加额外的空格。</p>
-<h2 id="一些烧脑的结构体使用模型"><a href="#一些烧脑的结构体使用模型" class="headerlink" title="一些烧脑的结构体使用模型"></a>一些烧脑的结构体使用模型</h2><h3 id="来一个可能会犯错的用法"><a href="#来一个可能会犯错的用法" class="headerlink" title="来一个可能会犯错的用法"></a>来一个可能会犯错的用法</h3><p>我们尝试不为变量赋值，就开始为字段里放数据，看看会怎么样。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">variable</span>;</span></span><br><span class="line">    variable.age = <span class="number">12</span>;</span><br><span class="line">    variable.isGirl = <span class="literal">false</span>;</span><br><span class="line">    variable.name = <span class="string">"Sunnie"</span>;</span><br><span class="line">    variable.score = <span class="number">99</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>请注意，这种用法是错误的，而且很可能会引起报错。因为 <code>variable</code> 并没有赋值就开始用了，在 C 语言里规定，没有（成功）赋初始值的时候，变量都是不起作用的，即没有真正的内存可以对应上这个变量。于是我们对一个根本就不知道是哪里的对象进行赋值，或字段赋值，显然是不可能找到正确答案的。</p>
-<p>其实，不只是这种情况，就连普通的变量也是如此：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> arr[<span class="number">3</span>];</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, arr[<span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
-<p>这两种输出都不会得到你想要的结果。我知道你可能会认为这里的输出可能是 0，不过……</p>
-<p>确实不一定真的是 0，有时候是一个莫名其喵的数字，看得头皮发麻。</p>
-<h3 id="结构体的嵌套声明模式"><a href="#结构体的嵌套声明模式" class="headerlink" title="结构体的嵌套声明模式"></a>结构体的嵌套声明模式</h3><p>假设我们有两个结构体：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">b</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>那么上文给出的 <code>b</code> 结构体类型是被允许的吗，即 <code>b</code> 结构体的某一个字段是别的结构体类型？</p>
-<p>答案是，是的。我们完全可以创建一个结构体，使得这个结构体的 <code>field</code> 字段是另外一个结构体的类型。从逻辑上讲，这完全是不矛盾的。</p>
-<p>不过，如果你创建这种类型的结构体，你需要注意初始化。假如我们现在有这样两个结构体：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>并初始化一个 <code>second</code> 结构体类型的变量：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span> *<span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br></pre></td></tr></table></figure>
-<p>然后对其进行赋值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;c = <span class="number">12</span>;</span><br><span class="line">p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">p-&gt;d.b = <span class="string">'a'</span>;</span><br></pre></td></tr></table></figure>
-<p>首先，<code>p-&gt;d</code> 是为了取出 <code>p</code> 指针指向的字段 <code>d</code> 的信息，它是 <code>first</code> 结构体类型的，而且不是指针；然后，对这个得到的结果再使用 <code>.</code> 成员访问运算符来获取字段 <code>a</code> 和 <code>b</code> 的信息，或者说赋值。</p>
-<p>这样便可完成真正的赋值操作。</p>
-<h3 id="结构体的递归声明模式"><a href="#结构体的递归声明模式" class="headerlink" title="结构体的递归声明模式"></a>结构体的递归声明模式</h3><p>前文我们说到，结构体内部是可以存放指针，也可以放普通变量的。那么，是否存在一种可能，让结构体（假设为 <code>a</code> 类型）内部也有一个 <code>a</code> 类型的字段呢，即：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这种写法是可以的吗？显然，我们从逻辑上说不通，因为我们要创建好一个 <code>field</code> 字段，由于它是 <code>a</code> 类型的结构体类型，所以我们就不得不先为结构体 <code>a</code> 类型创建好。但显然此时还在创建其中的字段，整个结构体并未完成创建，所以这是相违背的。</p>
-<p>实际上确实如此。C 语言不允许递归声明：<strong>结构体类型内的字段不允许是当前结构体类型的</strong>，不过，你可以声明同样类型的结构体指针变量。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> *<span class="title">ptr</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这样书写和存储是没有问题的，因为从道理上讲，<code>ptr</code> 字段在这里仅仅表示的是一个可以指向这个类型的地址信息罢了，它是一个地址，所以并不和结构体类型的本身有关，所以这样的声明方式是被允许的。而且，这种声明模式广泛存在于一些复杂的结构里，例如<strong>链表</strong>（Linked List），它具有一个数据字段（data）和一个下一节点地址的字段（next）；而这里的 <code>data</code> 字段就是指向下一个链表节点的，它依然是当前类型的，只不过是指针。</p>
-<p>下面代码可以展示这一点：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">second</span>* <span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span>*)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (p)</span><br><span class="line">    &#123;</span><br><span class="line">        p-&gt;c = <span class="number">12</span>;</span><br><span class="line">        p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">        p-&gt;d.b = <span class="string">'a'</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;c: %d\n"</span>, p-&gt;c);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.a: %d\n"</span>, p-&gt;d.a);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.b: %c\n"</span>, p-&gt;d.b);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">free</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>输出的结果如下：</p>
-<p><img src="output-nested-struct.png" alt=""></p>
-<h2 id="结构体的内存大小"><a href="#结构体的内存大小" class="headerlink" title="结构体的内存大小"></a>结构体的内存大小</h2><p>对一个结构体变量使用 <code>sizeof</code> 会如何呢？前文不是就用到堆内存分配了吗？</p>
-<p>这个数值实际上并不需要关心，但一般在考试题里会认为所有字段占据的内存空间的总和。但实际上并不一定是这样，结果可能比这个数值大一些，当然也可能是一样的。</p>
-<p>举个例子。就前文的学生类型结构体，它由四个字段构成：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>在内存里，很有可能存储的方式是这样的：</p>
-<p><img src="struct-in-memory.png" alt=""></p>
-<p>当然，我也只能说是“可能”，因为具体的分配模式是根据内存怎么样找起来快怎么分配的模式来分配的。如果这种分配方式，使得代码运算速度快的话，那么这种肯定就是内存里存储这个结构体的方式。也有可能把 <code>age</code> 拿到下面来，也可能把 <code>isGirl</code> 拿下来，等等。</p>
-<blockquote>
-<p>不过，按照基本考试的方法，把它们所占字节数加起来就是整个结构体所占大小了：4 + 4 + 1 + 20 = 29 字节，所以，<code>sizeof(struct student)</code> = <code>sizeof(variable)</code> = 29。</p>
-</blockquote>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -925,6 +954,10 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
 			
 		
@@ -937,10 +970,6 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -949,7 +978,7 @@
 			
 		
 			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>1</sup></a></li>
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -969,11 +998,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>
