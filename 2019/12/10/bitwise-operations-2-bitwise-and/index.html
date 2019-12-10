@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="为了讲述得比较清晰和实用，我们将把前文说到的六大运算挨个叙述一下，然后尝试把它们拿出来讲一下它们的实际用法。 回顾一下用法与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如  \begin{matrix}        &amp; Binary   &amp; Decimal\\        &amp; 10101010 &amp; 170\\">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-10T12:15:11.085Z">
+<meta property="og:updated_time" content="2019-12-10T12:21:59.858Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -190,9 +190,9 @@
 \begin{matrix}
        & Binary   & Decimal\\
        & 00001110 & 14\\
-    \& & 00001011 & 13\\
+    \& & 00001101 & 13\\
        & \text{_________}\\
-       & 00001010 & 10
+       & 00001100 & 12
 \end{matrix}</script><p>由于这个数不是 2 的整数次幂，所以这个数的二进制位最高位不会因为减去 1 的原因而从 1 更替为 0。这也就是在说，如果它不是 2 的整数次幂时，最高位是不会产生更替的，这样通过位与运算的结果会因为最高位都是 1 的原因，计算的结果一定不可能是 0。</p>
 <p><strong>推论 3：一个数 <code>x</code> 是 2 的整数次幂的充分必要条件是，<code>x</code> 一定满足 <code>(x &amp; (x - 1)) == 0</code> 的结论。</strong></p>
 <p>实际上，它还有更高级的用法，不过由于没有提到后面的知识点，所以我们这里暂不展开讨论。本节就结束了，希望你掌握上面的这些基本用法，并加以活用。</p>
