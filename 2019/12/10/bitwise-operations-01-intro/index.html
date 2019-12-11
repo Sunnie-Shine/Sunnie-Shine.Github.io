@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>位运算（2）：位与运算 | 向向的博客</title>
+    <title>位运算（1）：位运算的基本计算方法 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="为了讲述得比较清晰和实用，我们将把前文说到的六大运算挨个叙述一下，然后尝试把它们拿出来讲一下它们的实际用法。 回顾一下用法与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如  \begin{matrix}        &amp; Binary   &amp; Decimal\\        &amp; 10101010 &amp; 170\\">
+    <meta name="description" content="程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。 什么是位运算？位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。 常见的位运算有如下一些：  位与运算 &amp;amp;（and）； 位或运算 |（or）； 位取反运算 ~（not）； 位异或运算 ^ （xor）； 位左移运算 &amp;lt;&amp;lt; （shl">
 <meta name="keywords" content="位运算">
 <meta property="og:type" content="article">
-<meta property="og:title" content="位运算（2）：位与运算">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;bitwise-operations-2-bitwise-and&#x2F;index.html">
+<meta property="og:title" content="位运算（1）：位运算的基本计算方法">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;bitwise-operations-01-intro&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="为了讲述得比较清晰和实用，我们将把前文说到的六大运算挨个叙述一下，然后尝试把它们拿出来讲一下它们的实际用法。 回顾一下用法与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如  \begin{matrix}        &amp; Binary   &amp; Decimal\\        &amp; 10101010 &amp; 170\\">
+<meta property="og:description" content="程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。 什么是位运算？位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。 常见的位运算有如下一些：  位与运算 &amp;amp;（and）； 位或运算 |（or）； 位取反运算 ~（not）； 位异或运算 ^ （xor）； 位左移运算 &amp;lt;&amp;lt; （shl">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-10T12:50:15.914Z">
+<meta property="og:updated_time" content="2019-12-11T03:47:54.007Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -82,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/12/10/bitwise-operations-2-bitwise-and/" title="位运算（2）：位与运算" itemprop="url">位运算（2）：位与运算</a>
+      <a href="/2019/12/10/bitwise-operations-01-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
     
   </h1>
   <p class="article-author">By
@@ -90,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-12-10T11:22:33.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
+    <time datetime="2019-12-10T01:47:17.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
     
   </p>
 </header>
@@ -99,12 +99,23 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾一下用法"><span class="toc-number">1.</span> <span class="toc-text">回顾一下用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法"><span class="toc-number">2.</span> <span class="toc-text">用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#判断奇偶"><span class="toc-number">2.1.</span> <span class="toc-text">判断奇偶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对特定值取模"><span class="toc-number">2.2.</span> <span class="toc-text">对特定值取模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证是否是-2-的整数次幂"><span class="toc-number">2.3.</span> <span class="toc-text">验证是否是 2 的整数次幂</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是位运算？"><span class="toc-number">1.</span> <span class="toc-text">什么是位运算？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本介绍"><span class="toc-number">2.</span> <span class="toc-text">基本介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#位与运算"><span class="toc-number">2.1.</span> <span class="toc-text">位与运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位或运算"><span class="toc-number">2.2.</span> <span class="toc-text">位或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位取反运算"><span class="toc-number">2.3.</span> <span class="toc-text">位取反运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位异或运算"><span class="toc-number">2.4.</span> <span class="toc-text">位异或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位左移运算"><span class="toc-number">2.5.</span> <span class="toc-text">位左移运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位右移运算"><span class="toc-number">2.6.</span> <span class="toc-text">位右移运算</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p>为了讲述得比较清晰和实用，我们将把前文说到的六大运算挨个叙述一下，然后尝试把它们拿出来讲一下它们的实际用法。</p>
-<h2 id="回顾一下用法"><a href="#回顾一下用法" class="headerlink" title="回顾一下用法"></a>回顾一下用法</h2><p>与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
+		<p>程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。</p>
+<h2 id="什么是位运算？"><a href="#什么是位运算？" class="headerlink" title="什么是位运算？"></a>什么是位运算？</h2><p>位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。</p>
+<p>常见的位运算有如下一些：</p>
+<ul>
+<li>位与运算 <code>&amp;</code>（and）；</li>
+<li>位或运算 <code>|</code>（or）；</li>
+<li>位取反运算 <code>~</code>（not）；</li>
+<li>位异或运算 <code>^</code> （xor）；</li>
+<li>位左移运算 <code>&lt;&lt;</code> （shl）；</li>
+<li>位右移运算 <code>&gt;&gt;</code> （shr）。</li>
+</ul>
+<p>下面我们逐个进行介绍。</p>
+<h2 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h2><h3 id="位与运算"><a href="#位与运算" class="headerlink" title="位与运算"></a>位与运算</h3><p>位与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
        & Binary   & Decimal\\
@@ -115,91 +126,60 @@
 \end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
 <p>那么你输出的结果一定是 34（0b00100010）。</p>
-<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>下面我们来看看它的基本用法。我们把它的计算表格列出来：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>x</th>
-<th>y</th>
-<th>x &amp; y</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>0</td>
-<td>1</td>
-<td>0</td>
-</tr>
-<tr>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>列出表格后就会发现，当且仅当 <code>x</code> 和 <code>y</code> 同为 1 的时候才能得到 1 的结果数值。那么，我们可以反过来思考问题：如果我们尝试把它认为是有 0 必然变为 0 的话，那么位与运算就可以用来尝试清除掉 1 的二进制。</p>
-<ul>
-<li><strong>结论 1：当任何一个数和 0 进行位与运算（即 <code>x &amp; 0</code>）的时候，结果一定是 0。</strong></li>
-<li><strong>结论 2：当任何一个数 <code>x</code> 是 0 或 1 时，让它和 1 执行位与运算（即 <code>x &amp; 1</code>）的时候，结果一定是 <code>x</code>。</strong></li>
-</ul>
-<p>第一句话是一句稍加思考就可以得到的废话，因为只要有一个 0，我们就不可能保证“两端操作数都是 1”，自然就不可能得到 1 的结果，所以结果必然是 0。不过这一点经常被用到，特别是对一些以 2 为指数的处理上。</p>
-<p>而第二句话，对照表格就可以看出来。不论 <code>x</code> 是 0 还是 1，只要它和 1 进行位与运算，结果一定就是它本身。不过，<code>x</code> 如果大于 1，或者小于 0，肯定就不是这么简单了。</p>
-<h3 id="判断奇偶"><a href="#判断奇偶" class="headerlink" title="判断奇偶"></a>判断奇偶</h3><p>比如，计算一个数是否是偶数。显然这用到了对 2 求余数的操作，比如：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">bool</span> isEven = i % <span class="number">2</span> == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>当 <code>i % 2</code> 的结果为 0 的时候，我们就可以得到它是偶数的结果，自然 <code>isEven</code> 就应该为 <code>true</code>。不过，为了优化计算速度，我们有些时候不止使用这种方式判断它。</p>
-<p>试想一下，任意一个整数只可能是奇数或者偶数两种情况，而二进制正好完美地表达了这一点：末尾为 0 就肯定是偶数，而 1 则一定是奇数了。更直观地理解的话，可以这么去思考：所有整数均以 0 为分界点，而 0 是偶数，它的二进制表示肯定全部都是 0，而 1 的二进制是一大堆的 0 和末尾一个 1，而 2 则就会立马因为二进制的缘故进一位，使得末尾一位又变为 0 了。变为 3，则又一次使得末尾变为 1，再增大一个单位，末尾又是 0。</p>
-<p>可以从规律上看到，末尾会因为二进制的缘故呈现周期性变化：0、1、0、1、……，这恰好满足奇偶数字出现的规律：偶数、奇数、偶数、奇数、……。</p>
-<p>所以，我们将 0 作为基准，认为二进制末尾为 0 的数字都是偶数。这样的话，我们只需要取出末尾这一个二进制位，看它是不是 0 就可以知道它是不是偶数了。</p>
-<p>取出末尾这一个二进制位的方式，就是让这个数字前面的所有二进制位全部都不要，只保留最后一位。</p>
-<p>通过结论 1 可以得到，我们利用 0 来把前面的二进制位全部变为 0，而用 1 保留最后一位。如果按照对应位计算的原则，这个计算的数字就很好想到了：1。我们把这个数字和 1 进行位与运算，那么结果必然就是它二进制位末尾的值。所以，这个判断可以改写为：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = (i &amp; <span class="number">1</span>) == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>但需要你注意的是，位与运算 <code>&amp;</code> 比等号判断 <code>==</code> 优先级要低一点，所以需要你用括号把 <code>i &amp; 1</code> 括起来。</p>
-<p>同理，判断奇数就只需要把 <code>== 0</code> 改为 <code>== 1</code> 或者 <code>!= 0</code> 即可。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = (i &amp; <span class="number">1</span>) == <span class="number">0</span>;</span><br><span class="line"><span class="keyword">bool</span> isOdd = (i &amp; <span class="number">1</span>) != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>另外，C 语言里，不等于 0 的判断可以不写，所以可以记作</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = !(i &amp; <span class="number">1</span>);</span><br><span class="line"><span class="keyword">bool</span> isOdd = i &amp; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<p><strong>推论 1：<code>x &amp; 1</code> 只有两个数值结果，当为 0 时，<code>x</code> 为偶数；当为 1 时，<code>x</code> 为奇数。</strong></p>
-<h3 id="对特定值取模"><a href="#对特定值取模" class="headerlink" title="对特定值取模"></a>对特定值取模</h3><p>接下来，我们来看另外一种使用方式。既然 1 可以保留位次，那么我们为了保留末端若干二进制数位，想想看。</p>
-<p>假设，我们只需要保留二进制写法的末尾三位数，那么我们肯定是使用</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">0b00</span>..<span class="number">.00000111</span>;</span><br></pre></td></tr></table></figure>
-<p>这样的写法。</p>
-<p>显然可以从二进制数值看到，我们只要末尾三位数字是 1 就好，而这个数字的十进制写法是 7，故：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
-<p>这样就可以得到末尾三个二进制位了。不过，这有什么用呢？</p>
-<p>我们经常碰到取模运算的操作，而有些时候不免遇到对 2、4、8、16 进行求模运算。对它们求模运算，得到的结果范围肯定是 0~1、0~3、0~7、0~15，这不就是恰好处于保留末尾若干二进制位的表示方式吗？所以，如果我们要计算一个数 <code>x</code> 对 2 的整数次幂 <code>n</code> 的余数，一般可以使用位与运算 <code>n - 1</code> 的方式得到。</p>
-<p><strong>推论 2：当 <code>n</code> 是 2 的整数次幂时，<code>x % n</code> 可以改写为 <code>x &amp; (n - 1)</code>。</strong></p>
-<h3 id="验证是否是-2-的整数次幂"><a href="#验证是否是-2-的整数次幂" class="headerlink" title="验证是否是 2 的整数次幂"></a>验证是否是 2 的整数次幂</h3><p>我们以这个推论为基础继续往下思考。既然这个 <code>n</code> 就是一个 2 的整数次幂，那么如果我们尝试把 <code>n</code> 替换为 <code>x</code> 自己会怎么样呢？公式就变为 <code>x &amp; (x - 1)</code> 了。</p>
-<p>如果 <code>x</code> 和比自己小 1 个单位的数位与运算，而且此时这个 <code>x</code> 就是一个 2 的整数次幂的话，思考一下，既然是 2 的整数次幂，那么它的二进制表示必然就是 0b0、0b1、0b10、0b100、0b1000……这样的序列。而可以从序列里直接看出，2 的整数次幂只可能在最高位次上是 1，而其余位置都是 0。</p>
-<p>比这个数小 1 个单位就意味着这个数要减去 1，而这意味着整个完美的二进制表达（只有一个 1，而其余数字位置都是 0）就会立马全盘变化：由于减去 1，所以所有低位次都会变为 1，而最高位此时因为类似于数学竖式计算的借位逻辑而变为 0。这就好比是把一个数字的所有位次全部翻转了。</p>
-<p>如果是全部翻转的话，位与运算对两个数的执行结果就必然肯定是每一二进制位都是 0（因为不论是 1 &amp; 0 还是 0 &amp; 1，因为必然有 0 的缘故，所以结果肯定是 0）。</p>
-<p>所以，<code>(x &amp; (x - 1)) == 0</code> 是什么意思呢？这是不是就恰好表示一个数是否是 2 的整数次幂？实际上是的。我们随意找出一个不是 2 的整数次幂，代入公式进行计算：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = <span class="number">14</span> &amp; <span class="number">13</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>我们约定，把一个二进制位表示为 <code>0baaaa</code> 的方式，其中 <code>aaaa</code> 部分是二进制 0 和 1 的序列；<code>0oaaaa</code> 表示为八进制数，<code>0xaaaa</code> 表示为十六进制。</p>
+<p>注意二进制的开头是 0b 前缀（数字零和字母 b），八进制是 0o 前缀（数字零和字母 o），十六进制的开头是 0x 前缀（数字零和字母 x）。</p>
+</blockquote>
+<h3 id="位或运算"><a href="#位或运算" class="headerlink" title="位或运算"></a>位或运算</h3><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
-       & Binary   & Decimal\\
-       & 00001110 & 14\\
-    \& & 00001101 & 13\\
-       & \text{_________}\\
-       & 00001100 & 12
-\end{matrix}</script><p>由于这个数不是 2 的整数次幂，所以这个数的二进制位最高位不会因为减去 1 的原因而从 1 更替为 0。这也就是在说，如果它不是 2 的整数次幂时，最高位是不会产生更替的，这样通过位与运算的结果会因为最高位都是 1 的原因，计算的结果一定不可能是 0。</p>
-<p><strong>推论 3：一个数 <code>x</code> 是 2 的整数次幂的充分必要条件是，<code>x</code> 一定满足 <code>(x &amp; (x - 1)) == 0</code> 的结论。</strong></p>
-<p>实际上，它还有更高级的用法，不过由于没有提到后面的知识点，所以我们这里暂不展开讨论。本节就结束了，希望你掌握上面的这些基本用法，并加以活用。</p>
-  
+      & Binary   & Decimal\\
+      & 10101010 & 170\\
+    | & 00110111 & 55\\
+      & \text{_________}\\
+      & 10111111 & 191
+\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
+<h3 id="位取反运算"><a href="#位取反运算" class="headerlink" title="位取反运算"></a>位取反运算</h3><p>位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+    \text{~} & 10101010 & 170\\
+             & \text{_________}\\
+             & 01010101 & 85
+\end{matrix}</script><h3 id="位异或运算"><a href="#位异或运算" class="headerlink" title="位异或运算"></a>位异或运算</h3><p>异或运算比较生疏，我们可以认为是“要么……要么……”。当且仅当两者里取了一个 1 的时候才是 1，都是 0 或都是 1 则都会得到 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+             & 10101010 & 170\\
+    \text{^} & 00110111 & 55\\
+             & \text{_________}\\
+             & 10011101 & 157
+\end{matrix}</script><h3 id="位左移运算"><a href="#位左移运算" class="headerlink" title="位左移运算"></a>位左移运算</h3><p>位左移运算会把所有二进制位往左移动若干比特单位，然后溢出的部分直接不要了；反之，移动的末端会补充 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+              & Binary   & Decimal\\
+    \text{<<} & 10101010 & 170\\
+              & \text{_________}\\
+              & 01010100 & 84
+\end{matrix}</script><blockquote>
+<p>注意，位左移运算是需要两个操作数的。第一个数就是需要移动二进制位的整数，而第二个数则是移动多少次（即左移动多少个比特单位），例如 <code>170 &lt;&lt; 2</code> 表示把 170 的二进制位向左移动两个比特单位，而不是上面这样只移动一个单位。</p>
+</blockquote>
+<h3 id="位右移运算"><a href="#位右移运算" class="headerlink" title="位右移运算"></a>位右移运算</h3><p>位右移运算和位左移运算相反，它的移动方向是向右的。它会把所有二进制位往右移动一个比特单位，然后溢出部分不要了；反之，在移动端的末尾补充 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+              & Binary   & Decimal\\
+    \text{>>} & 10101010 & 170\\
+              & \text{_________}\\
+              & 01010101 & 85
+\end{matrix}</script>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
 
 
   <div class="article-tags">
@@ -213,7 +193,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/12/10/bitwise-operations-2-bitwise-and/" data-title="位运算（2）：位与运算 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/12/10/bitwise-operations-01-intro/" data-title="位运算（1）：位运算的基本计算方法 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -226,11 +206,19 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2019/12/10/async-await-fundamental/" title="Async/await 关键字原理">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Async/await 关键字原理</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/2019/12/10/async-await-fundamental/"  title="Async/await 关键字原理">
+<a href="/2019/11/27/csharp-complier-generating-yield/"  title="yield 关键字生成的代码">
  <strong>下一篇：</strong><br/> 
- <span>Async/await 关键字原理
+ <span>yield 关键字生成的代码
 </span>
 </a>
 </div>
@@ -354,7 +342,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾一下用法"><span class="toc-number">1.</span> <span class="toc-text">回顾一下用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法"><span class="toc-number">2.</span> <span class="toc-text">用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#判断奇偶"><span class="toc-number">2.1.</span> <span class="toc-text">判断奇偶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对特定值取模"><span class="toc-number">2.2.</span> <span class="toc-text">对特定值取模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证是否是-2-的整数次幂"><span class="toc-number">2.3.</span> <span class="toc-text">验证是否是 2 的整数次幂</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是位运算？"><span class="toc-number">1.</span> <span class="toc-text">什么是位运算？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本介绍"><span class="toc-number">2.</span> <span class="toc-text">基本介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#位与运算"><span class="toc-number">2.1.</span> <span class="toc-text">位与运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位或运算"><span class="toc-number">2.2.</span> <span class="toc-text">位或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位取反运算"><span class="toc-number">2.3.</span> <span class="toc-text">位取反运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位异或运算"><span class="toc-number">2.4.</span> <span class="toc-text">位异或运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位左移运算"><span class="toc-number">2.5.</span> <span class="toc-text">位左移运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位右移运算"><span class="toc-number">2.6.</span> <span class="toc-text">位右移运算</span></a></li></ol></li></ol>
  
   </div>
 
@@ -397,15 +385,15 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>2</sup></a></li>
 			
 		
 			
@@ -445,15 +433,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 		</ul>

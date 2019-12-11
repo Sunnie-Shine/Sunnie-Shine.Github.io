@@ -82,6 +82,160 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/07/csharplang-complement-03-trivalue-boolean/" title="C# 语法查漏补缺系列（3）：三值布尔运算表" itemprop="url">C# 语法查漏补缺系列（3）：三值布尔运算表</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-07T09:01:43.000Z" itemprop="datePublished"> 发表于 2019-11-07</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="可空值类型和-bool-简介"><a href="#可空值类型和-bool-简介" class="headerlink" title="可空值类型和 bool? 简介"></a>可空值类型和 <code>bool?</code> 简介</h2><p>我们知道，C# 里含有值类型和引用类型两种东西，而 Java 里，则你只能产生引用类型，而 <code>int</code> 等类型，也都是它们提供好的特殊的实例。那么，由于 Java 采用引用类型的机制，使得了 Java 的完整整数型数据 <code>Integer</code> 是可以为 <code>null</code> 值的。而 C# 的值类型并不允许这样，因为 C# 里的值类型提供出来是为了作为基本数据类型和基元类型而存在的。说白了就是，这种类型基本上就是一个数据整体，一般迫不得已不拆开它们的内部数据，例如一个点对 <code>Point</code>，显然横纵坐标被拆解后完全显得无意义了，所以 <code>Point</code> 被作为一种值类型来看待。但 Java 受到语法的制约，我们只能写成引用类型。</p>
+<p>那么，在 C# 里，我们可以为其声明含有空值的值类型数据，这种类型提供的 <code>null</code> 可是真的 <code>null</code> 哦！这种类型叫做 <code>Nullable&lt;T&gt;</code>，即可空值类型，其中的 <code>T</code> 必须是一个值类型。那么，<code>Nullable&lt;bool&gt;</code> 便是里面特殊的一种类型（可空值类型都可以简写为类型名加问号，即此处可以简写为 <code>bool?</code>）。由于布尔型数据的特殊性，这个类型只有两个数值，而加上可空类型的空值 <code>null</code>，这种类型就有了三个值：<code>true</code>、<code>false</code> 和 <code>null</code>。既然有值，就肯定有计算公式和方式，下面我们来看看它们的结果。</p>
+<h2 id="bool-类型计算表"><a href="#bool-类型计算表" class="headerlink" title="bool? 类型计算表"></a><code>bool?</code> 类型计算表</h2><p>下面陈列出 <code>bool?</code> 类型的计算结果表。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>y</th>
+<th>x&amp;y</th>
+<th>x\</th>
+<th>y</th>
+<th>!x</th>
+<th>x^y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>true</td>
+<td>null</td>
+<td></td>
+<td>true</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>false</td>
+<td>null</td>
+<td>false</td>
+<td></td>
+<td>true</td>
+<td></td>
+</tr>
+<tr>
+<td>null</td>
+<td>true</td>
+<td></td>
+<td>true</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>null</td>
+<td>false</td>
+<td>false</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>null</td>
+<td>null</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>为了精简表格，看起来不臃肿，所以所有空格都是 <code>null</code>。</p>
+</blockquote>
+<p>你可以参考如下代码，并执行。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> series = <span class="keyword">new</span> <span class="keyword">bool</span>?[] &#123; <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> a <span class="keyword">in</span> series)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> b <span class="keyword">in</span> series)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;(a?.ToString() ?? <span class="string">"null"</span>)&#125;</span> &amp; <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a &amp; b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> | <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a | b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"!<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(!a)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine(</span><br><span class="line">                <span class="string">$"<span class="subst">&#123;a?.ToString() ?? <span class="string">"null"</span>&#125;</span> ^ <span class="subst">&#123;b?.ToString() ?? <span class="string">"null"</span>&#125;</span> ="</span></span><br><span class="line">                + <span class="string">$" <span class="subst">&#123;(a ^ b)?.ToString() ?? <span class="string">"null"</span>&#125;</span>"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一定要注意的是，执行语句里一定要对字符串使用 <code>?.ToString()</code> 方式调用，否则由于 <code>null</code> 值的原因，什么都不输出。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/C%E2%99%AF-%E8%AF%AD%E6%B3%95-%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">C♯.语法.查漏补缺</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/07/gdip-extension/" title="GDI+ 拓展操作" itemprop="url">GDI+ 拓展操作</a>
     
   </h1>
@@ -612,15 +766,15 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>2</sup></a></li>
 			
 		
 			
@@ -660,15 +814,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 		</ul>

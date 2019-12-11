@@ -82,7 +82,97 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/12/10/bitwise-operations-2-bitwise-and/" title="位运算（2）：位与运算" itemprop="url">位运算（2）：位与运算</a>
+      <a href="/2019/12/11/bitwise-operations-03-bitwise-or/" title="位运算（3）：位或运算" itemprop="url">位运算（3）：位或运算</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-11T03:46:06.000Z" itemprop="datePublished"> 发表于 2019-12-11</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>上一节我们提到了位与运算的操作，今天我们来看一下位或运算。</p>
+<h2 id="回顾一下用法"><a href="#回顾一下用法" class="headerlink" title="回顾一下用法"></a>回顾一下用法</h2><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+      & Binary   & Decimal\\
+      & 10101010 & 170\\
+    | & 00110111 & 55\\
+      & \text{_________}\\
+      & 10111111 & 191
+\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>下面我们来看一下它的用法。</p>
+<h3 id="同时置位和查看哪些二进制位被置位"><a href="#同时置位和查看哪些二进制位被置位" class="headerlink" title="同时置位和查看哪些二进制位被置位"></a>同时置位和查看哪些二进制位被置位</h3><p>由于位或运算的特殊性，只要我们能和 1 进行位或运算，不管这个数是 0 还是 1，结果必然是 1。所以，我们可以利用这一点来做到一些用法。</p>
+<p>试想一下，我们会给路由的数据包里插入 6 个标志位，它们都只有一个比特的长度，所以它们要么是 0，要么是 1。它们是互不冲突的，我们可以同时为 ACK 置为 1，与此同时还可以为 URG 置为 1。这样的话，这 6 个比特我们如果看作一个二进制数的话，如果我们需要同时为这些数位置为 1，需要怎么做呢？</p>
+<p>假如，我们为其写成枚举类型：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> flags</span><br><span class="line">&#123;</span><br><span class="line">    URG = <span class="number">0x01</span>,</span><br><span class="line">    ACK = <span class="number">0x02</span>,</span><br><span class="line">    PSH = <span class="number">0x04</span>,</span><br><span class="line">    RST = <span class="number">0x08</span>,</span><br><span class="line">    SYN = <span class="number">0x10</span>,</span><br><span class="line">    FIN = <span class="number">0x20</span></span><br><span class="line">&#125; Flags;</span><br></pre></td></tr></table></figure>
+<p>这样可以为这些枚举字段设置值。</p>
+<p>现在我们考虑，我们把 URG 和 ACK 同时置为 1，需要怎么处理呢？很显然，处理方式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK;</span><br></pre></td></tr></table></figure>
+<p>我们把 URG 的数值和 ACK 进行位或运算就可以了。我们展开这些十六进制数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">URG: 0b00000001</span><br><span class="line">ACK: 0b00000010</span><br><span class="line">PSH: 0b00000100</span><br><span class="line">RST: 0b00001000</span><br><span class="line">SYN: 0b00010000</span><br><span class="line">FIN: 0b00100000</span><br></pre></td></tr></table></figure>
+<p>展开它们就可以发现，由于它们均以一个比特为单位，所以整体上来看，所有 1 的位次都是互相不冲突的。如果我们对 URG 和 ACK 两个字段作位或运算的话，由于其它位次为 0，而碰到 1 就会变为 1 的特效，最终的结果就变为了 <code>0b00000011</code>，这样一个数字就可以表示原本两个数字可以表示的信息了。</p>
+<p>那么，如果到时候判断它有哪些数位被置为 1 了的话，就很简单了，我们把这个数字再次和我们需要判断的数位数值进行位与运算，如果数字不为 0，就说明这个数位原本是 1（因为 1 才可能会和判断为 1 的这个数位位与运算结果为 1 而不是 0）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK;</span><br><span class="line"><span class="keyword">bool</span> isSetUrg = (f &amp; URG) != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>这样就可以了。其中的 <code>isSetUrg</code> 就是判断 URG 是否被置为 1。</p>
+<h3 id="多次位或运算"><a href="#多次位或运算" class="headerlink" title="多次位或运算"></a>多次位或运算</h3><p>我们甚至可以叠加执行位或运算。前文我们针对于两个不同的字段进行了位或运算，可以得到一个整数来表示两个字段的数值。如果需要合并更多呢？直接位或运算就可以了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK | RST;</span><br></pre></td></tr></table></figure>
+<p>这样的话，我们就可以同时把 URG、ACK 和 RST 三个比特位置为 1 了。</p>
+<p>总结：</p>
+<ul>
+<li><strong>结论 1：<code>x | 0 = x</code>（如果 <code>x</code> 为 0 或者 1 的话）；</strong></li>
+<li><strong>结论 2：<code>x | 1 = 1</code>。</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK | PSH;</span><br><span class="line">Flags g = f &amp; ~URG;</span><br></pre></td></tr></table></figure>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/位运算/">位运算</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/12/10/bitwise-operations-02-bitwise-and/" title="位运算（2）：位与运算" itemprop="url">位运算（2）：位与运算</a>
     
   </h1>
   <p class="article-author">By
@@ -198,6 +288,11 @@
     </div>
     <footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
 
 
   <div class="article-tags">
@@ -374,7 +469,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/12/10/bitwise-operations-1-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
+      <a href="/2019/12/10/bitwise-operations-01-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
     
   </h1>
   <p class="article-author">By
@@ -465,6 +560,11 @@
     </div>
     <footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
 
 
   <div class="article-tags">
@@ -825,80 +925,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/25/clang-20-unions/" title="C 语言语法系列（20）：联合体" itemprop="url">C 语言语法系列（20）：联合体</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-25T13:35:07.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前文我们描述了结构体的内容，我们知道了结构体需要堆内存的分配模式才可以正常分配变量，记得 <code>free</code> 函数释放，记得判断是否分配成功，还学习了如何使用 <code>sizeof</code> 关键字来获取变量（或结构体类型）的所占内存大小。下面我们来看另外一种模型：<strong>联合体</strong>（Union）。</p>
-<h2 id="不要尝试用联合体"><a href="#不要尝试用联合体" class="headerlink" title="不要尝试用联合体"></a>不要尝试用联合体</h2><p>可以通过名字看出，它就是并集的英文名，它和结构体非常相近，但它可能更加奇怪：它的元素储存机制并不是挨着放的，而是从同一点开始。</p>
-<p>加入，我们依旧使用 <code>student</code> 作为类型名，不够把关键字改为 <code>union</code>：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> student</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>如果我们定义一个变量，并为其分配好内存：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> student *a = (<span class="keyword">union</span> student *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">union</span> student));</span><br></pre></td></tr></table></figure>
-<p>这样就可以了。现在我们按照类似的方式来为联合体的字段赋值：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(*a).age = <span class="number">63</span>;</span><br><span class="line">(*a).name[<span class="number">0</span>] = <span class="string">'A'</span>;</span><br></pre></td></tr></table></figure>
-<p>我们并没有为其把所有字段都赋好值，而仅为 <code>age</code> 字段赋值 63，而把 <code>name</code> 的第一个字符位置赋值我 <code>A</code> 字符。这已经足以说明问题。现在我们尝试重新输出 <code>age</code> 字段结果，你就会发现奇怪的地方。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, (*a).age);</span><br></pre></td></tr></table></figure>
-<p>此时，你会发现输出结果一定不会是 63，而是一个非常大的数。这很奇怪，因为我们在赋值了 63 后再也没动过 <code>age</code> 字段的信息，就简单为 <code>name</code> 的第一个字符位置赋值了一下，竟然修改了 <code>age</code> 字段的结果。</p>
-<p>联合体在分配内存的时候，是全部都在头部对齐的，这也就意味着，如果我们分配的 <code>a</code> 指针指向内存假设为 <code>0x123</code> 的位置上的话，那么 <code>0x123</code> 就是所有四个字段的起始点。这样一来，修改一处字段，自然就会同时影响到其它字段的结果。</p>
-<p><img src="union-in-memory.png" alt=""></p>
-<p>所以，不要尝试使用联合体。</p>
-<h2 id="既然这样，联合体有什么样的用途呢？"><a href="#既然这样，联合体有什么样的用途呢？" class="headerlink" title="既然这样，联合体有什么样的用途呢？"></a>既然这样，联合体有什么样的用途呢？</h2><p>在非常罕见的情况下，我们需要节约内存。当我们不得不把多个信息点都放在同一个地方存储来节约内容，而且这些信息仅在调用时有效，其它时候根本不用的情况下，可以考虑使用联合体。</p>
-<p>不过，这种情况实在是太少了。</p>
-<h2 id="联合体的内存大小"><a href="#联合体的内存大小" class="headerlink" title="联合体的内存大小"></a>联合体的内存大小</h2><p>前文讲述了结构体的内存大小的计算。联合体的内存大小其实也很好求得。前文已经完全描述了所有有关联合体定义分配内存时候的模式：同时对齐在开头地址。所以它的总大小，取决于所有字段里最“长”的那一个，所以，<code>sizeof(union student)</code> = 20。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -946,15 +972,15 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>2</sup></a></li>
 			
 		
 			
@@ -994,15 +1020,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 		</ul>

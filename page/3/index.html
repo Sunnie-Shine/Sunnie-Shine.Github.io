@@ -82,6 +82,81 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/22/clang-12-hi-dimension-array/" title="C 语言语法系列（12）：三维或更高维的数组" itemprop="url">C 语言语法系列（12）：三维或更高维的数组</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-22T12:46:11.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="有没有三维数组？"><a href="#有没有三维数组？" class="headerlink" title="有没有三维数组？"></a>有没有三维数组？</h2><p>前文已经描述了一维数组和二维数组的基本语法和使用方式。那么，按道理来说，三维数组或者更高维度的数组是存在的。确实如此。不过……</p>
+<h2 id="三维数组的定义"><a href="#三维数组的定义" class="headerlink" title="三维数组的定义"></a>三维数组的定义</h2><p>拿三维数组来说，我们要定义一个三维数组，并按照规范初始化赋值，就得是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cube[<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">0</span> &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>或</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cube[][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span> &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>都是允许的。具体的赋值原理和原因在前文已经阐述得非常详细了。但需要你注意两个地方。</p>
+<p>第一，不完全赋值是可以混用的，比如第一个示例里的赋值模式，在第一个大括号里给了一个 0，这表示会把第一个维度里的所有元素全部赋值为 0。那么第一个维度里包含哪些元素呢？或者说，元素一共多少个呢？</p>
+<p>可以从最上面的定义语句的行元素数、列元素数和竖元素数看出，这个三维数组一共有 2 行 3 列 4 竖。不过三维数组复杂的地方在于，它如何规划内存空间。我们依旧按照顺次来看。这个三维数组会分为两个大块来表示行，即这个是一个一维数组，而这个一维数组一共包含两个元素，都存放的是一个<strong>二维数组</strong>，而这个二维数组内存放着 3 行 4 列的元素，这么一个情况。</p>
+<p>不过，可以从分配内存空间来看，三维数组只能省略行元素个数这一个条件。</p>
+<h2 id="三维数组的存取数值"><a href="#三维数组的存取数值" class="headerlink" title="三维数组的存取数值"></a>三维数组的存取数值</h2><p>三维数组的存取数值的方式和二维数组雷同，不过还是希望你注意的是，每一个维度的索引都是从 0 开始的，所以不要忘了这一点，而超出了数组内存的范围。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> value = arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+<p>将会取出这个数组的第二行、第三列的第四个元素。</p>
+<h2 id="更高维度的数组？"><a href="#更高维度的数组？" class="headerlink" title="更高维度的数组？"></a>更高维度的数组？</h2><p>是的，C 语言甚至允许你创建四维数组、五维数组等等。那么 C 语言创建数组的上限是多少呢？维度是没有上限一说的，但它受到电脑容量的制约。</p>
+<p>如果你尝试把数组元素总数定义得过大的话，就会出现这个错误信息：</p>
+<p><img src="c6262.png" alt=""></p>
+<p>这个错误信息意味着你的数组定义得太大了。具体的内容说的是：“函数在栈里使用了 ‘2147483644’ 字节，超出了原本定义的栈大小 ‘16384’，请尝试移动一些数据到堆里去”。</p>
+<p>按照 16384 而言，你只能定义一个小于这么多的所占内存的数组。而在外部定义也不可以超过 1073741823 个元素。</p>
+<p>所以，请你合理使用内存。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/22/clang-11-matrix-array/" title="C 语言语法系列（11）：二维数组" itemprop="url">C 语言语法系列（11）：二维数组</a>
     
   </h1>
@@ -1074,87 +1149,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/19/csharp-complier-generating-auto-property/" title="C# 里自动属性特性的编译器生成" itemprop="url">C# 里自动属性特性的编译器生成</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-19T13:02:37.000Z" itemprop="datePublished"> 发表于 2019-11-19</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="属性和自动属性都是什么？"><a href="#属性和自动属性都是什么？" class="headerlink" title="属性和自动属性都是什么？"></a>属性和自动属性都是什么？</h2><p>属性在 C# 里是一个非常重要的概念。在 Java 里是没有这个概念的，它可以类比表示一种封装机制，将内部使用的字段通过 <code>getxxx</code> 和 <code>setxxx</code> 方法存取数据，暴露给外部，使得程序员可以更轻松地发现哪些字段可以被看到，并赋值和读取。这种封装机制在 C# 得到了简化。</p>
-<p>最初的 C# 提供了属性机制，它是 Java 这种封装机制的整合工具。比如在 Java 里，封装一个字段的信息需要两个方法和一个字段，所以格式是这样的：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Class</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.age;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 C# 里变为了这样的书写格式：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Class</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> <span class="keyword">this</span>.age; &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123; <span class="keyword">this</span>.age = <span class="keyword">value</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到，它为这种封装机制取了个名，叫做 <code>Age</code>，它就是属性。这是一种约定俗成的习惯。我们习惯把属性的名称和字段的名字用到的词汇搞成一样的，只是字段用驼峰命名法（第一个单词首字母小写，后出现的单词每一个单词都大写首字母），而属性用帕斯卡命名法（所有单词用大写首字母的方式分隔）。</p>
-<p>属性在前面配上了类似于返回值的写法，比如上述的第 5 行 <code>public int Age</code> 的 <code>int</code> 是作为属性在获取值和赋值过程之中用到的类型。比如 <code>Age</code> 为 <code>age</code> 字段提供赋值和获取值的两个工作。获取值的返回值是 <code>int</code>，而赋值用的是 <code>int</code> 类型的变量才能成功赋值。所以这个 <code>int</code> 在属性这个包装器上并不是表达返回值的意思，仅仅是恰好写这里作为一种语法规范而已。</p>
-<p>自动属性表示自动实现的属性，因为大多的 <code>get</code> 和 <code>set</code> 块里的写法都是 <code>return</code> 一个数值和 <code>this.字段 = value</code> 的赋值模式，所以干脆就在 C# 3 里添加了自动实现的属性这个特性，就不必我们手动去写这么一大堆代码了。</p>
-<blockquote>
-<p>前文没有讲。<code>value</code> 关键字专门用来临时代替 <code>set</code> 块生成的参数名。就好像 Java 的 <code>setxxx</code> 方法一样，它一定会带有一个参数，为指定的字段赋值，这里的 <code>set</code> 块由于不让写参数名，所以就用了一个关键字专门来表达这个东西。</p>
-</blockquote>
-<h2 id="自动生成的代码"><a href="#自动生成的代码" class="headerlink" title="自动生成的代码"></a>自动生成的代码</h2><p>在 C# 3 里提供了自动属性，所以自动属性可以不要求你实现 <code>get</code> 和 <code>set</code> 块，直接用分号结尾即可，甚至不让你写字段名：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Class</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>它都将自动生成，生成的代码如下：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Class</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> <span class="keyword">this</span>.age; &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123; <span class="keyword">this</span>.age = <span class="keyword">value</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="其它用法"><a href="#其它用法" class="headerlink" title="其它用法"></a>其它用法</h2><h3 id="带访问修饰符的自动属性"><a href="#带访问修饰符的自动属性" class="headerlink" title="带访问修饰符的自动属性"></a>带访问修饰符的自动属性</h3><p>在自动属性里，它甚至提供了配套访问修饰符的模式。比如这里我们不想让 <code>age</code> 字段拥有赋值的操作，我们一般都会把 <code>set</code> 定为私有的，然后不让外界访问，只有本类里的成员可以使用 <code>Age</code> 属性的 <code>set</code> 块。</p>
-<p>那么代码如下：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Class</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; <span class="keyword">private</span> <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>确实很简单，只需要在前面加上 <code>private</code> 关键字即可。到时候它也会在指定的属性旁生成这个关键字，以表示 <code>set</code> 块是 <code>private</code> 的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Class</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> <span class="keyword">this</span>.age; &#125;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">set</span> &#123; <span class="keyword">this</span>.age = <span class="keyword">value</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="初始赋值的自动属性"><a href="#初始赋值的自动属性" class="headerlink" title="初始赋值的自动属性"></a>初始赋值的自动属性</h3><p>没想到吧，C# 6 里提供了初始赋值的自动属性。由于属性在自动属性特性实现后，字段已经被编译器“隐藏起来了”，所以我们只能通过属性来给字段赋初始值。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">string</span> FirstName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125; = <span class="string">"Jane"</span>;</span><br></pre></td></tr></table></figure>
-<p>生成的代码是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">string</span> FirstName = <span class="string">"Jane"</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">string</span> FirstName</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">get</span> &#123; <span class="keyword">return</span> <span class="keyword">this</span>.firstName; &#125;</span><br><span class="line">    <span class="keyword">set</span> &#123; <span class="keyword">this</span>.firstName = <span class="keyword">value</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a><a href="/tags/C♯-3/">C♯ 3</a><a href="/tags/C♯-6/">C♯ 6</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/2/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">下一页 ↓</a>
@@ -1202,15 +1196,15 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>2</sup></a></li>
 			
 		
 			
@@ -1250,15 +1244,15 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 		</ul>

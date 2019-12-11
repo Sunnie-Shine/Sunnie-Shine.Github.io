@@ -82,6 +82,65 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/11/asp-csharp-sql-helper/" title="ASP.NET SQL 查询类辅助操作的实现" itemprop="url">ASP.NET SQL 查询类辅助操作的实现</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-11T14:54:31.000Z" itemprop="datePublished"> 发表于 2019-11-11</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="话不多说，直接看代码！"><a href="#话不多说，直接看代码！" class="headerlink" title="话不多说，直接看代码！"></a>话不多说，直接看代码！</h2><p>下面来看看 SqlHelper 类的具体实现。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">SqlHelper</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span> ConnectionString</span><br><span class="line">        = ConfigurationManager.ConnectionStrings[<span class="string">"conn"</span>].ConnectionString;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ExecuteNonQuery</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[]? para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            conn.Open();</span><br><span class="line">            <span class="keyword">return</span> cmd.ExecuteNonQuery();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SqlDataReader <span class="title">ExecuteReader</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[]? para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        SqlDataReader result = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                conn.Open();</span><br><span class="line">                result = cmd.ExecuteReader(CommandBehavior.CloseConnection);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(ex.Message);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DataSet <span class="title">GetDataSet</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[] para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> da = <span class="keyword">new</span> SqlDataAdapter</span><br><span class="line">        &#123;</span><br><span class="line">            SelectCommand = <span class="keyword">new</span> SqlCommand</span><br><span class="line">            &#123;</span><br><span class="line">                Connection = conn,</span><br><span class="line">                CommandText = sql,</span><br><span class="line">                CommandType = commandType</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    da.SelectCommand.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> ds = <span class="keyword">new</span> DataSet();</span><br><span class="line">            conn.Open();</span><br><span class="line">            da.Fill(ds);</span><br><span class="line">            <span class="keyword">return</span> ds;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">object</span> <span class="title">ExecuteScalar</span>(<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">string</span> sql, CommandType commandType, <span class="keyword">params</span> SqlParameter[] para</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> conn = <span class="keyword">new</span> SqlConnection(ConnectionString))</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> cmd = <span class="keyword">new</span> SqlCommand</span><br><span class="line">        &#123;</span><br><span class="line">            Connection = conn,</span><br><span class="line">            CommandType = commandType,</span><br><span class="line">            CommandText = sql</span><br><span class="line">        &#125;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (para != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> sp <span class="keyword">in</span> para)</span><br><span class="line">                &#123;</span><br><span class="line">                    cmd.Parameters.Add(sp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            conn.Open();</span><br><span class="line">            <span class="keyword">return</span> cmd.ExecuteScalar();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-ASP/">C♯.ASP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/ASP/">ASP</a><a href="/tags/SQL/">SQL</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/11/linq-03-orderby-clause/" title="LINQ 教程（3）：orderby 从句" itemprop="url">LINQ 教程（3）：orderby 从句</a>
     
   </h1>
@@ -825,174 +884,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/09/bayes-rule/" title="贝叶斯公式解读" itemprop="url">贝叶斯公式解读</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-09T12:05:53.000Z" itemprop="datePublished"> 发表于 2019-11-09</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="先来看看贝叶斯公式"><a href="#先来看看贝叶斯公式" class="headerlink" title="先来看看贝叶斯公式"></a>先来看看贝叶斯公式</h2><p><strong>贝叶斯公式</strong>（Bayes Formula）是用于解决概率问题的公式，长成这样。</p>
-<script type="math/tex; mode=display">
-P(A|B) = \frac{P(B|A)P(A)}{P(B)}</script><p>其中的 $A$ 和 $B$ 指的是两个不同的事件，并且此时 $P(B)$，即事件 $B$ 的概率不能为 0（即 $P(B) \neq 0$），另外：</p>
-<ul>
-<li>$P(A|B)$ 表示一个条件概率，即当事件 $B$ 一定成立的前提下，事件 $A$ 发生的可能性。</li>
-<li>$P(B|A)$ 则是反过来的，事件 $A$ 一定成立的前提下，事件 $B$ 发生的可能性。</li>
-<li>$P(A)$ 和 $P(B)$ 都是针对于 $A$ 和 $B$ 两个事件的概率，但它们是互相独立的。</li>
-</ul>
-<p>不过有趣的地方在于，公式里带有的两个信息 $P(A|B)$ 和 $P(B|A)$ 刚好是反过来的，却得到了关联性，是不是很有意思呢？</p>
-<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>我们来看一个表格，清晰可见，还好懂。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>事件发生数量</th>
-<th>$B$</th>
-<th>$\bar B$</th>
-<th>总和</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>$A$</td>
-<td>💗💗</td>
-<td>🧡🧡🧡</td>
-<td>5</td>
-</tr>
-<tr>
-<td>$\bar A$</td>
-<td>💛💛<br />💛💛<br />💛💛</td>
-<td>💜💜💜<br />💜💜💜<br />💜💜💜</td>
-<td>15</td>
-</tr>
-<tr>
-<td>总和</td>
-<td>8</td>
-<td>12</td>
-<td>20</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>那么</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(B, \text{已知}A) \cdot P(A) &= P(B|A) \cdot P(A)\\
-\frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}
-}\cdot \frac{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3}}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}&= \frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}\\
-\\
-P(A, \text{已知}B) \cdot P(B) &= P(A|B) \cdot P(B)\\
-\frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}
-}\cdot \frac{
-    \cancel{\textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,1,0}{6}}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}&= \frac{
-    \textcolor[rgb]{1,0,0}{2}
-}{
-    \textcolor[rgb]{1,0,0}{2} + \textcolor[rgb]{1,0.5,0}{3} +
-    \textcolor[rgb]{1,1,0}{6} + \textcolor[rgb]{0.5,0.5,1}{9}
-}\\
-\\
-\because P(A|B) \cdot P(B) &= P(B|A) \cdot P(A)\\
-\therefore P(A|B) &= \frac{P(B|A) \cdot P(A)}{P(B)}
-\end{align}</script><h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>先来看个例子。某城市发生了一起汽车撞人逃跑事件，该城市只有两种颜色的车，蓝色15%，绿色85%，事发时有一个人在现场看见了，他指证是蓝车。但是根据专家在现场分析,当时那种条件能看正确的可能性是80%。那么,肇事的车是蓝车的概率到底是多少？ </p>
-<p>令 $B$ 是城市里车为蓝色的事件，$G$ 为车子是绿色的事件，$E$ 为观察到车子为蓝色的事件。则由已知条件可以得出$P(B) = 0.15$，$P(G) = P(\bar B) = 0.85$，至于 $P(E)$ 我们一会儿再说。</p>
-<p>好了。如果现在没有证人看到肇事者车的话，那么我们只能盲猜，因此肇事者的车子为蓝色的概率只能是整个城市里面车为蓝色的概率，也就是先验概率 $P(B) = 0.15$，因为这时我们还没有其他证据介入，只能做个粗略的估算。</p>
-<p>接下来，当当当当，有证人了。证人说他看到了车子，并且说是蓝色的，注意，这分两种情况，…………重要的事情说两遍：<strong>贝叶斯里面现象(新的证据)部分总是分两种情况出现的</strong>：一是车子的确是蓝色的，并且证人也正确的分辨出车是蓝色的来了，概率为</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(E, B) &= P(B) \cdot P(E|B)\\
-&= 0.15 \times 0.8\\
-&= 0.12
-\end{align}</script><p>二是车子根本就是绿色的，只是证人看成蓝色的了，概率为</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(E, \bar B) &= P(\bar B) \cdot P(E|\bar B)\\
-&= P(\bar B) \times (1 -  P(\bar E|\bar B))\\
-&= 0.85 \times (1 - 0.8)\\
-&= 0.17
-\end{align}</script><p>所以</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(E) &= P(E, B) + P(E, \bar B)\\
-&= 0.12 + 0.17\\
-&= 0.29
-\end{align}</script><p>然后，我们要求解的其实是在有证人的条件下车子为蓝色的概率，也就是</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P(B|E) &= \frac{P(E, B)}{P(E)}\\
-&= \frac{0.12}{0.29}\\
-&\approx 0.41
-\end{align}</script><p>你看，<strong>$P(B|E)$ 根本就是 $P(B)$ 的加强版本</strong>，条件概率跟先验概率描述的根本就是同一件事。</p>
-<p>那么当当当当，又一个结论来了：当有新的证据出现时，$P(B|E)$ 会替代原来 $P(B)$ 的角色。换句话说，现在警察找到了一个新的证人，他也觉得这辆肇事车是蓝色的，这时在新一轮的贝叶斯概率计算中，基础概率$P(B)=0.41$，而不是原先的 $0.15$，大家可以算一下，新的 $P(B|E)=0.73$，换句话说，当有两个人看见肇事车辆为蓝色的时候，对比只有一个人看到肇事车辆为蓝色的时候，该车实际为蓝色的概率大大增加。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数学/">数学</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/5/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">下一页 ↓</a>
@@ -1040,15 +931,15 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>2</sup></a></li>
 			
 		
 			
@@ -1088,15 +979,15 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 		</ul>

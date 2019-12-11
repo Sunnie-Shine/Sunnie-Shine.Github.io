@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>矩阵操作 | 向向的博客</title>
+    <title>位运算（3）：位或运算 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="回顾一下矩阵都有哪些基本操作吧！ 基本操作矩阵的加法加法就是把两个矩阵直接对应位置求和即可。  \left(     \begin{matrix}     1 &amp; 2 &amp; 3\\     4 &amp; 5 &amp; 6     \end{matrix} \right) + \left(     \begin{matrix}     2 &amp; 3 &amp; -1\\     0 &amp; -1 &amp; 5     \end{ma">
-<meta name="keywords" content="数学">
+    <meta name="description" content="上一节我们提到了位与运算的操作，今天我们来看一下位或运算。 回顾一下用法位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如  \begin{matrix}       &amp; Binary   &amp; Decimal\\       &amp; 10101010 &amp; 170\\     | &amp; 00110111 &amp; 55\\       &amp; \t">
+<meta name="keywords" content="位运算">
 <meta property="og:type" content="article">
-<meta property="og:title" content="矩阵操作">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;15&#x2F;linear-algebra-operations&#x2F;index.html">
+<meta property="og:title" content="位运算（3）：位或运算">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;11&#x2F;bitwise-operations-03-bitwise-or&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="回顾一下矩阵都有哪些基本操作吧！ 基本操作矩阵的加法加法就是把两个矩阵直接对应位置求和即可。  \left(     \begin{matrix}     1 &amp; 2 &amp; 3\\     4 &amp; 5 &amp; 6     \end{matrix} \right) + \left(     \begin{matrix}     2 &amp; 3 &amp; -1\\     0 &amp; -1 &amp; 5     \end{ma">
+<meta property="og:description" content="上一节我们提到了位与运算的操作，今天我们来看一下位或运算。 回顾一下用法位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如  \begin{matrix}       &amp; Binary   &amp; Decimal\\       &amp; 10101010 &amp; 170\\     | &amp; 00110111 &amp; 55\\       &amp; \t">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-16T14:20:36.780Z">
+<meta property="og:updated_time" content="2019-12-11T04:08:11.898Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -82,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/15/linear-algebra-operations/" title="矩阵操作" itemprop="url">矩阵操作</a>
+      <a href="/2019/12/11/bitwise-operations-03-bitwise-or/" title="位运算（3）：位或运算" itemprop="url">位运算（3）：位或运算</a>
     
   </h1>
   <p class="article-author">By
@@ -90,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-15T06:30:13.000Z" itemprop="datePublished"> 发表于 2019-11-15</time>
+    <time datetime="2019-12-11T03:46:06.000Z" itemprop="datePublished"> 发表于 2019-12-11</time>
     
   </p>
 </header>
@@ -99,238 +99,43 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本操作"><span class="toc-number">1.</span> <span class="toc-text">基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的加法"><span class="toc-number">1.1.</span> <span class="toc-text">矩阵的加法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的减法"><span class="toc-number">1.2.</span> <span class="toc-text">矩阵的减法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的点乘法（内乘法）"><span class="toc-number">1.3.</span> <span class="toc-text">矩阵的点乘法（内乘法）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的行列式"><span class="toc-number">1.4.</span> <span class="toc-text">方阵的行列式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的转置矩阵"><span class="toc-number">1.5.</span> <span class="toc-text">矩阵的转置矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的伴随矩阵"><span class="toc-number">1.6.</span> <span class="toc-text">方阵的伴随矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的逆矩阵"><span class="toc-number">1.7.</span> <span class="toc-text">方阵的逆矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的除法"><span class="toc-number">1.8.</span> <span class="toc-text">方阵的除法</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾一下用法"><span class="toc-number">1.</span> <span class="toc-text">回顾一下用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法"><span class="toc-number">2.</span> <span class="toc-text">用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#同时置位和查看哪些二进制位被置位"><span class="toc-number">2.1.</span> <span class="toc-text">同时置位和查看哪些二进制位被置位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多次位或运算"><span class="toc-number">2.2.</span> <span class="toc-text">多次位或运算</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p>回顾一下矩阵都有哪些基本操作吧！</p>
-<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="矩阵的加法"><a href="#矩阵的加法" class="headerlink" title="矩阵的加法"></a>矩阵的加法</h3><p>加法就是把两个矩阵直接对应位置求和即可。</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-    1 & 2 & 3\\
-    4 & 5 & 6
-    \end{matrix}
-\right) + \left(
-    \begin{matrix}
-    2 & 3 & -1\\
-    0 & -1 & 5
-    \end{matrix}
-\right) = \left(
-    \begin{matrix}
-    3 & 5 & 2\\
-    4 & 4 & 11
-    \end{matrix}
-\right)</script><h3 id="矩阵的减法"><a href="#矩阵的减法" class="headerlink" title="矩阵的减法"></a>矩阵的减法</h3><p>减法类似于加法，只是对应位置用减法罢了。</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-    1 & 2 & 3\\
-    4 & 5 & 6
-    \end{matrix}
-\right) - \left(
-    \begin{matrix}
-    2 & 3 & -1\\
-    0 & -1 & 5
-    \end{matrix}
-\right) = \left(
-    \begin{matrix}
-    -1 & -1 & 4\\
-    4 & 6 & 1
-    \end{matrix}
-\right)</script><h3 id="矩阵的点乘法（内乘法）"><a href="#矩阵的点乘法（内乘法）" class="headerlink" title="矩阵的点乘法（内乘法）"></a>矩阵的点乘法（内乘法）</h3><p>矩阵乘法必须要求两个矩阵 $A_{m \times n}$ 和 $B_{n \times p}$ 的矩阵规格，第一个矩阵的列数必须等于第二个矩阵的行数。这是因为求值的过程是按整行和整列的内乘积（对应位相乘，再相加）。</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \left(
-        \begin{matrix}
-        1 & 2 & 3\\
-        4 & 5 & 6
-        \end{matrix}
-    \right) \cdot \left(
-        \begin{matrix}
-        1 & 2\\
-        3 & 4\\
-        5 & 6
-        \end{matrix}
-    \right) &= \left(
-        \begin{matrix}
-        1 \times 1 + 2 \times 3 + 3 \times 5 & 1 \times 2 + 2 \times 4 + 3 \times 6\\
-        4 \times 1 + 5 \times 3 + 3 \times 6 & 4 \times 2 + 5 \times 4 + 6 \times 6
-        \end{matrix}
-    \right)\\
-    &= \left(
-        \begin{matrix}
-        22 & 28\\
-        37 & 64
-        \end{matrix}
-    \right)
-\end{align}</script><h3 id="方阵的行列式"><a href="#方阵的行列式" class="headerlink" title="方阵的行列式"></a>方阵的行列式</h3><p>获取方阵的行列式，是采用降阶实现的。</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \left|
-        \begin{matrix}
-        1 & 3\\
-        2 & 4
-        \end{matrix}
-    \right|
-    &= 1 \times 4 - 2 \times 3\\
-    &= -2
-\end{align}</script><p>三阶：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \left|
-        \begin{matrix}
-        1 & 2 & 3\\
-        4 & 5 & 6\\
-        7 & 8 & 9
-        \end{matrix}
-    \right| &= 1 \times (-1) ^ {1 + 1} \cdot \left|
-        \begin{matrix}
-        5 & 6\\
-        8 & 9
-        \end{matrix}
-    \right| + 2 \times (-1) ^ {1 + 2} \cdot \left|
-        \begin{matrix}
-        4 & 6\\
-        7 & 9
-        \end{matrix}
-    \right| + 3 \times (-1) ^ {1 + 3} \cdot \left|
-        \begin{matrix}
-        4 & 5\\
-        7 & 8
-        \end{matrix}
-    \right|\\
-    &= 1 \times 1 \times (-3) + 2 \times (-1) \times (-6) +3 \times 1 \times (-3)\\
-    &= -3 + 12 - 9\\
-    &=0
-\end{align}</script><h3 id="矩阵的转置矩阵"><a href="#矩阵的转置矩阵" class="headerlink" title="矩阵的转置矩阵"></a>矩阵的转置矩阵</h3><p>将矩阵转置就是行列交换。</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-    1 & 2 & 3\\
-    4 & 5 & 6
-    \end{matrix}
-\right) ^ T = \left(
-    \begin{matrix}
-    1 & 4\\
-    2 & 5\\
-    3 & 6
-    \end{matrix}
-\right)</script><h3 id="方阵的伴随矩阵"><a href="#方阵的伴随矩阵" class="headerlink" title="方阵的伴随矩阵"></a>方阵的伴随矩阵</h3><p>获取矩阵的伴随矩阵很简单，求得每一个位置上的代数余子式，并挨个写到矩阵里，再转置即可。</p>
-<p>例如矩阵</p>
-<script type="math/tex; mode=display">
-A = \left(
-    \begin{matrix}
-    0 & 3 & -1\\
-    1 & -1 & 1\\
-    3 & -1 & 2
-    \end{matrix}
-\right)</script><p>它的每一个代数余子式如下所示：</p>
+		<p>上一节我们提到了位与运算的操作，今天我们来看一下位或运算。</p>
+<h2 id="回顾一下用法"><a href="#回顾一下用法" class="headerlink" title="回顾一下用法"></a>回顾一下用法</h2><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
-    A_{11} = (-1) ^ {1 + 1} \left|
-        \begin{matrix}
-        -1 & 1\\
-        -1 & 2
-        \end{matrix}
-    \right| = -1, & A_{12} = (-1) ^ {1 + 2} \left|
-        \begin{matrix}
-        1 & 1\\
-        3 & 2
-        \end{matrix}
-    \right| = 1, & A_{13} = (-1) ^ {1 + 3} \left|
-        \begin{matrix}
-        1 & -1\\
-        3 & -1
-        \end{matrix}
-    \right| = 2,\\
-    A_{21} = (-1) ^ {2 + 1} \left|
-        \begin{matrix}
-        3 & 1\\
-        -1 & 2
-        \end{matrix}
-    \right| = -7, & A_{22} = (-1) ^ {2 + 2} \left|
-        \begin{matrix}
-        0 & 1\\
-        3 & 2
-        \end{matrix}
-    \right| = -3, & A_{23} = (-1) ^ {2 + 3} \left|
-        \begin{matrix}
-        0 & 3\\
-        3 & -1
-        \end{matrix}
-    \right| = 9,\\
-    A_{31} = (-1) ^ {3 + 1} \left|
-        \begin{matrix}
-        3 & 1\\
-        -1 & 1
-        \end{matrix}
-    \right| = 4, & A_{32} = (-1) ^ {3 + 2} \left|
-        \begin{matrix}
-        0 & 1\\
-        1 & 1
-        \end{matrix}
-    \right| = 1, & A_{33} = (-1) ^ {3 + 3} \left|
-        \begin{matrix}
-        0 & 3\\
-        1 & -1
-        \end{matrix}
-    \right| = -3.\\
-\end{matrix}</script><p>所以</p>
-<script type="math/tex; mode=display">
-\text{adj} \ A = \left(
-    \begin{matrix}
-    -1 & -7 & 4\\
-    1 & -3 & 1\\
-    2 & 9 & -3
-    \end{matrix}
-\right)</script><h3 id="方阵的逆矩阵"><a href="#方阵的逆矩阵" class="headerlink" title="方阵的逆矩阵"></a>方阵的逆矩阵</h3><p>矩阵的除法的主要思路就是求逆矩阵。逆矩阵可以通过矩阵拼接一个同型单位矩阵 $E$ 并执行初等变换后得到。当然，能得到矩阵具有逆矩阵的前提是，这个矩阵的行列式不等于 0，记作 $\det A \neq 0$（中国的高等数学和线性代数的教材里多使用 $|A|$ 来表示 $A$ 的行列式，而不是用 $\det A$）。</p>
-<p>矩阵如果能有它的逆矩阵，那么可以通过如下公式得到：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \text{inv} \ A &= \frac{\text{adj} \ A}{\det A}\\
-    &= \frac1{\det A} \ \text{adj} \ A
-\end{align}</script><p>或写作</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    A^{-1} &= \frac{A^*}{|A|}\\
-    &= \frac1{|A|} \ A^*
-\end{align}</script><p>例如上面的题目</p>
-<script type="math/tex; mode=display">
-A = \left(
-    \begin{matrix}
-    0 & 3 & -1\\
-    1 & -1 & 1\\
-    3 & -1 & 2
-    \end{matrix}
-\right)</script><p>它的行列式经过计算可得 $\det A = 5 \neq 0$，可逆，然后得到它的伴随矩阵为</p>
-<script type="math/tex; mode=display">
-\text{adj} \ A = \left(
-    \begin{matrix}
-    -1 & -7 & 4\\
-    1 & -3 & 1\\
-    2 & 9 & -3
-    \end{matrix}
-\right)</script><p>所以，根据公式可以得到</p>
-<script type="math/tex; mode=display">
-\begin{align}
-    \text{inv} \ A &= \frac15 \left(
-        \begin{matrix}
-        -1 & -7 & 4\\
-        1 & -3 & 1\\
-        2 & 9 & -3
-        \end{matrix}
-    \right)\\
-    &= \left(
-        \begin{matrix}
-        -\frac15 & -\frac75 & \frac45\\
-        \frac15 & -\frac35 & \frac15\\
-        \frac25 & \frac95 & -\frac35
-        \end{matrix}
-    \right)
-\end{align}</script><h3 id="方阵的除法"><a href="#方阵的除法" class="headerlink" title="方阵的除法"></a>方阵的除法</h3><p>如果我们可以得到结果，那么我们可以定义出方阵的除法运算：</p>
-<script type="math/tex; mode=display">
-A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script><p>当然，这种用法显然是不太方便的。</p>
+      & Binary   & Decimal\\
+      & 10101010 & 170\\
+    | & 00110111 & 55\\
+      & \text{_________}\\
+      & 10111111 & 191
+\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>下面我们来看一下它的用法。</p>
+<h3 id="同时置位和查看哪些二进制位被置位"><a href="#同时置位和查看哪些二进制位被置位" class="headerlink" title="同时置位和查看哪些二进制位被置位"></a>同时置位和查看哪些二进制位被置位</h3><p>由于位或运算的特殊性，只要我们能和 1 进行位或运算，不管这个数是 0 还是 1，结果必然是 1。所以，我们可以利用这一点来做到一些用法。</p>
+<p>试想一下，我们会给路由的数据包里插入 6 个标志位，它们都只有一个比特的长度，所以它们要么是 0，要么是 1。它们是互不冲突的，我们可以同时为 ACK 置为 1，与此同时还可以为 URG 置为 1。这样的话，这 6 个比特我们如果看作一个二进制数的话，如果我们需要同时为这些数位置为 1，需要怎么做呢？</p>
+<p>假如，我们为其写成枚举类型：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> flags</span><br><span class="line">&#123;</span><br><span class="line">    URG = <span class="number">0x01</span>,</span><br><span class="line">    ACK = <span class="number">0x02</span>,</span><br><span class="line">    PSH = <span class="number">0x04</span>,</span><br><span class="line">    RST = <span class="number">0x08</span>,</span><br><span class="line">    SYN = <span class="number">0x10</span>,</span><br><span class="line">    FIN = <span class="number">0x20</span></span><br><span class="line">&#125; Flags;</span><br></pre></td></tr></table></figure>
+<p>这样可以为这些枚举字段设置值。</p>
+<p>现在我们考虑，我们把 URG 和 ACK 同时置为 1，需要怎么处理呢？很显然，处理方式是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK;</span><br></pre></td></tr></table></figure>
+<p>我们把 URG 的数值和 ACK 进行位或运算就可以了。我们展开这些十六进制数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">URG: 0b00000001</span><br><span class="line">ACK: 0b00000010</span><br><span class="line">PSH: 0b00000100</span><br><span class="line">RST: 0b00001000</span><br><span class="line">SYN: 0b00010000</span><br><span class="line">FIN: 0b00100000</span><br></pre></td></tr></table></figure>
+<p>展开它们就可以发现，由于它们均以一个比特为单位，所以整体上来看，所有 1 的位次都是互相不冲突的。如果我们对 URG 和 ACK 两个字段作位或运算的话，由于其它位次为 0，而碰到 1 就会变为 1 的特效，最终的结果就变为了 <code>0b00000011</code>，这样一个数字就可以表示原本两个数字可以表示的信息了。</p>
+<p>那么，如果到时候判断它有哪些数位被置为 1 了的话，就很简单了，我们把这个数字再次和我们需要判断的数位数值进行位与运算，如果数字不为 0，就说明这个数位原本是 1（因为 1 才可能会和判断为 1 的这个数位位与运算结果为 1 而不是 0）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK;</span><br><span class="line"><span class="keyword">bool</span> isSetUrg = (f &amp; URG) != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>这样就可以了。其中的 <code>isSetUrg</code> 就是判断 URG 是否被置为 1。</p>
+<h3 id="多次位或运算"><a href="#多次位或运算" class="headerlink" title="多次位或运算"></a>多次位或运算</h3><p>我们甚至可以叠加执行位或运算。前文我们针对于两个不同的字段进行了位或运算，可以得到一个整数来表示两个字段的数值。如果需要合并更多呢？直接位或运算就可以了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK | RST;</span><br></pre></td></tr></table></figure>
+<p>这样的话，我们就可以同时把 URG、ACK 和 RST 三个比特位置为 1 了。</p>
+<p>总结：</p>
+<ul>
+<li><strong>结论 1：<code>x | 0 = x</code>（如果 <code>x</code> 为 0 或者 1 的话）；</strong></li>
+<li><strong>结论 2：<code>x | 1 = 1</code>。</strong></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK | PSH;</span><br><span class="line">Flags g = f &amp; ~URG;</span><br></pre></td></tr></table></figure>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -338,13 +143,13 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/数学/">数学</a>
+  <span></span> <a href="/tags/位运算/">位运算</a>
   </div>
 
 </div>
@@ -353,7 +158,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/15/linear-algebra-operations/" data-title="矩阵操作 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/12/11/bitwise-operations-03-bitwise-or/" data-title="位运算（3）：位或运算 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -366,19 +171,11 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/16/hexo-mathjax-recovery/" title="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案">
-  <strong>上一篇：</strong><br/>
-  <span>
-  Hexo 里关于 Mathjax 数学公式渲染问题的解决方案</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/15/clang-03-if-statement/"  title="C 语言语法系列（3）：if 语句">
+<a href="/2019/12/10/bitwise-operations-02-bitwise-and/"  title="位运算（2）：位与运算">
  <strong>下一篇：</strong><br/> 
- <span>C 语言语法系列（3）：if 语句
+ <span>位运算（2）：位与运算
 </span>
 </a>
 </div>
@@ -502,7 +299,7 @@ A \div B = A \ \text{inv} \ B = C => \text{inv} \ B = C \ \text{inv} \ A</script
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本操作"><span class="toc-number">1.</span> <span class="toc-text">基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的加法"><span class="toc-number">1.1.</span> <span class="toc-text">矩阵的加法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的减法"><span class="toc-number">1.2.</span> <span class="toc-text">矩阵的减法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的点乘法（内乘法）"><span class="toc-number">1.3.</span> <span class="toc-text">矩阵的点乘法（内乘法）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的行列式"><span class="toc-number">1.4.</span> <span class="toc-text">方阵的行列式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#矩阵的转置矩阵"><span class="toc-number">1.5.</span> <span class="toc-text">矩阵的转置矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的伴随矩阵"><span class="toc-number">1.6.</span> <span class="toc-text">方阵的伴随矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的逆矩阵"><span class="toc-number">1.7.</span> <span class="toc-text">方阵的逆矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方阵的除法"><span class="toc-number">1.8.</span> <span class="toc-text">方阵的除法</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾一下用法"><span class="toc-number">1.</span> <span class="toc-text">回顾一下用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法"><span class="toc-number">2.</span> <span class="toc-text">用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#同时置位和查看哪些二进制位被置位"><span class="toc-number">2.1.</span> <span class="toc-text">同时置位和查看哪些二进制位被置位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多次位或运算"><span class="toc-number">2.2.</span> <span class="toc-text">多次位或运算</span></a></li></ol></li></ol>
  
   </div>
 
