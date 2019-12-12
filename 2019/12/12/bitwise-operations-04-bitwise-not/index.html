@@ -4,27 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>6 宫对角线数独的潜规则 | 向向的博客</title>
+    <title>位运算（4)：位取反运算 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="简介六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。 六宫对角线数独一共存在 12 种不等价盘面，如图所示。  它具有如下两个潜规则。 潜规则一：中心对称潜规则中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。  例如这个图上给予了一个六宫对角线数独的">
-<meta name="keywords" content="数独">
+    <meta name="description" content="回顾位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。  \begin{matrix}             &amp; Binary   &amp; Decimal\\    \text{~} &amp; 10101010 &amp; 170\\             &amp; \text{_________}\\             &amp; 01010101 &amp; 85\end{matrix}看起">
+<meta name="keywords" content="位运算">
 <meta property="og:type" content="article">
-<meta property="og:title" content="6 宫对角线数独的潜规则">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;index.html">
+<meta property="og:title" content="位运算（4)：位取反运算">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;12&#x2F;bitwise-operations-04-bitwise-not&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="简介六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。 六宫对角线数独一共存在 12 种不等价盘面，如图所示。  它具有如下两个潜规则。 潜规则一：中心对称潜规则中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。  例如这个图上给予了一个六宫对角线数独的">
+<meta property="og:description" content="回顾位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。  \begin{matrix}             &amp; Binary   &amp; Decimal\\    \text{~} &amp; 10101010 &amp; 170\\             &amp; \text{_________}\\             &amp; 01010101 &amp; 85\end{matrix}看起">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_Global.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_HiddenRule_1.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_HiddenRule_2.png">
-<meta property="og:updated_time" content="2019-11-11T05:36:00.981Z">
+<meta property="og:updated_time" content="2019-12-12T14:59:41.094Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;diagonal-sudoku-6-da-rule&#x2F;DiagonalSix_Global.png">
 
     
     
@@ -86,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
+      <a href="/2019/12/12/bitwise-operations-04-bitwise-not/" title="位运算（4)：位取反运算" itemprop="url">位运算（4)：位取反运算</a>
     
   </h1>
   <p class="article-author">By
@@ -94,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-08T05:25:13.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    <time datetime="2019-12-12T13:19:01.000Z" itemprop="datePublished"> 发表于 2019-12-12</time>
     
   </p>
 </header>
@@ -103,30 +99,61 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则一：中心对称潜规则"><span class="toc-number">2.</span> <span class="toc-text">潜规则一：中心对称潜规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则二：轴对称潜规则"><span class="toc-number">3.</span> <span class="toc-text">潜规则二：轴对称潜规则</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原码、反码和补码"><span class="toc-number">2.</span> <span class="toc-text">原码、反码和补码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原码的出现"><span class="toc-number">2.1.</span> <span class="toc-text">原码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反码的出现"><span class="toc-number">2.2.</span> <span class="toc-text">反码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题解决：补码"><span class="toc-number">2.3.</span> <span class="toc-text">问题解决：补码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位取反运算的用法"><span class="toc-number">3.</span> <span class="toc-text">位取反运算的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取反得到类型最大值和它的差"><span class="toc-number">3.1.</span> <span class="toc-text">直接取反得到类型最大值和它的差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取相反数"><span class="toc-number">3.2.</span> <span class="toc-text">取相反数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取消置位"><span class="toc-number">3.3.</span> <span class="toc-text">取消置位</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。</p>
-<p>六宫对角线数独一共存在 12 种不等价盘面，如图所示。</p>
-<p><img src="DiagonalSix_Global.png" alt=""></p>
-<p>它具有如下两个潜规则。</p>
-<h2 id="潜规则一：中心对称潜规则"><a href="#潜规则一：中心对称潜规则" class="headerlink" title="潜规则一：中心对称潜规则"></a>潜规则一：中心对称潜规则</h2><p>中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。</p>
-<p><img src="DiagonalSix_HiddenRule_1.png" alt=""></p>
-<p>例如这个图上给予了一个六宫对角线数独的题目盘面的答案，答案体现出，r1c2和r6c5的填数一定不同（实际上是一个2和一个3，确实是不同的）。其他的同理。</p>
-<p>本潜规则可以直接在题目上使用，对于任意一个唯一解的六宫对角线数独题均适用。</p>
-<h2 id="潜规则二：轴对称潜规则"><a href="#潜规则二：轴对称潜规则" class="headerlink" title="潜规则二：轴对称潜规则"></a>潜规则二：轴对称潜规则</h2><p>轴对称潜规则指的是：盘面上任取的四格，只要满足以下几个条件，则有结论：四格的填数至少有一个数会出现两次（四格填数不能完全不同）：</p>
-<ol>
-<li>四格都不在对角线上；</li>
-<li>将四格只存在于一行、一列之中，且一行一列之中各两格；</li>
-<li>同在一行的这两格关于盘面中轴（c34中间的格线）轴对称、且同在一列的这两格关于盘面中轴（r34中间的格线）轴对称；</li>
-<li>四格必须存在于对角线两侧，且两侧各两格；</li>
-<li>两侧的四格必须一一关于对角线对称。</li>
-</ol>
-<p>什么意思呢？如图所示，以下四格就满足上述给予的所有要求：</p>
-<p><img src="DiagonalSix_HiddenRule_2.png" alt=""></p>
-<p>比如r25c6和r6c25四格，都不在对角线上；分属一行一列（r6和c6），而且恰有两格；r25c6确实对于盘面的中轴线轴对称、r6c25也是如此；四格也恰存在于捺对角线两侧，两侧也恰好各两格；并且r2c6和r6c2关于捺对角线对称、r5c6和r6c5关于捺对角线对称。</p>
-<p>由于满足这样一系列要求，所以四格内的填数一定至少有一个数是至少出现两次的（比如这里的3，有两个）。</p>
+		<h2 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h2><p>位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}             & Binary   & Decimal\\    \text{~} & 10101010 & 170\\             & \text{_________}\\             & 01010101 & 85\end{matrix}</script><p>看起来不错？</p>
+<h2 id="原码、反码和补码"><a href="#原码、反码和补码" class="headerlink" title="原码、反码和补码"></a>原码、反码和补码</h2><p>在讲解内容之前，我们不得不复习一下计算机组成原理里学到的知识点：原码、反码和补码。</p>
+<h3 id="原码的出现"><a href="#原码的出现" class="headerlink" title="原码的出现"></a>原码的出现</h3><p>在计算机世界里，我们如果想要表示一个整数，其实很简单：按照基本二进制转换就可以了。但是，整数是含负数的，那么负数怎么表示呢？计算机学家就在最开始的二进制设计上建议，我们牺牲一个比特来表示正负号。如果一个数是正数，我们把最高位表示为 0（为什么不是 1 而是 0 呢？大多数数字都是正整数，所以我们尽量保持原本数值的不变，为了不让计算机花功夫重新改写最高位为 1）。</p>
+<p>当然了，前文也说到了，既然最高位是 0 是正整数的话，那么为 1 自然就表示负整数了。不过，这遗留下来一个问题。假设一个数我们用 8 个二进制位表示（为了少写点 0），那么就会出现下面这两种写法：</p>
+<ul>
+<li>0b00000000</li>
+<li>0b10000000</li>
+</ul>
+<p>这两种写法一个表示 +0，一个表示 -0。可是，人为逻辑里 +0、-0 是一个东西啊，但这样的表达明显就产生了两种逻辑。而计算机学家认为，既然两个东西都指向计算机里不同的表示方式，而 -0 没有什么意义，我们就必须定义一个新的逻辑，让这个无效的 -0 单独去和它关联上。可是，这样就可能引起效率低下，因为我们单独为一个数值定义一种指向结果，而其它的数字都指向同样的执行和对应关系，岂不是不划算？所以，原码卡死在这里了。</p>
+<h3 id="反码的出现"><a href="#反码的出现" class="headerlink" title="反码的出现"></a>反码的出现</h3><p>为了解决问题，计算机学家发明了反码。如果要表示一个负数，我们必须表示为反码。所谓的反码，就是把除了最高位（符号位）保留下来外，其余的二进制位全部反转，即 0 改为 1，1 改为 0，然后反转后的数字才是我们表示的负数。</p>
+<blockquote>
+<p>特别需要引起注意的是，如果本身就是一个正整数，它就不需要反码的操作。换句话说，对于一个正整数而言，它的原码和它的反码是完全一样的；而只有负整数，才会进行符号位不变，其它比特位按位取反的操作。</p>
+</blockquote>
+<p>如果一个数是 -2，那么它的原码表示是 0b10000010，而经过反码处理后，其实真正的结果应当表示为 0b11111101，这才是 -2 真正的反码。这样的话，-0 的原码表示就是 0b10000000，所以反码直接变为 0b11111111。那么，-0 就有其它的表示含义了，问题被解决。</p>
+<p>诶，不对。-0 和 +0 确实表示方式不一样了，但依旧没解决问题啊。因为 -0 只是被关联到了二进制全 1 的表示上，但这并没有实质性解决 -0 这个数字存在的这个问题。于是，反码不够了。</p>
+<h3 id="问题解决：补码"><a href="#问题解决：补码" class="headerlink" title="问题解决：补码"></a>问题解决：补码</h3><p>补码的出现，解决了 -0 的问题。它做的工作只有一个：如果是表示负数的话，把反码结果再加上 1 就可以了；而表示的是正整数的话，就依然用原码表示补码。这样的话，当一个数为正整数的时候，由于它的原码等于补码，所以我们不必去做任何操作；相反，如果一个数是负整数（或者形式上是负的，比如 -0，那么它就会把它先转为反码，然后对这个数加 1。刚刚说到，-0 的反码是 0b11111111，那么它再加 1，就变为 0b100000000。但遗憾的是，我们认为一个数只有 8 个二进制位，所以由于加法会进位导致这个数产生了第 9 个二进制位的缘故，所以高位就被自动认为是溢出部分，被砍掉不要了。所以剩下的依然还是 0，就恢复了 0b00000000 这个数值表示，这样不就是 +0 了吗？</p>
+<p>所以，计算机学家是不是很厉害呢？+0 和 -0 就表示为完全一样的数字了。不过，既然 8 个二进制位，一个二进制位能表示两种状态，那么 8 个数位就是 $2^8 = 256$ 种情况，所以，这样操作起来的结果里自然就会多出来一个数值表示，这个数值表示多少呢？</p>
+<p>先回忆一下，一个字节表示一个整数（比如 C 语言的 <code>char</code> 类型和更高级编程语言里的 <code>byte</code> 类型），那么它的范围必然是 -128 ~ 127。可是，-128 并不是信息对称的，很有可能 -128 就是这个“多出来的数字”。</p>
+<p>是的，补码除了解决了 -0 的问题外，也扩展了数据范围，这个最小数字 -128 就是补码产生出来的结果。想象一下，既然补码是通过原码、反码、补码的顺序得到的，那么我们自然就可以尝试得到 -128 的补码结果。</p>
+<ul>
+<li>原码：0b11111111（-128）</li>
+<li>反码：0b10000000</li>
+<li>补码：0b10000001</li>
+</ul>
+<p>是的，这个看似很平凡的 0b10000001（补码）就是表示的 -128 了。</p>
+<blockquote>
+<p>所以，实际上在电脑里存储的所有整数都用的是补码表示，即正整数的原码等于补码，而负整数的原码的非符号位取反后加 1 的结果。</p>
+</blockquote>
+<h2 id="位取反运算的用法"><a href="#位取反运算的用法" class="headerlink" title="位取反运算的用法"></a>位取反运算的用法</h2><p>下面我们就可以真正开始谈论有关位取反运算的用法了。</p>
+<h3 id="直接取反得到类型最大值和它的差"><a href="#直接取反得到类型最大值和它的差" class="headerlink" title="直接取反得到类型最大值和它的差"></a>直接取反得到类型最大值和它的差</h3><p>这个标题看起来有点绕。假设一个带有符号的整数只有 8 个二进制位表示，那么对这个数直接取反，就等同于把所有位次都取反（包括符号位），比如对 3 取反 ~3：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> b = ~a;</span><br></pre></td></tr></table></figure>
+<p>那么这个结果是多少呢？我们来试着算一下：</p>
+<ul>
+<li>a 是 0b00000011</li>
+<li>~a 是 0b11111100</li>
+</ul>
+<p>可是，这个表示直接应该指向的是某个数字的补码，所以我们还得逆向转回原码才知道它是多少。补码转回反码的方式是减去 1，而反码再转回原码的方式是符号位取反。所以我们按照操作走一遍：</p>
+<ul>
+<li>补码：0b11111100</li>
+<li>反码：0b11111011</li>
+<li>原码：0b10000100</li>
+</ul>
+<p>虽然这么做有点绕，不过转回来的数字好像是 -4。所以，<code>b</code> 的结果就是 -4 了，即 ~3 = -4。不过，它们有什么关系呢？实际上口算一下就可以发现，3 距离可以表示的范围最大值的距离（差值）是 $|127 - 3| = 124$，而得到的结果 -4 则是范围最小值 -128 到它的距离（差值）：$|-128 - (-4)| = 124$。它们的结果是一样的。</p>
+<p>所以，位取反运算符得到的一个数字的结果，就是另外一个和范围最值距离相同的那个数。而范围的最小值 -128 和范围最大值 127，从数值上是差 1 的（我指的是只看 128 和 127 这两个数，而不看符号的话）。这也就意味着，如果想查找另一个距离相同的数字的话，必然原本那个数字和结果这两个数从数值上肯定也是相差 1 的。所以……</p>
+<h3 id="取相反数"><a href="#取相反数" class="headerlink" title="取相反数"></a>取相反数</h3><p>既然前文作出了这么多铺垫，那么既然两个数从数值上相差 1，那么干脆我们对结果再加上 1，就是数值上相同的数，而符号相反的数了。所以，如果对一个数字执行 <code>~a + 1</code>，那么这个结果就是对一个数字取相反数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> b = ~a + <span class="number">1</span>; <span class="comment">// b = -3</span></span><br></pre></td></tr></table></figure>
+<h3 id="取消置位"><a href="#取消置位" class="headerlink" title="取消置位"></a>取消置位</h3><p>前文我们介绍了如何使用位或运算符 <code>|</code> 来合并多个二进制位。我们如果需要取消一个二进制位，我们可以使用位取反运算和位与运算一起使用的方式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = ACK | URG;</span><br><span class="line">f = f &amp; ~ACK;</span><br></pre></td></tr></table></figure>
+<p>执行 <code>f = f &amp; ~ACK</code> 或直接写作复合赋值运算符模式 <code>f &amp;= ~ACK</code> 就可以去掉 <code>ACK</code> 置为 1 的二进制位。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -134,13 +161,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/数独/">数独</a>
+  <span></span> <a href="/tags/位运算/">位运算</a>
   </div>
 
 </div>
@@ -149,7 +176,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/08/diagonal-sudoku-6-da-rule/" data-title="6 宫对角线数独的潜规则 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2019/12/12/bitwise-operations-04-bitwise-not/" data-title="位运算（4)：位取反运算 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -162,19 +189,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/08/csharp-common-01-nvt/" title="C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/08/android-permissions/"  title="安卓权限设置">
+<a href="/2019/12/11/bitwise-operations-03-bitwise-or/"  title="位运算（3）：位或运算">
  <strong>下一篇：</strong><br/> 
- <span>安卓权限设置
+ <span>位运算（3）：位或运算
 </span>
 </a>
 </div>
@@ -298,7 +317,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则一：中心对称潜规则"><span class="toc-number">2.</span> <span class="toc-text">潜规则一：中心对称潜规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#潜规则二：轴对称潜规则"><span class="toc-number">3.</span> <span class="toc-text">潜规则二：轴对称潜规则</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原码、反码和补码"><span class="toc-number">2.</span> <span class="toc-text">原码、反码和补码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原码的出现"><span class="toc-number">2.1.</span> <span class="toc-text">原码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反码的出现"><span class="toc-number">2.2.</span> <span class="toc-text">反码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题解决：补码"><span class="toc-number">2.3.</span> <span class="toc-text">问题解决：补码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位取反运算的用法"><span class="toc-number">3.</span> <span class="toc-text">位取反运算的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取反得到类型最大值和它的差"><span class="toc-number">3.1.</span> <span class="toc-text">直接取反得到类型最大值和它的差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取相反数"><span class="toc-number">3.2.</span> <span class="toc-text">取相反数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取消置位"><span class="toc-number">3.3.</span> <span class="toc-text">取消置位</span></a></li></ol></li></ol>
  
   </div>
 

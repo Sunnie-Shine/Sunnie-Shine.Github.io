@@ -82,6 +82,78 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/26/clang-21-enums/" title="C 语言语法系列（21）：枚举类型" itemprop="url">C 语言语法系列（21）：枚举类型</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-26T02:43:27.000Z" itemprop="datePublished"> 发表于 2019-11-26</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>前文解决了两种需要带关键字的自定义类型：结构体和共用体，它们的用法也是各有各的好处和奇特之处。今天我们来看一种新的带关键字的类型：<strong>枚举类型</strong>（Enumerations）。</p>
+<h2 id="什么是枚举类型？"><a href="#什么是枚举类型？" class="headerlink" title="什么是枚举类型？"></a>什么是枚举类型？</h2><p>枚举类型一般用于列举一些特殊情况时，特别这些情况的范围仅仅只有可以数出来的几种情况的时候，我们就可以使用这种类型，例如星期。</p>
+<p>我们可以使用枚举类型为星期定义一个枚举类型，写法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> week</span><br><span class="line">&#123;</span><br><span class="line">    monday = <span class="number">1</span>,</span><br><span class="line">    tuesday = <span class="number">2</span>,</span><br><span class="line">    wednesday = <span class="number">3</span>,</span><br><span class="line">    thursday = <span class="number">4</span>,</span><br><span class="line">    friday = <span class="number">5</span>,</span><br><span class="line">    saturday = <span class="number">6</span>,</span><br><span class="line">    sunday = <span class="number">7</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们把枚举的每一个数值放到枚举的大括号里，然后把每一个枚举数值写进去就可以了。枚举类型一般是需要对应数值使用的，否则我们无法做到灵活使用枚举的效果。所以我们一般都会配合整数使用，为每一个枚举数值赋一个整数值；当然，如果不赋值，那么从第一个元素开始，就以 0 为起始点开始往下顺序默认赋值；如果为其某一个数值赋值，那么后面的元素不赋值也可以得到默认数值，这些数值就从赋值的数值开始自动递增 1 个单位。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> week</span><br><span class="line">&#123;</span><br><span class="line">    monday = <span class="number">1</span>,</span><br><span class="line">    tuesday,</span><br><span class="line">    wednesday,</span><br><span class="line">    thursday,</span><br><span class="line">    friday,</span><br><span class="line">    saturday,</span><br><span class="line">    sunday</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个写法等价于前者。</p>
+<p>当然，如果 <code>monday</code> 字段不赋值的话，那么整体就会从 0 开始计算，即 <code>monday</code> 赋值为 0、<code>tuesday</code> 赋值为 1、<code>wednesday</code> 赋值为 2，等等。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>枚举类型出乎意料得好用。为什么这么说呢？因为枚举类型一般都不会用类型名称（即这里的 <code>enum week</code>，当然有时候也可以用上），而大多直接把里面的数值代入到指定位置上去就完成了使用。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> w;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;w);</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span>(w)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">case</span> monday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Monday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> tuesday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Tuesday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> wednesday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Wednesday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> thursday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Thursday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> friday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Friday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> saturday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Saturday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> sunday:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Sunday\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Default\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从代码里可以发现，每一个 <code>case</code> 标签处跟的直接是枚举字段，而且不需要使用成员访问运算符这种奇怪的东西，也不需要类型名称来作为辅助操作。</p>
+<p>实际上，我们也可以从这种角度认为，<code>bool</code> 是一种枚举类型，因为它的声明语句可以是这样的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="keyword">bool</span> &#123; <span class="literal">false</span>, <span class="literal">true</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>这样 <code>false</code> 字段就赋值为 0，而 <code>true</code> 自动赋值为 1。</p>
+<h2 id="枚举类型的内存大小"><a href="#枚举类型的内存大小" class="headerlink" title="枚举类型的内存大小"></a>枚举类型的内存大小</h2><p>当然，<code>bool</code> 类型并不是这么简单，因为 <code>bool</code> 仅仅占据一个字节，而枚举类型需要整数的依托，所以枚举类型的大小一般是 4 个字节（即 <code>int</code> 占据多大，枚举就多大）。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/25/clang-20-unions/" title="C 语言语法系列（20）：联合体" itemprop="url">C 语言语法系列（20）：联合体</a>
     
   </h1>
@@ -1040,138 +1112,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/23/clang-13-function/" title="C 语言语法系列（13）：函数" itemprop="url">C 语言语法系列（13）：函数</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-23T02:38:09.000Z" itemprop="datePublished"> 发表于 2019-11-23</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="What-is-函数？"><a href="#What-is-函数？" class="headerlink" title="What is 函数？"></a>What is 函数？</h2><p>学过数学的人都知道，数学有一种函数表示方法，叫 $f(x) = \text{expression}$ 的东西，其中等号右边应当填入一个<strong>表达式</strong>（expression）。</p>
-<p>C 语言和数学的函数差不太多，不过 C 语言是为编程服务的，所以 C 语言可能还会广义化数学上的函数。C 语言里，函数其实是“一个过程”，这个“过程”下会执行一系列的操作，比如输入输出、循环等等。不过和数学相同的地方是，C 语言函数在执行完毕这一系列语句时，会有一个函数值（返回值），这个值就是这个“过程”最后的执行结果。比如说 $f(x) = x^2 + 2x + 3$ 的式子，我们可以这么去写C语言。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * x + <span class="number">2</span> * x + <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"f(%d) = %d"</span>, i, f(i));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先我们发现，在 <code>int main(void)</code> 前，还有一段代码独立于它而存在。它写成 <code>int f(int x)</code>，而里面只有一句话，是用类似于 <code>main</code> 里的 <code>return 0;</code> 差不太多的写法，也用了 <code>return</code> 单词。现在来解释一下它是什么意思。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">值域 函数名称(定义域 变量名称)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> 函数值;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>因为它和数学不同，定义域和值域不像数学那样，实数范围包含整数和小数，人可以灵活处理，电脑不能，所以电脑的定义域内整数和小数是区分开的，因此必定要为变量名和函数值先定下一个取值范围，再来写操作。定义定义域和值域时，即写出操作过程之中，定义域的取值范围（我们一般用整数，所以 <code>int</code> 足够了）；而值域，即函数值，一定根据刚才的计算公式，得到的是也应是 <code>int</code>，所以还是 <code>int</code>。所以，分别写在对应位置上。</p>
-<p>然后你对照这个写法和刚才 $f(x) = x^2 + 2x + 3$，你就会发现，其实 <code>return</code> 语句下就写的是这个表达式。这是因为，<code>return</code> 语句专门用于获取函数的函数值（返回值）。因为这个数学函数在编程里面肯定只有这样一个操作（得到数值结果），所以在 C 语言里，<code>f</code> 函数里只有 <code>return</code> 这一句话。</p>
-<p>然后在 <code>main</code> 里，我们要使用这个函数功能的话，就可以这么写。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, f(i)); <span class="comment">// 注意这句话。</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>特别注意那句话，我们使用 <code>f</code> 函数了，但是因为那个函数最后是一个结果，所以我们可以直接当成一个数来写进<code>printf</code> 之中，输出这个数。我们想要把这个手动输入的i当成自变量放进 <code>f</code> 函数之中得到结果。所以是这么写的。当然了，也可以分写两句话：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line"><span class="keyword">int</span> result = f(i);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, result);</span><br></pre></td></tr></table></figure>
-<p>这样要好理解一些，不过其实都一样。</p>
-<p>当然，我们可以这么去想这个问题：输入一个值，然后得到  <code>f(x)</code> 函数值，然后输出结果。这样的三个部分的操作，都可以同时丢进 C 语言的这个 <code>f</code> 函数之中。数学就不可以，C 语言就可以，而这就是因为，C 语言里的函数是执行一系列的操作，不一定只求一个值就完了，不过，这样执行输入输出了，也就不必再去纠结它程序结果的函数值了（因为结果已经输出了，根本就不需要再单独给这个程序一个函数值），这样的“只执行一系列语句”的函数，我们可以为值域部分写上 <code>void</code> 一词（<code>void</code> 一词就是空白、没有的意思）。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">void</span>)</span> <span class="comment">// Note here.</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, result;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    result = x * x + <span class="number">2</span> * x + <span class="number">3</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"f(%d) = %d"</span>, i, result);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span>; <span class="comment">// Note here.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    f(); <span class="comment">// Note here.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>看看这个程序和之前的程序，不同之处有三个：第一是 <code>int f(int x)</code> 改变为了 <code>void f()</code>；第二是最后末尾的 <code>return</code> 语句什么结果都没有，只是一个单独的 <code>return</code> 单词；第三是 <code>main</code> 之中，使用 <code>f</code> s函数时的写法，括号是空的，啥都没有，然后就直接分号结尾了。</p>
-<p>至于第一点，是因为我们刚才说到，它执行的是一系列的操作，而结果已经在中间输出过了，所以不需要对末尾再写出函数值，所以为这种函数用 <code>void</code>。至于括号里面为啥也没有数值了呢？因为括号不需要数值了，因为输入的数据值已经在函数里面体现了，何必非要写在上面括号里面去呢，这个函数功能根本就不需要用到这个 <code>x</code> 了，所以为了表示它是函数，就只有一个空的括号而已；</p>
-<p>第二点是因为，函数既然没有函数值结果了，但因为要结束这个函数，所以需要 <code>return</code> 作为结尾，表示函数执行完毕。当然了，这种末尾直接结束的函数，是可以不写这个 <code>return;</code> 语句的。但如果你想中途结束程序，就必须加上这句话，来表示在某个中间执行结果下就结束这个函数的运行；</p>
-<p>第三点是因为，刚才我们是当 <code>f</code> 函数是一个数值来处理的。但是现在 <code>f</code> 函数只是一个执行输入、求结果和输出三个操作的过程，所以要使用它直接写上去就可以了。</p>
-<h2 id="参数的定义"><a href="#参数的定义" class="headerlink" title="参数的定义"></a>参数的定义</h2><p>在 C 语言之中，我们称函数使用的小括号内的变量（可以有一个，也可以有很多个）叫<strong>参数</strong>。这一点来说，它和数学不太一样，数学里的参数往往指的是函数表达式里不同于自变量的数值（如 $f(x) = ax^2 + bx + c$ 之中的字母 <code>a</code>、<code>b</code>、<code>c</code>）。</p>
-<p>这里要提两个定义，考试要考的：</p>
-<ul>
-<li><strong>形参</strong>（Parameter）：函数的第一句话里，小括号内的变量；</li>
-<li><strong>实参</strong>（Argument）：函数内使用形参的这些变量。</li>
-</ul>
-<p>理解也很好理解。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> x)</span> <span class="comment">// Parameter.</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * x + <span class="number">2</span> * x + <span class="number">3</span>; <span class="comment">// Using the value (argument).</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="小括号里写-void？"><a href="#小括号里写-void？" class="headerlink" title="小括号里写 void？"></a>小括号里写 <code>void</code>？</h2><p>最后需要你注意的是，在小括号里也要写 <code>void</code>，这是为什么呢？</p>
-<p>如果我们知道这个函数不应该有参数，那么就在小括号里写上 <code>void</code> 关键字来告诉编译器，这个函数不需要任何参数。如果你不写它，往往程序也可以正常执行，但少见有些情况会出现内存泄漏和内存溢出的问题和 bug，导致很严重的错误。</p>
-<p>所以为了安全起见，我们习惯在不需要参数的函数里，小括号里添加 <code>void</code> 关键字。</p>
-<h2 id="main-函数剖析"><a href="#main-函数剖析" class="headerlink" title="main 函数剖析"></a><code>main</code> 函数剖析</h2><h3 id="main-究竟是什么东西"><a href="#main-究竟是什么东西" class="headerlink" title="main 究竟是什么东西"></a><code>main</code> 究竟是什么东西</h3><p>我们经常听到老师提起“<code>main</code> 函数”这个说法。它其实也是一个函数。理解起来也很容易：因为它执行的是一系列的操作。不过它更为特殊一些：所有 C 语言程序都需要从 <code>main</code> 的第一句开始执行。注意哈，这里说的是“执行”，后面会告诉大家，编译（从 C 语言翻译为机器识别的二进制代码串的过程）则是从最上面第一句开始的，跟 <code>main</code> 无关。</p>
-<h3 id="main-的返回值"><a href="#main-的返回值" class="headerlink" title="main 的返回值"></a><code>main</code> 的返回值</h3><p>那么，为什么 <code>main</code> 它也有函数值？<code>main</code> 有函数值的原因在于，为了大家方便查 bug 才搞的机制。让程序完整无误不出错地走一遍，默认为 0，表示没错；但如果中途出现某种错误了，比如没有赋值就使用变量啊这种，就会报错，这个时候程序会直接终止 <code>main</code>，而不是调过错误的语句继续往下走。这个时候，终止了 <code>main</code> 必然会直接得到返回值（函数值），这个时候为了方便查错，我们就把这样可以导致同一类出错情况的返回值给它规定成同一个返回值（函数值），这样开发人员就不会很头痛，从头开始找错。</p>
-<blockquote>
-<p>你需要记住一点，DevCpp 软件在没有为变量赋值时就使用变量时，<code>main</code> 的函数值为 3221225477。</p>
-</blockquote>
-<h3 id="main-的参数"><a href="#main-的参数" class="headerlink" title="main 的参数"></a><code>main</code> 的参数</h3><p>另外，<code>main</code> 函数里有时候有一坨东西，有时候又没有，是什么情况。</p>
-<ul>
-<li><code>int main();</code></li>
-<li><code>int main(int argc, char *argv[]);</code></li>
-</ul>
-<p>我们经常看到这两种写法。第一种表示 <code>main</code> 没有参数；第二种则是有两个参数。这两个参数是什么呢？其实，这两个参数指的是你在使用 cmd 命令行对程序操作时，产生的参数。</p>
-<p>比如我们在使用 Linux 下的命令：<code>rm</code>（remove）命令时，总会在网上看到资料说：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm -rf *</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm -rf</span><br></pre></td></tr></table></figure>
-<p>有时候还可以省略这个星号。先不管是什么东西。我们来说明一下。</p>
-<p><code>rm</code> 是这个命令的名字（它实际上是一个程序名，功能是删除文件），而我们习惯性写上的 <code>-rf</code> 参数，其实是删除文件需要的参数。<code>-rf</code> 表示递归删除文件，且不保留痕迹。所以这里的 <code>-rf</code> 其实就是在执行这个 <code>rm</code> 程序在进入 <code>main</code> 里的参数，<code>-rf</code> 是第二个参数的数值。</p>
-<p>为了达到程序执行的功能，有些时候会在调用程序和进入 <code>main</code> 前就要传递一系列的参数进去。这个时候我们可以为 <code>main</code> 设定这两个参数，就可以达到效果；第一个参数表明在执行命令行时，参数的个数；第二个则是参数的具体写法。目前你知道这个用途就可以了，因为参数的后者 <code>char *argv[]</code> 是一个字符串数组，这一点在这里阐述是超纲的，所以不在这里叙述。</p>
-<h2 id="函数的定义"><a href="#函数的定义" class="headerlink" title="函数的定义"></a>函数的定义</h2><h3 id="声明格式"><a href="#声明格式" class="headerlink" title="声明格式"></a>声明格式</h3><p>当函数放在 <code>main</code> 下的时候，在编译时，因为 <code>main</code> 会从上到下执行语句，但执行过程之中，发现有些东西没有声明，自然就不能用。比如这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"f(%d) = %d\n"</span>, i, f(i));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> number)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> number * <span class="number">2</span> + <span class="number">26</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个时候在语句执行到 <code>printf</code> 时，发现 <code>f</code> 是前文里没有看到过的函数，这个时候就会给出警告。所以函数的声明就需要放在执行 <code>main</code> 前面（即 <code>#include</code> 命令和 <code>int main(void)</code> 之前）。所以应写成这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span>)</span></span>; <span class="comment">// Statement of function (without parameter name).</span></span><br><span class="line"><span class="comment">//int f(int number); // Or write like this (with parameter name).</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> number)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>甚至可以写在执行语句前一句处：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span>)</span></span>; <span class="comment">// Here.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"f(%d) = %d\n"</span>, i, f(i));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> number)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> number * <span class="number">2</span> + <span class="number">26</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>都可以。</p>
-<h3 id="声明函数的原理"><a href="#声明函数的原理" class="headerlink" title="声明函数的原理"></a>声明函数的原理</h3><p>从原理上讲，函数的声明是什么东西呢？C 语言是一种<strong>面向过程的编程语言</strong>（Process Oriented Programming，简称 <strong>POP</strong>），这种编程语言就是按照流程一步一步执行即可，无需考虑其它因素。但为了代码书写的方便，C 语言为我们提供了两种可定义和声明的元素：变量（含数组变量以及后面要说到的指针变量）和函数。变量和函数的相似之处就是都需要定义出来才能使用（即先定义后使用）。像是 C 语言这样，如果我们尝试把其它的函数写在 <code>main</code> 之后，按照顺次执行，就会遇到无法解析的函数名称，于是我们肯定需要声明（也叫定义）这个函数了。</p>
-<p>那么，声明格式和函数名一致，是为了保证简单易懂。把函数名写在中间，左边写返回值，右边写参数，并用小括号把所有参数括起来，这样便是一个完整的函数变量的定义。所以实际上，从这个角度出发，函数也可以被视作一种特殊的变量类型。不过它和普通变量不同的是，它往往写在最外面（全局范围），一般不写在函数执行逻辑里，是因为这样书写，就不好看到它们。</p>
-<h2 id="函数内的变量"><a href="#函数内的变量" class="headerlink" title="函数内的变量"></a>函数内的变量</h2><h3 id="变量的生命周期和函数的销毁"><a href="#变量的生命周期和函数的销毁" class="headerlink" title="变量的生命周期和函数的销毁"></a>变量的生命周期和函数的销毁</h3><p>变量分为多种：外部变量、内部变量（函数内变量）等。它们各自有不同用途，所以会被放在不同的位置。不过，要知道，它们的生命周期也不同。</p>
-<p>变量会在函数用完时被销毁，<code>main</code> 也是一样。如果程序执行完毕时，即 <code>main</code> 也执行完毕，里面的所有变量都会直接蒸发，变得不存在。其他函数也是。所以我们来看这个函数：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = a;</span><br><span class="line">    a = b;</span><br><span class="line">    b = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>很显然，这个写法是交换两个数据用的。但是函数在执行完后，变量就会不复存在。所以交换完后，变量就会消失，使得交换之后的结果也不能继续使用。所以，换句话说：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"a = %d, b = %d\n"</span>, a, b);</span><br><span class="line">    swap(a, b);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"a = %d, b = %d\n"</span>, a, b);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>输出语句其实是没有任何变化的，即两处 <code>printf</code> 函数的输出结果都是 <code>a = 2</code>、<code>b = 3</code>。这一点要引起额外注意。这是因为，在执行交换函数 <code>swap</code> 后，它仅交换了在 <code>swap</code> 函数里的 <code>a</code> 和 <code>b</code> 变量，而并没有对 <code>main</code> 函数里的 <code>a</code> 和 <code>b</code> 作出任何影响，因为函数传递数值的模式是值传递，即只会把数值内容复制一份然后丢到 <code>swap</code> 里来用，所以实际上它交换的其实是复制后的副本，而真正的元素却没有发生改变。在交换后，函数被销毁，交换的副本也被同时销毁，所以原本的变量根本就没有发生任何的变化。</p>
-<p>另外，如果把变量写在函数外部的话，这样的变量在程序 <code>main</code> 执行的过程之中，只要 <code>main</code> 没有销毁（程序没有结束），变量就会一直存在。</p>
-<p>最后，还有一个冷门的知识点。</p>
-<h3 id="大括号封闭变量"><a href="#大括号封闭变量" class="headerlink" title="大括号封闭变量"></a>大括号封闭变量</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">4</span>;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a = <span class="number">2</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a); <span class="comment">// 2</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a); <span class="comment">// 4</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>虽然是同一个变量名字，但变量不同，并且有一个变量是用大括号括起来的，虽然这个大括号看起来好像不知道到底是什么用途。这里的大括号只有一个用：封闭变量。这个大括号内部的变量外部是无法使用的，而内部的输出语句也只是会找到最近的变量名作输出。所以就是 2 了；而外部的输出语句输出的 <code>a</code>，由于大括号封闭变量的关系，内部的 2 完全不可能被外部的这个输出语句的 <code>a</code>看到，所以根本不可能是 2，所以是相对于这个内部的 <code>a</code> 外面的这个 4。</p>
-<p>这告诉了我们，之前用于分割语义的大括号，它的原理到底是如何的。</p>
-<h2 id="一些修饰函数内成员和参数的修饰符"><a href="#一些修饰函数内成员和参数的修饰符" class="headerlink" title="一些修饰函数内成员和参数的修饰符"></a>一些修饰函数内成员和参数的修饰符</h2><h3 id="static-修饰符"><a href="#static-修饰符" class="headerlink" title="static 修饰符"></a><code>static</code> 修饰符</h3><p>在函数里对一些普通变量修饰 <code>static</code> 修饰符，可以让程序在反复调用这个函数时，这个变量都只会初始化一次，后续都直接用这个变量，而且函数被销毁的时候，这个变量也不会被同时销毁。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> a)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> z = <span class="number">10</span>;</span><br><span class="line">    </span><br><span class="line">    z += <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">return</span> a + z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果调用这个函数的话：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, f(i));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>那么，首次 <code>z</code> 会被初始化为 10，随后执行 <code>z += 3</code> 使之变为 13，然后返回 <code>13 + i</code>。每一次 <code>i</code> 传入的数值都不同，第一次是 0，第二次是 1，第三次是 2；而使用 <code>f</code> 函数时，<code>z</code> 第一次是 10（后自增 3，变为 13），第二次是 16，第三次则是 19。所以三次的输出结果是 <code>13 17 21</code>。</p>
-<h3 id="auto-修饰符"><a href="#auto-修饰符" class="headerlink" title="auto 修饰符"></a><code>auto</code> 修饰符</h3><p>实际上，所有在函数里声明的变量，都是 <code>auto</code> 的，也就是说，你不写它们，都会被默认添加这个修饰符。这种修饰符表示这个变量在栈内存进行分配。所谓的栈内存分配，就是跟着函数走。函数死亡，它就死亡，你就无法再使用里面的资源了。</p>
-<p>如果你不想让它消失，请在函数里对这个变量使用 <code>static</code> 修饰符，表示它不跟着函数销毁而销毁。</p>
-<h3 id="register-修饰符"><a href="#register-修饰符" class="headerlink" title="register 修饰符"></a><code>register</code> 修饰符</h3><p>这个修饰符虽然现在说还为时尚早，但这个修饰符并不需要任何的语法依托。它表示这个变量将在执行期间直接丢到寄存器里。这个操作就为了一个字：快。我们都知道，程序的分配的变量都是在内存里的，而执行这些程序，还是得被提取出来，丢进 CPU 里挨着执行它们。如果我们最初就把它们丢进了寄存器里，由于寄存器就在 CPU 里，所以这样执行起来，就会比其它变量算得更快。所以，我们如果非得考虑性能的话，我们会把常用的简单类型变量直接丢进寄存器里，方式就是添加 <code>register</code> 修饰符在定义语句之前就可以了。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
@@ -1211,15 +1151,15 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>4</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
 			
 		
 			
@@ -1231,15 +1171,19 @@
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1248,10 +1192,6 @@
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1271,11 +1211,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>

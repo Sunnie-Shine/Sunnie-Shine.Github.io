@@ -82,6 +82,66 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/08/solving-sudoku-using-linq/" title="使用 LINQ 解数独题" itemprop="url">使用 LINQ 解数独题</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-08T03:10:50.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="LINQ-解数独你见过吗？"><a href="#LINQ-解数独你见过吗？" class="headerlink" title="LINQ 解数独你见过吗？"></a>LINQ 解数独你见过吗？</h2><p>啥也不说了，本文就只有一整篇的代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> List&lt;<span class="keyword">string</span>&gt; <span class="title">Solve</span>(<span class="params"><span class="keyword">string</span> puzzle</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">string</span> values = <span class="string">"123456789"</span>;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt; &#123; puzzle &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (result.Count &gt; <span class="number">0</span> &amp;&amp; result[<span class="number">0</span>].IndexOf(<span class="string">'0'</span>, StringComparison.OrdinalIgnoreCase) != <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        result = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;(</span><br><span class="line">            <span class="keyword">from</span> solution <span class="keyword">in</span> result</span><br><span class="line">            <span class="keyword">let</span> index = solution.IndexOf(<span class="string">'0'</span>, StringComparison.OrdinalIgnoreCase)</span><br><span class="line">            <span class="keyword">let</span> column = index % <span class="number">9</span></span><br><span class="line">            <span class="keyword">let</span> block = index - index % <span class="number">27</span> + column - index % <span class="number">3</span></span><br><span class="line">            <span class="keyword">from</span> <span class="keyword">value</span> <span class="keyword">in</span> values</span><br><span class="line">            <span class="keyword">where</span> !(</span><br><span class="line">                <span class="keyword">from</span> i <span class="keyword">in</span> Values.DigitRange</span><br><span class="line">                <span class="keyword">let</span> inRow = solution[index - column + i] == <span class="keyword">value</span></span><br><span class="line">                <span class="keyword">let</span> inColumn = solution[column + i * <span class="number">9</span>] == <span class="keyword">value</span></span><br><span class="line">                <span class="keyword">let</span> inBlock = solution[block + i % <span class="number">3</span> + (<span class="keyword">int</span>)Floor(i / <span class="number">3f</span>) * <span class="number">9</span>] == <span class="keyword">value</span></span><br><span class="line">                <span class="keyword">where</span> inRow || inColumn || inBlock</span><br><span class="line">                <span class="keyword">select</span> i</span><br><span class="line">            ).Any()</span><br><span class="line">            <span class="keyword">select</span> <span class="string">$"<span class="subst">&#123;solution.Substring(<span class="number">0</span>, index)&#125;</span><span class="subst">&#123;<span class="keyword">value</span>&#125;</span><span class="subst">&#123;solution.Substring(index + <span class="number">1</span>)&#125;</span>"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过后续我们倒是可能会根据源代码进行原理性质的分析的更新。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/数独/">数独</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/07/csharplang-complement-03-trivalue-boolean/" title="C# 语法查漏补缺系列（3）：三值布尔运算表" itemprop="url">C# 语法查漏补缺系列（3）：三值布尔运算表</a>
     
   </h1>
@@ -758,15 +818,15 @@
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>4</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
 			
 		
 			
@@ -778,15 +838,19 @@
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -795,10 +859,6 @@
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -818,11 +878,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>

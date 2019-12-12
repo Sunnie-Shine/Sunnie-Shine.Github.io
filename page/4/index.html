@@ -82,6 +82,91 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/20/csharp-regex-util/" title="C# 的正则表达式用法" itemprop="url">C# 的正则表达式用法</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-20T11:24:21.000Z" itemprop="datePublished"> 发表于 2019-11-20</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="什么是正则表达式？"><a href="#什么是正则表达式？" class="headerlink" title="什么是正则表达式？"></a>什么是正则表达式？</h2><p>正则表达式是一种机制，可以从一个字符串里快速提取指定内容格式的信息，比如在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello, world</span><br></pre></td></tr></table></figure>
+<p>里提取出所有的单词信息，用正则表达式可以写作 <code>[A-Za-z]+</code>，这样就能得到与这个表达式所匹配的 <code>Hello</code> 和 <code>world</code> 两个单词。</p>
+<p>但是，具体怎么使用正则表达式，语法有哪些，并不在本文里给出，可以参考网络上的正则表达式的文章，或是这个 GitHub 上的<a href="https://github.com/ziishaned/learn-regex" target="_blank" rel="noopener">正则表达式学习 repo</a>。不过在使用所有下面的内容之前，你需要先使用命名空间 <code>System.Text.RegularExpression</code>。</p>
+<h2 id="Regex-类"><a href="#Regex-类" class="headerlink" title="Regex 类"></a><code>Regex</code> 类</h2><p>使用 <code>Regex</code> 类，并以正则表达式的字符串写法，可以实例化一个正则表达式的对象。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wordRegex = <span class="keyword">new</span> Regex(<span class="string">@"[A-Za-z]+"</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="Match-和-MatchCollection-类"><a href="#Match-和-MatchCollection-类" class="headerlink" title="Match 和 MatchCollection 类"></a><code>Match</code> 和 <code>MatchCollection</code> 类</h2><p>在通过实例化对象后，使用 <code>Match</code> 和 <code>Matches</code> 方法可以获取所有匹配项，只不过，<code>Match</code> 方法执行的结果是 <code>Match</code> 类类型的数据，它表示只提取所有满足条件的一个，而 <code>Matches</code> 方法执行的结果是一个 <code>MatchCollection</code> 类类型的对象，表示所有满足条件的匹配项目。不过，它们提取出来的内容都是封装好的对象，需要使用 <code>Value</code> 属性获取信息。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">string</span> str = <span class="string">"Hello, world"</span>;</span><br><span class="line"><span class="keyword">var</span> wordRegex = <span class="keyword">new</span> Regex(<span class="string">@"[A-Za-z]+"</span>);</span><br><span class="line"><span class="keyword">var</span> match = wordRegex.Match(str);</span><br><span class="line"><span class="keyword">var</span> matchCollection = wordRegex.Matches(str);</span><br><span class="line">Console.WriteLine(match.Value);</span><br><span class="line">Console.WriteLine(matchCollection[<span class="number">0</span>].Value);</span><br><span class="line">Console.WriteLine(matchCollection[<span class="number">1</span>].Value);</span><br></pre></td></tr></table></figure>
+<p>调用 <code>MatchCollection</code> 对象的方法是，通过中括号索引来获取，或者通过 <code>foreach</code> 循环获取每一个对象，再使用 <code>Value</code> 属性获取匹配的具体内容。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> m <span class="keyword">in</span> matchCollection) <span class="comment">// m is object.</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine((m <span class="keyword">as</span> Match).Value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Or</span></span><br><span class="line"><span class="keyword">foreach</span> (Match m <span class="keyword">in</span> matchCollection)</span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(m.Value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>稍微注意的是，<code>MatchCollection</code> 同时实现了 <code>IEnumerable</code> 和 <code>IEnumerable&lt;Match&gt;</code> 接口，这使得上述两种 <code>foreach</code> 循环均成立。但如果对迭代的每一个对象使用 <code>var</code> 关键字，它将会被当作 <code>object</code>，这是因为在 API 里，隐式实现接口的模式是 <code>IEnumerable</code>，而不是那个泛型接口。</p>
+<h2 id="IsMatch-方法"><a href="#IsMatch-方法" class="headerlink" title="IsMatch 方法"></a><code>IsMatch</code> 方法</h2><p>另外，你可以使用 <code>IsMatch</code> 方法来判断匹配是否成功（即匹配后是否包含有匹配项）。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isSuccess = <span class="keyword">new</span> Regex(<span class="string">@"[A-Za-z]+"</span>).IsMatch(str);</span><br></pre></td></tr></table></figure>
+<p>如果 <code>isSuccess</code> 是 <code>false</code>，则表示不包含。</p>
+<h2 id="构造器的精细化处理"><a href="#构造器的精细化处理" class="headerlink" title="构造器的精细化处理"></a>构造器的精细化处理</h2><p>我们甚至可以通过构造器的参数来设置匹配的更多细节，比如超时等。</p>
+<p>C# 为我们提供了三个不同的构造器：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Regex</span>(<span class="params"><span class="keyword">string</span> pattern</span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Regex</span>(<span class="params"><span class="keyword">string</span> pattern, RegexOptions options</span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Regex</span>(<span class="params"><span class="keyword">string</span> pattern, RegexOptions options, TimeSpan matchTimeout</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p>第一个参数是传入一个正则表达式的字符串格式写法（即上面的 <code>[A-Za-z]+</code>），第二个参数是匹配方式，它是一个枚举值，它包含如下的枚举结果：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> RegexOptions</span><br><span class="line">&#123;</span><br><span class="line">    None = <span class="number">0</span>,</span><br><span class="line">    IgnoreCase = <span class="number">1</span>,</span><br><span class="line">    Multiline = <span class="number">2</span>,</span><br><span class="line">    ExplicitCapture = <span class="number">4</span>,</span><br><span class="line">    Compiled = <span class="number">8</span>,</span><br><span class="line">    Singleline = <span class="number">16</span>,</span><br><span class="line">    IgnorePatternWhitespace = <span class="number">32</span>,</span><br><span class="line">    RightToLeft = <span class="number">64</span>,</span><br><span class="line">    ECMAScript = <span class="number">256</span>,</span><br><span class="line">    CultureInvariant = <span class="number">512</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们不必都讲，默认是传入 <code>RegexOptions.None</code> 的。到时候查文档就可以了。</p>
+<p>第三个参数是传入一个超时的时长 <code>TimeSpan</code> 结构对象。当匹配过程超出这个时间的时候将会直接抛出 <code>RegexMatchTimeoutException</code> 异常（这个是确定的），表示匹配超时。所以如果你在传入第三个参数时，就一定要想着去捕获可能抛出的这个异常。</p>
+<blockquote>
+<p>如果在 Java 里，这个机制就更加类似于 Checked Exception 了。</p>
+</blockquote>
+<h2 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h2><p>下面来一个实例。假设我们在设计一个分数类 <code>Fraction</code> 的时候需要解析字符串，并生成指定的分数对象。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Fraction <span class="title">Parse</span>(<span class="params"><span class="keyword">string</span> str</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">string</span> digitPattern = <span class="string">@"[+-]?\d+"</span>;</span><br><span class="line">    <span class="keyword">var</span> match = <span class="keyword">new</span> Regex(<span class="string">$@"<span class="subst">&#123;digitPattern&#125;</span>/\s*<span class="subst">&#123;digitPattern&#125;</span>"</span>).Match(str);</span><br><span class="line">    <span class="keyword">if</span> (match.Success)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> mc = <span class="keyword">new</span> Regex(digitPattern).Matches(str);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Fraction(<span class="keyword">int</span>.Parse(mc[<span class="number">0</span>].Value), <span class="keyword">int</span>.Parse(mc[<span class="number">1</span>].Value));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Parse failed.</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">"Cannot parse value to target type."</span>, <span class="keyword">nameof</span>(str));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">SuppressMessage(<span class="meta-string">"Design"</span>, <span class="meta-string">"CA1031:Do not catch general exception types"</span>, Justification = <span class="meta-string">"&lt;Pending&gt;"</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">TryParse</span>(<span class="params"><span class="keyword">string</span> str, [NotNullWhen(<span class="literal">true</span></span>)] <span class="keyword">out</span> Fraction? result)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        result = Parse(str);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span></span><br><span class="line">    &#123;</span><br><span class="line">        result = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试结果如下：</p>
+<p><img src="fraction-test.png" alt=""></p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/正则表达式/">正则表达式</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/19/csharp-complier-generating-auto-property/" title="C# 里自动属性特性的编译器生成" itemprop="url">C# 里自动属性特性的编译器生成</a>
     
   </h1>
@@ -846,87 +931,6 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/17/clang-04-switch-statement/" title="C 语言语法系列（4）：switch 语句" itemprop="url">C 语言语法系列（4）：switch 语句</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-17T07:38:08.000Z" itemprop="datePublished"> 发表于 2019-11-17</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="if-的弊端"><a href="#if-的弊端" class="headerlink" title="if 的弊端"></a><code>if</code> 的弊端</h2><p>很多时候，<code>if</code> 给我们的使用带来了方便的地方，但是依旧有点丑的是，我们经常会用到同一个变量分情况讨论的时候，但 <code>if</code> 非要写成 <code>if</code> 串联的模式，这样就很丑。于是，我们引入了新的语法格式：<code>switch</code> 语句。</p>
-<h2 id="switch-语句的写法"><a href="#switch-语句的写法" class="headerlink" title="switch 语句的写法"></a><code>switch</code> 语句的写法</h2><p>考虑如下 <code>if</code> 串联写法。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a == <span class="number">2</span>)</span><br><span class="line">    c = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">3</span>)</span><br><span class="line">    c = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">4</span>)</span><br><span class="line">    c = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">5</span>)</span><br><span class="line">    c = <span class="number">8</span>;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    c = <span class="number">16</span>;</span><br></pre></td></tr></table></figure>
-<p>当我们需要判断相同的一个变量的不同数值时，我们可以考虑使用 <code>switch</code> 语句来书写，它在转换后是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> (a)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        c = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">        c = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">        c = <span class="number">4</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">        c = <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        c = <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">break</span>; <span class="comment">// This one can not be written.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从代码里看到，它可能比原本的写法更臃肿了，但代码更清晰了。按照 <code>a</code> 分情况讨论。当 <code>a</code> 值为 2 的时候，执行 <code>c = 1</code> 的赋值操作；其它的同理。<code>default</code> 用来控制其它所有情况，类似于 <code>if</code> 里的 <code>else</code> 条件后没有其它判别情况时的执行操作。</p>
-<p>还需要注意的是，每一个 <code>case</code> 语句的最后都有一个冒号，而且在每一个部分结束的时候，都有一个 <code>break</code> 语句作为结束（写法必须是 <code>break;</code>，即末尾带分号）。这是两个需要注意的地方。</p>
-<p>另外，标签之间必须书写 <code>break</code> 是有道理的。如果不写它的话，语句就会贯穿到下一个部分去执行，所以不是非常好。但有些时候，我们也可以考虑使用这种特性来做事情。比如，我们获取 12 个月每一个月多少天的时候，可以这么写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> (month)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">7</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">10</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">12</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"31\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"28\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">6</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">9</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">11</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"30\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Month value is not valid.\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>; <span class="comment">// This one can not be written.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们暂且不考虑闰年还是平年，2 月分情况讨论的结果。这样的写法可以看到，像是 1、3、5、7、8、10、12 月，结果都是一样的，所以我们完全不必在中间给它加上 <code>break</code>。</p>
-<p>当然，<code>default</code> 不一定要放在最后面。有些时候我们可能期望默认执行的情况和其中某个数值的执行情况是一样的，这个时候我们可以把 <code>default</code> 调整到前面去。</p>
-<p>比如，我们需要在记录成绩等级（A 到 F）的时候，默认把其它情况和不及格显示成一样的结果（F），我们就可以这么做：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> score = <span class="number">67</span>;</span><br><span class="line"><span class="keyword">switch</span> (score / <span class="number">10</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"F\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">6</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"E\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">7</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"D\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"C\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">9</span>:</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"B\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">10</span>: <span class="comment">// Only for 100.</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"A\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意，<code>switch</code> 的小括号里的东西可以是任意一个整数数值的表达式，比如这个例子里的值就是 <code>score / 10</code>，算出来等于 6。</p>
-<blockquote>
-<p>注意，之前说过，67 和 10 都是整数，所以计算的除法一定得到的结果是整数，故得到的 6.7 会被截断为 6，而且截断不是四舍五入。</p>
-</blockquote>
-<h2 id="贯穿标签的用法"><a href="#贯穿标签的用法" class="headerlink" title="贯穿标签的用法"></a>贯穿标签的用法</h2><p>在前文里，所有 <code>case</code> 语句 <code>default</code> 都被称为标签。当有些时候，我们迫不得已需要贯穿标签，所以出现了前文的合并同类项的类似格式。但有些时候，我们除了这种贯穿模式之外，还有一种情况可以这么用，即不写 <code>break</code> 语句。</p>
-<p>给定 <code>month</code> 数值表示当前月份，求从 1 月份到这个月一共多少天（暂不考虑日期是多少）。那么代码可以这么写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> (month)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">12</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">11</span>:</span><br><span class="line">        result += <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">10</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">9</span>:</span><br><span class="line">        result += <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">7</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">6</span>:</span><br><span class="line">        result += <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">        result += <span class="number">30</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        result += <span class="number">28</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        result += <span class="number">31</span>;</span><br><span class="line">        <span class="keyword">break</span>; <span class="comment">// Note this break sentence.</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        result = <span class="number">0</span>; <span class="comment">// We use 0 to let user know his input value is invalid.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>你可以思考一下，为什么这种模式可以不写 <code>break</code> 语句。</p>
-<h2 id="缺乏不等模式判断"><a href="#缺乏不等模式判断" class="headerlink" title="缺乏不等模式判断"></a>缺乏不等模式判断</h2><p><code>switch</code> 有一个缺点在于，它没有不等模式的判别，比如我们希望某个数字在 0 到 60 的时候是差， 61 到 80 的时候是中等，81 到 90 的时候是良好，91 到 100 是优秀。这个时候，我们只能使用 <code>if</code> 语句的串联，<code>switch</code> 很抱歉的是，在这一点并没有提供对应的语法判别。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (score &lt;= <span class="number">60</span>)</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Bad\n"</span>);</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (score &lt;= <span class="number">80</span>)</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Not bad\n"</span>);</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (score &lt;= <span class="number">90</span>)</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Awesome!\n"</span>);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Excellent!!\n"</span>);</span><br></pre></td></tr></table></figure>
-<p>上述即可判断。你需要思考一点，为什么 <code>if</code> 判别里写的是 <code>score &lt;= 某数值</code> 呢？比如 61 到 80，不应该写成 <code>score &gt;= 61 &amp;&amp; score &lt;= 80</code> 才对吗？</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/3/">上一页 ↑</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">下一页 ↓</a>
@@ -966,15 +970,15 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 			
 		
 			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>4</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>3</sup></a></li>
 			
 		
 			
@@ -986,15 +990,19 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1003,10 +1011,6 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1026,11 +1030,11 @@ S_n = \frac{n(n - 1)}2</script><p>显然，这种模式完全可以解决这个�
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>
