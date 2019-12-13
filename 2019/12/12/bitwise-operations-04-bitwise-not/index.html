@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="向向的博客">
 <meta property="og:description" content="回顾位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。  \begin{matrix}             &amp; Binary   &amp; Decimal\\    \text{~} &amp; 10101010 &amp; 170\\             &amp; \text{_________}\\             &amp; 01010101 &amp; 85\end{matrix}看起">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-12T14:59:41.094Z">
+<meta property="og:updated_time" content="2019-12-13T01:42:50.517Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -99,7 +99,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原码、反码和补码"><span class="toc-number">2.</span> <span class="toc-text">原码、反码和补码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原码的出现"><span class="toc-number">2.1.</span> <span class="toc-text">原码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反码的出现"><span class="toc-number">2.2.</span> <span class="toc-text">反码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题解决：补码"><span class="toc-number">2.3.</span> <span class="toc-text">问题解决：补码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位取反运算的用法"><span class="toc-number">3.</span> <span class="toc-text">位取反运算的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取反得到类型最大值和它的差"><span class="toc-number">3.1.</span> <span class="toc-text">直接取反得到类型最大值和它的差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取相反数"><span class="toc-number">3.2.</span> <span class="toc-text">取相反数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取消置位"><span class="toc-number">3.3.</span> <span class="toc-text">取消置位</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原码、反码和补码"><span class="toc-number">2.</span> <span class="toc-text">原码、反码和补码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原码的出现"><span class="toc-number">2.1.</span> <span class="toc-text">原码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反码的出现"><span class="toc-number">2.2.</span> <span class="toc-text">反码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题解决：补码"><span class="toc-number">2.3.</span> <span class="toc-text">问题解决：补码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位取反运算的用法"><span class="toc-number">3.</span> <span class="toc-text">位取反运算的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取反得到和类型最大值和它的差相同的另外一个数"><span class="toc-number">3.1.</span> <span class="toc-text">直接取反得到和类型最大值和它的差相同的另外一个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取相反数"><span class="toc-number">3.2.</span> <span class="toc-text">取相反数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取消置位"><span class="toc-number">3.3.</span> <span class="toc-text">取消置位</span></a></li></ol></li></ol>
 		
 		</div>
 		
@@ -134,7 +134,7 @@
 <p>所以，实际上在电脑里存储的所有整数都用的是补码表示，即正整数的原码等于补码，而负整数的原码的非符号位取反后加 1 的结果。</p>
 </blockquote>
 <h2 id="位取反运算的用法"><a href="#位取反运算的用法" class="headerlink" title="位取反运算的用法"></a>位取反运算的用法</h2><p>下面我们就可以真正开始谈论有关位取反运算的用法了。</p>
-<h3 id="直接取反得到类型最大值和它的差"><a href="#直接取反得到类型最大值和它的差" class="headerlink" title="直接取反得到类型最大值和它的差"></a>直接取反得到类型最大值和它的差</h3><p>这个标题看起来有点绕。假设一个带有符号的整数只有 8 个二进制位表示，那么对这个数直接取反，就等同于把所有位次都取反（包括符号位），比如对 3 取反 ~3：</p>
+<h3 id="直接取反得到和类型最大值和它的差相同的另外一个数"><a href="#直接取反得到和类型最大值和它的差相同的另外一个数" class="headerlink" title="直接取反得到和类型最大值和它的差相同的另外一个数"></a>直接取反得到和类型最大值和它的差相同的另外一个数</h3><p>这个标题看起来有点绕。假设一个带有符号的整数只有 8 个二进制位表示，那么对这个数直接取反，就等同于把所有位次都取反（包括符号位），比如对 3 取反 ~3：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> b = ~a;</span><br></pre></td></tr></table></figure>
 <p>那么这个结果是多少呢？我们来试着算一下：</p>
 <ul>
@@ -149,8 +149,10 @@
 </ul>
 <p>虽然这么做有点绕，不过转回来的数字好像是 -4。所以，<code>b</code> 的结果就是 -4 了，即 ~3 = -4。不过，它们有什么关系呢？实际上口算一下就可以发现，3 距离可以表示的范围最大值的距离（差值）是 $|127 - 3| = 124$，而得到的结果 -4 则是范围最小值 -128 到它的距离（差值）：$|-128 - (-4)| = 124$。它们的结果是一样的。</p>
 <p>所以，位取反运算符得到的一个数字的结果，就是另外一个和范围最值距离相同的那个数。而范围的最小值 -128 和范围最大值 127，从数值上是差 1 的（我指的是只看 128 和 127 这两个数，而不看符号的话）。这也就意味着，如果想查找另一个距离相同的数字的话，必然原本那个数字和结果这两个数从数值上肯定也是相差 1 的。所以……</p>
+<p>当然，前文一直叙述的是正整数位取反的结果，而这个法则对于负数也是奏效的。如果我们对负数进行位取反运算的话，依旧是一样的，你可以试试看。</p>
 <h3 id="取相反数"><a href="#取相反数" class="headerlink" title="取相反数"></a>取相反数</h3><p>既然前文作出了这么多铺垫，那么既然两个数从数值上相差 1，那么干脆我们对结果再加上 1，就是数值上相同的数，而符号相反的数了。所以，如果对一个数字执行 <code>~a + 1</code>，那么这个结果就是对一个数字取相反数。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> b = ~a + <span class="number">1</span>; <span class="comment">// b = -3</span></span><br></pre></td></tr></table></figure>
+<p>这一点也同样针对于负整数。</p>
 <h3 id="取消置位"><a href="#取消置位" class="headerlink" title="取消置位"></a>取消置位</h3><p>前文我们介绍了如何使用位或运算符 <code>|</code> 来合并多个二进制位。我们如果需要取消一个二进制位，我们可以使用位取反运算和位与运算一起使用的方式：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = ACK | URG;</span><br><span class="line">f = f &amp; ~ACK;</span><br></pre></td></tr></table></figure>
 <p>执行 <code>f = f &amp; ~ACK</code> 或直接写作复合赋值运算符模式 <code>f &amp;= ~ACK</code> 就可以去掉 <code>ACK</code> 置为 1 的二进制位。</p>
@@ -189,6 +191,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2019/12/13/bitwise-operations-05-bitwise-exclusive-or/" title="位运算（5）：位异或运算">
+  <strong>上一篇：</strong><br/>
+  <span>
+  位运算（5）：位异或运算</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2019/12/11/bitwise-operations-03-bitwise-or/"  title="位运算（3）：位或运算">
@@ -317,7 +327,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原码、反码和补码"><span class="toc-number">2.</span> <span class="toc-text">原码、反码和补码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原码的出现"><span class="toc-number">2.1.</span> <span class="toc-text">原码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反码的出现"><span class="toc-number">2.2.</span> <span class="toc-text">反码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题解决：补码"><span class="toc-number">2.3.</span> <span class="toc-text">问题解决：补码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位取反运算的用法"><span class="toc-number">3.</span> <span class="toc-text">位取反运算的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取反得到类型最大值和它的差"><span class="toc-number">3.1.</span> <span class="toc-text">直接取反得到类型最大值和它的差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取相反数"><span class="toc-number">3.2.</span> <span class="toc-text">取相反数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取消置位"><span class="toc-number">3.3.</span> <span class="toc-text">取消置位</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#回顾"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原码、反码和补码"><span class="toc-number">2.</span> <span class="toc-text">原码、反码和补码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原码的出现"><span class="toc-number">2.1.</span> <span class="toc-text">原码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反码的出现"><span class="toc-number">2.2.</span> <span class="toc-text">反码的出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题解决：补码"><span class="toc-number">2.3.</span> <span class="toc-text">问题解决：补码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位取反运算的用法"><span class="toc-number">3.</span> <span class="toc-text">位取反运算的用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取反得到和类型最大值和它的差相同的另外一个数"><span class="toc-number">3.1.</span> <span class="toc-text">直接取反得到和类型最大值和它的差相同的另外一个数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取相反数"><span class="toc-number">3.2.</span> <span class="toc-text">取相反数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#取消置位"><span class="toc-number">3.3.</span> <span class="toc-text">取消置位</span></a></li></ol></li></ol>
  
   </div>
 
@@ -352,7 +362,7 @@
 			
 		
 			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>4</sup></a></li>
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>5</sup></a></li>
 			
 		
 			
@@ -372,11 +382,11 @@
 			
 		
 			
-				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
@@ -408,15 +418,15 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

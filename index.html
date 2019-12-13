@@ -82,6 +82,135 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/12/13/bitwise-operations-05-bitwise-exclusive-or/" title="位运算（5）：位异或运算" itemprop="url">位运算（5）：位异或运算</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-13T01:37:38.000Z" itemprop="datePublished"> 发表于 2019-12-13</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h2><p>异或运算比较生疏，我们可以认为是“要么……要么……”。当且仅当两者里取了一个 1 的时候才是 1，都是 0 或都是 1 则都会得到 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+             & 10101010 & 170\\
+    \text{^} & 00110111 & 55\\
+             & \text{_________}\\
+             & 10011101 & 157
+\end{matrix}</script><h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>位异或运算是比较生疏的一种运算模式，它非常不熟悉所以导致它的一些用法也不太清楚。我们先从基本原理说起。</p>
+<h3 id="等价转换和基本结论"><a href="#等价转换和基本结论" class="headerlink" title="等价转换和基本结论"></a>等价转换和基本结论</h3><p>它可以被等价转换为位与运算、位或运算、位取反运算三者的合并写法：<code>a ^ b = ~a &amp; b | a &amp; ~b</code>，根据上面的说法，我们只能要求两者选其一，所以要么 <code>a</code> 不选，并且 <code>b</code> 选；要么 <code>a</code> 选了，<code>b</code> 就不要选了。所以这样的定义直接套用就可以转换为上面的写法。</p>
+<p>但显然，这种写法不够简单和简洁，不过没事，好在基本上我们碰不到通过定义确定是否应该使用 <code>a ^ b</code> 的情况。</p>
+<p><strong>结论 1：位异或运算相当于不进位的加法。</strong></p>
+<p>我们先来看下异或运算的转换表：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>y</th>
+<th>x ^ y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>当为二进制的情况下，只有当 <code>x</code> 和 <code>y</code> 同为 1 的时候需要进位变为 0b10，不过在结果里，我们没有体现出来，而好像是丢弃了最高位的 1 一般，只留下了 0。所以，我称这种现象叫不进位的加法。这一点看起来没有什么用，不过在有些时候，它是非常管用的。</p>
+<p><strong>结论 2：对于一个比特而言，将它和 1 进行位异或运算，相当于取反。</strong></p>
+<p><strong>结论 3：对于一个比特而言，将它和 0 进行位异或运算，相当于保持不变。</strong></p>
+<p>接下来这两个结论应当是一起出现的，因为它们都针对于同一个比特进行操作。如果把一个比特位和 1 进行位异或运算，结果是取反。比如 <code>1 ^ 1 = 0</code>，原本是 1，和 1 进行位异或运算后变为 0；同理，如果是 0，则 <code>0 ^ 1 = 1</code>，变回 1。</p>
+<p>如果位异或运算下，一个比特位跟 0 进行计算的话，结果是它自己，即 <code>x ^ 0 = x</code>。这一点很好说明，因为不进位的加法。由于它在和 0 进行位异或运算，所以肯定是不可能进位的，所以我们不考虑进位的关系，剩下的部分自然就是这个比特位了。而这个比特位不论是多少，和 0“相加”，结果必然是它自己。</p>
+<p>当然，不论一个比特还是多个比特，它和 0 进行位异或运算结果都不会变：</p>
+<p><strong>结论 4：<code>x ^ 0 = x</code>（<code>x</code> 是任意整数）。</strong></p>
+<p>另外，思考一个问题。如果两个相同的数字进行位异或运算，结果是多少呢？比如 13，那么 13 ^ 13 等于多少呢？答案是 0，我们可以很简单地得到这一个结论。由于两个数是相同的元素，所以它们每一个二进制对应位次上的数都是一样的，而在异或运算里，两个相同的数字的位异或运算必然是 0，这也就意味着所有位次的运算结果都变为 0，所以整体的结果就是 0。</p>
+<p><strong>结论 5：<code>x ^ x = 0</code>（<code>x</code> 是任意整数）。</strong></p>
+<h3 id="找到序列里唯一出现一次的数字"><a href="#找到序列里唯一出现一次的数字" class="headerlink" title="找到序列里唯一出现一次的数字"></a>找到序列里唯一出现一次的数字</h3><p>如果一个序列里给了一系列元素，其中大多数都有两个，而只有一个数，它只出现了一次。我们需要找出它。这个时候位异或运算就显得很有用了。由于自己跟自己异或运算的结果为 0 的关系，我们直接对每一个元素挨个进行异或运算，既然碰到两个相同的数字，那么自然位异或的结果就为 0；而多出来的数字我们不必关心，因为任何一个数和 0 异或运算的结果也就是本身，所以它也不会发生变化。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = arr[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; length; i++)</span><br><span class="line">        result = result ^ arr[i];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result; <span class="comment">// The result.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，第 5 行代码也可以写成复合赋值运算符的形式 <code>result ^= arr[i]</code>。</p>
+<h3 id="找到-1-到-n-里唯一一个出现两次的数字"><a href="#找到-1-到-n-里唯一一个出现两次的数字" class="headerlink" title="找到 1 到 n 里唯一一个出现两次的数字"></a>找到 1 到 n 里唯一一个出现两次的数字</h3><p>这个变体问题则和上一个问题不太一样。但解法相同，依然考虑位异或运算。如果一个序列只有 1 到 n 的数字，其中某一个数有两个，而其它的都只有一个。现在要求找出这个两个的元素。我们的做法很简单。要想找到这个数，我们可以利用下标索引的方式对每一个数挨个异或运算。我们把 0 下标调整为 1，1 调整为 2，2 调整为 3（都调大一个单位），这样如果元素都是一次的话，那么这个下标结果和我们序列里的元素异或运算的结果就会为 0，保证元素只有一个。而多出来的这个数，算上下标调整后的数值，就相当于会出现三次，而三次的其中两次进行位异或运算的结果必然就消掉了（为 0），所以剩下一个数自然就是结果了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = arr[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; length; i++)</span><br><span class="line">        result = result ^ (i + <span class="number">1</span>) ^ arr[i];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，也可以简写为 <code>result ^= arr[i] ^ i + 1</code>。异或运算不考虑运算顺序，不像减法和除法。</p>
+<h3 id="不借助临时变量交换变量"><a href="#不借助临时变量交换变量" class="headerlink" title="不借助临时变量交换变量"></a>不借助临时变量交换变量</h3><p>如果想要交换两个变量的数值，我们平时的做法是使用临时变量来存储元素，来交换。现在我们使用异或运算的方式就可以在运算过程里产生临时存储数值形成另外一个维度的临时变量，达到交换效果。它的写法格式是相当简单的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *a ^= *b;</span><br><span class="line">    *b ^= *a;</span><br><span class="line">    *a ^= *b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>甚至可以写成一句话：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *a ^= *b ^= *a ^= *b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们现在来思考一下，这个代码奏效的原因。</p>
+<p>我们第一步是 <code>a = a ^ b</code>，即把两个数直接异或运算，得到的结果放 a 里，此时 <code>a</code> 的结果是 a ^ b，而 <code>b</code> 依旧是 b 自己。</p>
+<p>第二步是 <code>b = b ^ a</code>，而此时 <code>a</code> 已经变为了 a ^ b，所以通过计算后，由于两个 b 的原因，异或运算为 0，所以 <code>b</code> 此时的数值就是 a 了，而 <code>a</code> 依旧是 a ^ b。</p>
+<p>第三步是 <code>a = a ^ b</code>，由于 <code>a</code> 是 a ^ b 的关系，而 <code>b</code> 此时是 a 的关系，所以计算结果会把里面的 a去掉，所以 <code>a</code> 只有 b 的数值，故达到了交换效果。</p>
+<p>不过需要注意的是，这种交换方式通过计算得到，虽然快，但有可能会产生溢出，所以一般不提倡这种交换方式，最好的方式依然是三变量交换法。</p>
+<p>最后，给出一个 16 以内的位异或运算的对照表，你可以从中发现不一样的世界。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> 1^ 1= 0   1^ 2= 3   1^ 3= 2   1^ 4= 5   1^ 5= 4   1^ 6= 7   1^ 7= 6   1^ 8= 9   1^ 9= 8   1^10=11   1^11=10   1^12=13   1^13=12   1^14=15   1^15=14   1^16=17</span><br><span class="line"> 2^ 1= 3   2^ 2= 0   2^ 3= 1   2^ 4= 6   2^ 5= 7   2^ 6= 4   2^ 7= 5   2^ 8=10   2^ 9=11   2^10= 8   2^11= 9   2^12=14   2^13=15   2^14=12   2^15=13   2^16=18</span><br><span class="line"> 3^ 1= 2   3^ 2= 1   3^ 3= 0   3^ 4= 7   3^ 5= 6   3^ 6= 5   3^ 7= 4   3^ 8=11   3^ 9=10   3^10= 9   3^11= 8   3^12=15   3^13=14   3^14=13   3^15=12   3^16=19</span><br><span class="line"> 4^ 1= 5   4^ 2= 6   4^ 3= 7   4^ 4= 0   4^ 5= 1   4^ 6= 2   4^ 7= 3   4^ 8=12   4^ 9=13   4^10=14   4^11=15   4^12= 8   4^13= 9   4^14=10   4^15=11   4^16=20</span><br><span class="line"> 5^ 1= 4   5^ 2= 7   5^ 3= 6   5^ 4= 1   5^ 5= 0   5^ 6= 3   5^ 7= 2   5^ 8=13   5^ 9=12   5^10=15   5^11=14   5^12= 9   5^13= 8   5^14=11   5^15=10   5^16=21</span><br><span class="line"> 6^ 1= 7   6^ 2= 4   6^ 3= 5   6^ 4= 2   6^ 5= 3   6^ 6= 0   6^ 7= 1   6^ 8=14   6^ 9=15   6^10=12   6^11=13   6^12=10   6^13=11   6^14= 8   6^15= 9   6^16=22</span><br><span class="line"> 7^ 1= 6   7^ 2= 5   7^ 3= 4   7^ 4= 3   7^ 5= 2   7^ 6= 1   7^ 7= 0   7^ 8=15   7^ 9=14   7^10=13   7^11=12   7^12=11   7^13=10   7^14= 9   7^15= 8   7^16=23</span><br><span class="line"> 8^ 1= 9   8^ 2=10   8^ 3=11   8^ 4=12   8^ 5=13   8^ 6=14   8^ 7=15   8^ 8= 0   8^ 9= 1   8^10= 2   8^11= 3   8^12= 4   8^13= 5   8^14= 6   8^15= 7   8^16=24</span><br><span class="line"> 9^ 1= 8   9^ 2=11   9^ 3=10   9^ 4=13   9^ 5=12   9^ 6=15   9^ 7=14   9^ 8= 1   9^ 9= 0   9^10= 3   9^11= 2   9^12= 5   9^13= 4   9^14= 7   9^15= 6   9^16=25</span><br><span class="line">10^ 1=11  10^ 2= 8  10^ 3= 9  10^ 4=14  10^ 5=15  10^ 6=12  10^ 7=13  10^ 8= 2  10^ 9= 3  10^10= 0  10^11= 1  10^12= 6  10^13= 7  10^14= 4  10^15= 5  10^16=26</span><br><span class="line">11^ 1=10  11^ 2= 9  11^ 3= 8  11^ 4=15  11^ 5=14  11^ 6=13  11^ 7=12  11^ 8= 3  11^ 9= 2  11^10= 1  11^11= 0  11^12= 7  11^13= 6  11^14= 5  11^15= 4  11^16=27</span><br><span class="line">12^ 1=13  12^ 2=14  12^ 3=15  12^ 4= 8  12^ 5= 9  12^ 6=10  12^ 7=11  12^ 8= 4  12^ 9= 5  12^10= 6  12^11= 7  12^12= 0  12^13= 1  12^14= 2  12^15= 3  12^16=28</span><br><span class="line">13^ 1=12  13^ 2=15  13^ 3=14  13^ 4= 9  13^ 5= 8  13^ 6=11  13^ 7=10  13^ 8= 5  13^ 9= 4  13^10= 7  13^11= 6  13^12= 1  13^13= 0  13^14= 3  13^15= 2  13^16=29</span><br><span class="line">14^ 1=15  14^ 2=12  14^ 3=13  14^ 4=10  14^ 5=11  14^ 6= 8  14^ 7= 9  14^ 8= 6  14^ 9= 7  14^10= 4  14^11= 5  14^12= 2  14^13= 3  14^14= 0  14^15= 1  14^16=30</span><br><span class="line">15^ 1=14  15^ 2=13  15^ 3=12  15^ 4=11  15^ 5=10  15^ 6= 9  15^ 7= 8  15^ 8= 7  15^ 9= 6  15^10= 5  15^11= 4  15^12= 3  15^13= 2  15^14= 1  15^15= 0  15^16=31</span><br><span class="line">16^ 1=17  16^ 2=18  16^ 3=19  16^ 4=20  16^ 5=21  16^ 6=22  16^ 7=23  16^ 8=24  16^ 9=25  16^10=26  16^11=27  16^12=28  16^13=29  16^14=30  16^15=31  16^16= 0</span><br></pre></td></tr></table></figure>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/位运算/">位运算</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/12/12/bitwise-operations-04-bitwise-not/" title="位运算（4)：位取反运算" itemprop="url">位运算（4)：位取反运算</a>
     
   </h1>
@@ -127,7 +256,7 @@
 <p>所以，实际上在电脑里存储的所有整数都用的是补码表示，即正整数的原码等于补码，而负整数的原码的非符号位取反后加 1 的结果。</p>
 </blockquote>
 <h2 id="位取反运算的用法"><a href="#位取反运算的用法" class="headerlink" title="位取反运算的用法"></a>位取反运算的用法</h2><p>下面我们就可以真正开始谈论有关位取反运算的用法了。</p>
-<h3 id="直接取反得到类型最大值和它的差"><a href="#直接取反得到类型最大值和它的差" class="headerlink" title="直接取反得到类型最大值和它的差"></a>直接取反得到类型最大值和它的差</h3><p>这个标题看起来有点绕。假设一个带有符号的整数只有 8 个二进制位表示，那么对这个数直接取反，就等同于把所有位次都取反（包括符号位），比如对 3 取反 ~3：</p>
+<h3 id="直接取反得到和类型最大值和它的差相同的另外一个数"><a href="#直接取反得到和类型最大值和它的差相同的另外一个数" class="headerlink" title="直接取反得到和类型最大值和它的差相同的另外一个数"></a>直接取反得到和类型最大值和它的差相同的另外一个数</h3><p>这个标题看起来有点绕。假设一个带有符号的整数只有 8 个二进制位表示，那么对这个数直接取反，就等同于把所有位次都取反（包括符号位），比如对 3 取反 ~3：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> b = ~a;</span><br></pre></td></tr></table></figure>
 <p>那么这个结果是多少呢？我们来试着算一下：</p>
 <ul>
@@ -142,8 +271,10 @@
 </ul>
 <p>虽然这么做有点绕，不过转回来的数字好像是 -4。所以，<code>b</code> 的结果就是 -4 了，即 ~3 = -4。不过，它们有什么关系呢？实际上口算一下就可以发现，3 距离可以表示的范围最大值的距离（差值）是 $|127 - 3| = 124$，而得到的结果 -4 则是范围最小值 -128 到它的距离（差值）：$|-128 - (-4)| = 124$。它们的结果是一样的。</p>
 <p>所以，位取反运算符得到的一个数字的结果，就是另外一个和范围最值距离相同的那个数。而范围的最小值 -128 和范围最大值 127，从数值上是差 1 的（我指的是只看 128 和 127 这两个数，而不看符号的话）。这也就意味着，如果想查找另一个距离相同的数字的话，必然原本那个数字和结果这两个数从数值上肯定也是相差 1 的。所以……</p>
+<p>当然，前文一直叙述的是正整数位取反的结果，而这个法则对于负数也是奏效的。如果我们对负数进行位取反运算的话，依旧是一样的，你可以试试看。</p>
 <h3 id="取相反数"><a href="#取相反数" class="headerlink" title="取相反数"></a>取相反数</h3><p>既然前文作出了这么多铺垫，那么既然两个数从数值上相差 1，那么干脆我们对结果再加上 1，就是数值上相同的数，而符号相反的数了。所以，如果对一个数字执行 <code>~a + 1</code>，那么这个结果就是对一个数字取相反数。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> b = ~a + <span class="number">1</span>; <span class="comment">// b = -3</span></span><br></pre></td></tr></table></figure>
+<p>这一点也同样针对于负整数。</p>
 <h3 id="取消置位"><a href="#取消置位" class="headerlink" title="取消置位"></a>取消置位</h3><p>前文我们介绍了如何使用位或运算符 <code>|</code> 来合并多个二进制位。我们如果需要取消一个二进制位，我们可以使用位取反运算和位与运算一起使用的方式：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = ACK | URG;</span><br><span class="line">f = f &amp; ~ACK;</span><br></pre></td></tr></table></figure>
 <p>执行 <code>f = f &amp; ~ACK</code> 或直接写作复合赋值运算符模式 <code>f &amp;= ~ACK</code> 就可以去掉 <code>ACK</code> 置为 1 的二进制位。</p>
@@ -869,97 +1000,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/26/clang-22-typedef/" title="C 语言语法系列（22）：typedef 的艺术" itemprop="url">C 语言语法系列（22）：typedef 的艺术</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-26T02:58:21.000Z" itemprop="datePublished"> 发表于 2019-11-26</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前文我们讲完了所有三种自定义类型，也说明了它们的基本使用方式和模式，今天我们来看点不一样的。我们把这三种类型通过定义类型关键字 <code>typedef</code> 来改变它们的定义写法，甚至也可以用它把前文学到的所有类型都改个名字。</p>
-<h2 id="定义基本类型"><a href="#定义基本类型" class="headerlink" title="定义基本类型"></a>定义基本类型</h2><p>我们可以使用 <code>typedef</code> 关键字，把一个基本类型换一个名字。这样的话，所有程序代码里将都可以使用这个替换的名称（当然也可以用原名）。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Int32;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line">Int32 b = <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
-<p>通过 <code>typedef int Int32</code> 这样的定义后，后面就可以使用 <code>Int32</code> 来替换 <code>int</code> 的定义方式了。</p>
-<p>这种用法实际上也出现在很多场合，例如在 C 语言的文件里，经常将一个无符号的整数 <code>unsigned int</code> 定义为长度类型 <code>size_t</code>，这种定义方式导致了我们一眼就看得出这是表示长度的参数，我们就不会传入一个负数数值，也不会传入一个小数。</p>
-<h2 id="定义指针变量类型"><a href="#定义指针变量类型" class="headerlink" title="定义指针变量类型"></a>定义指针变量类型</h2><p>我们也可以拿这个定义关键字把指针类型改变类型名称。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> *IntPtr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *p = &amp;a;</span><br><span class="line">IntPtr q = &amp;a;</span><br></pre></td></tr></table></figure>
-<p>这样的定义方式可以使得把 <code>int *</code> 改为 <code>IntPtr</code>，后续就可以直接用这种定义符号来为指针类型作出定义了。不过需要注意的是，定义为指针类型后，后面的使用和没有定义的方式完全是一样的，只有定义语句的类型名称这里可以看到不同的地方。</p>
-<h2 id="定义数组变量类型"><a href="#定义数组变量类型" class="headerlink" title="定义数组变量类型"></a>定义数组变量类型</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> IntArr[<span class="number">100</span>];</span><br><span class="line"></span><br><span class="line">IntArr arr;</span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">    arr[i] = i + <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<p>我们可以使用 <code>typedef</code> 为数组定义新的名称。写法和数组变量的声明差不多，只是这一次把数组变量改为了数组类型，写在对应位置上。</p>
-<p>定义好后，数组类型就可以直接用了，把 <code>IntArr</code> 这种定义好的类型放在类型名称的位置上，类似于 <code>int i</code> 这样的定义默认，先类型后名称。然后后面的使用就和数组使用方式完全一样。</p>
-<p>不过需要你注意的是，数组变量类型需要你为其赋准确的数组大小的数值。和前文一样，你不能定义 VLA 类型在这个 <code>typedef</code> 语句上。</p>
-<h2 id="定义数组指针类型"><a href="#定义数组指针类型" class="headerlink" title="定义数组指针类型"></a>定义数组指针类型</h2><p>我们可以将复杂的类型改为很简单的类型，这也是 <code>typedef</code> 的一大功能。</p>
-<p>试想一下，数组指针的写法是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[<span class="number">20</span>];</span><br><span class="line"><span class="keyword">int</span> (*ArrPtr)[<span class="number">20</span>] = &amp;arr;</span><br></pre></td></tr></table></figure>
-<p>这表示一个指向长度为 20 的一维数组的指针。这种写法很多时候都是很不好看和不好理解的，所以我们尝试将其定义为简单类型：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef int (*ArrPtr)[20];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> arr[<span class="number">20</span>];</span><br><span class="line">ArrPtr ptr = &amp;arr;</span><br></pre></td></tr></table></figure>
-<p>这样就可以了使用 <code>ptr</code> 变量来指向 <code>arr</code> 数组了。而且，它的使用方式和数组指针一样。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++)</span><br><span class="line">    (*ptr)[i] = i + <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<p>先由 <code>*ptr</code> 来获取指向的数组信息，然后再在后面添加索引器 <code>[]</code> 来获取指定位置。当然，你也可以写成指针写法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++)</span><br><span class="line">    *((*ptr) + i) = i + <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="定义函数指针类型"><a href="#定义函数指针类型" class="headerlink" title="定义函数指针类型"></a>定义函数指针类型</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(*FuncPtr)</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmp</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FuncPtr ptr = &amp;cmp;</span><br><span class="line"><span class="keyword">int</span> result = (*cmp)(<span class="number">1</span>, <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
-<p>写法完全类似于前文的方式，我们定义一个函数指针，然后让变量 <code>ptr</code> 直接指向函数即可。</p>
-<h2 id="函数传参也可以用哦！"><a href="#函数传参也可以用哦！" class="headerlink" title="函数传参也可以用哦！"></a>函数传参也可以用哦！</h2><p>而且，这样的使用可以到任意位置，包括前面的数组指针、数组变量、指针变量，也都可以用到函数传参的地方上来。例如：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(*FuncPtr)</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> IntArr[<span class="number">100</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bubbleSort</span><span class="params">(IntArr arr, <span class="keyword">int</span> length, FuncPtr cmp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, j, temp;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length - <span class="number">1</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; length - <span class="number">1</span> - i; j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ((*cmp)(arr[j], arr[j + <span class="number">1</span>])) <span class="comment">// Note here.</span></span><br><span class="line">            &#123;</span><br><span class="line">                temp = arr[j];</span><br><span class="line">                arr[j] = arr[j + <span class="number">1</span>];</span><br><span class="line">                arr[j + <span class="number">1</span>] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这是前文用到的冒泡排序法，这个算法把参数类型经过 <code>typedef</code> 定义后就可以直接这么书写了。当然，数组长度是可以不规定的，但 <code>typedef</code> 需要有这一个定义，所以我们不得不书写这个数字（当然，这个数字在这里显然是没啥用处的）。</p>
-<h2 id="结构体、联合体和枚举类型"><a href="#结构体、联合体和枚举类型" class="headerlink" title="结构体、联合体和枚举类型"></a>结构体、联合体和枚举类型</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> week</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125; Week; <span class="comment">// Here Week can replace `enum week` as the type name.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125; Student; <span class="comment">// Here.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> tag</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125; Tag; <span class="comment">// Here.</span></span><br></pre></td></tr></table></figure>
-<p>经过这样的定义方式后，<code>Week</code>、<code>Student</code> 和 <code>Tag</code> 三个单词就可以作为 <code>enum week</code>、<code>struct student</code> 和 <code>union tag</code> 的替换类型名称了。你就不用再去书写前面的这个关键字 <code>enum</code>、<code>struct</code> 和 <code>union</code> 了。</p>
-<p>不过，这三个定义是把类型名称放后面的。</p>
-<h2 id="其它复杂类型的定义"><a href="#其它复杂类型的定义" class="headerlink" title="其它复杂类型的定义"></a>其它复杂类型的定义</h2><p>还有一些复杂的类型，例如函数指针的数组，这些类型我们可以采用两次定义的方式来简化：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(*FuncPtr)</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="keyword">typedef</span> FuncPtr FuncPtrArr[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
-<p>第一句定义了一个函数指针类型 <code>FuncPtr</code> 类型，第二句则直接类似于前面定义数组的方式，把数组元素类型放在开头，数组声明长度的中括号放在末尾，然后中间写定义的类型，这样就可以分步定义了。逻辑也不至于很复杂。你也可以一步搞定：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(*FuncPtrArr[<span class="number">20</span>])</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>这样也是可以的。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -999,7 +1039,7 @@
 			
 		
 			
-				<li><a href="/tags/位运算/" title="位运算">位运算<sup>4</sup></a></li>
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>5</sup></a></li>
 			
 		
 			
@@ -1019,11 +1059,11 @@
 			
 		
 			
-				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
 			
@@ -1055,15 +1095,15 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>
