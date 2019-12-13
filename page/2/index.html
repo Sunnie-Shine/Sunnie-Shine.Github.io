@@ -82,6 +82,118 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/26/clang-23-preprocessor/" title="C 语言语法系列（23）：预处理指令" itemprop="url">C 语言语法系列（23）：预处理指令</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-26T07:21:46.000Z" itemprop="datePublished"> 发表于 2019-11-26</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>编译器指令，或者叫做<strong>预处理指令</strong>（Preprocessor），指的是在程序用编译器翻译为机器可以识别和执行的指令前，所做的指令操作。它可以控制程序在不同执行状态下执行不同的结果。为区分其他编程语句，我们使用井号 <code>#</code>进行开头。</p>
+<h2 id="include-指令"><a href="#include-指令" class="headerlink" title="#include 指令"></a><code>#include</code> 指令</h2><p>这个指令用于导入头文件。什么是头文件呢？在使用特定的编程函数，诸如 <code>printf</code>、<code>scanf</code> 等时，由于每一个编程函数都有不同的功能，所以为了方便管理，它们各自被放在不同的头文件下，在使用时，需要根据它本身属于哪个头文件，先要导入，才能使用。否则编译器找不到这个函数。</p>
+<p>它有两种导入方式：引号导入和尖括号导入。如果写成这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>则表示它是一个系统自带的编程函数。它会先找系统自带的函数库，发现文件存在就可以打开。如果不存在，再找到你建立这个C语言程序代码下，文件夹下是否有这个头文件。</p>
+<p>反之，如果要先找当前文件夹下的头文件的话，我们使用引号导入。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"test.h"</span></span></span><br></pre></td></tr></table></figure>
+<p>注意，<strong>编译器指令都是不用分号结尾的</strong>。</p>
+<h2 id="define-指令"><a href="#define-指令" class="headerlink" title="#define 指令"></a><code>#define</code> 指令</h2><h3 id="真·常量定义"><a href="#真·常量定义" class="headerlink" title="真·常量定义"></a>真·常量定义</h3><p>它又被称为<strong>宏定义</strong>（Macro Defining），是将代码里所有代码的写法替换成宏定义过的写法。比如，在代码里写很多计算圆的公式，它会大量使用到圆周率的值（约 3.14159），可如果代码内直接写值的话，如果需要对代码作改动，就需要挨个改掉它们，就相对麻烦，这个时候我们可以使用 <code>#define</code> 指令替换它们，然后改值时，只需要改 <code>#define</code> 一处的值即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> pi 3.14159</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">float</span> area = pi * i * i;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%.2f"</span>, area);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，一般而言，像是这样的指令写的东西（3.14159）是一个常数，所以我们一般将常数全部大写变量名，即 PI 的形式，不过这只是一般而言，也可以不大写。</p>
+<h3 id="骚操作"><a href="#骚操作" class="headerlink" title="骚操作"></a>骚操作</h3><p>不过，宏定义下的写法是直接替换的，也就是说，你这么写完全可以：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 定义一个整型变量 int</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 主函数 main</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 无参数 void</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 输入 scanf</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 定义一个单精度小数型变量 float</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 圆周率 3.14159</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 输出 printf</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 返回 return</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 。 ;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 值为 =</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 开始 &#123;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 结束 &#125;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 取变量地址(a) &amp;a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 整体程序</span></span><br><span class="line">整型 主函数 (无参数)</span><br><span class="line">开始</span><br><span class="line">    定义一个整型变量 整型变量。</span><br><span class="line">    输入(<span class="string">"%d"</span>, 取变量地址(整型变量))。</span><br><span class="line">    </span><br><span class="line">    定义一个单精度小数型变量 面积 值为 圆周率 * 整型变量 * 整型变量。</span><br><span class="line">    输出(<span class="string">"%.2f"</span>, 面积)。</span><br><span class="line">    </span><br><span class="line">    返回 <span class="number">0</span>。</span><br><span class="line">结束</span><br><span class="line"><span class="comment">// 程序结束</span></span><br></pre></td></tr></table></figure>
+<p>只是，一部分 IDE，例如 DevCpp 的编译器不能执行中文字符的宏定义替换罢了。不过，<code>#define</code> 定义语句中间的空格是严格规定的，只能在 <code>#define</code> 后和定义名称后有空格，这样来控制替换，否则系统会无法判别。</p>
+<h3 id="宏定义有时候也会背锅"><a href="#宏定义有时候也会背锅" class="headerlink" title="宏定义有时候也会背锅"></a>宏定义有时候也会背锅</h3><p>另外，<code>#define</code> 有一处需要注意的替换。它甚至可以替换函数，但函数的替换方式可能有一些恶心：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> f(a,b) (a)*(b)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> g(a,b) a*b</span></span><br></pre></td></tr></table></figure>
+<p>它们是不同的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> c, d;</span><br><span class="line">c = f(a + a, b + b); <span class="comment">// (2 + 2) * (3 + 3)</span></span><br><span class="line">d = g(a + a, b + b); <span class="comment">// 2 + 2 * 3 + 3</span></span><br></pre></td></tr></table></figure>
+<p>看懂了吗？上面的 <code>a</code> 和 <code>b</code> 都有括号，所以下面替换后，也带括号；上面没有括号，下面也没有括号。于是根据优先级的不同，计算结果分别是 4 * 6 = 24 和 2 + 6 + 3 = 11。</p>
+<h3 id="undef-指令"><a href="#undef-指令" class="headerlink" title="#undef 指令"></a><code>#undef</code> 指令</h3><p>甚至还可以使用 <code>#undef 定义名</code> 的方式来撤销结束定义。比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> pi 3.14159</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> r = <span class="number">6</span>;</span><br><span class="line">    <span class="keyword">int</span> area = pi * r * r;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">undef</span> pi</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> c = <span class="number">2</span> * pi * r; <span class="comment">// Wrong.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="define-符号指令"><a href="#define-符号指令" class="headerlink" title="#define 符号指令"></a><code>#define</code> 符号指令</h3><p>我们也可以在定义符号的时候不为其赋值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> clang</span></span><br></pre></td></tr></table></figure>
+<p>这样定义的符号在本文件里的任意位置都可以用，或你把它写进头文件里，然后对其使用了 <code>#include</code> 引入了这个头文件时可用。</p>
+<p>这种用法需要配合下面要说到的 <code>#if</code> 指令才能发挥作用。</p>
+<h2 id="if、-else、-elif-和-endif-指令"><a href="#if、-else、-elif-和-endif-指令" class="headerlink" title="#if、#else、#elif 和 #endif 指令"></a><code>#if</code>、<code>#else</code>、<code>#elif</code> 和 <code>#endif</code> 指令</h2><p>这四个指令单纯就是为了和 C++ 语言配合使用得比较多。在 C++ 里，有些常量的定义数值是和 C 不一致的，好在它提供了 <code>#define</code> 的宏指令指定了语言类别。</p>
+<p>在 C++ 里，系统定义了 <code>__cplusplus</code> 符号。如果我们查看 <code>__cplusplus</code> 符号是否存在，就可以判断当前使用的文件和语言是 C 语言还是 C++，进而去区分程序的执行代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>例如上面的 5 行指令，先查询当前代码环境是否是 C++。如果是 C++，则会执行第 2 行的 <code>#define</code> 定义语句，让 <code>NULL</code> 常量定义为 0（这是 C++ 里的定义方式。C++ 的空是用 0 表示而不是 <code>(void *)0</code> 表示的；否则，没有查到 <code>__cplusplus</code>，说明是 C 语言环境，那么 <code>NULL</code> 的定义方式就是<code>(void *)0</code> 了。</p>
+<p>另外，<code>#if defined</code> 可以简写为 <code>#ifdef</code> 指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>另外，你对条件取反，也是被允许的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> !__cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>你也可以使用 <code>#ifndef</code> 指令来表达：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>最后，你还可以使用嵌套的方式为其定义。实际上，<code>NULL</code> 常量在头文件里是这么定义的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>由于头文件 <code>*.h</code> 是不区分 C 还是 C++ 语言的，所以保证程序允许正常，这些指令和赋值都是不可少的。<code>#elif</code> 指令类似于 <code>else if</code> 条件判断，这里就不讲了，因为用的机会很少。</p>
+<h2 id="pragma-杂注指令"><a href="#pragma-杂注指令" class="headerlink" title="#pragma 杂注指令"></a><code>#pragma</code> 杂注指令</h2><p>最后来说一下<strong>杂注</strong>（Pragma）。杂注是预处理指令里最复杂的一种，这是因为它的名字“杂注”就表示了所有乱七八糟的指令，不好取名或用得比较少的时候，就直接用 <code>#pragma</code> 指令来搞了，所以它的分支也非常多。我们这里来看一些常用的。至于不常用的，如果你碰到了，直接查询网上给出的文档即可。</p>
+<h3 id="pragma-warning-指令"><a href="#pragma-warning-指令" class="headerlink" title="#pragma warning 指令"></a><code>#pragma warning</code> 指令</h3><p><code>#pragma warning</code> 指令用于忽略、恢复和只提示一次警告信息。假如你的代码里出现了警告错误，例如下面代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br></pre></td></tr></table></figure>
+<p>这是最基础的使用 <code>scanf</code> 函数的方法了。不过编译器会提出警告 C6031，提示你忽略了 <code>scanf</code> 的返回值。<code>scanf</code> 的返回值表示正确输入到变量里的变量总个数。如果你输入了一个合适的数字，<code>a</code> 正常赋值，那么这个返回值就是 1。</p>
+<p>它提示这个信息，提示你最好不要忽略返回值的使用，而是这样用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a) != <span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// May have bugs...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Successful.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是，显然我们没有必要这么去处理，因为我们输入一个整数数值是预期的，所以我们可以忽略烦人的警告信息，用法是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span> (disable : 6031)</span></span><br></pre></td></tr></table></figure>
+<p>这样的话，你就看不到后续使用的所有有关 <code>scanf</code> 上输入信息的返回值未使用的报错了。</p>
+<p>如果你把代码改为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span> (restore: 6031)</span></span><br></pre></td></tr></table></figure>
+<p>表示从此处开始往下的代码，重新又开始对 C6031 忽略返回值的警告报错。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span> (once: 6031)</span></span><br></pre></td></tr></table></figure>
+<p>这样则是仅报告一次这样的警告信息，其它的都忽略。</p>
+<h3 id="pragma-region-和-pragma-endregion-指令"><a href="#pragma-region-和-pragma-endregion-指令" class="headerlink" title="#pragma region 和 #pragma endregion 指令"></a><code>#pragma region</code> 和 <code>#pragma endregion</code> 指令</h3><p>忘了这个了吗？这个就是最开始介绍的，用于分割语义的指令。这两个指令是配合使用的，用于分割代码段，这一段代码里的所有执行内容表示某个含义。另外，写了这样的指令后，IDE 就可以识别这一块代码是我们指定好的代码块，甚至可以允许我们手动折叠和展开它们。</p>
+<h3 id="pragma-once-指令"><a href="#pragma-once-指令" class="headerlink" title="#pragma once 指令"></a><code>#pragma once</code> 指令</h3><p>最后一个指令仅用于头文件里，表示这个头文件只会被编译一次。这是因为，很多时候，相同的指令会被分散放到不同的头文件里；而反之也可能存在多个相同名称的头文件。这样的话，如果我们使用 <code>#pragma once</code> 指令可以保证这个文件整体只会被编译一次，防止多次反复编译出现隐藏的 bug 和错误。</p>
+<p>当然，如果执行逻辑都不同的同名头文件最好还是不要用一样的头文件名，防止这些错误的出现。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C/">C</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/26/clang-22-typedef/" title="C 语言语法系列（22）：typedef 的艺术" itemprop="url">C 语言语法系列（22）：typedef 的艺术</a>
     
   </h1>
@@ -849,213 +961,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/23/clang-15-pointer-and-array/" title="C 语言语法系列（15）：指针和数组" itemprop="url">C 语言语法系列（15）：指针和数组</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-23T05:48:41.000Z" itemprop="datePublished"> 发表于 2019-11-23</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>上文我们基本上了解清楚了指针的基本用法和操作，不过，光是变量操作的指针模型可能过于单一，所以今天我们要看的是数组和指针的用法。</p>
-<h2 id="一维数组和指针"><a href="#一维数组和指针" class="headerlink" title="一维数组和指针"></a>一维数组和指针</h2><p>首先讲一下简单的一维数组和指针。首先你要明白一个东西，数组它其实除了是一系列数据的统一管理的集合外，它还有一个用的方式：指针形式。</p>
-<p>我们可以使用指针，将数组改变为指针，然后对变量名操作来达到操作内部数据的方式。比如之前我们讲到的数组的声明和使用。我们先来看一下基本的使用数组的方式。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">6</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> b = a[<span class="number">3</span>]; <span class="comment">// 4</span></span><br></pre></td></tr></table></figure>
-<p>这样写起来很轻松，不过呢，我们除了使用中括号来找出数据外，还有一种写法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">6</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a + <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> b = *(a + <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
-<p>注意看清楚，<code>*p</code> 和 <code>b</code> 变量，一个是指针变量，另一个则是一个普通的存数值的变量。我们再看右侧，<code>a</code> 只是一个数组名啊，为什么数组名字还可以加一个 2 和 3 呢？</p>
-<p>这是因为，数组名本身除了表示它是一个数组的名字外，它也是一个指针，且这个指针指向 <code>a[0]</code>。换句话说，数组名除了表示数组的名称外，它还是一个指针变量，这个指针的位置上存的数据是 <code>a[0]</code> 的地址。</p>
-<p>那么，对于地址加 2 来说，我们就很清楚了。因为数组是顺序存储数据的，每一个数据都是挨着放的，所以加 2 的话，自然就表示 <code>a[2]</code> 了。不过，<code>a + 2</code> 是真的 <code>a[2]</code> 吗？当然不是。刚说到，<code>a</code> 是指针，所以加了 2，还是一个指针，这个性质是没有变的。不会因为它是指针，加了数值之后变成了数值。所以 <code>a + 2</code> 其实是 <code>&amp;a[2]</code>。换句话说：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p;</span><br><span class="line"><span class="keyword">int</span> *q;</span><br><span class="line">p = a;</span><br><span class="line">q = &amp;a[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
-<p>最后 <code>p</code> 和 <code>q</code> 的结果是一样的。而</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p;</span><br><span class="line"><span class="keyword">int</span> *q;</span><br><span class="line">p = a + C; <span class="comment">// C can be any constant.</span></span><br><span class="line">q = &amp;a[C]; <span class="comment">// Same as C above.</span></span><br></pre></td></tr></table></figure>
-<p><code>p</code> 和 <code>q</code> 也是一样的，只要没有找出数组存储的范围（如果数组只有 5 个元素，那么这里的 <code>C</code> 就最好别超过 4，如果 <code>C</code> = 5 甚至大于 5，都会出现超出访问数组的范围的隐藏 bug）。</p>
-<p>所以，为了取出数值，还需要取值符号 <code>*</code>。所以相当于这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a + <span class="number">3</span>; <span class="comment">// Equi to int *p = &amp;a[3];</span></span><br><span class="line"><span class="keyword">int</span> b = *p;</span><br></pre></td></tr></table></figure>
-<p>看懂上面的写法了吗？那么现在来做个等效代替：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b = *(&amp;a[<span class="number">3</span>]);</span><br></pre></td></tr></table></figure>
-<p>因为取地址和取值是一对相反的运算，所以可以同时去掉。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b = a[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
-<p>另外，它还可以写作</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b = *(a + <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
-<p>你可以理解一下，这一点是为什么。</p>
-<h2 id="一维数组配合自增自减运算符"><a href="#一维数组配合自增自减运算符" class="headerlink" title="一维数组配合自增自减运算符"></a>一维数组配合自增自减运算符</h2><h3 id="一个复杂但重要的例子"><a href="#一个复杂但重要的例子" class="headerlink" title="一个复杂但重要的例子"></a>一个复杂但重要的例子</h3><p>我们来看一下，指针变量在配合自增自减运算符后的意思的理解。我们先来看示例和运行后的结果，来理解它们。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">5</span>] = &#123;<span class="number">1</span>, <span class="number">6</span>, <span class="number">11</span>, <span class="number">16</span>, <span class="number">21</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> *p, *q, *r, *s, *t, *u, *v;</span><br><span class="line">p = q = r = s = t = u = v = a; <span class="comment">// Let all pointer point to array variable `a`.</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*p++     = %d\n"</span>, *p++);     <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"(*q)++   = %d\n"</span>, (*q)++);   <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*(r++)   = %d\n"</span>, *(r++));   <span class="comment">// 2</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*(s + 1) = %d\n"</span>, *(s + <span class="number">1</span>)); <span class="comment">// 6</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*t + 1   = %d\n"</span>, *t + <span class="number">1</span>);   <span class="comment">// 3</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*++u     = %d\n"</span>, *++u);     <span class="comment">// 6</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"*(++v)   = %d\n"</span>, *(++v));   <span class="comment">// 6</span></span><br></pre></td></tr></table></figure>
-<p>这里提到了七个不同的语句写法：</p>
-<ul>
-<li><code>*p++</code></li>
-<li><code>(*p)++</code></li>
-<li><code>*(p++)</code></li>
-<li><code>*(p+1)</code></li>
-<li><code>*p+1</code></li>
-<li><code>*++p</code></li>
-<li><code>*(++p)</code></li>
-</ul>
-<p>最后发现数值除了一个数有些奇怪（<code>*t + 1</code>）外，其他都还算比较正常。现在我们来一个一个理解。</p>
-<h3 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h3><p>第一个为什么是 1 呢？因为 <code>*p++</code> 的自增符号在后，所以先不会改变值，而是先被取值。<code>p</code> 最开始指向了 <code>a</code>，就表示语句 <code>p = &amp;a[0]</code>。由于自增符号在后，所以输出的应为 <code>a[0]</code>，即 1。</p>
-<p>第二个为什么还是 1 呢？因为刚说过了，自增符号在后，所以打不打括号其实都是先取值。所以输出的值也是 1。</p>
-<p>第三个为什么是 2 呢？好像怎么看，自增运算符都不执行啊，即使有这个括号。这其实是因为，刚才 <code>(*q)++</code> 式子最开始取出了值，但因为自增在后，所以输出原来的 1，但后面的自增符号使得 <code>a[0]</code> 从 1 变为了 2。所以 <code>*(r++)</code> 虽然打了括号，但由于在后的关系，数值不会发生改变，但 <code>a[0]</code> 已经变为了 2，所以自然取出数值时，就是 2 了。</p>
-<p>第四个则比较好理解，<code>*(s + 1)</code> 自然取的是 <code>a[1]</code> 的值，故为 6。</p>
-<p>第五个，这里括号不见了，可是为什么变成3了呢？<code>*t + 1</code> 语句下，是先取了 <code>a[0]</code> 的值，然后对值再加 1，所以自然是 2 + 1（注意是 2 哈，刚才已经改为 2 了，不要带 1 进去）。</p>
-<p>第六个，<code>*++u</code>，自增符号在前，所以自然是对原本指向的 <code>a[0]</code> 往后移动一位，变为指向 <code>a[1]</code>。或者换句话说，<code>++u</code> 其实也就是 <code>a + 1</code>，或者是 <code>&amp;a[1]</code>。所以加星号表示取其值，所以是 <code>a[1]</code> 的值，也就是 6 了。</p>
-<p>第七个，和刚才不加括号是一样的效果。</p>
-<p>可能你会问第一个，为什么 <code>*p++</code> 和 <code>(*p)++</code> 不同。我是这么解释的：<code>*p++</code> 是相当于 <code>*(p++)</code> 的，这个自增符号不管在哪里，始终要记得，因为它挨着变量，所以它是先会被打括号的；而取值符号 <code>*</code>，不一定会直接挨着变量，所以有时候并不会先计算。所以我们有一个结论：<strong><code>*p++</code>和<code>*(p++)</code>一样，<code>*++p</code>和<code>*(++p)</code>一样</strong>。刚才我们在计算第六个的时候，就知道了，自增是挨着变量的，不论前后的关系，既然挨着，就肯定是先计算的咯。</p>
-<p>所以，优先级什么的都喂狗去吧！根本不需要去死记硬背的。</p>
-<p>从中我们可以总结以下内容：</p>
-<ul>
-<li><code>*p++</code> 等价于 <code>*(p++)</code> 等价于 <code>*((&amp;a[0])++)</code> 等价于 <code>*(&amp;a[0]++)</code> 等价于两个语句 <code>a[0]; &amp;a[1];</code>，自增符号在后，显示数据时，自增符号不会起作用，即使使用完毕后，因为后面是 <code>&amp;a[1]</code>，对后续变量的操作也没有任何影响（指针变动而不是数值变动），所以并没有用。</li>
-<li><code>*++p</code> 等价于 <code>*(++p)</code> 等价于 <code>*(++(&amp;a[0]))</code> 等价于 <code>*(++&amp;a[0])</code> 等价于 <code>*(&amp;a[1])</code> 等价于 <code>a[1]</code>，自增符号在前，取 <code>a[1]</code>。</li>
-<li><code>*p + 1</code> 等价于 <code>*(&amp;a[0]) + 1</code> 等价于 <code>a[0] + 1</code>。</li>
-<li><code>(*p)++</code> 等价于 <code>(*(&amp;a[0]))++</code> 等价于 <code>(a[0])++</code> 等价于 <code>a[0]++</code>，即 <code>a[0]</code> 使用完毕后自增 1。</li>
-</ul>
-<p>最后考一个问题：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">4</span>] = &#123; <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">22</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a;</span><br><span class="line">*p = *p + <span class="number">1</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, *p); <span class="comment">// 2</span></span><br><span class="line">*p = (*p + <span class="number">1</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, *p); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
-<p>看一下，注释表示当前位置输出的数值。请尝试理解一下为什么。</p>
-<h2 id="二维数组和指针"><a href="#二维数组和指针" class="headerlink" title="二维数组和指针"></a>二维数组和指针</h2><p>二维数组是既有行又有列的数组，所以相当于行、列均有数组的指针。</p>
-<p>和刚才一样，我们先定义一个数组。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span> &#125;,</span><br><span class="line">    &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span> &#125;,</span><br><span class="line">    &#123; <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>然后，这个 <code>a</code> 变量除了是数组的变量名外，还是一个指针。不过因为是二维的，就稍显麻烦。</p>
-<p>我们可以尝试将这里的a理解成一个二重指针。它是指向指向数值的指针的指针。很绕对吧~</p>
-<p>其实是这个意思：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> **doublePointer = a;</span><br></pre></td></tr></table></figure>
-<p>因为说的是二重指针，所以在声明指针变量时，需要两个星号。它等效于这句话：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> **doublePointer = &amp;((&amp;a[<span class="number">0</span>])[<span class="number">0</span>]);</span><br></pre></td></tr></table></figure>
-<p>首先我们使用一重指针指向行上的位置，因为数组名的缘故，所以指针指向的是最初的位置 <code>a[0]</code>；但是因为 <code>a[0]</code> 在二维数组下并不是一个数，而是一系列数据（可以看作是一个数组，数组内各自又有一个单独的数组），所以，<code>&amp;a[0]</code>实际还不够，还要取出列下标为 0 的情况，所以有两层括号和两层取地址符号。</p>
-<p>那么，普通的指针可以这么表示：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *singlePtr = &amp;a[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
-<p>那么，假设要取 <code>a[0][1]</code> 的值，可以这么做：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> d = *(*a + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-<p>看看为什么。首先 <code>*a</code> 表示是 <code>a</code> 数组的第一行的所有数据，即 <code>&amp;a[0]</code>，所以上述语句可以等效为</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> d = *(a[<span class="number">0</span>] + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-<p>但是依然不够。因为 <code>a[0]</code> 我们刚才说过，<code>a[0]</code> 是一组数据，虽然光秃秃在这里写着，没有地址符也没有取值符，但始终记得它相当于是一个数组名叫 <code>a[0]</code>。</p>
-<p>然后 <code>a[0] + 1</code> 表示将列往后移动一位，即相当于一维数组的指针 <code>a + 1</code> 这样的存在。</p>
-<p>所以这里就表示为了 <code>&amp;a[0][1]</code>。可为什么还带个指针呢？因为刚才就说过，一维数组的指针就带有取地址符号，即 <code>a + 1</code> 等效于 <code>&amp;a[1]</code>，所以自然二维数组的指针也有这样的符号了，故 <code>a[0] + 1</code> 就表示 <code>&amp;a[0][1]</code> 了。所以取出值还得需要一个取值符号，故 <code>*(&amp;a[0][1])</code> 就变为了 <code>a[0][1]</code> 了。</p>
-<p>所以上述语句就变为：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> d = a[<span class="number">0</span>][<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
-<p>明白意思了吗？</p>
-<p>所以第 $i$ 行第 $j$ 列的数值用指针表示为</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> value = *(*(a + i) + j);</span><br></pre></td></tr></table></figure>
-<h2 id="三维数组？"><a href="#三维数组？" class="headerlink" title="三维数组？"></a>三维数组？</h2><p>三维数组也是，只是指针变为三重指针罢了，只是就不多阐述了。它的表示可以类比这个推导出来：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> threeDArray[][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;,</span><br><span class="line">        &#123; <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span> &#125;,</span><br><span class="line">        &#123; <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span> &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span> &#125;,</span><br><span class="line">        &#123; <span class="number">10</span>, <span class="number">12</span>, <span class="number">14</span>, <span class="number">16</span> &#125;,</span><br><span class="line">        &#123; <span class="number">18</span>, <span class="number">20</span>, <span class="number">22</span>, <span class="number">24</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> ***triplePtr = a; <span class="comment">// What does this one equi to?</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> value = *(*(*(a + i) + j) + k);</span><br><span class="line"><span class="keyword">int</span> a = *(*(a[i] + j) + k);</span><br><span class="line"><span class="keyword">int</span> b = *(a[i][j] + k);</span><br><span class="line"><span class="keyword">int</span> c = a[i][j][k];</span><br></pre></td></tr></table></figure>
-<h2 id="把数组赋值给指针的退化赋值形式"><a href="#把数组赋值给指针的退化赋值形式" class="headerlink" title="把数组赋值给指针的退化赋值形式"></a>把数组赋值给指针的退化赋值形式</h2><p>前文提到了很多有关数组的声明（定义）和赋值方式。不过数组是可以赋值给一个指针的。比如下面这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *series = &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span> &#125;;</span><br></pre></td></tr></table></figure>
-<p>这样表示出来的 <code>series</code> 是一个指针，它依然指向的是 <code>series</code> 赋值的这个整型数组的首元素地址。所以这种方式几乎可以认为是等价于 <code>int series[] = { 1, 3, 5, 7, 9 };</code>，唯一的区别是，数组格式的声明可以为中括号指定元素总数（5），而指针形式则不可能这么写了。</p>
-<p>我们常把数组赋值给指针的这种赋值行为被称为<strong>退化赋值</strong>（Degenerated Assignment），因为它损失了数组长度这一个信息。不过，这种退化赋值却在 C 语言里使用得非常广泛。下面要讲到的数组传参就是典型的其中一种使用方式。</p>
-<h2 id="数组传参"><a href="#数组传参" class="headerlink" title="数组传参"></a>数组传参</h2><p>数组是可以用于传参的。换句话说，数组是可以当形式参数（形参）传递的。不过，古老的 C 语言只允许数组的指针写法传递，而且还有着另外的写法。因为这里用的类型不多，所以只讲解一维和二维数组的传参。</p>
-<p>不过在此之前，我们要搞清楚数组指针和指针数组的区别。这个名字有些绕，我们不用管名字，看它怎么用。</p>
-<h3 id="数组指针和指针数组"><a href="#数组指针和指针数组" class="headerlink" title="数组指针和指针数组"></a>数组指针和指针数组</h3><p>首先我们来看以下两种写法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *p[<span class="number">20</span>];</span><br><span class="line"><span class="keyword">int</span> (*q)[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
-<p>它们的区别就只是星号和数组变量名称有没有括号。这里要告诉大家，其实它们是有完全不一样的用途的。第一个是一个数组（<code>p[20]</code> 明显是一个数组的定义嘛），不过加了个星号，被定义为了指针，但其实这个写法是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *(p[<span class="number">20</span>]);</span><br></pre></td></tr></table></figure>
-<p>换句话说，我们借用本文最开头的第三种理解思路：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>* p[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
-<p>其实就看得很清楚了。它是一个数组，有 20 个元素组成。不过这个数组全存放的是指针罢了。</p>
-<p>这种数组称为<strong>指针数组</strong>（存放指针的数组）。</p>
-<p>下面这个呢？被打了括号，所以完全不同。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*q)[<span class="number">20</span>];</span><br></pre></td></tr></table></figure>
-<p>因为括号的关系，星号不可被拆开。所以它是什么呢？它是一个可以指向一个数组的指针。换句话说，如果我有100 个数据，被认为划分为了 5 个数组，每一个数组都有 20 个元素，并且它们是随便划分的，所以毫无关联。</p>
-<p>这个时候，我们可以让这个指向数组的指针（即<strong>数组指针</strong>）分别去指向这不同的 5 个数组，来测试这些数据。</p>
-<p>有了这些基础的理论后，我们来看一下示例。</p>
-<h3 id="一维数组传参"><a href="#一维数组传参" class="headerlink" title="一维数组传参"></a>一维数组传参</h3><p>首先我们试想一个场景，求一个数组下的最大数值。这个时候，我们可以这么做：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (a[i] &lt;= m)</span><br><span class="line">        &#123;</span><br><span class="line">            m = a[i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样，一个数组的最大值的算法就写好了。接下来我们来看一下，指针写法（因为 C 语言要用数组的指针写法来传递形参）。</p>
-<p>所以首先，我们要把上面的 <code>a[]</code> 这个诡异的中括号里值都没有的写法给它改掉，改为指针写法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> length)</span></span></span><br></pre></td></tr></table></figure>
-<p>就可以了。所以在声明时，按照可以去掉变量名称的手段，我们可以将刚才的程序的完整版写成这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> *, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> arr[<span class="number">5</span>] = &#123; <span class="number">2</span>, <span class="number">9</span>, <span class="number">-5</span>, <span class="number">19</span> &#125;; <span class="comment">// The last one is assigned 0.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"数组之中最大的数值是 %d\n"</span>, <span class="built_in">max</span>(arr, <span class="number">5</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">        <span class="keyword">if</span> (a[i] &lt;= m)</span><br><span class="line">            m = a[i];</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当然，<code>max</code> 内的 <code>a[i]</code> 等使用到数组的地方的，也可以改写为指针写法。当然，这里不改也没有关系。</p>
-<blockquote>
-<p>注意数组传参的过程，直接把数组名称写上去，而不要地址符号，也不要中括号，因为它传递的是一个地址数值，表示 <code>&amp;a[0]</code>。</p>
-</blockquote>
-<h3 id="amp-a-0-、a-和-amp-a？"><a href="#amp-a-0-、a-和-amp-a？" class="headerlink" title="&amp;a[0]、a 和 &amp;a？"></a><code>&amp;a[0]</code>、<code>a</code> 和 <code>&amp;a</code>？</h3><p>或许有小伙伴会对一维数组的指针三种写法提出问题：如果我们把数组命名为 <code>a</code> 的话，它同时等价于首元素的地址，即 <code>&amp;a[0]</code>，那么，<code>&amp;a</code> 表示什么？按照道理来说，<code>&amp;a</code> 表示的是这个数组变量本身的地址，而这个变量的地址不应该就是 <code>&amp;a[0]</code> 吗？所以这么说来的话，<code>a</code>、<code>&amp;a</code> 和 <code>&amp;a[0]</code> 三者不是就完全一样了吗？</p>
-<p>我想告诉你的是，这个说法目前来说确实是正确的。我们也确实经常写 <code>a</code> 来表示首元素地址，也有时候会用 <code>&amp;a</code> 来“严谨地”表达数组变量本身的地址，而由于数组变量本身而言，从这里开始存放的一系列元素就是这数组里的东西，所以 <code>&amp;a</code> 和 <code>a</code> 这么看是等价的。不过……</p>
-<p>在使用 <code>+</code> 和 <code>-</code> 的运算符的时候，就可以看出它们的区别。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;;</span><br><span class="line"><span class="keyword">int</span> *p = a;</span><br><span class="line"><span class="keyword">int</span> *q = &amp;a;</span><br><span class="line"><span class="keyword">int</span> *r = &amp;a[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> *x, *y, *z;</span><br><span class="line">x = p + <span class="number">1</span>;</span><br><span class="line">y = q + <span class="number">1</span>;</span><br><span class="line">z = r + <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<p>来看这个执行逻辑，<code>x</code>、<code>y</code> 和 <code>z</code> 都得到什么结果？第一个是把数组地址加上 1，它表示往下移动 1 个单位，所以等价于 <code>&amp;a[0] + 1</code>，即 <code>&amp;a[1]</code>；而 <code>z</code> 也就是这个结果。那么中间的 <code>y</code> 呢？它其实表示的是，以数组整体大小为单位，往下跨越一个完整大小的空间，所以它一口气就相当于往后移动到指向不存在的 <code>a[4]</code> 上去了。所以，请不要这样使用指针来操作数组，会立马超出访问范围，出现致命的 bug。</p>
-<h3 id="二维数组传参"><a href="#二维数组传参" class="headerlink" title="二维数组传参"></a>二维数组传参</h3><p>二维数组依然要取出最大值，就不容易了，因为它有两个维度。于是我们先要改写上面的 <code>max</code> 函数。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> (*a)[], <span class="keyword">int</span> row, <span class="keyword">int</span> column)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; row; i++)</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; column; j++)</span><br><span class="line">            <span class="keyword">if</span> (a[i][j] &lt;= m)</span><br><span class="line">                m = a[i][j];</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意这里，传参的写法，是一个数组指针，即指向数组的指针。这一点也很好理解。因为二维数组本身应当在处理成指针写法时可以改为二重指针，但因为传参的缘故，它的行列都可以变动，所以我们不能在处理函数时，行、列同时变动，即必须是“一静一动”，不然程序就不受控了。所以我们要保证其中一个维度是静止的（即数组形式），而另外一个维度则用指针来操作，就很轻松。所以写成了数组指针写法。刚才也告诉大家，数组指针是一种指针，不过这个指针是指向一个数组而不是一个数值的。当改变指针的值时，也就相当于移动了指针，达到测试和使用二维数组之中“一个维度下的数组”的操作。</p>
-<p>那么它的声明就省略变量名即可，但是因为只能省略变量名，所以括号是不能少的。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Statement of the function.</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> (*)[], <span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a[<span class="number">2</span>][<span class="number">3</span>] =</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">9</span>, <span class="number">-5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">-7</span>, <span class="number">0</span>, <span class="number">8</span> &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"The maximum value of the array is %d\n"</span>, <span class="built_in">max</span>(a, <span class="number">2</span>, <span class="number">3</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> (*arr)[], <span class="keyword">int</span> row, <span class="keyword">int</span> column)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; row; i++)</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; column; j++)</span><br><span class="line">            <span class="keyword">if</span> (a[i][j] &lt;= m)</span><br><span class="line">                m = a[i][j];</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="令人遗憾的返回数组的函数"><a href="#令人遗憾的返回数组的函数" class="headerlink" title="令人遗憾的返回数组的函数"></a>令人遗憾的返回数组的函数</h2><h3 id="听说你想返回数组？"><a href="#听说你想返回数组？" class="headerlink" title="听说你想返回数组？"></a>听说你想返回数组？</h3><p>我们有时候也尝试把一个数组作为返回值返回到外界来，但很遗憾的是，我们无法把返回数组的函数写成符合我们原本理解的可能写法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> funcReturningInt[]()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>或</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> [] funcReturningInt()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这两种写法都是不允许的。所以我们如何保证返回一个数组呢？</p>
-<p>返回数组只能使用前文提到的退化赋值的方式。如果你有一个数组需要返回，我们只能写成指针的方式返回，所以实际上的写法是这样的</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> *<span class="title">funcReturningInt</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这种写法没有问题，不过，很遗憾的是，它少了一个提示信息，即数组的长度，这样返回的数组很容易出现越界的问题，所以你可能还会在这种函数里加上一个 out 参数表示数组长度。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> *<span class="title">func</span><span class="params">(..., <span class="keyword">int</span> *arrayLength)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不过…… 还有一个遗憾的地方。在 C 语言里，所有在函数里声明的变量都是跟着栈内存走的。这有什么意义呢？跟着栈走的变量声明，会在函数执行完毕后自动销毁，所以，如果你尝试返回一个函数内的数组的话，只能很遗憾地通知你，在函数执行完毕后，这块内存会被销毁，所以你返回的这个指针其实是销毁前的这个结果的这块内存，但它目前已经被销毁。</p>
-<p>所以，目前我们只靠前文学到的知识点还无法做到不销毁这些自己声明和定义的内容。等我们接触到结构体和堆内存的时候，我们才会提到了。</p>
-<h3 id="总结、悬空指针和野指针的概念"><a href="#总结、悬空指针和野指针的概念" class="headerlink" title="总结、悬空指针和野指针的概念"></a>总结、悬空指针和野指针的概念</h3><p>所以，这一节的所有文字其实就想告诉你两个点：第一，<strong>返回数组的函数是做不到的。非得返回数组，你也只能退化赋值，返回一个指针</strong>；第二，返回的数组对象的这个指针，即使被成功返回了，也逃不过函数销毁时立刻销毁内部定义的所有变量的厄运。所以，<strong>不要尝试在函数里声明（定义）一个数组，然后用指针形式返回这个数组（的首地址），这样依然会失败</strong>。而且，这个指针由于失去了原本指向的内容，所以这个时候这个对象还被称为<strong>悬空指针</strong>（Dangling Pointer）。</p>
-<p>另外，还存在一个说法，叫做<strong>野指针</strong>（Wild Pointer），它表示一个没有初始化的指针变量。这个指针由于没有初始化，就和普通变量一样，它内部存储的值是不明的。不过由于它是指针的关系，内部的数值很可能是随机的，所以这意味着这个指针表示的意思就是“随机指向”。这是一个很可怕的概念。随机指向很有可能破坏电脑。</p>
-<h2 id="static-修饰数组参数"><a href="#static-修饰数组参数" class="headerlink" title="static 修饰数组参数"></a><code>static</code> 修饰数组参数</h2><p>当数组传入函数里的时候，我们常常可以对这个函数的参数加以修饰。在 C99 标准里，我们甚至可以对一个数组函数的长度作出修饰。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> a[<span class="keyword">static</span> <span class="number">10</span>])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们如果把数组参数用数组格式书写到参数上的时候，我们可以使用 <code>static 数字</code> 的方式来说明，这个数组参数传入的元素总数最多只能有 10 个。当然，这个用法有时候很有用，但有时候很鸡肋。</p>
-<h2 id="指针的运算"><a href="#指针的运算" class="headerlink" title="指针的运算"></a>指针的运算</h2><p>在 C 语言里，我们为指针也提供了方便的运算符，使得我们可以通过运算符来操作和计算内存地址。</p>
-<p>上文我们其实已经用到了一部分这样的运算符，诸如 <code>++</code>、<code>--</code> 这些符号，下面要提到的是这样的一些运算符：</p>
-<ul>
-<li><code>+</code>：计算两个地址的和，或是为一个地址增加偏移量。比如 <code>a</code> 是一个数组，<code>a + 3</code> 将会把当前地址往后移动 3 个元素单位。</li>
-<li><code>-</code>：和上面的算法相反，这里是减法。</li>
-<li><code>*</code>：将地址数值相乘。这个用法很少。</li>
-<li><code>/</code>：将地址数值相除。这个用法也很少。</li>
-<li><code>%</code>：把两个地址数值以整数方式执行取模运算。这个用法也很少。</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *p = &amp;a;</span><br><span class="line"><span class="keyword">int</span> *q = &amp;b;</span><br><span class="line"><span class="keyword">int</span> distance = p - q;</span><br><span class="line"><span class="keyword">int</span> valueDifference = *p - *q;</span><br></pre></td></tr></table></figure>
-<p>比如上述示例里就展示了指针的减法和数值的减法的区别。<code>distance</code> 是直接把两个指针相减，得到的是 <code>p</code> 和 <code>q</code> 它们两个在内存里相差的距离，而 <code>valueDifference</code> 表示的是 <code>p</code> 和 <code>q</code> 两个变量指向的变量的存储数值之差。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
+    <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
   </nav>
 
 </div>
@@ -1080,7 +988,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>26</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>27</sup></a></li>
 			
 		
 			
@@ -1108,11 +1016,11 @@
 			
 		
 			
-				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>2</sup></a></li>
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
 			
 		
 			
@@ -1124,15 +1032,15 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1152,11 +1060,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>1</sup></a></li>
 			
 		
 		</ul>

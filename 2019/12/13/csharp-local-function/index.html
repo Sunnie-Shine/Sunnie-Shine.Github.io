@@ -1,0 +1,696 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C# 的本地函数 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="本地函数是什么C# 有一点意思的地方是，函数和方法没有区别。非得要说区别的时候，术语词一般用的是函数，比如构造函数、析构函数，还有今天说的本地函数（Local function）。它们是术语词，所以一般不叫方法。当然有时候也可以叫方法，这只是习惯而已，但英文的术语词里都使用的是 function，即“函数”。 要给本地函数做一个比喻的话，最适合不过的其实是 C 语言里的函数变量。函数变量在 C 语">
+<meta name="keywords" content="C♯,C♯ 7,C♯ 8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C# 的本地函数">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;12&#x2F;13&#x2F;csharp-local-function&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="本地函数是什么C# 有一点意思的地方是，函数和方法没有区别。非得要说区别的时候，术语词一般用的是函数，比如构造函数、析构函数，还有今天说的本地函数（Local function）。它们是术语词，所以一般不叫方法。当然有时候也可以叫方法，这只是习惯而已，但英文的术语词里都使用的是 function，即“函数”。 要给本地函数做一个比喻的话，最适合不过的其实是 C 语言里的函数变量。函数变量在 C 语">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-13T12:14:53.256Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/12/13/csharp-local-function/" title="C# 的本地函数" itemprop="url">C# 的本地函数</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-13T11:12:26.000Z" itemprop="datePublished"> 发表于 2019-12-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#本地函数是什么"><span class="toc-number">1.</span> <span class="toc-text">本地函数是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#看起来好像没啥，这有什么用？"><span class="toc-number">2.</span> <span class="toc-text">看起来好像没啥，这有什么用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套本地函数"><span class="toc-number">3.</span> <span class="toc-text">嵌套本地函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用本地函数的情况"><span class="toc-number">4.</span> <span class="toc-text">使用本地函数的情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地函数在不捕获变量时为什么用-static-关键字？"><span class="toc-number">5.</span> <span class="toc-text">本地函数在不捕获变量时为什么用 static 关键字？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地函数和异常"><span class="toc-number">6.</span> <span class="toc-text">本地函数和异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法体本地函数"><span class="toc-number">7.</span> <span class="toc-text">方法体本地函数</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="本地函数是什么"><a href="#本地函数是什么" class="headerlink" title="本地函数是什么"></a>本地函数是什么</h2><p>C# 有一点意思的地方是，函数和方法没有区别。非得要说区别的时候，术语词一般用的是函数，比如构造函数、析构函数，还有今天说的<strong>本地函数</strong>（Local function）。它们是术语词，所以一般不叫方法。当然有时候也可以叫方法，这只是习惯而已，但英文的术语词里都使用的是 function，即“函数”。</p>
+<p>要给本地函数做一个比喻的话，最适合不过的其实是 C 语言里的函数变量。函数变量在 C 语言里也称为函数的声明，需要在 <code>main</code> 之前遇到它，然后才能分辨函数的执行返回值类型和参数表列。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a &gt; b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"a is %s than b.\n"</span>, compare(<span class="number">3</span>, <span class="number">4</span>) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果函数部分写在 <code>main</code> 下，就必须使用声明语句，来表示函数的返回值类型和参数表列：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>; <span class="comment">// Statement of the function.</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"a is %s than b.\n"</span>, compare(<span class="number">3</span>, <span class="number">4</span>) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数的声明可以放在执行这个函数的前面的任意位置，所以写在函数里也可以。所以它更像是一个变量，一个函数变量。</p>
+<p>C# 提供了本地函数这个特性，使得函数可以嵌套使用在某一个函数的函数体（方法体）里：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Local function.</span></span><br><span class="line">    <span class="comment">// Same as a variable, but this variable is a function.</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">compare</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> a &gt; b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;a&#125;</span> is <span class="subst">&#123;(compare(a, b) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>)&#125;</span> than <span class="subst">&#123;b&#125;</span>."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样一来，我们就可以把一个函数写在方法体里了，来达到内联的效果。</p>
+<h2 id="看起来好像没啥，这有什么用？"><a href="#看起来好像没啥，这有什么用？" class="headerlink" title="看起来好像没啥，这有什么用？"></a>看起来好像没啥，这有什么用？</h2><p>本地函数似乎好像仅仅是嵌套在方法体里了，看起来没什么用。不过，它到底有什么用？</p>
+<p>首先，它的出现是为了解决 Lambda 表达式的问题。Lambda 表达式到目前已经基本上成熟了，比如上述代码可以写成 Lambda 执行的方式：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Lambda expression.</span></span><br><span class="line">    Func&lt;<span class="keyword">int</span>, <span class="keyword">int</span>, <span class="keyword">bool</span>&gt; compare = (a, b) =&gt; a &gt; b;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;a&#125;</span> is <span class="subst">&#123;(compare(a, b) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>)&#125;</span> than <span class="subst">&#123;b&#125;</span>."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Lambda 表达式看起来没有任何问题，执行起效，而且没有区别，所以很多程序员一般都会认为，这两种写法仅仅是个人偏好，所以随便自己怎么用。不过实际上它们是有区别的。</p>
+<p>第一，如果想要让函数执行递归，Lambda 表达式或匿名函数（使用 <code>delegate</code> 关键字）是无法做到的，因为没有办法使用函数名；</p>
+<p>第二，Lambda 表达式在实现具体函数机制的时候，使用的是委托特性。在声明的那一刻起，Lambda 表达式就会被转换为委托类型，但本地函数并不会。它真的跟一个函数很类似，若不是用到委托，它根本就不会被当成委托处理；</p>
+<p>第三，本地函数和 Lambda 表达式都可能或多或少产生捕获变量的情况，但 Lambda 表达式一般都不会去“在意”你是否捕获变量，捕获了哪些变量。编译器不会尝试去解析、分析这一点内容。但是，本地函数会进行处理。在 C# 8 里，当本地函数确实没有捕获变量时，编译器会提示警告，为其添加关键字 <code>static</code> 在本地函数前：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Local function.</span></span><br><span class="line">    <span class="comment">// Same as a variable, but this variable is a function.</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">compare</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> a &gt; b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;a&#125;</span> is <span class="subst">&#123;(compare(a, b) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>)&#125;</span> than <span class="subst">&#123;b&#125;</span>."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总的来说，本地函数实现了方法的内联，并且能够动态分析变量捕获情况，是一个好的特性。</p>
+<h2 id="嵌套本地函数"><a href="#嵌套本地函数" class="headerlink" title="嵌套本地函数"></a>嵌套本地函数</h2><p>本地函数是支持任何级别的嵌套的。也就是说，你可以尝试在本地函数里嵌套本地函数，然后再次在内部嵌套额外的本地函数。这些情况都是允许的。</p>
+<h2 id="使用本地函数的情况"><a href="#使用本地函数的情况" class="headerlink" title="使用本地函数的情况"></a>使用本地函数的情况</h2><p>在什么时候可以使用本地函数，比较高效而且有用呢？当这个执行语句可以被写作一个函数，但函数不需要大量的执行语句时，就可以使用本地函数。考虑得到两个数的较大值，并将其输出。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">PrintMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">GetMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> a &gt; b ? a : b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Console.WriteLine(<span class="string">"%d"</span>, GetMax(<span class="number">3</span>, <span class="number">-3</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如上述示例，得到两个数的较大者是比较简单的操作，而它没有被得到封装（如果我们忽略 <code>Math.Max</code> 的话）。这个时候，为了效率，我们可以使用本地函数，把这个执行语句写在方法里，然后调用。这在一定程度上解决了 C++ 里的 <code>inline</code> 函数。</p>
+<h2 id="本地函数在不捕获变量时为什么用-static-关键字？"><a href="#本地函数在不捕获变量时为什么用-static-关键字？" class="headerlink" title="本地函数在不捕获变量时为什么用 static 关键字？"></a>本地函数在不捕获变量时为什么用 <code>static</code> 关键字？</h2><p>下面我们来思考一个问题。为什么本地函数不捕获变量的时候使用 <code>static</code> 关键字而不是其它呢？本地函数这一个特性实际上也是用的 <code>private</code> 方法实现的。所有级别的嵌套的本地函数都会被翻译和改为类和结构级别的方法。</p>
+<p>如果函数不捕获变量的话，这便意味着它不会使用到方法里的任何变量对象。既然都用不上它们，为什么这个类和结构级别的方法不定义为静态的呢？所以它们自然用的是 <code>static</code> 关键字。</p>
+<h2 id="本地函数和异常"><a href="#本地函数和异常" class="headerlink" title="本地函数和异常"></a>本地函数和异常</h2><p>考虑一个问题。本地函数写在函数体里，那么如果出现异常了，本地函数的行为是如何的呢？答案是，异常不会立马在本地函数里爆出，而是立刻终止函数调用，在调用层面（方法体级别）抛出这个异常。例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Try</span>(<span class="params"><span class="keyword">string</span> a</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(a.ToString());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Try(<span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>显然，将 <code>null</code> 调用 <code>ToString</code> 方法是不合法的，所以它会产生异常。不过，它推后在第 8 行产生异常，而不是在的 5 行。</p>
+<p>如果需要实现捕获异常，或者预判情况，请添加 <code>try-catch</code> 语句。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">Try</span>(<span class="params"><span class="keyword">string</span> a</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Console.WriteLine(a.ToString());</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        Try(<span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (NullReferenceException)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="方法体本地函数"><a href="#方法体本地函数" class="headerlink" title="方法体本地函数"></a>方法体本地函数</h2><p>当然，这种写法依然有点麻烦，因为要写大括号。所以，本地函数可以直接简化为方法体形式。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">PrintMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">GetMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> =&gt; a &gt; b ? a : b;</span><br><span class="line">    </span><br><span class="line">    Console.WriteLine(<span class="string">"%d"</span>, GetMax(<span class="number">3</span>, <span class="number">-3</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样会简单一些。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-7/">C♯ 7</a><a href="/tags/C♯-8/">C♯ 8</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2019/12/13/csharp-local-function/" data-title="C# 的本地函数 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/12/13/bitwise-operations-05-bitwise-exclusive-or/"  title="位运算（5）：位异或运算">
+ <strong>下一篇：</strong><br/> 
+ <span>位运算（5）：位异或运算
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#本地函数是什么"><span class="toc-number">1.</span> <span class="toc-text">本地函数是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#看起来好像没啥，这有什么用？"><span class="toc-number">2.</span> <span class="toc-text">看起来好像没啥，这有什么用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#嵌套本地函数"><span class="toc-number">3.</span> <span class="toc-text">嵌套本地函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用本地函数的情况"><span class="toc-number">4.</span> <span class="toc-text">使用本地函数的情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地函数在不捕获变量时为什么用-static-关键字？"><span class="toc-number">5.</span> <span class="toc-text">本地函数在不捕获变量时为什么用 static 关键字？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地函数和异常"><span class="toc-number">6.</span> <span class="toc-text">本地函数和异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法体本地函数"><span class="toc-number">7.</span> <span class="toc-text">方法体本地函数</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>27</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>24</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2019 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
