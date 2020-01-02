@@ -82,6 +82,102 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/08/csharp-common-01-nvt/" title="C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;" itemprop="url">C# 内置类型详解系列（1）：可空值类型 Nullable&lt;T&gt;</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-08T07:25:57.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>从本文开始，我们将探究 C# 里常见的一些内置类型，并详细分析这些类型的使用方式和原理（当然，如果有的话）。</p>
+<h2 id="可空值类型是什么？"><a href="#可空值类型是什么？" class="headerlink" title="可空值类型是什么？"></a>可空值类型是什么？</h2><p>在进入正题之前，我们先来思考一个问题。在 Java 语言里，我们只有一些常见的内置数据类型：<code>byte</code>、<code>int</code>、<code>short</code>、<code>long</code>、<code>float</code>、<code>double</code>、<code>char</code>、<code>boolean</code>，它们都不可空。但是，这些都不能算作一个完整的类型。为什么这么说呢？因为这些东西实际上也都是我们 Java 里提供好的一些特殊的类型，它们分别都是 <code>Byte</code>、<code>Integer</code>、<code>Short</code>、<code>Long</code>、<code>Float</code>、<code>Double</code>、<code>Character</code> 和 <code>Boolean</code> 类型的一个特殊实例。之所以这么说，是因为在泛型语法里，我们无法把那些以关键字作为类型的所谓的类型，作为泛型参数，即我们无法使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">int</span>&gt; l = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">// Wrong.</span></span><br></pre></td></tr></table></figure>
+<p>这种写法。但是，对应的这些类类型，由于都是类，所以它们反而可以被赋值为 <code>null</code> 值，即我们完全可以租到下面的操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="keyword">null</span>;   <span class="comment">// Allow.</span></span><br><span class="line">Character c = <span class="keyword">null</span>; <span class="comment">// Allow.</span></span><br><span class="line"><span class="comment">//int i = null;     // Disallow.</span></span><br></pre></td></tr></table></figure>
+<p>所以，Java 里拥有这种特殊的机制。那么，今天探讨的 C# 里，跟这个有什么关系呢？</p>
+<p>在 C# 的世界里，所有的内置类型关键字 <code>int</code>、<code>short</code>、<code>long</code>、<code>uint</code>、<code>ulong</code>、<code>ushort</code>、<code>byte</code>、<code>sbyte</code>、<code>char</code>、<code>string</code>、<code>float</code>、<code>double</code>、<code>decimal</code> 和 <code>bool</code> 等类型都是 BCL 体系规定的那些名称的别名。所谓的 BCL，就是规定的体系，比如 <code>int</code> 和 <code>System.Int32</code> 等价，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Omitted the namespace, class statements...</span></span><br><span class="line"><span class="keyword">int</span> i;   <span class="comment">// Allow.</span></span><br><span class="line">Int32 j; <span class="comment">// Also allow.</span></span><br></pre></td></tr></table></figure>
+<p>甚至为其初始化。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Omitted the namespace, class statements...</span></span><br><span class="line"><span class="keyword">int</span> i = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">3</span>);     <span class="comment">// Allow.</span></span><br><span class="line">Int32 j = <span class="keyword">new</span> Int32(<span class="number">3</span>); <span class="comment">// Also allow.</span></span><br><span class="line">Int32 k = <span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">3</span>);   <span class="comment">// Allow still.</span></span><br></pre></td></tr></table></figure>
+<p>或是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="keyword">new</span> System.Int32(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<p>等等。由于是别名，所以我们完全可以尝试着把它用作泛型的参数上：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IList&lt;<span class="keyword">int</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
+<p>所以，这一点和 Java 不同。</p>
+<p>当然，开篇内容说得太多了。我们现在看看，今天要说的内容：<strong>可空类型</strong>（Nullable Types）。可空类型是一种类型，这种类型允许为 <code>null</code> 值。在 C# 的机制里，<code>null</code> 无法赋值给一个值类型变量，因为所有的值类型，都是通过直接创建对象，然后在栈内分配空间并直接赋值的，而引用类型，则在堆里分配。由于在单独的内存块里，所以引用类型往往在分配好后，会得到一个引用，这个引用便是一个地址的信息，即一个指针信息。而指针，是可以为 <code>null</code> 的，所以引用类型才允许为 <code>null</code>。C# 不能让值类型为 <code>null</code>，但这种机制会为我们带来诸多不便，比如我们迫不得已需要一个特殊数值来表示一些特有信息时，就显得很不好搞定。</p>
+<p>举个例子，假如我们需要表示一个数据库里可为空值的数据信息，这怎么办呢？最早的方式是，通过“牺牲”一个特殊数值来表示空值，比如我们拿出 <code>0x3f3f3f3f</code> 来表达这里存储的数值为空。但这带来一个不便是，如果真有一个数据非得等于 <code>0x3f3f3f3f</code>，这怎么办呢？所以就不方便解决了。于是，在 C# 2 里，我们带来了一个新的数据类型，<strong>可空值类型</strong>（Nullable Value Types），一般被简称为 NVT。</p>
+<blockquote>
+<p>上述内容里提到了泛型，我们在此处不作过多阐述，因为这里的重点并非泛型。</p>
+</blockquote>
+<h2 id="可空值类型"><a href="#可空值类型" class="headerlink" title="可空值类型"></a>可空值类型</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>可空值类型的用法是，在类型后加上一个后缀符号“?”来表示这个类型可以赋 <code>null</code> 值，如</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+<p>它在内存之中的写法是</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable&lt;<span class="keyword">int</span>&gt; ni = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+<p>意思就是，这两种写法是等价的，唯一的区别是，后者需要引用 <code>System</code> 命名空间，就像 <code>Int32</code> 和 <code>int</code> 的唯一区别就是引用命名空间一样。</p>
+<p>显然，我们这样写是非常简单的，所以语法层面基本上就说完了。不过！</p>
+<h3 id="可空值类型和普通值类型的转换"><a href="#可空值类型和普通值类型的转换" class="headerlink" title="可空值类型和普通值类型的转换"></a>可空值类型和普通值类型的转换</h3><p>有些时候，我们会使用条件运算符 <code>?:</code> 来表达赋值行为，但如果带有可空类型，比如下面这样</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : p;</span><br></pre></td></tr></table></figure>
+<p>乍一看，这个写法是没啥毛病的，因为我们当 <code>p</code> 为空的时候，赋值为默认数值 0，而当它不为空的时候，赋值则是 <code>p</code> 的原始数值。所以看起来好像没有问题，但你写成代码后，就会得到一个语法错误，大概说“你的条件表达式的两边的返回值类型不一样”。可以看到，0 显然是 <code>int</code> 类型的，而 <code>p</code> 呢？这里的 <code>p</code> 可是 <code>int?</code> 类型的啊，条件运算符的两侧返回的必须得是完全一样的类型的结果，但这里一个是 <code>int</code>，而另外一个则是 <code>int?</code>。这显然是不对的。所以，我们只能这么做：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> q = p == <span class="literal">null</span> ? <span class="number">0</span> : (<span class="keyword">int</span>)p;</span><br></pre></td></tr></table></figure>
+<p>即为 <code>p</code> 做一次强制转换，把它改为 <code>int</code> 类型。可能你会问了。那么这种转换的行为是合理的，但为什么可以这么写呢？在 C# 2 里，可空值类型提供了这样一个语法：允许可空值类型强制转换为不可空的值类型，即取出它的值。但如果当这个类型此时为 <code>null</code> 值的时候，它将抛出一个 <code>InvalidOperationException</code> 异常。一般来说，提示信息都是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nullable object must have a value.</span><br></pre></td></tr></table></figure>
+<p>即“可空对象必须拥有数值（才能进行转换）”。所以，请万分注意。比如下面这个代码，就会产生一个错误。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? p = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">int</span> q = (<span class="keyword">int</span>)p + <span class="number">3</span>;</span><br><span class="line">Console.WriteLine(q);</span><br></pre></td></tr></table></figure>
+<p>这是显然的。我哦们尝试直接把 <code>null</code> 值的对象加上 3，这显然是不合适的。</p>
+<p>另外，<code>int?</code> 和 <code>double</code> 依旧不能直接转换，我们先得转换为 <code>int</code> 后，再依赖于隐式转换，变为 <code>double</code> 类型，即</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>? i = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">double</span> d = (<span class="keyword">double</span>)(<span class="keyword">int</span>)i;</span><br></pre></td></tr></table></figure>
+<p>先调用 <code>(int)i</code> 将 <code>i</code> 强制转换为 <code>int</code> 类型后，然后再根据 <code>int</code> 转换为 <code>double</code> 类型的转换方式继续进行一次强制转换。</p>
+<p>是的，我们很少这么书写代码，不过事实上确实需要这么做。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B/">C♯.内置类型</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
     
   </h1>
@@ -321,7 +417,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/数独/">数独</a><a href="/tags/LINQ/">LINQ</a>
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a><a href="/tags/数独/">数独</a>
   </div>
 
 </div>
@@ -827,93 +923,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/csharplang-complement-01-is-as-operator/" title="C# 语法查漏补缺系列（1）：is 和 as 运算符" itemprop="url">C# 语法查漏补缺系列（1）：is 和 as 运算符</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T09:17:04.000Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>各位好，欢迎来跟我一起学习 C# 语义探究系列篇文。我们今天第一个学习的语法点是 <code>is</code> 和 <code>as</code> 运算符。</p>
-<h2 id="is-运算符"><a href="#is-运算符" class="headerlink" title="is 运算符"></a><code>is</code> 运算符</h2><h3 id="关键字介绍"><a href="#关键字介绍" class="headerlink" title="关键字介绍"></a>关键字介绍</h3><p><code>is</code> 就好比 Java 语言里的 <code>instanceof</code>，在运算符左侧写的是变量，右侧写的是数据的类型。它会尝试测试和判定变量是否是这个类型的。如果是，则返回 <code>true</code>；而否则返回 <code>false</code>，如下示例。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> hello = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> <span class="keyword">object</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result3 = hello <span class="keyword">is</span> IEnumerable&lt;<span class="keyword">char</span>&gt;; <span class="comment">// also true</span></span><br></pre></td></tr></table></figure>
-<p>可以看到的是，只要兼容的类型，它都能测试出来。例如，字符串实现了 <code>IEnumerable&lt;char&gt;</code> 接口，那么它就完全可以转换为这个类型。在 OOP 的世界里，一个类型就好比是一个角色。你实现（或继承）了什么类型，就拥有了什么角色，你就可以转换过去。</p>
-<p>一切皆对象（object），那么我们所有人，所有事都可以被转换为 <code>object</code> 类型。包括值类型，它会迂回地转换，先隐式转换（派生自）<code>ValueType</code> 类类型，而这个类型又是派生自 <code>object</code> 的；而指针，则隐式继承自 <code>IntPtr</code> 结构类型，而这个类型依然派生自 <code>object</code>。</p>
-<p>不过，哪怕你的数据数值为 <code>null</code>，也不会报错：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>? hello = <span class="literal">null</span>; <span class="comment">// C# 8 uses `T?` to tell us the referenced type may be null.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">bool</span> result1 = hello <span class="keyword">is</span> <span class="keyword">string</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">bool</span> result2 = hello <span class="keyword">is</span> IDisposable; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-<p>它并不会抛出异常。</p>
-<p>当我们转换到指定类型时，可以使用强制转换语法：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> s = <span class="string">"hello"</span>; <span class="comment">// Define a variable.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (s <span class="keyword">is</span> <span class="keyword">string</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">string</span> p = (<span class="keyword">string</span>)s;</span><br><span class="line">    <span class="comment">// And then do what you want to do...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"Oh no, I don't know what the type of <span class="subst">&#123;<span class="keyword">nameof</span>(s)&#125;</span> is."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="is-null-和-is-constant-模式"><a href="#is-null-和-is-constant-模式" class="headerlink" title="is null 和 is constant 模式"></a><code>is null</code> 和 <code>is constant</code> 模式</h3><p>现如今，C# 语法支持 <code>is null</code> 模式来指定判断对象是否为 <code>null</code>，来避免操作符重载没有判断 <code>null</code> 的情况时尴尬报错的情况。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = (<span class="keyword">object</span>?)obj == <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>即相当于先隐式转换回最终类 <code>object</code>，并在可空情况下，判断它是否为 <code>null</code>。当然，如果你不是高版本的话，<code>object?</code> 里的问号就可以不写了。</p>
-<p>C# 还支持 <code>is constant</code> 模式来判断对象是否是指定常量数值，写法是这样的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="string">"Hello"</span></span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">string</span> comparer &amp;&amp; comparer == <span class="string">"Hello"</span></span><br></pre></td></tr></table></figure>
-<p>即，<code>obj</code> 是字符串类型，且它在转换后，要是跟 <code>Hello</code> 的写法一样的字符串。当然，值类型也可以用。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> b1 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">bool</span> b2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i &amp;&amp; i == <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>当然，注意此时是可能拆箱的，因为从引用类型转为值类型是必须拆箱的。当然，<code>obj</code> 如果被你假设为不是引用类型，就另当别论了。</p>
-</blockquote>
-<p>可见，<code>is</code> 的进化是非常明显的。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> r1 = obj <span class="keyword">is</span> <span class="keyword">int</span>;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r2 = obj <span class="keyword">is</span> <span class="keyword">int</span> i;</span><br><span class="line"><span class="comment">// ↓</span></span><br><span class="line"><span class="keyword">bool</span> r3 = obj <span class="keyword">is</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="as-运算符"><a href="#as-运算符" class="headerlink" title="as 运算符"></a><code>as</code> 运算符</h2><p><code>as</code> 运算符是 <code>is</code> 的转换模式升级版，当我们需要转换的时候，能够安全转换，并不报错的话，请采用 <code>as</code>，它的写法是这样的：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> o = <span class="string">"Hello"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">string</span> s1 = (<span class="keyword">string</span>)o; <span class="comment">// Elder style.</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// New style (in C# 7 or lower)</span></span><br></pre></td></tr></table></figure>
-<p>可以看到，代码直接用类似于 <code>is</code> 的写法，就转换了，但是需要注意的是，使用 <code>as</code> 和强制转换可能转换失败。当强制转换失败时，将会直接报错，因为它会提示“无法转换”；而 <code>as</code> 在无法转换时，对象的数值将为 <code>null</code>，即等价于如下写法</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>;</span><br><span class="line"><span class="comment">// Equivalent to</span></span><br><span class="line"><span class="keyword">string</span> s2 = o <span class="keyword">is</span> <span class="keyword">string</span> result ? result : <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>不过请注意，不论何时，<code>as</code> 运算符都能带来 <code>null</code> 数值。当你使用 C# 8 的时候，它将提示警告。如果你能保证该写法是合法转换的话，就在转换语句的末尾加上后缀 <code>!</code>，让编译器去掉对该所谓的“错误”进行报错处理。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = o <span class="keyword">as</span> <span class="keyword">string</span>; <span class="comment">// var is string?</span></span><br><span class="line"><span class="keyword">var</span> s2 = (o <span class="keyword">as</span> <span class="keyword">string</span>)!; <span class="comment">// var is string</span></span><br></pre></td></tr></table></figure>
-<p>但请注意，<code>null</code> 包容运算符（有时候也叫 <code>null</code> 禁用运算符，null-suppress operator）作用的内容是转换结果，而不是类型，所以感叹号应加在整体上，故需要打小括号。</p>
-<p>但是，如果你不小心，错把 <code>o</code> 变量认为是“一定为 <code>string</code>”，而为其加上了该符号后，后续的执行语句在报错时会显得很隐蔽。即如果代码报错，显示 <code>NullReferenceException</code> 时，有可能你发现该对象的类型并没有带 <code>?</code> 后缀，而显得非常迷惑。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/C%E2%99%AF-%E8%AF%AD%E6%B3%95-%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">C♯.语法.查漏补缺</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/7/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/9/">下一页 ↓</a>
@@ -941,7 +950,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>27</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>28</sup></a></li>
 			
 		
 			
@@ -1009,11 +1018,11 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 			
@@ -1085,7 +1094,7 @@
 		
 
 		<p class="copyright">
-		Copyright © 2019 
+		Copyright © 2020 
 		
 		<a href="/about" target="_blank" title="向向">向向</a>
 		
