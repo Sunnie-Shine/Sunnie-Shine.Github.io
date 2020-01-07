@@ -82,6 +82,131 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/12/10/bitwise-operations-01-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-10T01:47:17.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。</p>
+<h2 id="什么是位运算？"><a href="#什么是位运算？" class="headerlink" title="什么是位运算？"></a>什么是位运算？</h2><p>位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。</p>
+<p>常见的位运算有如下一些：</p>
+<ul>
+<li>位与运算 <code>&amp;</code>（and）；</li>
+<li>位或运算 <code>|</code>（or）；</li>
+<li>位取反运算 <code>~</code>（not）；</li>
+<li>位异或运算 <code>^</code> （xor）；</li>
+<li>位左移运算 <code>&lt;&lt;</code> （shl）；</li>
+<li>位右移运算 <code>&gt;&gt;</code> （shr）。</li>
+</ul>
+<p>下面我们逐个进行介绍。</p>
+<h2 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h2><h3 id="位与运算"><a href="#位与运算" class="headerlink" title="位与运算"></a>位与运算</h3><p>位与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+       & Binary   & Decimal\\
+       & 10101010 & 170\\
+    \& & 00110111 & 55\\
+       & \text{_________}\\
+       & 00100010 & 34
+\end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
+<p>那么你输出的结果一定是 34（0b00100010）。</p>
+<blockquote>
+<p>我们约定，把一个二进制位表示为 <code>0baaaa</code> 的方式，其中 <code>aaaa</code> 部分是二进制 0 和 1 的序列；<code>0oaaaa</code> 表示为八进制数，<code>0xaaaa</code> 表示为十六进制。</p>
+<p>注意二进制的开头是 0b 前缀（数字零和字母 b），八进制是 0o 前缀（数字零和字母 o），十六进制的开头是 0x 前缀（数字零和字母 x）。</p>
+</blockquote>
+<h3 id="位或运算"><a href="#位或运算" class="headerlink" title="位或运算"></a>位或运算</h3><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+      & Binary   & Decimal\\
+      & 10101010 & 170\\
+    | & 00110111 & 55\\
+      & \text{_________}\\
+      & 10111111 & 191
+\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
+<h3 id="位取反运算"><a href="#位取反运算" class="headerlink" title="位取反运算"></a>位取反运算</h3><p>位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+    \text{~} & 10101010 & 170\\
+             & \text{_________}\\
+             & 01010101 & 85
+\end{matrix}</script><h3 id="位异或运算"><a href="#位异或运算" class="headerlink" title="位异或运算"></a>位异或运算</h3><p>异或运算比较生疏，我们可以认为是“要么……要么……”。当且仅当两者里取了一个 1 的时候才是 1，都是 0 或都是 1 则都会得到 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+             & Binary   & Decimal\\
+             & 10101010 & 170\\
+    \text{^} & 00110111 & 55\\
+             & \text{_________}\\
+             & 10011101 & 157
+\end{matrix}</script><h3 id="位左移运算"><a href="#位左移运算" class="headerlink" title="位左移运算"></a>位左移运算</h3><p>位左移运算会把所有二进制位往左移动若干比特单位，然后溢出的部分直接不要了；反之，移动的末端会补充 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+              & Binary   & Decimal\\
+    \text{<<} & 10101010 & 170\\
+              & \text{_________}\\
+              & 01010100 & 84
+\end{matrix}</script><blockquote>
+<p>注意，位左移运算是需要两个操作数的。第一个数就是需要移动二进制位的整数，而第二个数则是移动多少次（即左移动多少个比特单位），例如 <code>170 &lt;&lt; 2</code> 表示把 170 的二进制位向左移动两个比特单位，而不是上面这样只移动一个单位。</p>
+</blockquote>
+<h3 id="位右移运算"><a href="#位右移运算" class="headerlink" title="位右移运算"></a>位右移运算</h3><p>位右移运算和位左移运算相反，它的移动方向是向右的。它会把所有二进制位往右移动一个比特单位，然后溢出部分不要了；反之，在移动端的末尾补充 0。</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+              & Binary   & Decimal\\
+    \text{>>} & 10101010 & 170\\
+              & \text{_________}\\
+              & 01010101 & 85
+\end{matrix}</script>
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/位运算/">位运算</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/27/csharp-complier-generating-yield/" title="yield 关键字生成的代码" itemprop="url">yield 关键字生成的代码</a>
     
   </h1>
@@ -687,213 +812,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/24/clang-17-pointer-and-function/" title="C 语言语法系列（17）：指针和函数" itemprop="url">C 语言语法系列（17）：指针和函数</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-24T06:11:13.000Z" itemprop="datePublished"> 发表于 2019-11-24</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前文我们提到了指针的很多用法，比如指针和普通变量的使用，利用指针来指向变量，以间接操作变量的方式来控制程序的行为。我们还讲到了指针和数组的方式，以及把数组传入函数的参数的时候，会退化为指针的形式，因此数组当参数传递到函数里的时候，是以指针形式存在的，所以我们需要单独为其添加一个参数表示数组的长度。我们甚至还讨论了字符串（字符数组）和普通数组的表现方式。</p>
-<p>今天我们要谈论一种新型语法，这种语法不多见，所以很少有人接触到，所以比较难。但它依然很有用途。</p>
-<h2 id="数组有指针，那么函数呢？"><a href="#数组有指针，那么函数呢？" class="headerlink" title="数组有指针，那么函数呢？"></a>数组有指针，那么函数呢？</h2><p>很令人欣喜和疑惑的是，在 C 语言里，函数也具有指针一说。在内存里，如果我们不尝试把代码编译后的二进制串放到内存里，我们就无法调用和执行这些方法。那么唯一能找到它们执行位置的就是通过这些函数的执行地址来确定函数的位置了。既然是地址，就可以存在指针。所以 C 语言为函数也提供了指针的说法。</p>
-<p>在前文里，我们已经提到了数组退化为指针作为返回值的一个说法。这种返回指针的函数叫做<strong>指针函数</strong>，它们并不是多余和难用的，因为需要堆内存这一知识点才能辅助我们更好使用它们，不过因为超过了讲解范围，所以我们没有在上一节内容里提及到非常深入。</p>
-<p>今天要提到的是，间接调用函数的机制。这种机制被称为<strong>函数指针</strong>。</p>
-<h2 id="函数指针的用法"><a href="#函数指针的用法" class="headerlink" title="函数指针的用法"></a>函数指针的用法</h2><p>还记得函数需要声明吧？声明也被称为定义，所以这些写在开头的内容被称为“函数变量”的定义。它们被广义化称为一个变量，它们满足标识符命名规则，而且也需要先定义后使用。</p>
-<h3 id="基本用法的实现流程"><a href="#基本用法的实现流程" class="headerlink" title="基本用法的实现流程"></a>基本用法的实现流程</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, Add(a, b));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>比如上述一个简单的执行流程，我们在外面写的 <code>int Add(int, int)</code> 就是函数的定义。当我们定义了它们，我们就可以使用 <code>Add</code> 的函数了，否则，你必须把 <code>Add</code> 放在 <code>main</code> 前面书写。</p>
-<p>不过，函数指针的写法格式有点类似于数组指针，它需要把函数名括起来，前面加上指针符号：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*Adder)(<span class="keyword">int</span>, <span class="keyword">int</span>)</span><br></pre></td></tr></table></figure>
-<p>这就是一个函数指针。这种指针仅用于指向一个函数：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*Adder)(<span class="keyword">int</span>, <span class="keyword">int</span>) = &amp;Add;</span><br></pre></td></tr></table></figure>
-<p>那么，在使用的时候，使用取内容符号 <code>*</code>，取出 <code>Adder</code> 这个函数指针指向的函数，并执行调用：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> result = (*Adder)(a, b);</span><br></pre></td></tr></table></figure>
-<p>这样就可以间接通过 <code>Adder</code> 函数指针，来调用指向的函数 <code>Add</code>，传入两个参数 <code>a</code> 和 <code>b</code> 来得到结果，赋值给 <code>result</code> 了。所以总的写法格式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Define a function pointer to point a specified function.</span></span><br><span class="line">    <span class="keyword">int</span> (*Adder)(<span class="keyword">int</span>, <span class="keyword">int</span>) = &amp;Add;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Call the function pointee to get the result.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, (*Adder)(a, b));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里特别要提及的是，调用和声明函数指针的时候，都需要这个星号。第一个星号（第 8 行）指的是定义语句的星号，表示定义的这个变量是一个函数指针变量；而第二个星号（第 11 行）则指的是调用指向函数（即取出内容）。</p>
-<p>在 C 语言里，由于为函数指针赋值操作（<code>int (*Adder)(int, int) = &amp;Add</code>）和调用指向函数操作（<code>(*Adder)(a, b)</code>）两个操作基本上都是这么书写的，没有其它的形式，所以指针赋值操作里的取地址符可以不需要写，而且调用函数指针指向的函数的操作也可以不写这个取内容符号，即上面第 8 行的代码和第 11 行的代码可以修改变为如下方式：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Line 8.</span></span><br><span class="line"><span class="keyword">int</span> (*Adder)(<span class="keyword">int</span>, <span class="keyword">int</span>) = &amp;Add; <span class="comment">// Elder.</span></span><br><span class="line"><span class="keyword">int</span> (*Adder)(<span class="keyword">int</span>, <span class="keyword">int</span>) = Add; <span class="comment">// Newer, omit address-of operator `&amp;`.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Line 11.</span></span><br><span class="line">(*Adder)(a, b) <span class="comment">// Elder.</span></span><br><span class="line">Adder(a, b) <span class="comment">// Newer, omit indirection operator `*`.</span></span><br></pre></td></tr></table></figure>
-<h3 id="函数指针构成的数组？"><a href="#函数指针构成的数组？" class="headerlink" title="函数指针构成的数组？"></a>函数指针构成的数组？</h3><p>下面我们为了更加熟悉语法，我们来一个难一点的。我们尝试用一个数组来存放一组函数指针。我们之前学过，数组可以存放整数（整数数组）、小数（小数数组）和字符（字符串或字符数组）。</p>
-<p>首先考虑如下情况，我们尝试用四个函数来实现四则运算。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a + b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Subtract</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a - b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Multiply</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a * b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Divide</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a / b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Modulo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a % b; &#125;</span><br></pre></td></tr></table></figure>
-<p>那么，我们发现，它们的实现都是传入两个 <code>int</code> 参数，返回 <code>int</code> 结果，所以我们尝试把它们存到数组里。我们显然可以发现，数组的类型是这个函数指针类型，而函数指针类型的格式是</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*Calculator)(<span class="keyword">int</span>, <span class="keyword">int</span>)</span><br></pre></td></tr></table></figure>
-<p>那么，这个数组就是</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*Calculators[])(<span class="keyword">int</span>, <span class="keyword">int</span>)</span><br></pre></td></tr></table></figure>
-<p>这个类型了。</p>
-<blockquote>
-<p>为什么函数指针数组这么书写呢？这是因为，数组符号 <code>[]</code> 一般都挨在变量名称后，所以这里也不例外。我们在原始的函数指针名后添加数组符号 <code>[]</code> 暗示它是数组，这个时候它就可以表示一个函数指针数组了。而且，我们不用考虑函数指针左侧的这个星号 <code>*</code> 到底是作用在谁上的。因为这个运算符挨着谁，就是谁，它是单目运算符。</p>
-</blockquote>
-<p>现在，我们为其赋初始值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (*Calculators[])(<span class="keyword">int</span>, <span class="keyword">int</span>) = &#123; &amp;Add, &amp;Subtract, &amp;Multiply, &amp;Divide, &amp;Modulo &#125;;</span><br></pre></td></tr></table></figure>
-<p>然后我们尝试对这个数组进行 <code>for</code> 循环遍历，然后挨个执行和输出。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d "</span>, (*Calculators[i])(<span class="number">5</span>, <span class="number">13</span>));</span><br></pre></td></tr></table></figure>
-<p>这样执行下来，整体的输出就是 <code>18 -8 65 0 5</code> 了。整体代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a + b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Subtract</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a - b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Multiply</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a * b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Divide</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a / b; &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Modulo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a % b; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> (*Calculators[])(<span class="keyword">int</span>, <span class="keyword">int</span>) = &#123; Add, Subtract, Multiply, Divide, Modulo &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, Calculator(<span class="number">5</span>, <span class="number">13</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="函数指针作参数"><a href="#函数指针作参数" class="headerlink" title="函数指针作参数"></a>函数指针作参数</h2><p>在什么场合会用到如此鸡肋和别扭的写法呢？考虑一下。前文提到的 <code>printf</code>、<code>puts</code> 等等函数都是系统为我们已经提供好了的，我们无需实现，而且无法修改它们的实现。这样的函数既然自带，肯定考虑到了扩展性，即考虑到我们可能会在后期更改或给予一些特殊情况。函数指针就可以解决一部分问题。</p>
-<p>如果我们尝试为代码写一个冒泡排序的算法代码，如下所示：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BubbleSort</span><span class="params">(<span class="keyword">int</span> *arr, <span class="keyword">const</span> <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, j, temp;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length - <span class="number">1</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; length - <span class="number">1</span> - i; j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j] &gt; arr[j + <span class="number">1</span>])</span><br><span class="line">            &#123;</span><br><span class="line">                temp = arr[j];</span><br><span class="line">                arr[j] = arr[j + <span class="number">1</span>];</span><br><span class="line">                arr[j + <span class="number">1</span>] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样就实现了。不过，如果我们考虑扩展性，万一用户要写一个降序执行冒泡排序的算法呢？那岂不是照抄代码，只改掉比较的代码（第 8 行）？</p>
-<p>是的，实际上，我们实现仅需要修改第 8 行的比较，把 <code>&gt;</code> 改为 <code>&lt;</code> 就好了。不过很显然的是，这种东西如果非得让用户自行实现一遍，还不如提供一个参数，让它自己去实现比较操作。所以我们可以尝试为这个函数添加一个函数指针作为一个参数，专门让用户自己实现这个比较算法，然后用函数指针来调用自己实现的这个比较就可以了：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BubbleSort</span><span class="params">(<span class="keyword">int</span> *arr, <span class="keyword">const</span> <span class="keyword">int</span> length, <span class="keyword">int</span> (*Comparer)(<span class="keyword">int</span>, <span class="keyword">int</span>))</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, j, temp;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length - <span class="number">1</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; length - <span class="number">1</span> - i; j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ((*Comparer)(arr[j], arr[j + <span class="number">1</span>])) <span class="comment">// Note here.</span></span><br><span class="line">            &#123;</span><br><span class="line">                temp = arr[j];</span><br><span class="line">                arr[j] = arr[j + <span class="number">1</span>];</span><br><span class="line">                arr[j + <span class="number">1</span>] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>仅需要这么修改它，用户层面就可以自己实现和修改比较算法的代码，来实现比较操作了。整体代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BubbleSort</span><span class="params">(<span class="keyword">int</span> *arr, <span class="keyword">const</span> <span class="keyword">int</span> length, <span class="keyword">int</span> (*Comparer)(<span class="keyword">int</span>, <span class="keyword">int</span>))</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, j, temp;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length - <span class="number">1</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; length - <span class="number">1</span> - i; j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ((*Comparer)(arr[j], arr[j + <span class="number">1</span>])) <span class="comment">// Note here.</span></span><br><span class="line">            &#123;</span><br><span class="line">                temp = arr[j];</span><br><span class="line">                arr[j] = arr[j + <span class="number">1</span>];</span><br><span class="line">                arr[j + <span class="number">1</span>] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Write this function to implement the comparison.</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Compare</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a &lt; b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a[] = &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span> &#125;;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">9</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, a[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    BubbleSort(a, <span class="number">9</span>, &amp;Compare);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">9</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, a[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="函数指针传参时的函数的声明"><a href="#函数指针传参时的函数的声明" class="headerlink" title="函数指针传参时的函数的声明"></a>函数指针传参时的函数的声明</h2><p>最头疼的是，这种函数的声明语句应该如何写。实际上，照着前文数组指针的格式简写就好，把参数名称全去掉，符号该有的还保留就可以了：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BubbleSort</span><span class="params">(<span class="keyword">int</span>*, <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">int</span> (*)(<span class="keyword">int</span>, <span class="keyword">int</span>))</span></span>;</span><br></pre></td></tr></table></figure>
-<p>你答对了吗？</p>
-<p>那么，再来一个麻烦的。我们尝试把刚才的函数指针变量构成的数组作为函数参数传递进去。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Subtract</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Multiply</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Divide</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Modulo</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="comment">// ???</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> (*Calculators[])(<span class="keyword">int</span>, <span class="keyword">int</span>) = &#123; Add, Subtract, Multiply, Divide, Modulo &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, Calculator(<span class="number">5</span>, <span class="number">13</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExecuteAllFuncs</span><span class="params">(<span class="keyword">int</span> (**Calculators)(<span class="keyword">int</span>, <span class="keyword">int</span>), <span class="keyword">int</span> length, <span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, (*(Calculator[<span class="number">0</span>]))(a, b));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a + b; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Subtract</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a - b; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Multiply</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a * b; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Divide</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a / b; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Modulo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123; <span class="keyword">return</span> a % b; &#125;</span><br></pre></td></tr></table></figure>
-<p>答案就是</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExecuteAllFuncs</span><span class="params">(<span class="keyword">int</span> (*[])(<span class="keyword">int</span>, <span class="keyword">int</span>), <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="comment">// Or</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExecuteAllFuncs</span><span class="params">(<span class="keyword">int</span> (**)(<span class="keyword">int</span>, <span class="keyword">int</span>), <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>, <span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>为什么可以写作 <code>int (*[])(int, int)</code> 或 <code>int (**)(int, int)</code> 呢？这是因为，去掉函数指针的部分 <code>int (*)(int, int)</code> 外，这两种写法就剩下一个 <code>[]</code> 和一个指针定义符 <code>*</code> 了，这不就恰好是一个数组的意思吗？所以，这种写法恰好就表示了一个函数指针变量的数组。</p>
-<h2 id="快速排序-qsort-函数"><a href="#快速排序-qsort-函数" class="headerlink" title="快速排序 qsort 函数"></a>快速排序 <code>qsort</code> 函数</h2><p>在 C 语言里甚至为我们贴心地提供了为数值序列排序的函数 <code>qsort</code>，不过这个函数用起来非常复杂，需要函数指针。</p>
-<h3 id="先来看看使用"><a href="#先来看看使用" class="headerlink" title="先来看看使用"></a>先来看看使用</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Comparison function.</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *a, <span class="keyword">const</span> <span class="keyword">void</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> *(<span class="keyword">int</span> *)a - *(<span class="keyword">int</span> *)b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a[] = &#123; <span class="number">3</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span> &#125;;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">9</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, a[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    qsort(a, <span class="number">9</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), &amp;cmp); <span class="comment">// Note here.</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">9</span>; i++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, a[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    system(<span class="string">"pause"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样调用它就可以立马得到排序后的数组，和上面自己实现的冒泡排序的操作基本上一样，不过差别是需要添加的函数指针，有一些奇怪。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qsort(a, <span class="number">9</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), &amp;cmp);</span><br></pre></td></tr></table></figure>
-<p>这个函数第一个参数传入的是数组名（即数组的首地址），而第二个参数传入的是数组的长度 9。</p>
-<p>第三个参数和第四个参数比较麻烦。第三个参数传入的是数组的每一个元素的内存大小，显然这个数组是 <code>int</code> 类型的，所以需要指定这个数组的元素大小是 <code>sizeof(int)</code>，而第四个参数传入的是比较函数。这里是在上面实现的 <code>cmp</code> 函数，所以这里写 <code>&amp;cmp</code> 或直接写 <code>cmp</code>。</p>
-<p>下面来分析一下自己实现的函数 <code>cmp</code> 到底为什么参数这么奇怪。</p>
-<h3 id="void-类型"><a href="#void-类型" class="headerlink" title="void * 类型"></a><code>void *</code> 类型</h3><p><code>const</code> 是一个关键字，表示指向不可修改，所以这里我们先可以忽略掉。那么，<code>void *</code> 是什么类型呢？<code>void *</code> 往往被称为无类型指针，这种类型允许你在传入的时候传入任何指针类型（<code>int *</code>、<code>char *</code> 等都可以）。不过在使用取值的时候，由于指针无法确定指向的元素类型，所以需要你自己给出强制转换，它就会把这个类型转换为指定的类型的指针。例如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">void</span> *p = &amp;a; <span class="comment">// Okay.</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%p "</span>, (<span class="keyword">int</span> *)p); <span class="comment">// Will print the address of `p`.</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, *(<span class="keyword">int</span> *)p); <span class="comment">// Will print the value of pointee of `p`.</span></span><br></pre></td></tr></table></figure>
-<p>第 3 行将会输出这个 <code>p</code> 指针的地址数值，而第 4 行将在取出地址的前提下，使用 <code>*</code> 间接取出数值，得到 3 这个结果。注意，<code>*(int *)p</code> 和 <code>*((int *)p)</code> 是等价的，你无需为后面这一坨内容添加括号。</p>
-<p>那么，我们转回 <code>qsort</code> 函数就可以看到，整个函数的声明是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">qsort</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">void</span> *, <span class="comment">// An array to compare and sort. The elements of array can be any type.</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span>, <span class="comment">// The count of the array.</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span>, <span class="comment">// The size of each element.</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> (*)(<span class="keyword">const</span> <span class="keyword">void</span> *, <span class="keyword">const</span> <span class="keyword">void</span> *) <span class="comment">// A comparison function pointer which</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// used for compare two values.</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// The type of the parameter is `const void *`</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// because the element type is unknown</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                        <span class="comment">// from `void *` type array.</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>从注释里就可以看到，第四个参数里为什么传入的两个参数是 <code>const void *</code> 类型了：因为两个参数都指向元素，而这两个元素的类型我们是无法从第一个参数 <code>void *</code> 类型而确定下来的，所以我们不得不推后到调用时候才能确定，所以这个时候，我们不得不为其设置 <code>void *</code> 类型来表示这个指向的元素是无类型（未知类型）的。</p>
-<p>那么，从实现角度上说，<code>cmp</code> 函数里给定的代码是：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *a, <span class="keyword">const</span> <span class="keyword">void</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> *(<span class="keyword">int</span> *)a - *(<span class="keyword">int</span> *)b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由此可以看出，我们如果需要强制得到元素的类型，需要把指针 <code>a</code> 和 <code>b</code> 转换为 <code>int *</code> 类型才可以去使用和取值。然后，我们转换后，把地址数值再使用 <code>*</code> 运算符取出元素数值，将两者相减就可以得到它们俩的大小关系了。当然，如果需要降序排序，只需要把被减数和减数换一下位置，即改为 <code>*(int *)b - *(int *)a</code> 即可。</p>
-<p>总的来说，<code>void *</code> 类型是一个可以指向任何类型变量的指针，但需要确定指向元素的数值时，需要自己给定指针的类型，并通过间接取值的运算符 <code>*</code> 来取值：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">void</span> *p = &amp;a;</span><br><span class="line"><span class="keyword">int</span> *pointer = (<span class="keyword">int</span> *)p;</span><br><span class="line"><span class="keyword">int</span> value = *pointer;</span><br></pre></td></tr></table></figure>
-<p>即强制转换 <code>void *</code> 为其它类型的指针 <code>T *</code>。</p>
-<h3 id="那么-NULL-常量？"><a href="#那么-NULL-常量？" class="headerlink" title="那么 NULL 常量？"></a>那么 <code>NULL</code> 常量？</h3><p>前文提到了一个 <code>NULL</code> 常量，这个常量表示为所有指针类型的默认数值，即指向 0 号内存的指针。当我们现在已经学会了 <code>void *</code> 类型后，就可以知道 <code>NULL</code> 的本面目：<code>(void *)0</code>，它直接把 0 强制转换为一个地址，而这个地址还是无类型的。所以这允许了所有的类型都可以用。所以，<code>NULL</code> 和 <code>(void *)0</code> 等价。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>那么至此，我们就把所有关于指针的内容就介绍完了。现在我们作出总结。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>指针用法</th>
-<th>意义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>int *p</code></td>
-<td>一个指向 <code>int</code> 类型变量的一级指针</td>
-</tr>
-<tr>
-<td><code>int **p</code></td>
-<td>一个用于指向 <code>int *</code> 一级指针的指针</td>
-</tr>
-<tr>
-<td><code>int p[]</code></td>
-<td>一个存放 <code>int</code> 类型元素的一维数组</td>
-</tr>
-<tr>
-<td><code>int p[][]</code></td>
-<td>一个存放 <code>int</code> 类型元素的二维数组</td>
-</tr>
-<tr>
-<td><code>int *p[]</code></td>
-<td>一个存储 <code>int *</code> 类型元素的一维数组</td>
-</tr>
-<tr>
-<td><code>int (*p)[]</code></td>
-<td>一个用于指向 <code>int []</code> 一维数组的指针</td>
-</tr>
-<tr>
-<td><code>int p()</code></td>
-<td>一个返回 <code>int</code> 类型，不要参数的函数</td>
-</tr>
-<tr>
-<td><code>int p(int)</code></td>
-<td>一个返回 <code>int</code> 类型，需要一个 <code>int</code> 类型参数的函数</td>
-</tr>
-<tr>
-<td><code>int p(int *)</code></td>
-<td>一个返回 <code>int</code> 类型，需要一个 <code>int *</code> 类型参数的函数</td>
-</tr>
-<tr>
-<td><code>int *p(int)</code></td>
-<td>一个返回 <code>int *</code> 类型，需要一个 <code>int</code> 类型参数的函数</td>
-</tr>
-<tr>
-<td><code>int **p()</code></td>
-<td>一个返回 <code>int **</code>、且不要参数的函数</td>
-</tr>
-<tr>
-<td><code>int (*p)(int)</code></td>
-<td>一个指向形如 <code>int f(int)</code> 的函数的函数指针</td>
-</tr>
-<tr>
-<td><code>int *(*p)()</code></td>
-<td>一个指向形如 <code>int *f()</code> 的函数的函数指针</td>
-</tr>
-<tr>
-<td><code>int *p[]()</code></td>
-<td>一个存放形如 <code>int *f()</code> 的函数的一维数组</td>
-</tr>
-<tr>
-<td><code>int (*p[])()</code></td>
-<td>一个存放形如 <code>int f()</code> 的函数指针的一维数组</td>
-</tr>
-<tr>
-<td><code>int (**p)()</code></td>
-<td>一个指向 <code>int (*p)()</code> 的函数指针的指针</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>这些写法都在函数声明时去掉变量名 <code>p</code> 即可。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
@@ -993,11 +911,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>

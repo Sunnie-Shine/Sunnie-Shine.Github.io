@@ -4,25 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C 语言语法系列（12）：三维或更高维的数组 | 向向的博客</title>
+    <title>函数指针作结构体成员 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="有没有三维数组？前文已经描述了一维数组和二维数组的基本语法和使用方式。那么，按道理来说，三维数组或者更高维度的数组是存在的。确实如此。不过…… 三维数组的定义拿三维数组来说，我们要定义一个三维数组，并按照规范初始化赋值，就得是这样的： 123456789int cube[2][3][4] =&amp;#123;    &amp;#123; 0 &amp;#125;,    &amp;#123;        &amp;#123; 1 &amp;">
-<meta name="keywords" content="C">
+    <meta name="description" content="函数指针？看下下面这个例子： 1234567891011121314151617181920212223242526272829303132333435363738394041#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;malloc.h&amp;gt;void print(const int);typedef struct&amp;#">
+<meta name="keywords" content="C 语言">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C 语言语法系列（12）：三维或更高维的数组">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;22&#x2F;clang-12-hi-dimension-array&#x2F;index.html">
+<meta property="og:title" content="函数指针作结构体成员">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2020&#x2F;01&#x2F;07&#x2F;function-pointer-as-member-in-structs&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="有没有三维数组？前文已经描述了一维数组和二维数组的基本语法和使用方式。那么，按道理来说，三维数组或者更高维度的数组是存在的。确实如此。不过…… 三维数组的定义拿三维数组来说，我们要定义一个三维数组，并按照规范初始化赋值，就得是这样的： 123456789int cube[2][3][4] =&amp;#123;    &amp;#123; 0 &amp;#125;,    &amp;#123;        &amp;#123; 1 &amp;">
+<meta property="og:description" content="函数指针？看下下面这个例子： 1234567891011121314151617181920212223242526272829303132333435363738394041#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;malloc.h&amp;gt;void print(const int);typedef struct&amp;#">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;22&#x2F;clang-12-hi-dimension-array&#x2F;c6262.png">
-<meta property="og:updated_time" content="2019-11-22T13:12:31.130Z">
+<meta property="og:updated_time" content="2020-01-07T03:34:39.920Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;22&#x2F;clang-12-hi-dimension-array&#x2F;c6262.png">
 
     
     
@@ -84,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/22/clang-12-hi-dimension-array/" title="C 语言语法系列（12）：三维或更高维的数组" itemprop="url">C 语言语法系列（12）：三维或更高维的数组</a>
+      <a href="/2020/01/07/function-pointer-as-member-in-structs/" title="函数指针作结构体成员" itemprop="url">函数指针作结构体成员</a>
     
   </h1>
   <p class="article-author">By
@@ -92,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-22T12:46:11.000Z" itemprop="datePublished"> 发表于 2019-11-22</time>
+    <time datetime="2020-01-07T03:24:51.000Z" itemprop="datePublished"> 发表于 2020-01-07</time>
     
   </p>
 </header>
@@ -101,28 +99,23 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#有没有三维数组？"><span class="toc-number">1.</span> <span class="toc-text">有没有三维数组？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三维数组的定义"><span class="toc-number">2.</span> <span class="toc-text">三维数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三维数组的存取数值"><span class="toc-number">3.</span> <span class="toc-text">三维数组的存取数值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更高维度的数组？"><span class="toc-number">4.</span> <span class="toc-text">更高维度的数组？</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针？"><span class="toc-number">1.</span> <span class="toc-text">函数指针？</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="有没有三维数组？"><a href="#有没有三维数组？" class="headerlink" title="有没有三维数组？"></a>有没有三维数组？</h2><p>前文已经描述了一维数组和二维数组的基本语法和使用方式。那么，按道理来说，三维数组或者更高维度的数组是存在的。确实如此。不过……</p>
-<h2 id="三维数组的定义"><a href="#三维数组的定义" class="headerlink" title="三维数组的定义"></a>三维数组的定义</h2><p>拿三维数组来说，我们要定义一个三维数组，并按照规范初始化赋值，就得是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cube[<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123; <span class="number">0</span> &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>或</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cube[][<span class="number">3</span>][<span class="number">4</span>] =</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span> &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="number">4</span>, <span class="number">5</span> &#125;,</span><br><span class="line">        &#123; <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>都是允许的。具体的赋值原理和原因在前文已经阐述得非常详细了。但需要你注意两个地方。</p>
-<p>第一，不完全赋值是可以混用的，比如第一个示例里的赋值模式，在第一个大括号里给了一个 0，这表示会把第一个维度里的所有元素全部赋值为 0。那么第一个维度里包含哪些元素呢？或者说，元素一共多少个呢？</p>
-<p>可以从最上面的定义语句的行元素数、列元素数和竖元素数看出，这个三维数组一共有 2 行 3 列 4 竖。不过三维数组复杂的地方在于，它如何规划内存空间。我们依旧按照顺次来看。这个三维数组会分为两个大块来表示行，即这个是一个一维数组，而这个一维数组一共包含两个元素，都存放的是一个<strong>二维数组</strong>，而这个二维数组内存放着 3 行 4 列的元素，这么一个情况。</p>
-<p>不过，可以从分配内存空间来看，三维数组只能省略行元素个数这一个条件。</p>
-<h2 id="三维数组的存取数值"><a href="#三维数组的存取数值" class="headerlink" title="三维数组的存取数值"></a>三维数组的存取数值</h2><p>三维数组的存取数值的方式和二维数组雷同，不过还是希望你注意的是，每一个维度的索引都是从 0 开始的，所以不要忘了这一点，而超出了数组内存的范围。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> value = arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
-<p>将会取出这个数组的第二行、第三列的第四个元素。</p>
-<h2 id="更高维度的数组？"><a href="#更高维度的数组？" class="headerlink" title="更高维度的数组？"></a>更高维度的数组？</h2><p>是的，C 语言甚至允许你创建四维数组、五维数组等等。那么 C 语言创建数组的上限是多少呢？维度是没有上限一说的，但它受到电脑容量的制约。</p>
-<p>如果你尝试把数组元素总数定义得过大的话，就会出现这个错误信息：</p>
-<p><img src="c6262.png" alt=""></p>
-<p>这个错误信息意味着你的数组定义得太大了。具体的内容说的是：“函数在栈里使用了 ‘2147483644’ 字节，超出了原本定义的栈大小 ‘16384’，请尝试移动一些数据到堆里去”。</p>
-<p>按照 16384 而言，你只能定义一个小于这么多的所占内存的数组。而在外部定义也不可以超过 1073741823 个元素。</p>
-<p>所以，请你合理使用内存。</p>
+		<h2 id="函数指针？"><a href="#函数指针？" class="headerlink" title="函数指针？"></a>函数指针？</h2><p>看下下面这个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">void</span> (*<span class="built_in">print</span>)(<span class="keyword">const</span> <span class="keyword">int</span>);</span><br><span class="line">&#125; Object;</span><br><span class="line"></span><br><span class="line"><span class="function">Object *<span class="title">createInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Object *o = (Object *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Object));</span><br><span class="line">    <span class="keyword">if</span> (o != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        o-&gt;<span class="built_in">print</span> = &amp;<span class="built_in">print</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispose</span><span class="params">(Object *o)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">free</span>(o);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Object *o = createInstance();</span><br><span class="line">    (*o-&gt;<span class="built_in">print</span>)(<span class="number">32</span>);</span><br><span class="line">    dispose(o);</span><br><span class="line"></span><br><span class="line">    system(<span class="string">"pause"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个程序似乎看起来很复杂，不过……</p>
+<p>有没有想过，它这么书写就非常像是高级编程语言里的对象实例化和对象调用了。</p>
+<p>我定义了一个 <code>Object</code> 类型的对象，这个对象啥都没有，没有字段，没有所谓的属性和其它东西，但它却具有一个函数指针。这个函数指针在 <code>createInstance</code> 方法下被初始化，指向 <code>print</code> 函数。当我们需要使用的时候，使用星号进行解取地址操作，然后调用方法，传入参数 32。</p>
+<p>注意，函数指针在前文里说过，一般它的使用就是指向函数和控制和间接调用函数，所以它可以不写星号也可以成功，故这个代码 <code>(*o-&gt;print)(32)</code> 也可以不要前面的括号和星号：<code>o-&gt;print(32)</code>。</p>
+<p>如果你希望规划好所有的函数的存放位置（比如所有有关 <code>Object</code> 的方法放在一起），你可以尝试创建一个 <code>Object.c</code> 文件，然后把除了 <code>print</code> 函数的东西都放在里面；然后单独创建一个 <code>global.c</code> 的文件，把 <code>print</code> 函数单独放进去；最后使用头文件 <code>global.h</code> 的形式进行 <code>#include</code> 指令的引用，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// global.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%d\n"</span>, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// global.h</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Object.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"global.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Object.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">Object *<span class="title">createInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Object *o = (Object *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Object));</span><br><span class="line">	<span class="keyword">if</span> (o != <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		o-&gt;<span class="built_in">print</span> = &amp;<span class="built_in">print</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispose</span><span class="params">(Object *o)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">free</span>(o);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Object.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">void</span> (*<span class="built_in">print</span>)(<span class="keyword">const</span> <span class="keyword">int</span>);</span><br><span class="line">&#125; Object;</span><br><span class="line"></span><br><span class="line"><span class="function">Object* <span class="title">createInstance</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispose</span><span class="params">(Object* o)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"global.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Object.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Object* o = createInstance();</span><br><span class="line">	(*o-&gt;<span class="built_in">print</span>)(<span class="number">32</span>);</span><br><span class="line">	dispose(o);</span><br><span class="line"></span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用结果依然是符合预期行为的。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -130,13 +123,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
+  <a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/">C 语言</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C/">C</a>
+  <span></span> <a href="/tags/C-语言/">C 语言</a>
   </div>
 
 </div>
@@ -145,7 +138,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/22/clang-12-hi-dimension-array/" data-title="C 语言语法系列（12）：三维或更高维的数组 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2020/01/07/function-pointer-as-member-in-structs/" data-title="函数指针作结构体成员 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -158,19 +151,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/23/clang-13-function/" title="C 语言语法系列（13）：函数">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C 语言语法系列（13）：函数</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/22/clang-11-matrix-array/"  title="C 语言语法系列（11）：二维数组">
+<a href="/2020/01/02/csharp-null-and-zero/"  title="C# 里的 null 和 0">
  <strong>下一篇：</strong><br/> 
- <span>C 语言语法系列（11）：二维数组
+ <span>C# 里的 null 和 0
 </span>
 </a>
 </div>
@@ -294,7 +279,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#有没有三维数组？"><span class="toc-number">1.</span> <span class="toc-text">有没有三维数组？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三维数组的定义"><span class="toc-number">2.</span> <span class="toc-text">三维数组的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三维数组的存取数值"><span class="toc-number">3.</span> <span class="toc-text">三维数组的存取数值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更高维度的数组？"><span class="toc-number">4.</span> <span class="toc-text">更高维度的数组？</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#函数指针？"><span class="toc-number">1.</span> <span class="toc-text">函数指针？</span></a></li></ol>
  
   </div>
 

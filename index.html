@@ -82,6 +82,76 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2020/01/07/function-pointer-as-member-in-structs/" title="函数指针作结构体成员" itemprop="url">函数指针作结构体成员</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2020-01-07T03:24:51.000Z" itemprop="datePublished"> 发表于 2020-01-07</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="函数指针？"><a href="#函数指针？" class="headerlink" title="函数指针？"></a>函数指针？</h2><p>看下下面这个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">void</span> (*<span class="built_in">print</span>)(<span class="keyword">const</span> <span class="keyword">int</span>);</span><br><span class="line">&#125; Object;</span><br><span class="line"></span><br><span class="line"><span class="function">Object *<span class="title">createInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Object *o = (Object *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Object));</span><br><span class="line">    <span class="keyword">if</span> (o != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        o-&gt;<span class="built_in">print</span> = &amp;<span class="built_in">print</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispose</span><span class="params">(Object *o)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">free</span>(o);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Object *o = createInstance();</span><br><span class="line">    (*o-&gt;<span class="built_in">print</span>)(<span class="number">32</span>);</span><br><span class="line">    dispose(o);</span><br><span class="line"></span><br><span class="line">    system(<span class="string">"pause"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个程序似乎看起来很复杂，不过……</p>
+<p>有没有想过，它这么书写就非常像是高级编程语言里的对象实例化和对象调用了。</p>
+<p>我定义了一个 <code>Object</code> 类型的对象，这个对象啥都没有，没有字段，没有所谓的属性和其它东西，但它却具有一个函数指针。这个函数指针在 <code>createInstance</code> 方法下被初始化，指向 <code>print</code> 函数。当我们需要使用的时候，使用星号进行解取地址操作，然后调用方法，传入参数 32。</p>
+<p>注意，函数指针在前文里说过，一般它的使用就是指向函数和控制和间接调用函数，所以它可以不写星号也可以成功，故这个代码 <code>(*o-&gt;print)(32)</code> 也可以不要前面的括号和星号：<code>o-&gt;print(32)</code>。</p>
+<p>如果你希望规划好所有的函数的存放位置（比如所有有关 <code>Object</code> 的方法放在一起），你可以尝试创建一个 <code>Object.c</code> 文件，然后把除了 <code>print</code> 函数的东西都放在里面；然后单独创建一个 <code>global.c</code> 的文件，把 <code>print</code> 函数单独放进去；最后使用头文件 <code>global.h</code> 的形式进行 <code>#include</code> 指令的引用，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// global.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%d\n"</span>, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// global.h</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Object.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"global.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Object.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">Object *<span class="title">createInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Object *o = (Object *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Object));</span><br><span class="line">	<span class="keyword">if</span> (o != <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		o-&gt;<span class="built_in">print</span> = &amp;<span class="built_in">print</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispose</span><span class="params">(Object *o)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">free</span>(o);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Object.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">void</span> (*<span class="built_in">print</span>)(<span class="keyword">const</span> <span class="keyword">int</span>);</span><br><span class="line">&#125; Object;</span><br><span class="line"></span><br><span class="line"><span class="function">Object* <span class="title">createInstance</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispose</span><span class="params">(Object* o)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"global.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Object.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Object* o = createInstance();</span><br><span class="line">	(*o-&gt;<span class="built_in">print</span>)(<span class="number">32</span>);</span><br><span class="line">	dispose(o);</span><br><span class="line"></span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用结果依然是符合预期行为的。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C-%E8%AF%AD%E8%A8%80/">C 语言</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C-语言/">C 语言</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2020/01/02/csharp-null-and-zero/" title="C# 里的 null 和 0" itemprop="url">C# 里的 null 和 0</a>
     
   </h1>
@@ -863,131 +933,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/12/10/bitwise-operations-01-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-12-10T01:47:17.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>程序员怎么能够不学习一些位运算的知识呢？下面我们来看一些位运算的知识。</p>
-<h2 id="什么是位运算？"><a href="#什么是位运算？" class="headerlink" title="什么是位运算？"></a>什么是位运算？</h2><p>位运算在电脑里面占有很高的地位，因为电脑存储元素都是二进制的，使用位运算可以针对于二进制层面对数据进行处理，以达到非常高效的操作。</p>
-<p>常见的位运算有如下一些：</p>
-<ul>
-<li>位与运算 <code>&amp;</code>（and）；</li>
-<li>位或运算 <code>|</code>（or）；</li>
-<li>位取反运算 <code>~</code>（not）；</li>
-<li>位异或运算 <code>^</code> （xor）；</li>
-<li>位左移运算 <code>&lt;&lt;</code> （shl）；</li>
-<li>位右移运算 <code>&gt;&gt;</code> （shr）。</li>
-</ul>
-<p>下面我们逐个进行介绍。</p>
-<h2 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h2><h3 id="位与运算"><a href="#位与运算" class="headerlink" title="位与运算"></a>位与运算</h3><p>位与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-       & Binary   & Decimal\\
-       & 10101010 & 170\\
-    \& & 00110111 & 55\\
-       & \text{_________}\\
-       & 00100010 & 34
-\end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
-<p>那么你输出的结果一定是 34（0b00100010）。</p>
-<blockquote>
-<p>我们约定，把一个二进制位表示为 <code>0baaaa</code> 的方式，其中 <code>aaaa</code> 部分是二进制 0 和 1 的序列；<code>0oaaaa</code> 表示为八进制数，<code>0xaaaa</code> 表示为十六进制。</p>
-<p>注意二进制的开头是 0b 前缀（数字零和字母 b），八进制是 0o 前缀（数字零和字母 o），十六进制的开头是 0x 前缀（数字零和字母 x）。</p>
-</blockquote>
-<h3 id="位或运算"><a href="#位或运算" class="headerlink" title="位或运算"></a>位或运算</h3><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-      & Binary   & Decimal\\
-      & 10101010 & 170\\
-    | & 00110111 & 55\\
-      & \text{_________}\\
-      & 10111111 & 191
-\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
-<h3 id="位取反运算"><a href="#位取反运算" class="headerlink" title="位取反运算"></a>位取反运算</h3><p>位取反运算针对于一个数字，它将这个数的所有 0 反转为 1，而 1 则反转为 0。</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-             & Binary   & Decimal\\
-    \text{~} & 10101010 & 170\\
-             & \text{_________}\\
-             & 01010101 & 85
-\end{matrix}</script><h3 id="位异或运算"><a href="#位异或运算" class="headerlink" title="位异或运算"></a>位异或运算</h3><p>异或运算比较生疏，我们可以认为是“要么……要么……”。当且仅当两者里取了一个 1 的时候才是 1，都是 0 或都是 1 则都会得到 0。</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-             & Binary   & Decimal\\
-             & 10101010 & 170\\
-    \text{^} & 00110111 & 55\\
-             & \text{_________}\\
-             & 10011101 & 157
-\end{matrix}</script><h3 id="位左移运算"><a href="#位左移运算" class="headerlink" title="位左移运算"></a>位左移运算</h3><p>位左移运算会把所有二进制位往左移动若干比特单位，然后溢出的部分直接不要了；反之，移动的末端会补充 0。</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-              & Binary   & Decimal\\
-    \text{<<} & 10101010 & 170\\
-              & \text{_________}\\
-              & 01010100 & 84
-\end{matrix}</script><blockquote>
-<p>注意，位左移运算是需要两个操作数的。第一个数就是需要移动二进制位的整数，而第二个数则是移动多少次（即左移动多少个比特单位），例如 <code>170 &lt;&lt; 2</code> 表示把 170 的二进制位向左移动两个比特单位，而不是上面这样只移动一个单位。</p>
-</blockquote>
-<h3 id="位右移运算"><a href="#位右移运算" class="headerlink" title="位右移运算"></a>位右移运算</h3><p>位右移运算和位左移运算相反，它的移动方向是向右的。它会把所有二进制位往右移动一个比特单位，然后溢出部分不要了；反之，在移动端的末尾补充 0。</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-              & Binary   & Decimal\\
-    \text{>>} & 10101010 & 170\\
-              & \text{_________}\\
-              & 01010101 & 85
-\end{matrix}</script>
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/位运算/">位运算</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -1087,11 +1032,11 @@
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 		</ul>
