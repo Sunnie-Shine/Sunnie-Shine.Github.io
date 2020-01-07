@@ -82,6 +82,303 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/12/10/bitwise-operations-02-bitwise-and/" title="位运算（2）：位与运算" itemprop="url">位运算（2）：位与运算</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-10T11:22:33.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>为了讲述得比较清晰和实用，我们将把前文说到的六大运算挨个叙述一下，然后尝试把它们拿出来讲一下它们的实际用法。</p>
+<h2 id="回顾一下用法"><a href="#回顾一下用法" class="headerlink" title="回顾一下用法"></a>回顾一下用法</h2><p>与运算将两个数值的二进制以每一个二进制位进行处理，处理方式如同“必须都要”，当且仅当同时为 1 的时候，结果为 1，其它为 0。例如</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+       & Binary   & Decimal\\
+       & 10101010 & 170\\
+    \& & 00110111 & 55\\
+       & \text{_________}\\
+       & 00100010 & 34
+\end{matrix}</script><p>上下对应求值。例如 1 &amp; 0 为 0，0 &amp; 0 为 0，等等。所以，如果你书写的代码是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">170</span>, b = <span class="number">55</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a &amp; b);</span><br></pre></td></tr></table></figure>
+<p>那么你输出的结果一定是 34（0b00100010）。</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>下面我们来看看它的基本用法。我们把它的计算表格列出来：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>y</th>
+<th>x &amp; y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>列出表格后就会发现，当且仅当 <code>x</code> 和 <code>y</code> 同为 1 的时候才能得到 1 的结果数值。那么，我们可以反过来思考问题：如果我们尝试把它认为是有 0 必然变为 0 的话，那么位与运算就可以用来尝试清除掉 1 的二进制。</p>
+<ul>
+<li><strong>结论 1：当任何一个数和 0 进行位与运算（即 <code>x &amp; 0</code>）的时候，结果一定是 0。</strong></li>
+<li><strong>结论 2：当任何一个数 <code>x</code> 是 0 或 1 时，让它和 1 执行位与运算（即 <code>x &amp; 1</code>）的时候，结果一定是 <code>x</code>。</strong></li>
+</ul>
+<p>第一句话是一句稍加思考就可以得到的废话，因为只要有一个 0，我们就不可能保证“两端操作数都是 1”，自然就不可能得到 1 的结果，所以结果必然是 0。不过这一点经常被用到，特别是对一些以 2 为指数的处理上。</p>
+<p>而第二句话，对照表格就可以看出来。不论 <code>x</code> 是 0 还是 1，只要它和 1 进行位与运算，结果一定就是它本身。不过，<code>x</code> 如果大于 1，或者小于 0，肯定就不是这么简单了。</p>
+<h3 id="判断奇偶"><a href="#判断奇偶" class="headerlink" title="判断奇偶"></a>判断奇偶</h3><p>比如，计算一个数是否是偶数。显然这用到了对 2 求余数的操作，比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">bool</span> isEven = i % <span class="number">2</span> == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>当 <code>i % 2</code> 的结果为 0 的时候，我们就可以得到它是偶数的结果，自然 <code>isEven</code> 就应该为 <code>true</code>。不过，为了优化计算速度，我们有些时候不止使用这种方式判断它。</p>
+<p>试想一下，任意一个整数只可能是奇数或者偶数两种情况，而二进制正好完美地表达了这一点：末尾为 0 就肯定是偶数，而 1 则一定是奇数了。更直观地理解的话，可以这么去思考：所有整数均以 0 为分界点，而 0 是偶数，它的二进制表示肯定全部都是 0，而 1 的二进制是一大堆的 0 和末尾一个 1，而 2 则就会立马因为二进制的缘故进一位，使得末尾一位又变为 0 了。变为 3，则又一次使得末尾变为 1，再增大一个单位，末尾又是 0。</p>
+<p>可以从规律上看到，末尾会因为二进制的缘故呈现周期性变化：0、1、0、1、……，这恰好满足奇偶数字出现的规律：偶数、奇数、偶数、奇数、……。</p>
+<p>所以，我们将 0 作为基准，认为二进制末尾为 0 的数字都是偶数。这样的话，我们只需要取出末尾这一个二进制位，看它是不是 0 就可以知道它是不是偶数了。</p>
+<p>取出末尾这一个二进制位的方式，就是让这个数字前面的所有二进制位全部都不要，只保留最后一位。</p>
+<p>通过结论 1 可以得到，我们利用 0 来把前面的二进制位全部变为 0，而用 1 保留最后一位。如果按照对应位计算的原则，这个计算的数字就很好想到了：1。我们把这个数字和 1 进行位与运算，那么结果必然就是它二进制位末尾的值。所以，这个判断可以改写为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = (i &amp; <span class="number">1</span>) == <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>但需要你注意的是，位与运算 <code>&amp;</code> 比等号判断 <code>==</code> 优先级要低一点，所以需要你用括号把 <code>i &amp; 1</code> 括起来。</p>
+<p>同理，判断奇数就只需要把 <code>== 0</code> 改为 <code>== 1</code> 或者 <code>!= 0</code> 即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = (i &amp; <span class="number">1</span>) == <span class="number">0</span>;</span><br><span class="line"><span class="keyword">bool</span> isOdd = (i &amp; <span class="number">1</span>) != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>另外，C 语言里，不等于 0 的判断可以不写，所以可以记作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> isEven = !(i &amp; <span class="number">1</span>);</span><br><span class="line"><span class="keyword">bool</span> isOdd = i &amp; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>推论 1：<code>x &amp; 1</code> 只有两个数值结果，当为 0 时，<code>x</code> 为偶数；当为 1 时，<code>x</code> 为奇数。</strong></p>
+<h3 id="对特定值取模"><a href="#对特定值取模" class="headerlink" title="对特定值取模"></a>对特定值取模</h3><p>接下来，我们来看另外一种使用方式。既然 1 可以保留位次，那么我们为了保留末端若干二进制数位，想想看。</p>
+<p>假设，我们只需要保留二进制写法的末尾三位数，那么我们肯定是使用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">13</span>;</span><br><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">0b00</span>..<span class="number">.00000111</span>;</span><br></pre></td></tr></table></figure>
+<p>这样的写法。</p>
+<p>显然可以从二进制数值看到，我们只要末尾三位数字是 1 就好，而这个数字的十进制写法是 7，故：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = i &amp; <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
+<p>这样就可以得到末尾三个二进制位了。不过，这有什么用呢？</p>
+<p>我们经常碰到取模运算的操作，而有些时候不免遇到对 2、4、8、16 进行求模运算。对它们求模运算，得到的结果范围肯定是 0~1、0~3、0~7、0~15，这不就是恰好处于保留末尾若干二进制位的表示方式吗？所以，如果我们要计算一个数 <code>x</code> 对 2 的整数次幂 <code>n</code> 的余数，一般可以使用位与运算 <code>n - 1</code> 的方式得到。</p>
+<p><strong>推论 2：当 <code>n</code> 是 2 的整数次幂时，<code>x % n</code> 可以改写为 <code>x &amp; (n - 1)</code>。</strong></p>
+<h3 id="验证是否是-2-的整数次幂"><a href="#验证是否是-2-的整数次幂" class="headerlink" title="验证是否是 2 的整数次幂"></a>验证是否是 2 的整数次幂</h3><p>我们以这个推论为基础继续往下思考。既然这个 <code>n</code> 就是一个 2 的整数次幂，那么如果我们尝试把 <code>n</code> 替换为 <code>x</code> 自己会怎么样呢？公式就变为 <code>x &amp; (x - 1)</code> 了。</p>
+<p>如果 <code>x</code> 和比自己小 1 个单位的数位与运算，而且此时这个 <code>x</code> 就是一个 2 的整数次幂的话，思考一下，既然是 2 的整数次幂，那么它的二进制表示必然就是 0b0、0b1、0b10、0b100、0b1000……这样的序列。而可以从序列里直接看出，2 的整数次幂只可能在最高位次上是 1，而其余位置都是 0。</p>
+<p>比这个数小 1 个单位就意味着这个数要减去 1，而这意味着整个完美的二进制表达（只有一个 1，而其余数字位置都是 0）就会立马全盘变化：由于减去 1，所以所有低位次都会变为 1，而最高位此时因为类似于数学竖式计算的借位逻辑而变为 0。这就好比是把一个数字的所有位次全部翻转了。</p>
+<p>如果是全部翻转的话，位与运算对两个数的执行结果就必然肯定是每一二进制位都是 0（因为不论是 1 &amp; 0 还是 0 &amp; 1，因为必然有 0 的缘故，所以结果肯定是 0）。</p>
+<p>所以，<code>(x &amp; (x - 1)) == 0</code> 是什么意思呢？这是不是就恰好表示一个数是否是 2 的整数次幂？实际上是的。我们随意找出一个不是 2 的整数次幂，代入公式进行计算：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> z = <span class="number">14</span> &amp; <span class="number">13</span>;</span><br></pre></td></tr></table></figure>
+<script type="math/tex; mode=display">
+\begin{matrix}
+       & Binary   & Decimal\\
+       & 00001110 & 14\\
+    \& & 00001101 & 13\\
+       & \text{_________}\\
+       & 00001100 & 12
+\end{matrix}</script><p>由于这个数不是 2 的整数次幂，所以这个数的二进制位最高位不会因为减去 1 的原因而从 1 更替为 0。这也就是在说，如果它不是 2 的整数次幂时，最高位是不会产生更替的，这样通过位与运算的结果会因为最高位都是 1 的原因，计算的结果一定不可能是 0。</p>
+<p><strong>推论 3：一个数 <code>x</code> 是 2 的整数次幂的充分必要条件是，<code>x</code> 一定满足 <code>(x &amp; (x - 1)) == 0</code> 的结论。</strong></p>
+<p>实际上，它还有更高级的用法，不过由于没有提到后面的知识点，所以我们这里暂不展开讨论。本节就结束了，希望你掌握上面的这些基本用法，并加以活用。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/位运算/">位运算</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/12/10/async-await-fundamental/" title="Async/await 关键字原理" itemprop="url">Async/await 关键字原理</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-10T05:59:20.000Z" itemprop="datePublished"> 发表于 2019-12-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="async-和-await-是什么？"><a href="#async-和-await-是什么？" class="headerlink" title="async 和 await 是什么？"></a><code>async</code> 和 <code>await</code> 是什么？</h2><p>在我们平时 C# 的使用之中，总会遇到很多超时和耗时操作，比如获取网页的 HTTP 源代码。</p>
+<blockquote>
+<p>可能你会问：获取源代码有什么用吗？其实获取这个源代码，可以用来解析并生成模板，来处理这个源代码内部的文字信息，可以达到爬虫的效果。比如我想要联网查英语单词的意思，因为没有提供数据库，所以我们可以使用页面自带的返回的效果来找到所有查到的单词都用得到的 div 块，然后去看它们的共同之处，进而通过代码，来获取单词的释义，然后反馈回来。</p>
+</blockquote>
+<p>那么，这些操作显然都有可能出现，而如果我们在使用 UI 设计的时候调用它们，就很容易出现卡死、导致 UI 无法响应，并卡死的操作。于是，我们出现了这个模式。这个模式用于异步处理这些耗时操作，会在线程池里取出一个空闲的后台线程，并执行这个操作；执行完毕后，将会默认回到主线程继续执行，这样一来，你就会发现，由于单独开了一个线程处理，所以 UI 不卡了。这就是这两个关键字带给我们的使用效果。</p>
+<blockquote>
+<p>上述说法还有点细节的问题，不要当杠精，我们在下文里会慢慢阐述原理，并重新解释这些内容。</p>
+</blockquote>
+<h2 id="书写格式"><a href="#书写格式" class="headerlink" title="书写格式"></a>书写格式</h2><p>来看一下，我们如何对一个方法使用 <code>async</code> 和 <code>await</code> 模式。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Project</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">await</span> client.GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，这个写法便是使用了 <code>async</code> 和 <code>await</code> 模式。首先，我们将耗时的操作写到方法名前面。一般按照规范，<code>async</code> 将放到类型前面，挨着类型名称。其次，类型请使用 <code>Task&lt;T&gt;</code> 方式，其中的泛型参数 <code>T</code> 使用这个类型的本应该返回的返回值类型。比如，这个实例想要通过这个模式来获取 HTTP 文件的内容，那么我们将可以使用这个模式来获取。</p>
+<h2 id="编译器处理后的样子"><a href="#编译器处理后的样子" class="headerlink" title="编译器处理后的样子"></a>编译器处理后的样子</h2><p>上述的短短十多行代码将会生成下面的编译器处理后的代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Project</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">StructLayout(LayoutKind.Auto)</span>]</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">struct</span> &lt;FetchHttpFile&gt;d__0 : IAsyncStateMachine</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TaskAwaiter&lt;<span class="keyword">string</span>&gt; &lt;&gt;u__1;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">int</span> num = &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line">            <span class="keyword">string</span> result;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                TaskAwaiter&lt;<span class="keyword">string</span>&gt; awaiter;</span><br><span class="line">                <span class="keyword">if</span> (num != <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    awaiter = <span class="keyword">new</span> HttpClient().GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>)).GetAwaiter();</span><br><span class="line">                    <span class="keyword">if</span> (!awaiter.IsCompleted)</span><br><span class="line">                    &#123;</span><br><span class="line">                        num = (&lt;&gt;<span class="number">1</span>__state = <span class="number">0</span>);</span><br><span class="line">                        &lt;&gt;u__1 = awaiter;</span><br><span class="line">                        &lt;&gt;t__builder.AwaitUnsafeOnCompleted(<span class="keyword">ref</span> awaiter, <span class="keyword">ref</span> <span class="keyword">this</span>);</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    awaiter = &lt;&gt;u__1;</span><br><span class="line">                    &lt;&gt;u__1 = <span class="keyword">default</span>(TaskAwaiter&lt;<span class="keyword">string</span>&gt;);</span><br><span class="line">                    num = (&lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                result = awaiter.GetResult();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception exception)</span><br><span class="line">            &#123;</span><br><span class="line">                &lt;&gt;<span class="number">1</span>__state = <span class="number">-2</span>;</span><br><span class="line">                &lt;&gt;t__builder.SetException(exception);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            &lt;&gt;<span class="number">1</span>__state = <span class="number">-2</span>;</span><br><span class="line">            &lt;&gt;t__builder.SetResult(result);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> IAsyncStateMachine.MoveNext()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">            <span class="keyword">this</span>.MoveNext();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetStateMachine</span>(<span class="params">IAsyncStateMachine stateMachine</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            &lt;&gt;t__builder.SetStateMachine(stateMachine);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine</span></span><br><span class="line">            <span class="keyword">this</span>.SetStateMachine(stateMachine);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">AsyncStateMachine(typeof(&lt;FetchHttpFile&gt;d__0))</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        &lt;FetchHttpFile&gt;d__0 stateMachine = <span class="keyword">default</span>(&lt;FetchHttpFile&gt;d__0);</span><br><span class="line">        stateMachine.&lt;&gt;t__builder = AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt;.Create();</span><br><span class="line">        stateMachine.&lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>;</span><br><span class="line">        AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder = stateMachine.&lt;&gt;t__builder;</span><br><span class="line">        &lt;&gt;t__builder.Start(<span class="keyword">ref</span> stateMachine);</span><br><span class="line">        <span class="keyword">return</span> stateMachine.&lt;&gt;t__builder.Task;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以仔细看看，这个代码一下就陡增到 90 多行了。我们下面来分析一下它们。</p>
+<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>下面我们来看下这个生成的代码，到底内部执行了哪些操作，又处理了什么。</p>
+<h3 id="原方法部分"><a href="#原方法部分" class="headerlink" title="原方法部分"></a>原方法部分</h3><p>先来看原本的方法部分，虽然它会调用内部的执行操作，不过我们先看它是为了逻辑框架上更清晰。</p>
+<p>这一部分有点难搞的地方在于，它的类型全部都是没办法看的，因为这些内容基本上都是被编译器自动生成了，所以我们只能翻译一下。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">AsyncStateMachine(typeof(StateMachine))</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">FetchHttpFile</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> stateMachine = <span class="keyword">default</span>(StateMachine); <span class="comment">// StateMachine</span></span><br><span class="line">    stateMachine.builder = AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt;.Create();</span><br><span class="line">    stateMachine.state = <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">var</span> builder = stateMachine.builder; <span class="comment">// AsyncTaskMethodBuilder&lt;string&gt;</span></span><br><span class="line">    builder.Start(<span class="keyword">ref</span> stateMachine);</span><br><span class="line">    <span class="keyword">return</span> stateMachine.builder.Task;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就比较清晰了。首先，它在原本的代码方法体里插入了一个状态机。什么是状态机呢？这一点的详细内容我们稍后再说，这里先大致认为是一个专门记录执行获取 HTTP 文件操作状态的一个对象。然后，</p>
+<h3 id="状态机部分"><a href="#状态机部分" class="headerlink" title="状态机部分"></a>状态机部分</h3><p>这段代码稍微困难一些，因为内容非常多。我们只能一块一块地进行解读。</p>
+<h4 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h4><p>首先是三个字段：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"><span class="keyword">public</span> AsyncTaskMethodBuilder&lt;<span class="keyword">string</span>&gt; &lt;&gt;t__builder;</span><br><span class="line"><span class="keyword">private</span> TaskAwaiter&lt;<span class="keyword">string</span>&gt; &lt;&gt;u__1;</span><br></pre></td></tr></table></figure>
+<p>第一个字段是一个整数类型的变量，它在编译期间生成，用来表示一会儿执行状态机期间的状态；第二个字段叫 <code>builder</code>，是异步任务方法的生成器对象，它带有一个泛型参数 <code>string</code>，就是我们最初异步返回任务类型的方法里那个泛型参数；第三个字段表示一个 awaiter。awaiter 这个词到现在都不好翻译，你只需要知道 await 是异步等待的关键字，那么加入 -er 后缀就是表示这个任务需要异步等待的那一个对象。</p>
+<blockquote>
+<p>注意，awaiter 是一个对象，它专门用于等待异步任务的完成。</p>
+</blockquote>
+<h4 id="MoveNext-方法"><a href="#MoveNext-方法" class="headerlink" title="MoveNext 方法"></a><code>MoveNext</code> 方法</h4><p>下面来看下 <code>MoveNext</code> 方法。让我们先把里面一些写起来诡异的字段名改一下写法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">string</span> result;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        TaskAwaiter&lt;<span class="keyword">string</span>&gt; awaiter;</span><br><span class="line">        <span class="keyword">if</span> (num != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            awaiter = <span class="keyword">new</span> HttpClient().GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>)).GetAwaiter();</span><br><span class="line">            <span class="keyword">if</span> (!awaiter.IsCompleted)</span><br><span class="line">            &#123;</span><br><span class="line">                num = <span class="keyword">this</span>.state = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">this</span>.awaiter = awaiter;</span><br><span class="line">                <span class="keyword">this</span>.builder.AwaitUnsafeOnCompleted(<span class="keyword">ref</span> awaiter, <span class="keyword">ref</span> <span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            awaiter = <span class="keyword">this</span>.awaiter;</span><br><span class="line">            <span class="keyword">this</span>.awaiter = <span class="keyword">default</span>(TaskAwaiter&lt;<span class="keyword">string</span>&gt;);</span><br><span class="line">            num = (<span class="keyword">this</span>.state = <span class="number">-1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        result = awaiter.GetResult();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception exception)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="number">-2</span>;</span><br><span class="line">        <span class="keyword">this</span>.builder.SetException(exception);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.state = <span class="number">-2</span>;</span><br><span class="line">    <span class="keyword">this</span>.builder.SetResult(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先，它把状态机里生成的字段 <code>state</code> 取出来，赋值给 <code>num</code> 作为后面使用，然后创建了一个结果对象，就是我们需要提取的 HTTP 网页文件源代码的字符串变量 <code>result</code> 此时还没有赋值。</p>
+<p>然后，它尝试去执行获取操作，写在 <code>try</code> 块里。在 <code>try</code> 块里，有一个异步等待的对象 <code>awaiter</code>，在当前状态不为 0 的时候，进入 <code>if</code> 条件，然后去获取异步 <code>Task&lt;T&gt;</code> 对象的 awaiter。这个时候，就可以把这个 <code>Task&lt;T&gt;</code> 的 awaiter 获取出来，赋值给这个 <code>try</code> 块里的临时变量了。</p>
+<p>然后此时，立马判断这个执行任务是否已经完成。如果没有执行完毕，就会进入内部的 <code>if</code> 块，然后将当前状态和这个临时变量 <code>num</code> 改为 0，并把 awaiter 赋值给当前对象里的字段 <code>awaiter</code> 上去；接着，它会调用字段 <code>builder</code> 对象的 <code>AwaiteUnsafeOnCompleted</code> 方法，这个方法是用来做什么呢？查看资料就可以发现，它实际上是一个处理任务调度的方法，当指定的 awaiter 已经完成的时候，它就会调度任务，去执行处理下一个行为。</p>
+<p>不过，在外层条件判断里，还有一个 <code>else</code> 块，它表示当任务已经完成的时候的行为。当任务已经在此处都做完了，就会立马把这些基本的执行行为的信息（诸如 <code>awaiter</code>、<code>state</code> 等等信息）统统赋值一次。</p>
+<p>最后，不论是走 <code>if</code> 还是走 <code>else</code> 块，最终都会到 <code>result = awaiter.GetResult()</code> 操作，获取最终结果。注意，这个方法内部的实现较复杂，我们最终阐述一下结果：<strong>这个方法最终会阻塞程序执行，直到结果被得到</strong>。</p>
+<p>当然，如果执行期间出现了异常，<code>catch</code> 块就会捕捉到，然后把异常塞进 <code>builder</code> 里去，并且把此时执行状态置为 -2，表示退出。</p>
+<p>最后，除了 awaiter 尚未完成和抛出异常时，会立马退出程序之外，都会执行到最后，将状态改为 -2，表示退出，并且把结果塞进 <code>builder</code> 里，状态机的行为便执行完毕。可以从代码里看到，整个行为好像并没有体现出启动后台线程的操作，这些都在 <code>builder</code> 里为我们做好了一切，就在 <code>AwaitUnsafeOnCompleted</code> 方法的执行里。另外，状态机本身是不会抛出不被处理的异常的，哪怕出现异常，都是都被 <code>catch</code> 块处理，然后塞进 <code>builder</code> 里，推后到后续的某个位置才会抛出。</p>
+<p>总的来说：<strong><code>async</code>/<code>await</code> 模式会在编译期生成一个状态机，记录当前操作执行状态。在执行过程之中，判断异步任务是否在此时此刻已经执行完毕。如果没有的话，就会把这个任务一并塞进 <code>builder</code> 里等待稍后的执行，但如果完成了的话，就会立马取出其结果，并塞进 <code>builder</code> 里，留着后续调用的时候获取结果；当最终没有完成的任务，将会立马放到最后开始执行，并阻塞当前线程</strong>。</p>
+<h4 id="剩下的三个方法"><a href="#剩下的三个方法" class="headerlink" title="剩下的三个方法"></a>剩下的三个方法</h4><p>那么，剩下的三个方法的实现其实就不难理解了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> IAsyncStateMachine.MoveNext()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">    <span class="keyword">this</span>.MoveNext();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">DebuggerHidden</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetStateMachine</span>(<span class="params">IAsyncStateMachine stateMachine</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.builder.SetStateMachine(stateMachine);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine</span></span><br><span class="line">    <span class="keyword">this</span>.SetStateMachine(stateMachine);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的<code>MoveNext</code> 方法用于实现接口对象，而它为什么非要单独用显式实现接口的模式来单独在外部创建对象，并在此实现呢？这是为了更好的封装性。这个方法一般不希望被外部调用，所以这里采用显式实现接口的方式，让外部必须知晓实现模型才能进行转换和调用；而内部调用到的 <code>MoveNext</code> 方法也是一个 <code>private</code> 的方法，这保证了完整的内部封装的模式。</p>
+<p>然后在 <code>SetStateMachine</code> 方法里，它直接调用 <code>builder</code> 字段的 <code>SetStateMachine</code> 方法来设置状态机，最后使用显式实现接口的模式达到封装性。</p>
+<h2 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h2><p>在前文里，我们完整描述了整个 <code>async</code> 方法在编译器里生成的所有内容的执行思路和操作，但依然存在一些逻辑上的漏洞。</p>
+<h3 id="1、异步方法真的是异步执行和被调用的吗？"><a href="#1、异步方法真的是异步执行和被调用的吗？" class="headerlink" title="1、异步方法真的是异步执行和被调用的吗？"></a>1、异步方法真的是异步执行和被调用的吗？</h3><p>在调用层面来看，你可以观察到 <code>FetchHttpFile</code> 方法本被标注了 <code>async</code> 关键字，后面被编译器生成代码之后，却不见了。这告诉了我们，<code>async</code> 关键字只是一个关键字，它用于标记方法是可能被异步执行的，但调用期间却是同步调用的，并没有产生任何的后台线程。</p>
+<p>不过，在执行的时候，系统会为其单独分配一个后台线程，执行内部“耗时”的操作。</p>
+<h3 id="2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？"><a href="#2、讲了这么多，都在说-async-关键字了，那么-await-关键字呢？" class="headerlink" title="2、讲了这么多，都在说 async 关键字了，那么 await 关键字呢？"></a>2、讲了这么多，都在说 <code>async</code> 关键字了，那么 <code>await</code> 关键字呢？</h3><p>在原本的写法里，我们使用 <code>await</code> 关键字，嵌入到 <code>FetchHttpFile</code> 方法里，最后它生成了一大堆东西。不过 <code>await</code> 在前文并没有得到很好的解释。实际上，在前文里我们是不是提到了一个 <code>Task&lt;T&gt;</code> 对象，来表达一个可能耗时的任务？是的，这便是这个地方执行的关键。<code>await</code> 关键字用于获取这个任务里的 awaiter，然后取出执行结果。注意，在此期间，程序是开了后台线程并执行了这一套工作的，所以只是你看不到罢了。</p>
+<p>当获取结果后，主线程才会继续向下执行，在前面没有执行完毕获取结果的操作前，主线程都是被阻塞的，而往往 UI 界面的线程都跑在主线程上，所以 UI 界面此时该卡死还卡死。后续我会介绍如何避免这样的情况发生。</p>
+<h3 id="3、异步操作会造成程序死锁吗？"><a href="#3、异步操作会造成程序死锁吗？" class="headerlink" title="3、异步操作会造成程序死锁吗？"></a>3、异步操作会造成程序死锁吗？</h3><p>当线程处理期间，就一定存在死锁的问题需要我们去解决。死锁指的是两个或更多线程在相互调用期间，各自由于都在等待对方执行完毕释放资源，导致程序使用的全部的线程都在等待，引起的卡死的现象。在异步操作里，我们为了保证程序能够完整执行下去，而且还不阻塞主线程，就会使用 <code>async</code> 关键字来让耗时的操作去单独跑在一个线程上（注意，此时依旧我们会等待线程执行完毕反馈结果），然后最后执行完毕后，把结果取出来并显示的行为。这涉及到两个线程了。如果是 UI 线程的话，如果像是上面这么简单的实现，会不会出现死锁呢？</p>
+<p>很遗憾，上述例子是会产生死锁的。它满足了整个项目产生死锁的两大充分不必要条件：</p>
+<ol>
+<li>调用 <code>Wait</code> 方法（一个用于阻塞任务执行的方法）或 <code>Result</code> 属性（相当于 <code>GetResult</code> 方法）的位置处于 UI 线程上；</li>
+<li>任务执行在其它的后台线程上，而并不在和 UI 一样的线程上。</li>
+</ol>
+<p>那么为什么是这两个条件就可能死锁呢？回顾一下线程死锁的四大必要条件：</p>
+<ol>
+<li><strong>互斥</strong>：资源只能被一个资源使用，其它资源必须等待释放后才能继续使用；</li>
+<li><strong>请求和保持</strong>：由于请求资源而阻塞时，对已获得的资源保持不放；</li>
+<li><strong>让权等待</strong>：在执行期间，已获得的资源在末使用完之前，都不能被强行剥夺；</li>
+<li><strong>循环等待</strong>：若干线程之间有循环的依赖关系。</li>
+</ol>
+<p>这四个条件是<strong>死锁的必要条件</strong>，只要系统发生死锁，这些条件必然成立，而只要上述条件之一不满足，就不会发生死锁。 观察上述两种说法就可以看出，<code>async</code> 执行模式是满足前三点的，而第四点到底是否满足呢？实际上是的，因为主线程（UI）会等待后台线程下载文件，而后台线程又会依赖主线程的执行（不然怎么可能单独跑一个后台线程呢），所以四大条件全部满足，必然是可能会存在死锁现象的发生的。</p>
+<h3 id="4、我们应该如何修改代码去阻止可能产生的死锁呢？"><a href="#4、我们应该如何修改代码去阻止可能产生的死锁呢？" class="headerlink" title="4、我们应该如何修改代码去阻止可能产生的死锁呢？"></a>4、我们应该如何修改代码去阻止可能产生的死锁呢？</h3><p>为了避免线程死锁的问题，我们拥有一些合理的解决方案。不过先要我们来看下下面的问题。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Task <span class="title">RunAsync1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">RunAsync2</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">RunAsync3</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.Run(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Some asynchronized operation.</span></span><br><span class="line">    &#125;).ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面三个方法里，哪个（或哪些）方法会可能产生死锁？</p>
+<p>答案是，只有第 2 个会产生死锁，而第 1 个和第 3 个都不会。原因如下：</p>
+<p>第一个压根就没有使用 <code>async</code> 和 <code>await</code> 关键字，这使得编译器并不会给我们产生状态机和一大堆异步执行行为，所以好比任务是同步完成的。既然是在同一个线程上，为什么会死锁呢？</p>
+<p>第三个有 <code>async</code> 和 <code>await</code> 关键字，而后续我们配备了 <code>ConfigureAwait</code> 方法，以此来为这个任务的执行分配新的线程，并让后续的执行行为直接全跑在这个线程上。默认的话，<code>ConfigureAwait</code> 的参数是为 <code>true</code> 的，这意味着在后续执行的操作，会重新返回到主线程上。但刚才说过，返回主线程执行后续操作就必然存在死锁的问题，所以我们为其设置 <code>ConfigureAwait(false)</code> 的话，执行的操作就会跑到随机分配的新的线程里去搞定它们，这样一来，甚至 UI 线程都不用返回到主线程去做了，因为它们都在随机分配好的新线程里在做这些东西了。所以这个时候，它们在执行期间就不会产生死锁了。</p>
+<blockquote>
+<p>实际上，后续怎么返回到上一个执行调用方线程，是通过一个叫做 <code>SynchronizationContext</code> 对象来搞定的，直译就是同步上下文，它记录了线程执行的调用顺序：是谁调用了异步方法的执行，并在什么线程上执行的。这些信息都在这个同步上下文里可以找到。有了这个对象，我们就可以轻松反推找到原来的执行方的线程信息了，所以 C# 采用的是这种操作来返回到主线程。当然，UI 线程使用的是一个叫做 <code>DispatcherSynchronizationContext</code> 的对象来搞的，不过这一点你在初步学习的时候知道有这么一个东西存在就好了。</p>
+<p>由于指定了 <code>ConfigureAwait(false)</code>，这意味着通知异步状态机 <code>AsyncMethodStateMachine</code> 并不需要使用设置好的 <code>SynchronizationContext</code>（对于 UI 线程，是 <code>DispatcherSynchronizationContext</code>）执行线程同步，而是使用默认的 <code>SynchronizationContext</code>，而默认行为是随便找个线程执行后面的代码。于是，<code>await Task.Run</code> 后面的代码便不需要返回原线程，也就不会发生第 2 种情况里的死锁问题。 </p>
+</blockquote>
+<p>所以，当你安装了 <a href="https://www.nuget.org/packages/Microsoft.CodeAnalysis.FxCopAnalyzers/" target="_blank" rel="noopener">Microsoft.CodeAnalysis.FxCopAnalyzers</a> 编译器后，你就会发现，编译器自动会为你提出警告 CA2007，告诉你请你在使用异步行为的时候在其后面配置 <code>ConfigureAwait(false)</code> 来达到避免死锁的目的。如果你是类库的编写者，注意此问题能够一定程度上防止逗比使用者出现死锁问题后喷你的类库写得不好。</p>
+<h2 id="多个-await-语句"><a href="#多个-await-语句" class="headerlink" title="多个 await 语句"></a>多个 <code>await</code> 语句</h2><p>有些时候，我们希望的 <code>async</code> 方法里不一定只有一个 <code>await</code>。比如，我们尝试将取出的网页文件再使用 <code>WriteAsync</code> 方法来挨个写到文件里。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">async</span> Task <span class="title">GetTextAsync</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();</span><br><span class="line">    <span class="keyword">var</span> text = <span class="keyword">await</span> client</span><br><span class="line">        .GetStringAsync(<span class="keyword">new</span> Uri(<span class="string">"www.baidu.com"</span>))</span><br><span class="line">        .ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Write all text.</span></span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> sw = <span class="keyword">new</span> StreamWriter(<span class="string">@".\Helloworld.txt"</span>);</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">await</span> sw.WriteAsync(text).ConfigureAwait(<span class="literal">false</span>);</span><br><span class="line">        Console.WriteLine(<span class="string">"Success."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (IOException)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Failed to write"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时我们具有两处 <code>await</code> 操作。而此时它会被编译器拆分为多个部分。由于项目需要两次 <code>await</code> 操作，所以编译器最后编译出来的代码会先使用前面的封装逻辑创建状态机，然后把第一个 <code>await</code> 语句以及之前的这段代码放到一个 <code>try-catch</code> 里。而至于第二个 <code>await</code> 操作，系统会为其单独再次创建一个专门处理这里代码的 <code>try-catch</code>，然后放在上一个 <code>try-catch</code> 里，即嵌套 <code>try-catch</code>。那么为什么不用同一个 <code>try-catch</code> 呢？这是因为每一次 <code>await</code> 操作所抛出的异常类型都是不确定和不一定相同的，所以它们各自的处理的手段和方式不同，如果使用同一个 <code>try-catch</code> 的话，就不容易去找出两个不同异常对象的同一种异常处理类型和模式；另外，这样的话，编译器也比较好实现它。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当方法被标记为 <code>async</code> 方法后，会将其创建一个状态机。同时在执行期间，状态机检测到代码段里如果存在 <code>await</code> 语句，就会创建一个后台线程，并且拿该线程单独进行这段代码操作；如果有多个，就会每一次使用线程池的后台线程并执行，但 <code>async-await</code> 的机制保证了我们不必去关心执行线程操作的后台到底是如何处理的，线程的编号是多少，我们都不必知道，我们只需要关心执行的操作到底有没有语法、语义和运行时错误。</p>
+<p>如果代码段里包含 <code>await</code> 语句，它就会使用 <code>try-catch</code> 永不抛出异常的手段执行从这里往前的所有代码。如果有多个 <code>await</code>，就会以 <code>await</code> 语句作为分割，作为多个代码块，然后挨个执行它们。</p>
+<p>如果遇到错误，状态机会提前退出并得到该错误信息，它将在真正执行的语句处抛出。</p>
+<p>不过，<code>async</code> 只是一个关键字，它不会为其分配执行线程。我们可以从两方面来说明原因：</p>
+<ol>
+<li><code>async</code> 方法里可能有多个 <code>await</code> 执行语句，这会使得我们为其正确分配多次线程池的线程。而方法是以方法整体作为单位的，所以我们不可能从整体层面精确细分线程的分配方式。</li>
+<li><code>await</code> 代码段本身也具有推迟执行的特效，如果我们不用它的时候，由于整体的执行结果是一个 <code>Task</code> 或 <code>Task&lt;T&gt;</code> 对象，所以分配线程并不是针对于方法处理的，而是针对于这个 <code>Task</code> 或 <code>Task&lt;T&gt;</code> 的。如果我们把代码拆分，先使用 <code>var task = GetxxxAsync()</code> 时，得到的是一个 <code>Task</code>，但这个 <code>Task</code> 在这里并没有得到执行，而是推后到必须用 <code>await task</code> 时候才得到执行，才会分配线程。</li>
+</ol>
+<p>所以，我们如果不正确处理异步行为的话，需要异步执行代码段的方法即使被标记为 <code>async</code> 方法，也不代表就是真正正确的异步方法。如果把一个没有任何 <code>await</code> 语句的方法标记为 <code>async</code> 方法的话，由于前文提到的这些内容，我们也可以知道，迫不得已在执行 <code>await</code> 语句时候才会分配后台线程执行它，而由于没有 <code>await</code> 的关系，这个异步方法就仅仅有一个内部创建好的状态机，但这个状态机并没有用，然后整个没有 <code>await</code> 的假异步方法顺次执行完毕后，状态机都没有运行，而且也没有任何分配线程的迹象（除非你在代码段里自己写了其它的异步操作，比如 <code>Task.Run(() =&gt; SomeThing());</code>）。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.compilerservices.iasyncstatemachine?view=netframework-4.8" target="_blank" rel="noopener">IAsyncStateMachine 接口</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.compilerservices.asyncstatemachineattribute?view=netframework-4.8" target="_blank" rel="noopener">AsyncStateMachineAttribute 特性</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.taskawaiter?view=netframework-4.8" target="_blank" rel="noopener">TaskAwaiter 结构</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asynctaskmethodbuilder.awaitunsafeoncompleted?view=netframework-4.8" target="_blank" rel="noopener">AwaitUnsafeOnCompleted<TAwaiter, TStateMachine> 方法</a></li>
+<li><a href="https://blog.walterlv.com/post/deadlock-in-task-wait.html" target="_blank" rel="noopener">使用 Task.Wait()? 立即死锁</a>（博文）</li>
+<li><a href="https://blog.walterlv.com/post/using-configure-await-to-avoid-deadlocks.html" target="_blank" rel="noopener">使用 ConfigureAwait(bool) 避免死锁</a>（博文）</li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%85%B3%E9%94%AE%E5%AD%97/">C♯.关键字</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/12/10/bitwise-operations-01-intro/" title="位运算（1）：位运算的基本计算方法" itemprop="url">位运算（1）：位运算的基本计算方法</a>
     
   </h1>
@@ -612,206 +909,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/25/clang-19-structs/" title="C 语言语法系列（19）：结构体" itemprop="url">C 语言语法系列（19）：结构体</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-25T12:14:35.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="何为结构体？"><a href="#何为结构体？" class="headerlink" title="何为结构体？"></a>何为结构体？</h2><p>前文我们学习了非常多的数据类型，比如基本的数据类型 <code>int</code>、<code>float</code> 等等，也学习了指针类型 <code>int *</code>、<code>char *</code> 类型，以及无类型指针类型 <code>void *</code>，数组 <code>[]</code> 和函数 <code>()</code>。不过，这些基础数据类型并不能够满足我们的所有需求。比如，我们把“学生”看作一种类型，这个类型里包含一些基本信息，诸如成绩，学号姓名等等。这可能吗？</p>
-<p>当然，今天要讲到的<strong>结构体</strong>（Structure）就是为了解决这种复合结构类型的基本知识点。</p>
-<p>结构体的声明格式如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> 结构体名</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    字段类型 字段名;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>比如，学生类型的书写格式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">char</span> *name; <span class="comment">// Or write as `char name[20]`.</span></span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">    <span class="keyword">int</span> score;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>也可以简写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这样就定义好了一个结构体，这个结构体类型是 <code>student</code> 类型的。</p>
-<p>请注意，这种特殊类型和函数一样，需要放在独立的位置上，而不是嵌套到函数里，这样全局级别才能访问到，否则我们就无法在想要的位置使用它们。当然，C 语言确实不允许把结构体的声明（定义）语句（上面那一坨）放进函数之中。</p>
-<h2 id="结构体的使用"><a href="#结构体的使用" class="headerlink" title="结构体的使用"></a>结构体的使用</h2><p>我们尝试为结构体里的每一个成员赋值，并输出它们。不过，我们需要开始复杂一点的逻辑了。前文学过了如何声明堆内存，所以这里我们也可以使用这种东西来在堆内存里创建结构体变量。不过请注意，结构体是无法在栈内存里分配的，所以我们必须为其赋值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> *<span class="title">xiaoMing</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (xiaoMing)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Allocated successfully.</span></span><br><span class="line">        <span class="keyword">char</span> gender;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Input them.</span></span><br><span class="line">        gets((*xiaoMing).name); <span class="comment">// Input a string that can contain space character.</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).age);</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%c"</span>, &amp;gender);</span><br><span class="line">        (*xiaoMing).isGirl = gender == <span class="string">'f'</span>;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;(*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Output them.</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s's Data:\n"</span>, (*xiaoMing).name);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    IsGirl: %s\n"</span>, (*xiaoMing).isGirl ? <span class="string">"Yes"</span> : <span class="string">"No"</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Age: %d\n"</span>, (*xiaoMing).age);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    Score: %d\n"</span>, (*xiaoMing).score);</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">free</span>(xiaoMing); <span class="comment">// Dispose resource.</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>变量类型是 <code>student</code> 类型，而这里作为一种结构体类型，我们需要书写的格式是</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">a</span> = (<span class="title">struct</span> <span class="title">student</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">student</span>));</span></span><br></pre></td></tr></table></figure>
-<p>首先为堆内存里分配 <code>student</code> 类型足够使用的内存空间，然后把这块内存的地址返回给变量 <code>a</code>。注意，返回的类型是 <code>void *</code>，所以需要经过一次强制转换。</p>
-<p>在完成分配后，判断一下它是否为 <code>NULL</code> 是一个好习惯。如果不为 <code>NULL</code> 则说明分配内存是成功的，于是我们开始为内部的所有信息点进行赋值。</p>
-<p>它和数组不同，数组分配的空间是连续的，但由于数组内的所有元素的类型全是一样的，所以有索引这种东西的存在；而结构体里，我们不能保证所有自己写的字段的类型一样，所以我们确实没有办法通过索引器 <code>[]</code> 来获取每一个成员的信息，而是通过<strong>成员访问运算符</strong> <code>.</code>（Member Access Operator）来取得它们。</p>
-<p>不过，请注意，前文使用的是堆内存分配的模式，所以得到的分配结果显然是指针类型的，于是要将指针“拆解”为普通类型（取得内容），需要使用间接访问运算符 <code>*</code> 对指针变量加以修饰：<code>*xiaoMing</code>，这才是真正的“内容”。然后，我们对这个具体的结果再次使用成员访问运算符来取值：<code>(*xiaoMing).age</code>。请注意，这种取值需要为变量名和取内容运算符用小括号括起来。如果不括起来，C 语言将认为执行内容是先获取 <code>xiaoMing.age</code>，然后再对这个变量取内容（执行 <code>*</code> 取内容），而显然取内容是针对于指针变量而言的，但此时就算 <code>xiaoMing.age</code> 奏效，没有语法问题，而 <code>age</code> 字段是我们规定的数值类型的，而不是指针，所以 C 语言会为此报错，提示你“<code>xiaoMing.age</code> 不是一个指针类型”。</p>
-<p>同理，其它的元素都可以使用这种方式进行赋值，但需要注意的是，字符串的赋值方式，一般我们不要去使用 <code>scanf(&quot;%s&quot;, &amp;字符指针或字符数组变量)</code> 的模式，因为 <code>scanf</code> 函数向来都是不处理空格的，所以它遇到空格直接就认为是输入结束了；而名字里可能是英文名，所以此时是可能含有空格的，故我们需要使用 <code>gets</code> 函数来输入。</p>
-<p>另外，<code>gets</code> 函数需要给定一个参数，这个参数必须是一个字符数组变量，而不是指针。指针并不能保证这个指向的内存块是可以被修改的，甚至不能保证这一块内存是可以被修改的。字符数组在声明期间就已经创建好了一系列内存空间，所以我们完全可以对其进行修改和使用。所以字符指针和字符数组的区别在于这一点：字符数组可修改内部元素，而字符指针不一定表示的是一个数组，而可能仅仅是一个普通的指针变量。前文说过，<strong>数组可以在赋值的时候退化为指针，但反之不然</strong>。</p>
-<p>记得最后添加 <code>free</code> 函数释放资源，否则会造成内存泄漏的 bug。</p>
-<h2 id="我觉得-v-f-的访问模式太难写代码了，有没有简化版？"><a href="#我觉得-v-f-的访问模式太难写代码了，有没有简化版？" class="headerlink" title="我觉得 (*v).f 的访问模式太难写代码了，有没有简化版？"></a>我觉得 <code>(*v).f</code> 的访问模式太难写代码了，有没有简化版？</h2><p>我也这么觉得，我们每次为字段赋值都得“无情地”加入小括号，然后才能往后加字段信息。这样写确实麻烦了。所以，C 语言提供了一个语法糖（简化版书写格式），叫<strong>指针成员访问成员运算符</strong> <code>-&gt;</code>（Pointer Member Access Operator）。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age1 = (*xiaoMing).age;</span><br><span class="line"><span class="keyword">int</span> age2 = xiaoMing-&gt;age;</span><br></pre></td></tr></table></figure>
-<p>仔细体会两种写法，这两种写法是等价的。由于 <code>-&gt;</code> 符号和 <code>.</code> 符号都是访问运算符，所以这两个运算符挨着两边的英文单词（标识符），而不用在中间添加额外的空格。</p>
-<h2 id="一些烧脑的结构体使用模型"><a href="#一些烧脑的结构体使用模型" class="headerlink" title="一些烧脑的结构体使用模型"></a>一些烧脑的结构体使用模型</h2><h3 id="来一个可能会犯错的用法"><a href="#来一个可能会犯错的用法" class="headerlink" title="来一个可能会犯错的用法"></a>来一个可能会犯错的用法</h3><p>我们尝试不为变量赋值，就开始为字段里放数据，看看会怎么样。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">student</span> <span class="title">variable</span>;</span></span><br><span class="line">    variable.age = <span class="number">12</span>;</span><br><span class="line">    variable.isGirl = <span class="literal">false</span>;</span><br><span class="line">    variable.name = <span class="string">"Sunnie"</span>;</span><br><span class="line">    variable.score = <span class="number">99</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>请注意，这种用法是错误的，而且很可能会引起报错。因为 <code>variable</code> 并没有赋值就开始用了，在 C 语言里规定，没有（成功）赋初始值的时候，变量都是不起作用的，即没有真正的内存可以对应上这个变量。于是我们对一个根本就不知道是哪里的对象进行赋值，或字段赋值，显然是不可能找到正确答案的。</p>
-<p>其实，不只是这种情况，就连普通的变量也是如此：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> arr[<span class="number">3</span>];</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, arr[<span class="number">2</span>]);</span><br></pre></td></tr></table></figure>
-<p>这两种输出都不会得到你想要的结果。我知道你可能会认为这里的输出可能是 0，不过……</p>
-<p>确实不一定真的是 0，有时候是一个莫名其喵的数字，看得头皮发麻。</p>
-<h3 id="结构体的嵌套声明模式"><a href="#结构体的嵌套声明模式" class="headerlink" title="结构体的嵌套声明模式"></a>结构体的嵌套声明模式</h3><p>假设我们有两个结构体：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">b</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>那么上文给出的 <code>b</code> 结构体类型是被允许的吗，即 <code>b</code> 结构体的某一个字段是别的结构体类型？</p>
-<p>答案是，是的。我们完全可以创建一个结构体，使得这个结构体的 <code>field</code> 字段是另外一个结构体的类型。从逻辑上讲，这完全是不矛盾的。</p>
-<p>不过，如果你创建这种类型的结构体，你需要注意初始化。假如我们现在有这样两个结构体：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>并初始化一个 <code>second</code> 结构体类型的变量：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span> *<span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span> *)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br></pre></td></tr></table></figure>
-<p>然后对其进行赋值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;c = <span class="number">12</span>;</span><br><span class="line">p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">p-&gt;d.b = <span class="string">'a'</span>;</span><br></pre></td></tr></table></figure>
-<p>首先，<code>p-&gt;d</code> 是为了取出 <code>p</code> 指针指向的字段 <code>d</code> 的信息，它是 <code>first</code> 结构体类型的，而且不是指针；然后，对这个得到的结果再使用 <code>.</code> 成员访问运算符来获取字段 <code>a</code> 和 <code>b</code> 的信息，或者说赋值。</p>
-<p>这样便可完成真正的赋值操作。</p>
-<h3 id="结构体的递归声明模式"><a href="#结构体的递归声明模式" class="headerlink" title="结构体的递归声明模式"></a>结构体的递归声明模式</h3><p>前文我们说到，结构体内部是可以存放指针，也可以放普通变量的。那么，是否存在一种可能，让结构体（假设为 <code>a</code> 类型）内部也有一个 <code>a</code> 类型的字段呢，即：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> <span class="title">field</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这种写法是可以的吗？显然，我们从逻辑上说不通，因为我们要创建好一个 <code>field</code> 字段，由于它是 <code>a</code> 类型的结构体类型，所以我们就不得不先为结构体 <code>a</code> 类型创建好。但显然此时还在创建其中的字段，整个结构体并未完成创建，所以这是相违背的。</p>
-<p>实际上确实如此。C 语言不允许递归声明：<strong>结构体类型内的字段不允许是当前结构体类型的</strong>，不过，你可以声明同样类型的结构体指针变量。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">a</span> *<span class="title">ptr</span>;</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这样书写和存储是没有问题的，因为从道理上讲，<code>ptr</code> 字段在这里仅仅表示的是一个可以指向这个类型的地址信息罢了，它是一个地址，所以并不和结构体类型的本身有关，所以这样的声明方式是被允许的。而且，这种声明模式广泛存在于一些复杂的结构里，例如<strong>链表</strong>（Linked List），它具有一个数据字段（data）和一个下一节点地址的字段（next）；而这里的 <code>data</code> 字段就是指向下一个链表节点的，它依然是当前类型的，只不过是指针。</p>
-<p>下面代码可以展示这一点：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">first</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">second</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">first</span> <span class="title">d</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">second</span>* <span class="title">p</span> = (<span class="title">struct</span> <span class="title">second</span>*)<span class="title">malloc</span>(<span class="title">sizeof</span>(<span class="title">struct</span> <span class="title">second</span>));</span></span><br><span class="line">    <span class="keyword">if</span> (p)</span><br><span class="line">    &#123;</span><br><span class="line">        p-&gt;c = <span class="number">12</span>;</span><br><span class="line">        p-&gt;d.a = <span class="number">23</span>;</span><br><span class="line">        p-&gt;d.b = <span class="string">'a'</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;c: %d\n"</span>, p-&gt;c);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.a: %d\n"</span>, p-&gt;d.a);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"p-&gt;d.b: %c\n"</span>, p-&gt;d.b);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">free</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>输出的结果如下：</p>
-<p><img src="output-nested-struct.png" alt=""></p>
-<h2 id="结构体的内存大小"><a href="#结构体的内存大小" class="headerlink" title="结构体的内存大小"></a>结构体的内存大小</h2><p>对一个结构体变量使用 <code>sizeof</code> 会如何呢？前文不是就用到堆内存分配了吗？</p>
-<p>这个数值实际上并不需要关心，但一般在考试题里会认为所有字段占据的内存空间的总和。但实际上并不一定是这样，结果可能比这个数值大一些，当然也可能是一样的。</p>
-<p>举个例子。就前文的学生类型结构体，它由四个字段构成：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">student</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age, score;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">bool</span> isGirl;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>在内存里，很有可能存储的方式是这样的：</p>
-<p><img src="struct-in-memory.png" alt=""></p>
-<p>当然，我也只能说是“可能”，因为具体的分配模式是根据内存怎么样找起来快怎么分配的模式来分配的。如果这种分配方式，使得代码运算速度快的话，那么这种肯定就是内存里存储这个结构体的方式。也有可能把 <code>age</code> 拿到下面来，也可能把 <code>isGirl</code> 拿下来，等等。</p>
-<blockquote>
-<p>不过，按照基本考试的方法，把它们所占字节数加起来就是整个结构体所占大小了：4 + 4 + 1 + 20 = 29 字节，所以，<code>sizeof(struct student)</code> = <code>sizeof(variable)</code> = 29。</p>
-</blockquote>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/25/clang-18-memory-allocation/" title="C 语言语法系列（18）：堆内存和栈内存" itemprop="url">C 语言语法系列（18）：堆内存和栈内存</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-25T06:43:20.000Z" itemprop="datePublished"> 发表于 2019-11-25</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前文我们已经说了很多有关 C 语言的语法了。今天我们来讲一点不同的理论：<strong>堆内存</strong>（Heap Memory）和<strong>栈内存</strong>（Stack Memory）。</p>
-<h2 id="堆内存和栈内存的定义"><a href="#堆内存和栈内存的定义" class="headerlink" title="堆内存和栈内存的定义"></a>堆内存和栈内存的定义</h2><p>堆内存和栈内存是两个不同的存储空间，由于名称不同，所以它们各自的功能也不同。堆内存专门用来管理我们程序使用的大量数据信息，当程序员不用的时候，可以自己手动释放掉（具体我们稍后再说）。不过前文我们都没有用过堆内存。</p>
-<p>栈内存指的是，当一个函数在生成的时候，就会在栈内存上分配指定的函数执行信息，以及参数、变量信息。当函数执行完毕后，这些信息会跟着函数销毁而自动销毁。这些内容是程序为我们直接完成的，无需我们手动去搞。举个例子。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> <span class="keyword">int</span> z = <span class="number">3</span>; <span class="comment">// Keyword `auto` can be omitted.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>, z + x);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当我们调用 <code>f</code> 函数时，系统就会为我们自动生成一个函数栈，分配其中需要用到的 <code>x</code>、<code>z</code> 变量的空间以可以存放它们，然后生成足够的空间可以让我们去执行这些内容。</p>
-<p>当执行完毕整个函数（调用返回语句 <code>return z;</code>）后，<code>f</code> 函数被销毁，此时，<code>f</code> 函数栈使用的空间就会被立刻释放掉，留给其它程序或下一次执行某处的时候用，这样就可以节约内容使用。不然一直占用着，程序的使用内存就会越来越大。</p>
-<p>当 <code>f</code> 执行完后，里面的变量的内存就会一起被释放，因为这些变量所处的内存的地方，就在这个函数栈里。这就是栈内存的方式。C 语言确实也默认所有在函数内定义的默认类型变量都是这样的生命周期。这些自动化处理的变量也就是前文提到过的 <code>auto</code> 类型变量。比如上文实例给出的 <code>auto int z = 3</code> 就是一个自动化处理的变量，而且一般我们都不写这个 <code>auto</code> 关键字。</p>
-<h2 id="使用堆内存"><a href="#使用堆内存" class="headerlink" title="使用堆内存"></a>使用堆内存</h2><p>既然栈内存这么不方便，那么可以自定义使用堆内存吗？是的，这也是我们接下来要提到的话题。C 语言为我们贴心地搞了一个堆内存的体系，让我们可以更加灵活处理很多复杂的内存分配的机制，也可以同时去避免函数栈销毁后同时销毁变量本身的方式。</p>
-<p>下面我们将开始尝试使用堆内存分配内存空间，并手动释放它们。不过我们需要介绍几个常用函数，它们在使用的时候都需要在前文 <code>#include</code> 指令处添加 <code>#include &lt;malloc.h&gt;</code> 头文件导入指令。</p>
-<h3 id="malloc-函数"><a href="#malloc-函数" class="headerlink" title="malloc 函数"></a><code>malloc</code> 函数</h3><p>考虑如下代码。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    <span class="keyword">if</span> (p != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        *p = <span class="number">3</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d"</span>, *p);</span><br><span class="line">        <span class="built_in">free</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们尝试在堆内存里分配了一个足够存放 <code>int</code> 的空间，而这坨空间的地址就是 <code>malloc</code> 函数的返回值。请注意，<code>malloc</code> 函数是具有通用性的，所以它可以为任何其它类型进行分配内存空间，所以此时我们需要把得到的地址强制转换为 <code>int *</code> 类型后赋值给 <code>p</code>，于是 <code>p</code> 就指向了这块内存了。</p>
-<p>然后我们尝试去比较 <code>p</code>。如果 <code>p</code> 不为 <code>NULL</code> 则继续往下执行。这是因为 <code>malloc</code> 函数在分配内存失败时将会返回 <code>NULL</code> 值。当它不为 <code>NULL</code>，就说明了变量被成功分配内存。另外，由于 <code>NULL</code> 和 <code>(void *)0</code> 等价，所以它实际上也是 0 的特殊写法。所以 <code>p != NULL</code> 依然可以认为是在和 0 进行比较，所以可以省略 <code>!= 0</code> 部分，即改写为 <code>p</code> 即可：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (p) <span class="comment">// p != NULL</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="free-函数"><a href="#free-函数" class="headerlink" title="free 函数"></a><code>free</code> 函数</h3><p>这个函数用于释放掉用完的内存。上文里如果我们已经完成了使用 <code>p</code> 的操作，那么我们就可以直接释放掉它了，所以我们把这个指针变量写到 <code>free</code> 函数里当参数就可以完成释放了。</p>
-<h3 id="realloc-函数"><a href="#realloc-函数" class="headerlink" title="realloc 函数"></a><code>realloc</code> 函数</h3><p>可以从单词上看出，<code>realloc</code> 就是 re-alloc。re- 前缀表示“反复”，“又”、“再一次”的意思，而 alloc 是 allocation，即分配的简写。所以这个函数的用法是将已经分配过的内存空间再一次重新分配一下，这一次可以更改内存分配的大小。如果你对这块内存目前的大小不满意，你可以调大这个内存空间，当然你也可以调小。它的写法是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> *pn = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">5</span> * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        pn[i] = i + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pn = (<span class="keyword">int</span> *)<span class="built_in">realloc</span>(pn, <span class="number">10</span> * <span class="keyword">sizeof</span>(<span class="keyword">int</span>)); <span class="comment">// Note here.</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">5</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        pn[i] = i + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, pn[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(pn);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>写法很简单，第一个参数传入需要扩容和缩容的内存块指针，第二个参数传入的则是新的分配大小。在内存里，<code>realloc</code> 会为我们自动往后扩容和缩容空间。当扩容的时候，如果发现后续连续空间不能使用的时候，它就会自动把数据拷贝到可以连续分配到足够内存空间的某处上，然后把这些刚才拷贝后的备份放到相对对应好的位置上，并返回新内存块的首地址。这里是 <code>pn</code> 得到的内存块重新分配后，再次赋值给 <code>pn</code>。</p>
-<p>请注意，这种赋值格式是存在严重的内存 bug 的：</p>
-<blockquote>
-<p>C6308: ‘realloc’ might return null pointer: assigning null pointer to ‘pn’, which is passed as an argument to ‘realloc’, will cause the original memory block to be leaked.</p>
-</blockquote>
-<p>这段话的意思是，如果你要使用 <code>realloc</code> 函数，就最好不要使用同一个变量来接受分配的地址。<code>realloc</code> 是可能返回 <code>NULL</code> 的，如果你用同一个变量接收的话，就可能导致新得到的地址是 <code>NULL</code>，这样你原本的内存块就找不到了，此时出现内存泄漏的 bug。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
@@ -855,6 +952,10 @@
 			
 		
 			
+				<li><a href="/tags/数独/" title="数独">数独<sup>5</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
@@ -871,10 +972,6 @@
 			
 		
 			
-				<li><a href="/tags/数独/" title="数独">数独<sup>3</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
 			
 		
@@ -883,15 +980,15 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -911,11 +1008,11 @@
 			
 		
 			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/TODO/" title="TODO">TODO<sup>1</sup></a></li>
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>1</sup></a></li>
 			
 		
 		</ul>
