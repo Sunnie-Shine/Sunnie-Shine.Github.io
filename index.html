@@ -82,6 +82,71 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2020/01/18/csharp-deconstruction/" title="C♯ 里的解构" itemprop="url">C♯ 里的解构</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2020-01-18T04:20:40.000Z" itemprop="datePublished"> 发表于 2020-01-18</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="什么是解构对象"><a href="#什么是解构对象" class="headerlink" title="什么是解构对象"></a>什么是解构对象</h2><p>假设，我们现在有一个学生类型：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">Student</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span>(<span class="params"><span class="keyword">int</span> age, <span class="keyword">string</span> name, <span class="keyword">bool</span> isBoy</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Age = age;</span><br><span class="line">        Name = name;</span><br><span class="line">        IsBoy = isBoy;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">bool</span> IsBoy &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可是，在有些时候，我们经常需要通过一些实际情况返回其中的一个信息，而不是对象整体。比如我只需要获取所有学生的性别而已，但每一次我们都需要跑一遍整个类的对象，并获取数据，是有些多事的。所以，在 C# 7 里提供了解构对象的概念，你只需要把需要输出的对象放到自己书写的 <code>Deconstruct</code> 方法的参数上就可以了。</p>
+<p>比如，如果你需要输出这三个信息，而不需要对象的话，就可以这么写方法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Deconstruct</span>(<span class="params"><span class="keyword">out</span> <span class="keyword">int</span> age, <span class="keyword">out</span> <span class="keyword">string</span> name, <span class="keyword">out</span> <span class="keyword">bool</span> isBoy</span>)</span> =&gt;</span><br><span class="line">    (age, name, isBoy) = (Age, Name, IsBoy);</span><br></pre></td></tr></table></figure>
+<p>这样的话，当你需要对对象的每一个属性取值时，就可以这么写了：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> stu = <span class="keyword">new</span> Student(<span class="number">18</span>, <span class="string">"ZhangSan"</span>, <span class="literal">true</span>);</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (age, name, isBoy) = stu; <span class="comment">// Note this.</span></span><br></pre></td></tr></table></figure>
+<p>在等号左侧写上最终的三个输出变量的名字（这个名字可以自己随便取，不需要照着 <code>Deconstruct</code> 方法上写得一模一样，只是一般都用一样的变量名），就可以了。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-7/">C♯ 7</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2020/01/07/sudoku-weekly-puzzles/" title="向日葵的每周数独" itemprop="url">向日葵的每周数独</a>
     
   </h1>
@@ -487,7 +552,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-8/">C♯ 8</a><a href="/tags/C♯-7/">C♯ 7</a>
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-7/">C♯ 7</a><a href="/tags/C♯-8/">C♯ 8</a>
   </div>
 
 </div>
@@ -745,95 +810,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/12/11/bitwise-operations-03-bitwise-or/" title="位运算（3）：位或运算" itemprop="url">位运算（3）：位或运算</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-12-11T03:46:06.000Z" itemprop="datePublished"> 发表于 2019-12-11</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>上一节我们提到了位与运算的操作，今天我们来看一下位或运算。</p>
-<h2 id="回顾一下用法"><a href="#回顾一下用法" class="headerlink" title="回顾一下用法"></a>回顾一下用法</h2><p>位或运算类似于“随便”，只要你随便给哪个 1（或者都给了 1）的时候结果为 1，当且仅当全部为 0 的时候为 0。例如</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-      & Binary   & Decimal\\
-      & 10101010 & 170\\
-    | & 00110111 & 55\\
-      & \text{_________}\\
-      & 10111111 & 191
-\end{matrix}</script><p>照旧，上下对应求值。所以这个运算结果一定是 191（0b10111111）。</p>
-<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>下面我们来看一下它的用法。</p>
-<h3 id="同时置位和查看哪些二进制位被置位"><a href="#同时置位和查看哪些二进制位被置位" class="headerlink" title="同时置位和查看哪些二进制位被置位"></a>同时置位和查看哪些二进制位被置位</h3><p>由于位或运算的特殊性，只要我们能和 1 进行位或运算，不管这个数是 0 还是 1，结果必然是 1。所以，我们可以利用这一点来做到一些用法。</p>
-<p>试想一下，我们会给路由的数据包里插入 6 个标志位，它们都只有一个比特的长度，所以它们要么是 0，要么是 1。它们是互不冲突的，我们可以同时为 ACK 置为 1，与此同时还可以为 URG 置为 1。这样的话，这 6 个比特我们如果看作一个二进制数的话，如果我们需要同时为这些数位置为 1，需要怎么做呢？</p>
-<p>假如，我们为其写成枚举类型：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> flags</span><br><span class="line">&#123;</span><br><span class="line">    URG = <span class="number">0x01</span>,</span><br><span class="line">    ACK = <span class="number">0x02</span>,</span><br><span class="line">    PSH = <span class="number">0x04</span>,</span><br><span class="line">    RST = <span class="number">0x08</span>,</span><br><span class="line">    SYN = <span class="number">0x10</span>,</span><br><span class="line">    FIN = <span class="number">0x20</span></span><br><span class="line">&#125; Flags;</span><br></pre></td></tr></table></figure>
-<p>这样可以为这些枚举字段设置值。</p>
-<p>现在我们考虑，我们把 URG 和 ACK 同时置为 1，需要怎么处理呢？很显然，处理方式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK;</span><br></pre></td></tr></table></figure>
-<p>我们把 URG 的数值和 ACK 进行位或运算就可以了。我们展开这些十六进制数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">URG: 0b00000001</span><br><span class="line">ACK: 0b00000010</span><br><span class="line">PSH: 0b00000100</span><br><span class="line">RST: 0b00001000</span><br><span class="line">SYN: 0b00010000</span><br><span class="line">FIN: 0b00100000</span><br></pre></td></tr></table></figure>
-<p>展开它们就可以发现，由于它们均以一个比特为单位，所以整体上来看，所有 1 的位次都是互相不冲突的。如果我们对 URG 和 ACK 两个字段作位或运算的话，由于其它位次为 0，而碰到 1 就会变为 1 的特效，最终的结果就变为了 <code>0b00000011</code>，这样一个数字就可以表示原本两个数字可以表示的信息了。</p>
-<p>那么，如果到时候判断它有哪些数位被置为 1 了的话，就很简单了，我们把这个数字再次和我们需要判断的数位数值进行位与运算，如果数字不为 0，就说明这个数位原本是 1（因为 1 才可能会和判断为 1 的这个数位位与运算结果为 1 而不是 0）：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK;</span><br><span class="line"><span class="keyword">bool</span> isSetUrg = (f &amp; URG) != <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>这样就可以了。其中的 <code>isSetUrg</code> 就是判断 URG 是否被置为 1。</p>
-<h3 id="多次位或运算"><a href="#多次位或运算" class="headerlink" title="多次位或运算"></a>多次位或运算</h3><p>我们甚至可以叠加执行位或运算。前文我们针对于两个不同的字段进行了位或运算，可以得到一个整数来表示两个字段的数值。如果需要合并更多呢？直接位或运算就可以了：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Flags f = URG | ACK | RST;</span><br></pre></td></tr></table></figure>
-<p>这样的话，我们就可以同时把 URG、ACK 和 RST 三个比特位置为 1 了。</p>
-<p>总结：</p>
-<ul>
-<li><strong>结论 1：<code>x | 0 = x</code>（如果 <code>x</code> 为 0 或者 1 的话）；</strong></li>
-<li><strong>结论 2：<code>x | 1 = 1</code>。</strong></li>
-</ul>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/位运算/">位运算</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -861,7 +837,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>28</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>29</sup></a></li>
 			
 		
 			
@@ -894,6 +870,10 @@
 		
 			
 				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>2</sup></a></li>
 			
 		
 			
@@ -930,10 +910,6 @@
 		
 			
 				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
 			
 		
 			
