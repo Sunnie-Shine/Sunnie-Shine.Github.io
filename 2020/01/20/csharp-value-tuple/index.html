@@ -1,0 +1,712 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C# 里的值元组 | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="值元组是什么在 C# 4 里提供了一种数据类型，叫做元组（Tuple），用法是这样的： 1var tuple = new Tuple&amp;lt;int, string&amp;gt;(24, &quot;Sunnie&quot;); 我们使用里面的数值时，可以直接使用 Item1 这样的名字来得到： 1string name = tuple.Item2; 但请注意的是，我们一直使用这种像是 Item2 的名字，显然是很难看的。于">
+<meta name="keywords" content="C♯,C♯ 7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C# 里的值元组">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2020&#x2F;01&#x2F;20&#x2F;csharp-value-tuple&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="值元组是什么在 C# 4 里提供了一种数据类型，叫做元组（Tuple），用法是这样的： 1var tuple = new Tuple&amp;lt;int, string&amp;gt;(24, &quot;Sunnie&quot;); 我们使用里面的数值时，可以直接使用 Item1 这样的名字来得到： 1string name = tuple.Item2; 但请注意的是，我们一直使用这种像是 Item2 的名字，显然是很难看的。于">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-20T11:14:28.785Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/01/20/csharp-value-tuple/" title="C# 里的值元组" itemprop="url">C# 里的值元组</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2020-01-20T09:50:34.000Z" itemprop="datePublished"> 发表于 2020-01-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#值元组是什么"><span class="toc-number">1.</span> <span class="toc-text">值元组是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#值元组的实现原理"><span class="toc-number">2.</span> <span class="toc-text">值元组的实现原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对位赋值"><span class="toc-number">3.</span> <span class="toc-text">对位赋值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解构和弃元"><span class="toc-number">4.</span> <span class="toc-text">解构和弃元</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="值元组是什么"><a href="#值元组是什么" class="headerlink" title="值元组是什么"></a>值元组是什么</h2><p>在 C# 4 里提供了一种数据类型，叫做元组（Tuple），用法是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tuple = <span class="keyword">new</span> Tuple&lt;<span class="keyword">int</span>, <span class="keyword">string</span>&gt;(<span class="number">24</span>, <span class="string">"Sunnie"</span>);</span><br></pre></td></tr></table></figure>
+<p>我们使用里面的数值时，可以直接使用 <code>Item1</code> 这样的名字来得到：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> name = tuple.Item2;</span><br></pre></td></tr></table></figure>
+<p>但请注意的是，我们一直使用这种像是 <code>Item2</code> 的名字，显然是很难看的。于是催生出了元组类型的进化版：值元组。</p>
+<p>值元组类型的英文叫做 <code>ValueTuple</code>，和上面等价的书写模式是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tuple = (<span class="number">24</span>, <span class="string">"Sunnie"</span>);</span><br></pre></td></tr></table></figure>
+<p>取值的话，可以这么写：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> name = tuple.Item2;</span><br></pre></td></tr></table></figure>
+<p>但是，当你在声明类型上书写参数名称时，就可以直接使用参数类型即可替换掉不好看的 <code>Item1</code> 这样的名字，如下代码所示。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tuple = (age: <span class="number">24</span>, name: <span class="string">"Sunnie"</span>);</span><br><span class="line"><span class="keyword">string</span> name = tuple.name;</span><br></pre></td></tr></table></figure>
+<p>这样看起来是不是非常简洁呢？</p>
+<h2 id="值元组的实现原理"><a href="#值元组的实现原理" class="headerlink" title="值元组的实现原理"></a>值元组的实现原理</h2><p>我们一般使用一对小括号来声明和对变量进行赋值。你最多可以为其赋值 8 个元素。</p>
+<p>每一多一个元素，元组的名字就增加一个单位。比如具有两个元素的值元组叫做二元组（或者叫值对），三个元素的值元组叫三元组，四个元素的则叫四元组，等等。</p>
+<p>在值元组的声明和创建时，由于它是以值类型方式实现的，所以它不会像是引用类型元组一样，具有基类型，但是，它具有一个基本类型 <code>ValueTuple</code> ，这个类型可以创建所有我们需要的基本值元组类型的所有元素，即 <code>ValueTuple.Create</code> 方法。</p>
+<p>创建出来的元素类型一般使用元组的表示方式表示其类型：<code>ValueTuple&lt;int, string&gt;</code>，不过值元组提供了一种新的表达方式，使得这种类型可以写起来更简单：<code>(int, string)</code>。这种表示显然比普通值元组的类型表示方式更加简单。而且，这种通过值对的表示方式还可以和类型名后配上一个名称，使得值元组在使用内部元素的时候可以简单通过这个名称来取值，而不需要用 <code>Item1</code> 这样的名字。所以，总的变化方式是这样的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ValueTuple&lt;<span class="keyword">int</span>, <span class="keyword">string</span>&gt; a = ValueTuple.Create(<span class="number">1</span>, <span class="string">"a"</span>);</span><br><span class="line">(<span class="keyword">int</span>, <span class="keyword">string</span>) b = ValueTuple.Create(<span class="number">1</span>, <span class="string">"a"</span>); <span class="comment">// Also write as '(1, "a")' instead of 'ValueTuple.Create(1, "a")'.</span></span><br><span class="line">(<span class="keyword">int</span> age, <span class="keyword">string</span> name) c = (<span class="number">1</span>, <span class="string">"a"</span>);</span><br></pre></td></tr></table></figure>
+<p>使用上述三种值元组的数值分别用的是下面这样的表示方式：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age1 = a.Item1;</span><br><span class="line"><span class="keyword">int</span> age2 = b.Item1;</span><br><span class="line"><span class="keyword">int</span> age3 = c.age;</span><br></pre></td></tr></table></figure>
+<p>由于前面两种只有类型声明，没有配上类型参数的名称，所以只能使用 <code>Item1</code>；而第三种表达在类型参数后配上了名称，所以可以直接使用该名称来调用和取元素的值。</p>
+<p>但注意一点。值元组的实现内部是通过字段来搞定的，所以建议所有的值元组类型名称都用字段的标识符的规范命名。比如，有些地方的字段会采用“下划线加驼峰命名法”的规范，所以这里的 <code>age</code> 建议使用 <code>_age</code> 这个名称，所以上述表示方式可以建议写成</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> _age, <span class="keyword">string</span> _name) pair;</span><br></pre></td></tr></table></figure>
+<h2 id="对位赋值"><a href="#对位赋值" class="headerlink" title="对位赋值"></a>对位赋值</h2><p>显然，这样的声明格式太长了，我们很希望也可以使用前文提到的 <code>var</code> 关键字处理掉赋值。于是，催生了一个新的语法。我们类型名称可以不用这么长。如果你要取值和赋值到类型上的话，可以采用对位赋值的操作：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (age, name) = (<span class="number">24</span>, <span class="string">"Sunnie"</span>);</span><br><span class="line">Console.WriteLine(age);</span><br></pre></td></tr></table></figure>
+<p>这样便可直接定义出来两个变量，且两个变量挨个赋上 24 和 “Sunnie” 的值，注意到的是，这里的 <code>age</code> 和 <code>name</code> 就不再是一个类型名称，而是一个实际的变量名了。当然，你也可以不用 <code>var</code>，而把所有类型写到小括号里：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> age, <span class="keyword">string</span> name) = (<span class="number">24</span>, <span class="string">"Sunnie"</span>);</span><br></pre></td></tr></table></figure>
+<p>这里的 <code>age</code> 和 <code>name</code> 也是和上面声明方式完全一样的格式，只是把类型写在里面了。但注意到的是，这种格式和 <code>(int age, string name) pair = (24, &quot;Sunnie&quot;)</code> 有完全不一样的理解方式，虽然区别只有一个 <code>pair</code> 单词的差别。如果没有 <code>pair</code>，系统就会直接认为 <code>age</code> 和 <code>name</code> 是两个变量，因此里面的 <code>age</code> 和 <code>name</code> 会被当成一个变量名称；相反，如果带有 <code>pair</code>，按照定义变量的格式规范，<code>pair</code> 自然就会被解析为变量名，而前面的所有部分都会被视作是一个变量类型，故此时的 <code>(int _age, string _name)</code> 会被看作是一个类型，虽然这个类型里带有 <code>_age</code> 和 <code>_name</code> 这两个看起来很像是变量名定义的类型配套的名称。</p>
+<p>从语法层面上讲，它等价于</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> age = <span class="number">24</span>;</span><br><span class="line"><span class="keyword">string</span> name = <span class="string">"Sunnie"</span>;</span><br></pre></td></tr></table></figure>
+<p>这两句话，即挨个赋值。只是上面的对位赋值模式书写起来会更加简单。另外，C# 完全支持属性等等成员的对位赋值。试想一下，等号左侧一般写的是变量名称，而如果书写的是属性名称或字段名称的话，按道理说是报错的，因为这个变量名称没有写类型。但是，如果你在类或结构里声明了这些属性和字段，就不必写类型名也能认识这个标识符。</p>
+<h2 id="解构和弃元"><a href="#解构和弃元" class="headerlink" title="解构和弃元"></a>解构和弃元</h2><p>有些时候，它并非是一个值元组类型，而是一个很普通的类类型或结构类型。举个例子，我这里有一个学生类型：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">readonly</span> <span class="keyword">struct</span> Student</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span>(<span class="params"><span class="keyword">int</span> age, <span class="keyword">string</span> name, <span class="keyword">bool</span> isBoy</span>)</span> =&gt;</span><br><span class="line">        (Age, Name, IsBoy) = (age, name, isBoy);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; ]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">bool</span> IsBoy &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>再次提一下，位于第 4 行的赋值行为就是前文提到的对位赋值模式。</p>
+</blockquote>
+<p>比如这样的结构，有些时候我期望在赋值对象的时候，不必每次都把类型写出来，而只需要其中的某个或某些属性数值，来精简代码处理，这该怎么做呢？</p>
+<p>为了考虑兼容性，我们不必让这样在之前就写好的类型作出过多的改动。只要你实现了 <code>Deconstruct</code> 方法，就可以对对象解构，对象里需要的所有数据就直接脱离对象本身返回出来。比如上面的例子，我们就可以写成这样的方法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Deconstruct</span>(<span class="params"><span class="keyword">out</span> <span class="keyword">int</span> age, <span class="keyword">out</span> <span class="keyword">string</span> name, <span class="keyword">out</span> <span class="keyword">bool</span> isBoy</span>)</span> =&gt;</span><br><span class="line">    (age, name, isBoy) = (Age, Name, IsBoy);</span><br></pre></td></tr></table></figure>
+<p>这样的话，我们使用对象就可以这么写：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Older.</span></span><br><span class="line"><span class="keyword">var</span> name = stu.Name;</span><br><span class="line"><span class="keyword">var</span> (name, age) = (stu.Name, stu.Age);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Newer.</span></span><br><span class="line"><span class="keyword">var</span> (_, name, _) = stu;</span><br></pre></td></tr></table></figure>
+<p>将对象直接赋值给三元组，而且不需要用到的地方直接用一个下划线 <code>_</code> 表示就可以了。这里的 <code>name</code> 变量就是调用了前面 <code>Deconstruct</code> 方法的第二个参数 <code>name</code> 的结果。</p>
+<p>顺带一提，这里的下划线抛弃不需要的变量的行为叫做<strong>弃元</strong>（Discard）。</p>
+<p>注意，弃元是一个符号，它不算做一个变量名。而变量名是允许下划线出现的。所以注意区分下划线使用的情况。如果一个单独的下划线作为变量名，也是允许的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> _ = <span class="number">3</span>; <span class="comment">// Legal.</span></span><br></pre></td></tr></table></figure>
+<p>但弃元使用在不是声明变量的地方，所以类型名称不会出现的地方，使用这个符号是不会产生二义性的：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_ = <span class="number">3</span>; <span class="comment">// Legal but useless.</span></span><br></pre></td></tr></table></figure>
+<p>但是！如果你在前文声明了下划线作为名字的变量的话，使用 <code>_ = 3</code> 就会正常赋值，而不是一个弃元。所以请你注意它们的用法区别。</p>
+<p>当然，解构对象的方法 <code>Deconstruct</code> 支持重载，重载规则将会完全参照基本的重载规则执行，只要你没有所有类型完全一样的两个 <code>Deconstruct</code> 方法就可以。但如果解构对象的方法参数个数一致的话，就请你一定要写清楚每一个赋值的变量的类型，否则就分不开了。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-7/">C♯ 7</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2020/01/20/csharp-value-tuple/" data-title="C# 里的值元组 | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2020/01/18/csharp-deconstruction/"  title="C# 里的解构">
+ <strong>下一篇：</strong><br/> 
+ <span>C# 里的解构
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#值元组是什么"><span class="toc-number">1.</span> <span class="toc-text">值元组是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#值元组的实现原理"><span class="toc-number">2.</span> <span class="toc-text">值元组的实现原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对位赋值"><span class="toc-number">3.</span> <span class="toc-text">对位赋值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解构和弃元"><span class="toc-number">4.</span> <span class="toc-text">解构和弃元</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>30</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>24</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/向向的每周数独/" title="向向的每周数独">向向的每周数独<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2020 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
