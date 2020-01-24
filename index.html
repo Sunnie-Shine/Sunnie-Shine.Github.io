@@ -82,6 +82,65 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2020/01/24/lru-caching/" title="LRU 缓存机制算法源代码（C#）" itemprop="url">LRU 缓存机制算法源代码（C#）</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2020-01-24T05:11:21.000Z" itemprop="datePublished"> 发表于 2020-01-24</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>下面列出代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Your LRUCache object will be instantiated and called as such:</span></span><br><span class="line"><span class="comment">// LRUCache obj = new LRUCache(capacity);</span></span><br><span class="line"><span class="comment">// int param_1 = obj.Get(key);</span></span><br><span class="line"><span class="comment">// obj.Put(key,value);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">LRUCache</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> _size;</span><br><span class="line">    <span class="keyword">private</span> Dictionary&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt; _dic;</span><br><span class="line">    <span class="keyword">private</span> List&lt;<span class="keyword">int</span>&gt; _list;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LRUCache</span>(<span class="params"><span class="keyword">int</span> capacity</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _size = capacity;</span><br><span class="line">        _dic = <span class="keyword">new</span> Dictionary&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt;();</span><br><span class="line">        _list = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">Get</span>(<span class="params"><span class="keyword">int</span> key</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_dic.ContainsKey(key))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> temp = _dic[key];</span><br><span class="line">            _list.Remove(key);</span><br><span class="line">            _list.Add(key);</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">return</span> temp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Put</span>(<span class="params"><span class="keyword">int</span> key, <span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_dic.ContainsKey(key))</span><br><span class="line">        &#123;</span><br><span class="line">            _dic[key] = <span class="keyword">value</span>;</span><br><span class="line">            _list.Remove(key);</span><br><span class="line">            _list.Add(key);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (_size != _dic.Count)</span><br><span class="line">        &#123;</span><br><span class="line">            _list.Add(key);</span><br><span class="line">            _dic[key] = <span class="keyword">value</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> x = _list[<span class="number">0</span>];</span><br><span class="line">            _dic.Remove(x);</span><br><span class="line">            _list.RemoveAt(<span class="number">0</span>);</span><br><span class="line">            _dic[key] = <span class="keyword">value</span>;</span><br><span class="line">            _list.Add(key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/操作系统/">操作系统</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2020/01/20/csharp-value-tuple/" title="C# 里的值元组" itemprop="url">C# 里的值元组</a>
     
   </h1>
@@ -676,135 +735,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/12/13/bitwise-operations-05-bitwise-exclusive-or/" title="位运算（5）：位异或运算" itemprop="url">位运算（5）：位异或运算</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-12-13T01:37:38.000Z" itemprop="datePublished"> 发表于 2019-12-13</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h2><p>异或运算比较生疏，我们可以认为是“要么……要么……”。当且仅当两者里取了一个 1 的时候才是 1，都是 0 或都是 1 则都会得到 0。</p>
-<script type="math/tex; mode=display">
-\begin{matrix}
-             & Binary   & Decimal\\
-             & 10101010 & 170\\
-    \text{^} & 00110111 & 55\\
-             & \text{_________}\\
-             & 10011101 & 157
-\end{matrix}</script><h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>位异或运算是比较生疏的一种运算模式，它非常不熟悉所以导致它的一些用法也不太清楚。我们先从基本原理说起。</p>
-<h3 id="等价转换和基本结论"><a href="#等价转换和基本结论" class="headerlink" title="等价转换和基本结论"></a>等价转换和基本结论</h3><p>它可以被等价转换为位与运算、位或运算、位取反运算三者的合并写法：<code>a ^ b = ~a &amp; b | a &amp; ~b</code>，根据上面的说法，我们只能要求两者选其一，所以要么 <code>a</code> 不选，并且 <code>b</code> 选；要么 <code>a</code> 选了，<code>b</code> 就不要选了。所以这样的定义直接套用就可以转换为上面的写法。</p>
-<p>但显然，这种写法不够简单和简洁，不过没事，好在基本上我们碰不到通过定义确定是否应该使用 <code>a ^ b</code> 的情况。</p>
-<p><strong>结论 1：位异或运算相当于不进位的加法。</strong></p>
-<p>我们先来看下异或运算的转换表：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>x</th>
-<th>y</th>
-<th>x ^ y</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr>
-<td>1</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td>1</td>
-<td>1</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>当为二进制的情况下，只有当 <code>x</code> 和 <code>y</code> 同为 1 的时候需要进位变为 0b10，不过在结果里，我们没有体现出来，而好像是丢弃了最高位的 1 一般，只留下了 0。所以，我称这种现象叫不进位的加法。这一点看起来没有什么用，不过在有些时候，它是非常管用的。</p>
-<p><strong>结论 2：对于一个比特而言，将它和 1 进行位异或运算，相当于取反。</strong></p>
-<p><strong>结论 3：对于一个比特而言，将它和 0 进行位异或运算，相当于保持不变。</strong></p>
-<p>接下来这两个结论应当是一起出现的，因为它们都针对于同一个比特进行操作。如果把一个比特位和 1 进行位异或运算，结果是取反。比如 <code>1 ^ 1 = 0</code>，原本是 1，和 1 进行位异或运算后变为 0；同理，如果是 0，则 <code>0 ^ 1 = 1</code>，变回 1。</p>
-<p>如果位异或运算下，一个比特位跟 0 进行计算的话，结果是它自己，即 <code>x ^ 0 = x</code>。这一点很好说明，因为不进位的加法。由于它在和 0 进行位异或运算，所以肯定是不可能进位的，所以我们不考虑进位的关系，剩下的部分自然就是这个比特位了。而这个比特位不论是多少，和 0“相加”，结果必然是它自己。</p>
-<p>当然，不论一个比特还是多个比特，它和 0 进行位异或运算结果都不会变：</p>
-<p><strong>结论 4：<code>x ^ 0 = x</code>（<code>x</code> 是任意整数）。</strong></p>
-<p>另外，思考一个问题。如果两个相同的数字进行位异或运算，结果是多少呢？比如 13，那么 13 ^ 13 等于多少呢？答案是 0，我们可以很简单地得到这一个结论。由于两个数是相同的元素，所以它们每一个二进制对应位次上的数都是一样的，而在异或运算里，两个相同的数字的位异或运算必然是 0，这也就意味着所有位次的运算结果都变为 0，所以整体的结果就是 0。</p>
-<p><strong>结论 5：<code>x ^ x = 0</code>（<code>x</code> 是任意整数）。</strong></p>
-<h3 id="找到序列里唯一出现一次的数字"><a href="#找到序列里唯一出现一次的数字" class="headerlink" title="找到序列里唯一出现一次的数字"></a>找到序列里唯一出现一次的数字</h3><p>如果一个序列里给了一系列元素，其中大多数都有两个，而只有一个数，它只出现了一次。我们需要找出它。这个时候位异或运算就显得很有用了。由于自己跟自己异或运算的结果为 0 的关系，我们直接对每一个元素挨个进行异或运算，既然碰到两个相同的数字，那么自然位异或的结果就为 0；而多出来的数字我们不必关心，因为任何一个数和 0 异或运算的结果也就是本身，所以它也不会发生变化。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = arr[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; length; i++)</span><br><span class="line">        result = result ^ arr[i];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result; <span class="comment">// The result.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当然，第 5 行代码也可以写成复合赋值运算符的形式 <code>result ^= arr[i]</code>。</p>
-<h3 id="找到-1-到-n-里唯一一个出现两次的数字"><a href="#找到-1-到-n-里唯一一个出现两次的数字" class="headerlink" title="找到 1 到 n 里唯一一个出现两次的数字"></a>找到 1 到 n 里唯一一个出现两次的数字</h3><p>这个变体问题则和上一个问题不太一样。但解法相同，依然考虑位异或运算。如果一个序列只有 1 到 n 的数字，其中某一个数有两个，而其它的都只有一个。现在要求找出这个两个的元素。我们的做法很简单。要想找到这个数，我们可以利用下标索引的方式对每一个数挨个异或运算。我们把 0 下标调整为 1，1 调整为 2，2 调整为 3（都调大一个单位），这样如果元素都是一次的话，那么这个下标结果和我们序列里的元素异或运算的结果就会为 0，保证元素只有一个。而多出来的这个数，算上下标调整后的数值，就相当于会出现三次，而三次的其中两次进行位异或运算的结果必然就消掉了（为 0），所以剩下一个数自然就是结果了。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> arr[], <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = arr[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; length; i++)</span><br><span class="line">        result = result ^ (i + <span class="number">1</span>) ^ arr[i];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当然，也可以简写为 <code>result ^= arr[i] ^ i + 1</code>。异或运算不考虑运算顺序，不像减法和除法。</p>
-<h3 id="不借助临时变量交换变量"><a href="#不借助临时变量交换变量" class="headerlink" title="不借助临时变量交换变量"></a>不借助临时变量交换变量</h3><p>如果想要交换两个变量的数值，我们平时的做法是使用临时变量来存储元素，来交换。现在我们使用异或运算的方式就可以在运算过程里产生临时存储数值形成另外一个维度的临时变量，达到交换效果。它的写法格式是相当简单的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *a ^= *b;</span><br><span class="line">    *b ^= *a;</span><br><span class="line">    *a ^= *b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>甚至可以写成一句话：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *a ^= *b ^= *a ^= *b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们现在来思考一下，这个代码奏效的原因。</p>
-<p>我们第一步是 <code>a = a ^ b</code>，即把两个数直接异或运算，得到的结果放 a 里，此时 <code>a</code> 的结果是 a ^ b，而 <code>b</code> 依旧是 b 自己。</p>
-<p>第二步是 <code>b = b ^ a</code>，而此时 <code>a</code> 已经变为了 a ^ b，所以通过计算后，由于两个 b 的原因，异或运算为 0，所以 <code>b</code> 此时的数值就是 a 了，而 <code>a</code> 依旧是 a ^ b。</p>
-<p>第三步是 <code>a = a ^ b</code>，由于 <code>a</code> 是 a ^ b 的关系，而 <code>b</code> 此时是 a 的关系，所以计算结果会把里面的 a去掉，所以 <code>a</code> 只有 b 的数值，故达到了交换效果。</p>
-<p>不过需要注意的是，这种交换方式通过计算得到，虽然快，但有可能会产生溢出，所以一般不提倡这种交换方式，最好的方式依然是三变量交换法。</p>
-<p>最后，给出一个 16 以内的位异或运算的对照表，你可以从中发现不一样的世界。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> 1^ 1= 0   1^ 2= 3   1^ 3= 2   1^ 4= 5   1^ 5= 4   1^ 6= 7   1^ 7= 6   1^ 8= 9   1^ 9= 8   1^10=11   1^11=10   1^12=13   1^13=12   1^14=15   1^15=14   1^16=17</span><br><span class="line"> 2^ 1= 3   2^ 2= 0   2^ 3= 1   2^ 4= 6   2^ 5= 7   2^ 6= 4   2^ 7= 5   2^ 8=10   2^ 9=11   2^10= 8   2^11= 9   2^12=14   2^13=15   2^14=12   2^15=13   2^16=18</span><br><span class="line"> 3^ 1= 2   3^ 2= 1   3^ 3= 0   3^ 4= 7   3^ 5= 6   3^ 6= 5   3^ 7= 4   3^ 8=11   3^ 9=10   3^10= 9   3^11= 8   3^12=15   3^13=14   3^14=13   3^15=12   3^16=19</span><br><span class="line"> 4^ 1= 5   4^ 2= 6   4^ 3= 7   4^ 4= 0   4^ 5= 1   4^ 6= 2   4^ 7= 3   4^ 8=12   4^ 9=13   4^10=14   4^11=15   4^12= 8   4^13= 9   4^14=10   4^15=11   4^16=20</span><br><span class="line"> 5^ 1= 4   5^ 2= 7   5^ 3= 6   5^ 4= 1   5^ 5= 0   5^ 6= 3   5^ 7= 2   5^ 8=13   5^ 9=12   5^10=15   5^11=14   5^12= 9   5^13= 8   5^14=11   5^15=10   5^16=21</span><br><span class="line"> 6^ 1= 7   6^ 2= 4   6^ 3= 5   6^ 4= 2   6^ 5= 3   6^ 6= 0   6^ 7= 1   6^ 8=14   6^ 9=15   6^10=12   6^11=13   6^12=10   6^13=11   6^14= 8   6^15= 9   6^16=22</span><br><span class="line"> 7^ 1= 6   7^ 2= 5   7^ 3= 4   7^ 4= 3   7^ 5= 2   7^ 6= 1   7^ 7= 0   7^ 8=15   7^ 9=14   7^10=13   7^11=12   7^12=11   7^13=10   7^14= 9   7^15= 8   7^16=23</span><br><span class="line"> 8^ 1= 9   8^ 2=10   8^ 3=11   8^ 4=12   8^ 5=13   8^ 6=14   8^ 7=15   8^ 8= 0   8^ 9= 1   8^10= 2   8^11= 3   8^12= 4   8^13= 5   8^14= 6   8^15= 7   8^16=24</span><br><span class="line"> 9^ 1= 8   9^ 2=11   9^ 3=10   9^ 4=13   9^ 5=12   9^ 6=15   9^ 7=14   9^ 8= 1   9^ 9= 0   9^10= 3   9^11= 2   9^12= 5   9^13= 4   9^14= 7   9^15= 6   9^16=25</span><br><span class="line">10^ 1=11  10^ 2= 8  10^ 3= 9  10^ 4=14  10^ 5=15  10^ 6=12  10^ 7=13  10^ 8= 2  10^ 9= 3  10^10= 0  10^11= 1  10^12= 6  10^13= 7  10^14= 4  10^15= 5  10^16=26</span><br><span class="line">11^ 1=10  11^ 2= 9  11^ 3= 8  11^ 4=15  11^ 5=14  11^ 6=13  11^ 7=12  11^ 8= 3  11^ 9= 2  11^10= 1  11^11= 0  11^12= 7  11^13= 6  11^14= 5  11^15= 4  11^16=27</span><br><span class="line">12^ 1=13  12^ 2=14  12^ 3=15  12^ 4= 8  12^ 5= 9  12^ 6=10  12^ 7=11  12^ 8= 4  12^ 9= 5  12^10= 6  12^11= 7  12^12= 0  12^13= 1  12^14= 2  12^15= 3  12^16=28</span><br><span class="line">13^ 1=12  13^ 2=15  13^ 3=14  13^ 4= 9  13^ 5= 8  13^ 6=11  13^ 7=10  13^ 8= 5  13^ 9= 4  13^10= 7  13^11= 6  13^12= 1  13^13= 0  13^14= 3  13^15= 2  13^16=29</span><br><span class="line">14^ 1=15  14^ 2=12  14^ 3=13  14^ 4=10  14^ 5=11  14^ 6= 8  14^ 7= 9  14^ 8= 6  14^ 9= 7  14^10= 4  14^11= 5  14^12= 2  14^13= 3  14^14= 0  14^15= 1  14^16=30</span><br><span class="line">15^ 1=14  15^ 2=13  15^ 3=12  15^ 4=11  15^ 5=10  15^ 6= 9  15^ 7= 8  15^ 8= 7  15^ 9= 6  15^10= 5  15^11= 4  15^12= 3  15^13= 2  15^14= 1  15^15= 0  15^16=31</span><br><span class="line">16^ 1=17  16^ 2=18  16^ 3=19  16^ 4=20  16^ 5=21  16^ 6=22  16^ 7=23  16^ 8=24  16^ 9=25  16^10=26  16^11=27  16^12=28  16^13=29  16^14=30  16^15=31  16^16= 0</span><br></pre></td></tr></table></figure>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/位运算/">位运算</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">下一页 ↓</a>
@@ -852,11 +782,11 @@
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
 			
 		
 			
@@ -884,15 +814,15 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -908,7 +838,7 @@
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

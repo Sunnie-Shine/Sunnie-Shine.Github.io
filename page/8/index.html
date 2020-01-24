@@ -82,6 +82,79 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/10/csharp-common-02-idisposable/" title="C# 内置类型详解系列（2）：IDisposable 接口" itemprop="url">C# 内置类型详解系列（2）：IDisposable 接口</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-10T03:08:50.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="IDisposable-接口简述"><a href="#IDisposable-接口简述" class="headerlink" title="IDisposable 接口简述"></a><code>IDisposable</code> 接口简述</h2><p>在 C# 里，我们是允许使用不安全代码（指针）来操作非托管内存的，于是便产生了非托管内存如何规范释放的问题。<code>IDisposable</code> 接口的产生，正是为了这种需求。</p>
+<p>当我们需要手动释放一些比较大的资源的时候（比如 GC 没有回收垃圾资源，或是由于 GC 回收机制体系的 bug 导致无法回收的时候，我们就需要这个接口了。</p>
+<h2 id="接口实现"><a href="#接口实现" class="headerlink" title="接口实现"></a>接口实现</h2><p>一般来说，这个接口的实现不容易，我们来看看实现的整体代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DisposableObject</span> : <span class="title">IDisposable</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">bool</span> _disposed;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Dispose(<span class="literal">true</span>);</span><br><span class="line">        GC.SuppressFinalize(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Close</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Dispose();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~DisposableObject()</span><br><span class="line">    &#123;</span><br><span class="line">        Dispose(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"><span class="keyword">bool</span> disposing</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_disposed)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (disposing)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清理托管资源</span></span><br><span class="line">            <span class="comment">// if (managedResource != null)</span></span><br><span class="line">            <span class="comment">// &#123;</span></span><br><span class="line">            <span class="comment">//     managedResource.Dispose();</span></span><br><span class="line">            <span class="comment">//     managedResource = null;</span></span><br><span class="line">            <span class="comment">// &#125;</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 清理非托管资源</span></span><br><span class="line">        <span class="comment">// if (nativeResource != IntPtr.Zero)</span></span><br><span class="line">        <span class="comment">// &#123;</span></span><br><span class="line">        <span class="comment">//     Marshal.FreeHGlobal(nativeResource);</span></span><br><span class="line">        <span class="comment">//     nativeResource = IntPtr.Zero;</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 标记已经被释放。</span></span><br><span class="line">        _disposed = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>大致来看看，这个执行流程。首先是调用 <code>Dispose</code> 和 <code>Close</code> 方法的时候，系统会自动调用这个内部的虚方法 <code>Dispose(bool)</code>，调用这个方法的目的是进行分流。当参数为 <code>true</code> 的时候，表示需要清理托管资源，它就会进入到 <code>if</code> 条件里面去执行，然后清理内部用到的所有资源。注意，第 33 行的内容，即把对象置为 <code>null</code> 这一点，一直饱受争议，因为 GC 的回收机制的关系，有人认为是通过计数引用的方式，所以我们置为 <code>null</code> 就好比脱离了对象，计数就会减去 1。当计数为 0 的时候，就表示对象没有被用到了，此时就可以回收掉了。但有人认为这种做法是多余的，因为 GC 本身的实现并不是计数引用的算法，而是分代算法，它利用了一种叫做 Generation 的东西，将对象分为 0、1、2 三代，如果在第 0 代执行回收，而没有被销毁的对象都将被丢到第 1 代里；第 1 代的没有回收就进入第 2 代。注意，只有三种情况，所以到第 2 代就没往后了，于是这些所谓的第 2 代的东西就变得更加稳定，比较难回收。</p>
+<blockquote>
+<p> 总之，实现算法层面可以参考最后一部分的链接。</p>
+</blockquote>
+<p>继续看代码。可以看出，我们这里不论是否清理了托管资源，非托管资源都会被得到释放，因为它并不受到 <code>if</code> 条件的约束。然后在释放后，将当前对象的 <code>_disposed</code> 字段置为 <code>true</code> 表示这个对象不要被反复释放了，因为里面的资源目前已经全部指向 <code>null</code> 了，如果你再次释放，就会引发 <code>ObjectDisposedException</code> 或 <code>NullReferenceException</code> 异常，这分别表示你的对象已经释放，对象被重复释放时抛出的异常，以及调用 <code>null</code> 内存块的异常。</p>
+<p>最后请注意，在那个非虚方法 <code>Dispose</code> 里，还调用了 <code>GC.SuppressFinalize</code> 方法，这个方法表示禁用 GC 回收这个资源。如果不禁用的话，我们正在回收的资源被 GC 突然拿走了，岂不是会报错。</p>
+<blockquote>
+<p>是的，实际上报错就是前文说到的 <code>ObjectDisposedException</code>。</p>
+</blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://www.cnblogs.com/nele/p/5673215.html" target="_blank" rel="noopener">GC 实现算法</a></li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B/">C♯.内置类型</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/09/linq-01-from-and-select-clause/" title="LINQ 教程（1）：from 和 select 从句" itemprop="url">LINQ 教程（1）：from 和 select 从句</a>
     
   </h1>
@@ -1119,133 +1192,6 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/08/android-permissions/" title="安卓权限设置" itemprop="url">安卓权限设置</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-08T04:43:21.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="开篇"><a href="#开篇" class="headerlink" title="开篇"></a>开篇</h2><p>我们先来思考一个问题。我们平时在使用安卓程序的时候，经常会使用到网络权限来上网，获取信息，然后显示到 App 里，比如我们需要网络去查找一些单词的意思之类的 App。那么，这个时候显然我们就需要网络的权限。但是在安卓程序里，我们只要需要它们，就必须得添加这些东西的权限声明，并在代码里添加这些内容。那么添加什么呢？</p>
-<h2 id="获取权限的流程"><a href="#获取权限的流程" class="headerlink" title="获取权限的流程"></a>获取权限的流程</h2><p>那么，我们应该怎么做呢？</p>
-<h3 id="第一步：修改-AndroidManifest-xml-文件"><a href="#第一步：修改-AndroidManifest-xml-文件" class="headerlink" title="第一步：修改 AndroidManifest.xml 文件"></a>第一步：修改 <code>AndroidManifest.xml</code> 文件</h3><p>我们打开项目里的 <code>AndroidManifest.xml</code> 文件，并在上方添加一项。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">package</span>=<span class="string">"com.example.sunnieapp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:versionCode</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:versionName</span>=<span class="string">"1.0"</span> &gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- Note here --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Other contents such as application node. --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这样，我们就声明了，这个 App 可能会使用到使用网络的权限的说明。但是光声明没有用啊，我们还得添加上执行语句，判断是否获取到了权限，获取到权限就上网查东西，获取不了就弹窗啥的。</p>
-<h3 id="第二步：修改代码"><a href="#第二步：修改代码" class="headerlink" title="第二步：修改代码"></a>第二步：修改代码</h3><p>下面我们就需要在代码里添加权限获取和权限提示的方法了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">requestPermission</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Here, this activity is the current activity.</span></span><br><span class="line">    <span class="keyword">if</span> (ContextCompat.checkSelfPermission(<span class="keyword">this</span>, INTERNET)</span><br><span class="line">        != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">        ActivityCompat.requestPermissions(</span><br><span class="line">            <span class="keyword">this</span>,</span><br><span class="line">            <span class="keyword">new</span> String[] &#123; INTERNET &#125;,</span><br><span class="line">            NEED_INTERNET_REQUEST_CODE);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们需要先写出权限请求的代码。<code>requestPermission</code> 方法就是用来请求获取 <code>INTERNET</code> 这个权限的代码。其中的 <code>ActivityCompat.requestPermissions</code> 方法，就是为了使得当前活动获取对应的权限，第一个参数传递的是活动对象，这里肯定就是 <code>this</code> 了；而第二个参数传递的是你需要获取的权限的名称，这里获取的是网络权限，所以写 <code>INTERNET</code>。具体还有其它的权限，我们将在稍后罗列出来；第三个参数则是请求代码。这个代码是你自己规定的，我们可以随意给定一个数值，然后看这个请求结果最终是不是和我们预期给出的这个数值一样。如果不一样，显然就是出错了，这里我们随便传递一个数值进去就好。我的程序的整体代码是 <code>private final int NEED_INTERNET_REQUEST_CODE = 0xC0DE;</code>。</p>
-<h3 id="第三步：重写-onRequestPermissionsResult-方法"><a href="#第三步：重写-onRequestPermissionsResult-方法" class="headerlink" title="第三步：重写 onRequestPermissionsResult 方法"></a>第三步：重写 <code>onRequestPermissionsResult</code> 方法</h3><p>下面是重写当前活动里的 <code>onRequestPermissionResult</code> 方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onRequestPermissionsResult</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> requestCode, @NotNull String[] permissions, @NotNull <span class="keyword">int</span>[] grantResults)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (requestCode == NEED_INTERNET_REQUEST_CODE) &#123;</span><br><span class="line">        <span class="comment">// If request is cancelled, the result arrays are empty.</span></span><br><span class="line">        <span class="keyword">if</span> (grantResults.length &gt; <span class="number">0</span></span><br><span class="line">            &amp;&amp; grantResults[<span class="number">0</span>] == PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">            <span class="comment">// Permission was granted.</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// Permission denied, boo!</span></span><br><span class="line">            messageBoxHelper.show(<span class="string">"啊偶，我们需要网络 emmm……"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后我们就重写了这个方法。</p>
-<p>简单说一下。第一个参数 <code>requestCode</code> 表示请求码，也就是当请求的时候应该有的数值，它应等于刚才我们前文设定的 <code>0xC0DE</code>；第二个参数是权限列表，即我们需要获取的权限的名称序列。第三个参数传递的则是权限获取的每一个权限的结果。这里只需要一个，因为我们假设了这个项目只需要网络权限。</p>
-<p>然后在 <code>if</code> 条件里判断一下，参数 <code>grantResult</code> 是否有元素，并且第一个元素的数值确实是成功授权的。成功授权写的是 <code>PackageManager.PERMISSION_GRANTED</code>，这个是一个常量，这样就不用我们去记忆这个整数是多少了；否则的话，我们就报错，说获取权限失败。</p>
-<h3 id="第四步：在执行逻辑上调用这些方法"><a href="#第四步：在执行逻辑上调用这些方法" class="headerlink" title="第四步：在执行逻辑上调用这些方法"></a>第四步：在执行逻辑上调用这些方法</h3><p>比如，我们做了查词软件，需要等待用户点击了按钮后，执行操作，于是我们有这样的代码。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">buttonName.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Judge the text is null or empty.</span></span><br><span class="line">        <span class="keyword">if</span> (!editTextName.getText().toString().equals(<span class="string">""</span>)) &#123;</span><br><span class="line">            <span class="comment">// To check the permission of using Internet.</span></span><br><span class="line">            requestPermission();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Do something else...</span></span><br><span class="line">            <span class="comment">// Here you can use the Internet.</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>这里我们添加一个监听器即可，注意，<code>EditText</code> 的 <code>getText()</code> 方法，获取到的并不是字符串，而是一个字符序列 <code>CharSequence</code> 对象，这是一个接口对象，要想将其改为字符串 <code>String</code> 类型，还要对这个对象再调用 <code>toString()</code> 方法才行。</p>
-<blockquote>
-<p>在 Java 里，判断字符串相等用的是 <code>equals()</code> 方法，而不是 <code>==</code> 运算符。</p>
-</blockquote>
-<p>这样，完整的权限获取就写好了。</p>
-<h2 id="不写权限申请会怎么样？"><a href="#不写权限申请会怎么样？" class="headerlink" title="不写权限申请会怎么样？"></a>不写权限申请会怎么样？</h2><p>不写的话，会出现异常（Exception），导致程序崩溃的异常。</p>
-<h2 id="权限名称列表"><a href="#权限名称列表" class="headerlink" title="权限名称列表"></a>权限名称列表</h2><p>下面我们列举一些常用的权限的名称列表。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>组名称</th>
-<th>权限</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>联系人</td>
-<td>android.permission.WRITE_CONTACTS(写入联系人)<br/>android.permission.GET_ACCOUNTS(查找设备上的帐户)<br/>android.permission.READ_CONTACTS(读取联系人)</td>
-</tr>
-<tr>
-<td>手机拨号</td>
-<td>android.permission.READ_CALL_LOG(读取通话记录)<br/>android.permission.READ_PHONE_STATE(读取电话状态)<br/>android.permission.CALL_PHONE(拨打电话)<br/>android.permission.WRITE_CALL_LOG(修改通话记录)<br/>android.permission.USE_SIP(SIP视频服务)<br/>android.permission.PROCESS_OUTGOING_CALLS(程序监视，修改或放弃拨出电话)<br/>com.android.voicemail.permission.ADD_VOICEMAIL(允许应用程序添加系统中的语音邮件)</td>
-</tr>
-<tr>
-<td>日历</td>
-<td>android.permission.READ_CALENDAR(读取日历)<br/>android.permission.WRITE_CALENDAR(修改日历)</td>
-</tr>
-<tr>
-<td>相机</td>
-<td>android.permission.CAMERA(获取拍照权限)</td>
-</tr>
-<tr>
-<td>传感器</td>
-<td>android.permission.BODY_SENSORS(获取传感器权限)</td>
-</tr>
-<tr>
-<td>定位</td>
-<td>android.permission.ACCESS_FINE_LOCATION(通过 GPS 获取定位权限)<br/>android.permission.ACCESS_COARSE_LOCATION(通过 Wi-Fi 和移动基站获取定位权限)</td>
-</tr>
-<tr>
-<td>内存卡</td>
-<td>android.permission.READ_EXTERNAL_STORAGE(读取内存卡)<br/>android.permission.WRITE_EXTERNAL_STORAGE(写内存卡)</td>
-</tr>
-<tr>
-<td>麦克风</td>
-<td>android.permission.RECORD_AUDIO(录音权限)</td>
-</tr>
-<tr>
-<td>短信</td>
-<td>android.permission.READ_SMS(读取短信)<br/>android.permission.RECEIVE_WAP_PUSH(接收WAP PUSH信息)<br/>android.permission.RECEIVE_SMS(接收短信权限)<br/>android.permission.SEND_SMS(发送短信)<br/>android.permission.READ_CELL_BROADCASTS(获取小区广播)</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Java/">Java</a>►<a class="article-category-link" href="/categories/Java/Java-%E5%AE%89%E5%8D%93/">Java.安卓</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/安卓/">安卓</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/page/7/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/9/">下一页 ↓</a>
@@ -1293,11 +1239,11 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
 			
 		
 			
@@ -1325,15 +1271,15 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
 			
 		
 			
@@ -1349,7 +1295,7 @@ P(B|E) &= \frac{P(E, B)}{P(E)}\\
 			
 		
 			
-				<li><a href="/tags/C♯-2/" title="C♯ 2">C♯ 2<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>
