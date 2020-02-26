@@ -82,6 +82,107 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/14/linq-06-phase-exercises/" title="LINQ 教程（6）：阶段性练习" itemprop="url">LINQ 教程（6）：阶段性练习</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-14T09:38:10.000Z" itemprop="datePublished"> 发表于 2019-11-14</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="一起来练习吧！"><a href="#一起来练习吧！" class="headerlink" title="一起来练习吧！"></a>一起来练习吧！</h2><p>在前面的内容里，我们尝试了非常多的 LINQ 语句（查询表达式格式以及方法链调用格式），今天我们这一节不讲解内容，而是来做一个小练习。</p>
+<h3 id="题目一：关键字查询"><a href="#题目一：关键字查询" class="headerlink" title="题目一：关键字查询"></a>题目一：关键字查询</h3><p>我们依旧拿出之前用过的实例：关键字。C# 拥有上百个关键字，这使得我们使用 C# 语言更加丰富多彩：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> words = <span class="keyword">new</span>[]</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"abstract"</span>, <span class="string">"as"</span>,</span><br><span class="line">    <span class="string">"base"</span>, <span class="string">"bool"</span>, <span class="string">"break"</span>, <span class="string">"byte"</span>,</span><br><span class="line">    <span class="string">"case"</span>, <span class="string">"catch"</span>, <span class="string">"char"</span>, <span class="string">"checked"</span>, <span class="string">"class"</span>, <span class="string">"const"</span>, <span class="string">"continue"</span>,</span><br><span class="line">    <span class="string">"decimal"</span>, <span class="string">"default"</span>, <span class="string">"delegate"</span>, <span class="string">"do"</span>, <span class="string">"double"</span>,</span><br><span class="line">    <span class="string">"else"</span>, <span class="string">"enum"</span>, <span class="string">"event"</span>, <span class="string">"explicit"</span>, <span class="string">"extern"</span>,</span><br><span class="line">    <span class="string">"false"</span>, <span class="string">"finally"</span>, <span class="string">"fixed"</span>, <span class="string">"float"</span>, <span class="string">"for"</span>, <span class="string">"foreach"</span>,</span><br><span class="line">    <span class="string">"goto"</span>,</span><br><span class="line">    <span class="string">"if"</span>, <span class="string">"implicit"</span>, <span class="string">"in (foreach)"</span>, <span class="string">"int"</span>, <span class="string">"interface"</span>, <span class="string">"internal"</span>, <span class="string">"is"</span>,</span><br><span class="line">    <span class="string">"lock"</span>, <span class="string">"long"</span>,</span><br><span class="line">    <span class="string">"namespace"</span>, <span class="string">"new"</span>, <span class="string">"null"</span>,</span><br><span class="line">    <span class="string">"object"</span>, <span class="string">"operator"</span>, <span class="string">"out (generic modifier)"</span>, <span class="string">"out (parameter)"</span>, <span class="string">"override"</span>,</span><br><span class="line">    <span class="string">"params"</span>, <span class="string">"private"</span>, <span class="string">"protected"</span>, <span class="string">"public"</span>,</span><br><span class="line">    <span class="string">"readonly"</span>, <span class="string">"ref"</span>, <span class="string">"return"</span>,</span><br><span class="line">    <span class="string">"sbyte"</span>, <span class="string">"sealed"</span>, <span class="string">"short"</span>, <span class="string">"sizeof"</span>, <span class="string">"stackalloc"</span>, <span class="string">"static"</span>, <span class="string">"string"</span>, <span class="string">"struct"</span>, <span class="string">"switch"</span>,</span><br><span class="line">    <span class="string">"this"</span>, <span class="string">"throw"</span>, <span class="string">"true"</span>, <span class="string">"try"</span>, <span class="string">"typeof"</span>,</span><br><span class="line">    <span class="string">"uint"</span>, <span class="string">"ulong"</span>, <span class="string">"unchecked"</span>, <span class="string">"unsafe"</span>, <span class="string">"ushort"</span>, <span class="string">"using"</span>,</span><br><span class="line">    <span class="string">"virtual"</span>, <span class="string">"void"</span>, <span class="string">"volatile"</span>,</span><br><span class="line">    <span class="string">"while"</span>,</span><br><span class="line">    <span class="string">"*add"</span>, <span class="string">"*alias"</span>, <span class="string">"*ascending"</span>, <span class="string">"*async"</span>, <span class="string">"*await"</span>,</span><br><span class="line">    <span class="string">"*by"</span>,</span><br><span class="line">    <span class="string">"*descending"</span>, <span class="string">"*dynamic"</span>,</span><br><span class="line">    <span class="string">"*equals"</span>,</span><br><span class="line">    <span class="string">"*from"</span>,</span><br><span class="line">    <span class="string">"*get"</span>, <span class="string">"*global"</span>, <span class="string">"*group"</span>,</span><br><span class="line">    <span class="string">"*in (generic modifier)"</span>, <span class="string">"*in (parameter)"</span>, <span class="string">"*in (query)"</span>, <span class="string">"*into"</span>,</span><br><span class="line">    <span class="string">"*join"</span>,</span><br><span class="line">    <span class="string">"*let"</span>,</span><br><span class="line">    <span class="string">"*nameof"</span>, <span class="string">"*notnull"</span>,</span><br><span class="line">    <span class="string">"*on"</span>, <span class="string">"*orderby"</span>,</span><br><span class="line">    <span class="string">"*partial (method)"</span>, <span class="string">"*partial (type)"</span>,</span><br><span class="line">    <span class="string">"*remove"</span>,</span><br><span class="line">    <span class="string">"*select"</span>, <span class="string">"*set"</span>, <span class="string">"*switch (expression)"</span>,</span><br><span class="line">    <span class="string">"*unmanaged"</span>, <span class="string">"*using static"</span>,</span><br><span class="line">    <span class="string">"*value"</span>, <span class="string">"*var"</span>,</span><br><span class="line">    <span class="string">"*when"</span>, <span class="string">"*where (generic constraint)"</span>, <span class="string">"*where (query)"</span>,</span><br><span class="line">    <span class="string">"*yield"</span>,</span><br><span class="line">    <span class="string">"#annotations"</span>,</span><br><span class="line">    <span class="string">"#checksum"</span>,</span><br><span class="line">    <span class="string">"#disable"</span>,</span><br><span class="line">    <span class="string">"#enable"</span>,</span><br><span class="line">    <span class="string">"#nullable"</span>,</span><br><span class="line">    <span class="string">"#restore"</span>,</span><br><span class="line">    <span class="string">"!#safeonly"</span>,</span><br><span class="line">    <span class="string">"#warning"</span>, <span class="string">"#warnings"</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>下面试着完成如下的小练习：</p>
+<ol>
+<li>取出所有第一个字符不是符号的关键字；</li>
+<li>取出所有不含有注解文字（包含小括号的注解）的关键字；</li>
+<li>取出所有只有一个符号开头的关键字（例如 <code>!#safeonly</code> 就不应该包含在该集合里，因为它以两个符号开头）；</li>
+<li>取出所有上下文关键字（以 <code>*</code> 符号开头的关键字）；</li>
+<li>取出所有的预处理器关键字（以 <code>#</code> 或以 <code>!#</code> 符号开头的关键字）；</li>
+<li>取出所有超过 7 个字符的关键字（包含符号在内）；</li>
+<li>将所有不是以符号开头的关键字按字母表顺序升序排序；</li>
+<li>将所有第一个字符是符号的关键字以第二个字符升序排序；</li>
+<li>将所有关键字以第一个字符分组；</li>
+<li>取出所有关键字的第一个字符的所有情况；</li>
+<li>取出所有关键字的单词部分（即忽略掉所有的前缀符号），并按忽略后的关键字，它们的第一个字符进行升序排序并分组；</li>
+<li>使用目前学过的知识点，尝试将所有关键字按第一个字符进行升序排序，然后取出倒数 30 个关键字。</li>
+</ol>
+<h3 id="题目二：宠物和主人"><a href="#题目二：宠物和主人" class="headerlink" title="题目二：宠物和主人"></a>题目二：宠物和主人</h3><p>现给出狗狗和猫咪若干只，并给出如下的类：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">internal class Person : IEquatable&lt;Person&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> FirstName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> LastName &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params">Person other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> FirstName == other.FirstName &amp;&amp; LastName == other.LastName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params"><span class="keyword">object</span> other</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> other <span class="keyword">is</span> Person comparer &amp;&amp; Equals(comparer);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">GetHashCode</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> FirstName.GetHashCode() ^ LastName.GetHashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">$"<span class="subst">&#123;FirstName&#125;</span> <span class="subst">&#123;LastName&#125;</span>"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> ==(Person left, Person right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> left.Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="keyword">operator</span> !=(Person left, Person right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> !left.Equals(right);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">class</span> <span class="title">Pet</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> Person Owner &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">string</span> <span class="title">ToString</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> Name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">class</span> <span class="title">Dog</span> : <span class="title">Pet</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">class</span> <span class="title">Cat</span> : <span class="title">Pet</span> &#123; &#125;</span><br></pre></td></tr></table></figure>
+<p>并给出如下信息：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> magnus = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Magnus"</span>, LastName = <span class="string">"Hedlund"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> terry = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Terry"</span>, LastName = <span class="string">"Adams"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> charlotte = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Charlotte"</span>, LastName = <span class="string">"Weiss"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> arlene = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Arlene"</span>, LastName = <span class="string">"Huff"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> rui = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Rui"</span>, LastName = <span class="string">"Raposo"</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> phyllis = <span class="keyword">new</span> Person &#123; FirstName = <span class="string">"Phyllis"</span>, LastName = <span class="string">"Harris"</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> barley = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Barley"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> boots = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Boots"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> whiskers = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Whiskers"</span>, Owner = charlotte &#125;;</span><br><span class="line"><span class="keyword">var</span> bluemoon = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Blue Moon"</span>, Owner = rui &#125;;</span><br><span class="line"><span class="keyword">var</span> daisy = <span class="keyword">new</span> Cat &#123; Name = <span class="string">"Daisy"</span>, Owner = magnus &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fourwheeldrive = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Four Wheel Drive"</span>, Owner = phyllis &#125;;</span><br><span class="line"><span class="keyword">var</span> duke = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Duke"</span>, Owner = magnus &#125;;</span><br><span class="line"><span class="keyword">var</span> denim = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Denim"</span>, Owner = terry &#125;;</span><br><span class="line"><span class="keyword">var</span> wiley = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Wiley"</span>, Owner = charlotte &#125;;</span><br><span class="line"><span class="keyword">var</span> snoopy = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Snoopy"</span>, Owner = rui &#125;;</span><br><span class="line"><span class="keyword">var</span> snickers = <span class="keyword">new</span> Dog &#123; Name = <span class="string">"Snickers"</span>, Owner = arlene &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create three lists.</span></span><br><span class="line"><span class="keyword">var</span> people =</span><br><span class="line">    <span class="keyword">new</span> List&lt;Person&gt; &#123; magnus, terry, charlotte, arlene, rui, phyllis &#125;;</span><br><span class="line"><span class="keyword">var</span> cats =</span><br><span class="line">    <span class="keyword">new</span> List&lt;Cat&gt; &#123; barley, boots, whiskers, bluemoon, daisy &#125;;</span><br><span class="line"><span class="keyword">var</span> dogs =</span><br><span class="line">    <span class="keyword">new</span> List&lt;Dog&gt; &#123; fourwheeldrive, duke, denim, wiley, snoopy, snickers &#125;;</span><br></pre></td></tr></table></figure>
+<p>请查找如下内容：</p>
+<ol>
+<li>所有狗狗自己的名字；</li>
+<li>所有猫咪的主人的姓和名；</li>
+<li>所有狗狗和猫咪的主人的姓和名；</li>
+<li>所有养了两只狗狗的主人；</li>
+<li>所有没有养宠物的人。</li>
+</ol>
+<h3 id="题目三：杂货铺"><a href="#题目三：杂货铺" class="headerlink" title="题目三：杂货铺"></a>题目三：杂货铺</h3><p>给定一些类：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Product</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> CategoryID &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Category</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> ID &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>并提供如下信息：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> categories = <span class="keyword">new</span> List&lt;Category&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">new</span> Category() &#123; Name = <span class="string">"Beverages"</span>, ID = <span class="number">001</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Category() &#123; Name = <span class="string">"Condiments"</span>, ID = <span class="number">002</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Category() &#123; Name = <span class="string">"Vegetables"</span>, ID = <span class="number">003</span> &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Specify the second data source.</span></span><br><span class="line"><span class="keyword">var</span> products = <span class="keyword">new</span> List&lt;Product&gt;()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Tea"</span>, CategoryID = <span class="number">001</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Mustard"</span>, CategoryID = <span class="number">002</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Pickles"</span>, CategoryID = <span class="number">002</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Carrots"</span>, CategoryID = <span class="number">003</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Bok Choy"</span>, CategoryID = <span class="number">003</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Peaches"</span>, CategoryID = <span class="number">005</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Melons"</span>, CategoryID = <span class="number">005</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Ice Cream"</span>, CategoryID = <span class="number">007</span> &#125;,</span><br><span class="line">    <span class="keyword">new</span> Product &#123; Name = <span class="string">"Mackerel"</span>, CategoryID = <span class="number">012</span> &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>请找出如下内容：</p>
+<ol>
+<li>所有商品的分类 ID；</li>
+<li>所有名字至少含有两个单词的商品；</li>
+<li>所有饮品；</li>
+<li>所有调味料；</li>
+<li>胡萝卜（Carrot）的所有信息（名字、编号以及它的所属类别的名称）；</li>
+<li>白菜（Bok Choy）的分类名称；</li>
+<li>所有拥有两个商品的分类。</li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/">C♯.LINQ</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-LINQ/C%E2%99%AF-LINQ-%E6%95%99%E7%A8%8B/">C♯.LINQ.教程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/LINQ/">LINQ</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/13/linq-05-join-clause/" title="LINQ 教程（5）：join 从句" itemprop="url">LINQ 教程（5）：join 从句</a>
     
   </h1>
@@ -777,202 +878,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/10/clang-02-operator/" title="C 语言语法系列（2）：运算符和表达式" itemprop="url">C 语言语法系列（2）：运算符和表达式</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-10T06:28:10.000Z" itemprop="datePublished"> 发表于 2019-11-10</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="运算符是什么？"><a href="#运算符是什么？" class="headerlink" title="运算符是什么？"></a>运算符是什么？</h2><p>运算符是程序执行操作期间，为了避免复杂的函数调用和书写格式，通过一些简单的、类似于数学表达式的模式书写的语言规范。在 C 语言里，我们可以尝试使用加号来拼接两个数字，得到两个数字的和。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">2</span> + <span class="number">3</span>; <span class="comment">// i = 5</span></span><br></pre></td></tr></table></figure>
-<p>其中的 <code>=</code> 叫做赋值运算符，它被称为一个广义的运算符，因为它实际上并不称为一种运算，而是一种行为：从微观角度来看，它是把符号右侧的数据结果，放到变量 <code>i</code> 存放的位置上；从宏观来看，其实就是使得 <code>i</code> 得到 5 的这个结果的行为，就称为<strong>赋值</strong>（Assignment）。</p>
-<p>实际上，不仅是加号，在 C 语言里，我们提供了很多执行操作，稍后我们将挨个写出来。</p>
-<h2 id="表达式是什么？"><a href="#表达式是什么？" class="headerlink" title="表达式是什么？"></a>表达式是什么？</h2><p><strong>表达式</strong>（Expression），就是一个计算式子，这个式子拥有一个结果。从目前来看，它可以和 <code>printf</code>、<code>scanf</code> 等语句来讲独立开来。表达式最终有一个数值结果，并且这个结果可以被其它地方所利用（当然你也可以不用它）。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">2</span> + <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-<p>里，<code>2 + 3</code> 就是一个表达式，而表达式的结果就是 5，我们利用了这个结果，赋值给了 <code>i</code>，这便是我们刚才说到的“利用表达式的值”。如果你写作</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span> + <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
-<p>实际上没有任何问题，表达式是可以单独成句的，但是这样一来，得到的 5 也没有任何意义。</p>
-<p>学习了前置内容后，我们来看看下面我们会学习到的运算符有哪些。</p>
-<h2 id="运算符一览"><a href="#运算符一览" class="headerlink" title="运算符一览"></a>运算符一览</h2><h3 id="数学运算符"><a href="#数学运算符" class="headerlink" title="数学运算符"></a>数学运算符</h3><p>第一个种类的运算符称为<strong>数学运算符</strong>（Math Operator），它用来表达一些数学运算期间产生的运算符号。我们暂且先不说 <code>sin</code> 等函数符号，我们在 C 语言里先暂时不当成运算符，而只关注于那些用非字母构成的符号，比如 <code>+</code>、<code>-</code> 等等。</p>
-<p>数学运算符在 C 语言里提供了如下一些：</p>
-<ul>
-<li>正号（<code>+</code>）</li>
-<li>负号（<code>-</code>）</li>
-<li>加号（<code>+</code>）</li>
-<li>减号（<code>-</code>）</li>
-<li>乘号（<code>*</code>）</li>
-<li>除号（<code>/</code>）</li>
-<li>取模运算（<code>%</code>）</li>
-</ul>
-<p>首先是正负号。正负号都只需要在符号右侧添加一个变量名称，或一个数值常量，表示这个数的本身，或这个数的相反数。例如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">-3</span>; <span class="comment">// a = -3</span></span><br><span class="line"><span class="keyword">int</span> b = -a; <span class="comment">// b = 3</span></span><br><span class="line"><span class="keyword">int</span> c = +a; <span class="comment">// c = -3</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>顺便提一下，这里的正负号都只需要为其旁边添加一个数字作为计算即可，所以这样的运算符称为<strong>一元运算符</strong>或<strong>单目运算符</strong>（Unary Operator）。</p>
-</blockquote>
-<p>下面来说一下，需要两个数字参与计算的这五个基础的计算符号了：加减乘除模。这些符号称为<strong>二元运算符</strong>或<strong>双目运算符</strong>（Binary Operator），因为需要两个数字才能起作用。</p>
-<p>加减乘三个运算符直接用就可以了。比如下面的例子：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a + b); <span class="comment">// 5</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a - b); <span class="comment">// -1</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, a * b); <span class="comment">// 6</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">float</span> c = <span class="number">2.0</span>, d = <span class="number">6.0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f\n"</span>, c + d); <span class="comment">// 8.000000</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f\n"</span>, c - d); <span class="comment">// -4.000000</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f\n"</span>, c * d); <span class="comment">// 12.000000</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>那么这里就需要提及一点了。不同的数据类型运算是具有不同的精度的，比如小数就有精度一说，而整数没有。在 C 语言里，如果你运行好了程序，系统将会为你默认显示 6 个小数，所以输出的结果就是注释里给出的那个样子；当然，<code>double</code> 类型还能为你显示 12 位小数，于是你就会看到一大堆的 0。如果你要控制小数位数的显示的话，请使用前文介绍的显示小数位数的格式化字符串来处理。比如 <code>%.2f</code> 就表示小数点后只会两位。</p>
-</blockquote>
-<p>当然，数据类型进行混用也是可以的。比如一个整数加一个小数，在 C 语言里是允许的，不过从微观来看，执行起来没有那么简单。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">float</span> b = <span class="number">2.5</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> result1 = a + b;</span><br><span class="line"><span class="keyword">float</span> result2 = a + b;</span><br></pre></td></tr></table></figure>
-<p>那么请你思考这个问题，<code>result1</code> 和 <code>result2</code> 分别都是多少呢？这里给出答案，<code>result1</code> 是 3，而 <code>result2</code> 是 3.5。实际上是很好理解的：由于计算的限制，一个整数和一个小数计算的时候，肯定会往“范围更大”的方向去处理。比如 <code>int</code> 类型显然不可能让它无限制的大，这样就使得数字一定有一个取值范围，而不是像人脑那样无限制的大。实际上，<code>float</code> 的范围比 <code>int</code> 的更大，所以为了保证计算结果能够放得下，结果一定是 <code>float</code> 类型来存储的，否则 <code>int</code> 类型就可能会出现存不下，进而出错的问题。</p>
-<p>现在考虑到这个的时候，<code>a</code> 和 <code>b</code> 的求和结果肯定就是 <code>float</code> 类型所表示的 3.5 了。但你仔细观察代码，就可以发现，<code>result1</code> 可是 <code>int</code> 类型的，这意味着这个它想把 <code>float</code> 的结果用 <code>int</code> 表示出来，所以最终 3.5 被程序截断（注意，并不是四舍五入），于是这个数就变为了 3；同理，第二个则完全不需要转换，所以 <code>result2</code> 一定是 3.5 这个结果。</p>
-<blockquote>
-<p>那么，这里就学习到了一个知识点，叫做<strong>类型转换</strong>（Type Conversion）。类型转换分两种，一种是人为强制定义这个结果转换为另一种类型的模式，叫做<strong>强制类型转换</strong>或<strong>显式转换</strong>（Explicit Conversion）；而另外一种，就是上面这样，通过系统自己的机制进行的类型转换，叫做<strong>隐式转换</strong>（Implicit Conversion）。</p>
-<p>但是，可以发现，不论类型较小转较大，还是较大转较小，C 语言貌似都给出了隐式转换的模式和手段。比如 <code>float</code> 转 <code>int</code> 就是典型的大转小，而它采用的手段是<strong>截断</strong>（Truncate），而不是<strong>四舍五入</strong>（Round），所以在使用这种转换的时候应小心数据类型不同时引发的一些潜在的问题。</p>
-</blockquote>
-<p>接下来是除法和求模运算。除法需要大量使用类型转换的知识点，所以需要你注意和小心每一步的执行逻辑了。除法和数学上有些不同，因为 C 语言有整数和小数的区分制度，所以除下来的结果不总是和数学相同的。</p>
-<p><strong>如果除号两边的数都是整数（<code>int</code>、<code>long</code>等），结果一定是整数；如果两边的数不都是整数的话（至少有一个是小数），结果都应为小数。</strong></p>
-<p>这句话什么意思呢？</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">10</span>, j = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">long</span> l = <span class="number">10L</span>, m = <span class="number">3L</span>; <span class="comment">// 赋值 long 数据类型时，需要加后缀 L 或小写 l 表示 10 是 long 而不是 int。</span></span><br><span class="line"><span class="keyword">short</span> s = <span class="number">10</span>, t = <span class="number">3</span>; <span class="comment">// 没有后缀。</span></span><br><span class="line"><span class="keyword">float</span> f = <span class="number">10.0</span>, g = <span class="number">3.0</span>; <span class="comment">// Java 语言有后缀 F 或小写 f 表示 float 小数。</span></span><br><span class="line"><span class="keyword">double</span> d = <span class="number">10.0</span>, e = <span class="number">3.0</span>; <span class="comment">// 不需要后缀。</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, i / j); <span class="comment">// 10 / 3 = 3，因为除号两边都为整数，所以值应为整数。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%ld\n"</span>, l / m); <span class="comment">// 10L / 3L = 3L，原因同上。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, s / t); <span class="comment">// 10 / 3 = 3。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%f\n"</span>, f / g); <span class="comment">// 10.0 / 3.0 = 3.333333，因为至少有一个小数。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%lf\n"</span>, d / e); <span class="comment">// 10.0 / 3.0 = 3.333333，因为至少有一个小数。</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%f\n"</span>, i / e); <span class="comment">// 10 / 3.0 = 3.333333，因为有一个是小数。</span></span><br></pre></td></tr></table></figure>
-<p>可以看到，这里举出的例子都是一些比较奇特的使用方式，它展示出了所有除法需要注意的地方。</p>
-<p>最后我们来看下求模运算。</p>
-<p>取模运算即带余除法下的余数数值。但和数学不同的是，<strong>C 语言的取模运算的两边的数字，都必须是整数才可以进行计算</strong>。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">20</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> c = a % b; <span class="comment">// 20 % 3 = 2</span></span><br><span class="line"><span class="keyword">int</span> d = <span class="number">9</span>, e = <span class="number">7</span>;</span><br><span class="line"><span class="keyword">int</span> f = d % e; <span class="comment">// 9 % 7 = 2</span></span><br></pre></td></tr></table></figure>
-<p>第二个要注意的是，<strong>如果除法下有一个负数值的话（注意负数也是整数），结果取决于被除数的符号</strong>。如果被除数是负数，取模后的结果也是负数，跟除数无关。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">7</span>, b = <span class="number">3</span>, c = a % b; <span class="comment">// 7 % 3 = 1</span></span><br><span class="line"><span class="keyword">int</span> d = <span class="number">-7</span>, e = <span class="number">3</span>, f = d % e; <span class="comment">// -7 % 3 = -1</span></span><br><span class="line"><span class="keyword">int</span> g = <span class="number">7</span>, h = <span class="number">-3</span>, i = g % h; <span class="comment">// 7 % -3 = 1</span></span><br></pre></td></tr></table></figure>
-<p>哦对了，C 语言是可以识别负号 <code>-</code> 和减法 <code>-</code> 的区别，所以写代码的时候，数学上应有的对负号的括号也可以省略不写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">7</span> % (<span class="number">-3</span>);</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">7</span> % <span class="number">-3</span>;</span><br><span class="line"><span class="keyword">int</span> c = <span class="number">7</span>%<span class="number">-3</span>;</span><br></pre></td></tr></table></figure>
-<p>都是一样的。包括前面的运算符也是一样。</p>
-<h2 id="赋值运算符"><a href="#赋值运算符" class="headerlink" title="赋值运算符"></a>赋值运算符</h2><p>接下来我们来看一些赋值运算符。</p>
-<ul>
-<li>普通赋值（<code>=</code>）</li>
-<li>自增自减运算符（<code>++</code> 和 <code>--</code>）</li>
-<li>复合赋值运算符（<code>op=</code>）</li>
-</ul>
-<p>普通的赋值运算符在前文里其实已经说了，所以这里大可不必去讲。不过这里还需要说一种情况。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>;</span><br><span class="line">a = a + <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
-<p>可以看到，这个等号在这里和数学意义就完全不同了。在编程里，<code>=</code> 表示把右侧的结果赋值给左边，即 <code>a</code> 变量的内存区域存放的是原始的数值再加 5 的新结果。所以从宏观来看，这样的写法就好比让变量自己增大 5 个单位。</p>
-<p>当自增为 1 或自减为 1 的时候，我们可以使用自增自减的单目运算符，来操控变量增大或减少一个单位。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>;</span><br><span class="line">a++; <span class="comment">// Changes a into 5.</span></span><br></pre></td></tr></table></figure>
-<p>不过请注意，<code>++</code> 运算符和变量拼接起来的话，它则是一个表达式，它可以嵌入到别的赋值语句里使用，于是就产生了如下的写法。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>, b;</span><br><span class="line">b = a++;</span><br></pre></td></tr></table></figure>
-<p>那么，此时 <code>b</code> 应该是多少呢？这就牵扯到了自增自减运算符的前缀和后缀写法的不同了。</p>
-<p>自增自减运算符是为了将变量自身的数值增大或减小一个单位而特别定义出来的。因为大多数计算操作之中都会使用到这一点，所以C语言单独提供了这样的一种东西。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line">a++; <span class="comment">// `a` itself has changed into 2</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">6</span>;</span><br><span class="line">b--; <span class="comment">// `b` itself has changed into 5</span></span><br></pre></td></tr></table></figure>
-<p>另外，自增自减运算符也可以写到变量前面。不过意义不同。现在来阐述一下。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a++); <span class="comment">// 符号在后表示先使用变量后自增</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, --a); <span class="comment">// 符号在前表示先自减后再使用变量</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, a--); <span class="comment">// 符号在后</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, ++a); <span class="comment">// 符号在前</span></span><br></pre></td></tr></table></figure>
-<p>所以这个题的结果为 <code>4444</code> 才对。你做对了吗？</p>
-<p>我们知道，编程之中的等号和数学上的等号的意义不同，编程的等号实际是一个操作，将右侧的数据的数值结果拿到左侧变量的位置上存放。所以C语言之中，<code>a = a + 1</code> 这种写法才得以存在（将 <code>a</code> 原来的数值加 1，得到的新数值再重新放到 <code>a</code> 变量的存储位置上存放）。不过，这样的写法有些丑陋，因为确实等号两侧又有相同的变量名字，写法也太长，所以才出现了复合赋值运算符一说。</p>
-<p>复合赋值运算符是说，省略右侧相同的变量名，并把右侧的运算符号放到等号左侧拼在一起写的特殊规范。比如：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> p = <span class="number">4</span>;</span><br><span class="line">p = p + <span class="number">3</span>; <span class="comment">// is equi to `p += 3;`</span></span><br><span class="line"><span class="keyword">int</span> q = <span class="number">25</span>;</span><br><span class="line">q = q % <span class="number">2</span>; <span class="comment">// is equi to `q %= 2;`</span></span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">int</span> sum = sum + i; i++; <span class="comment">// is equi to `sum += i++;`</span></span><br></pre></td></tr></table></figure>
-<p>前文的 <code>op=</code> 的 <code>op</code> 表示的是运算符的符号，这里可以替换为任何运算符，包括稍后讲到的其他一些运算符。</p>
-<h2 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h2><p>比较运算符是用作数值比较之用的，每一个表达式都会产生一个特定的数值结果表征判断结果。基本的比较运算符一共有以下一些：</p>
-<p><code>&gt;</code>（大于）、<code>&lt;</code>（小于）、<code>&gt;=</code>（大于等于）、<code>&lt;=</code>（小于等于）、<code>==</code>（等于）、<code>!=</code>（不等于）。</p>
-<p>前两个就不用说了，表示大于和小于；中间两个分别是大于等于和小于等于，只是因为数学的符号无法直接在代码里面打出来，所以才用两个符号拼在一起表示的这样的含义。第5个是等号，判断两个数是否相同；最后一个则是不等号，注意不等号的写法是感叹号和等号拼接的意思。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c, d, e, a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line">c = a &gt; b; <span class="comment">// 0</span></span><br><span class="line">d = a &lt;= b; <span class="comment">// 1</span></span><br><span class="line">e = a != a; <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
-<p>这样赋值是没有问题的，刚才说过，右侧会得到一个特定的数值来表征判断结果。首先2是不大于3的，所以<code>a &gt; b</code>是错误的，在C语言之中，错误的结果会被转为数字0进行数据处理；正确的则会被转为1，所以<code>c</code>的值为0，而<code>d</code>的值为1。而后面的<code>a != a</code>肯定也不对，所以<code>e</code>的值为0。</p>
-<h2 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h2><p>逻辑运算用于处理高中学到的命题和逻辑那样的东西，它提供了三种逻辑表达：</p>
-<p><code>&amp;&amp;</code>（且）、<code>||</code>（或）、<code>!</code>（非）</p>
-<p>数学上的且、或、非的符号写法在代码里面不好输入，所以只能用上面的三种写法代替。它最后也是一个表达式，也会产生一个数值，表征最终的判断结果。和上面一样，对的则会为转为 1，错的则会转为 0。不过，如果是人为定下的数字来直接表示判断结果的话，非 0 的数值都会化为“正确的”，而 0 则会化为“错误的”。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c, d, e, a = <span class="number">6</span>, b = <span class="number">0</span>;</span><br><span class="line">c = a &amp;&amp; b; <span class="comment">// 6 &amp;&amp; 0 = 0</span></span><br><span class="line">d = a || b; <span class="comment">// 6 || 0 = 1</span></span><br><span class="line">e = !a; <span class="comment">// !6 = 0</span></span><br></pre></td></tr></table></figure>
-<p>首先，因为 6 直接作为逻辑判断的一边来充当条件的话，因为是非 0 数值，所以会被转化为 1 处理（6 表示“正确的”，作为数值处理后为 1），而 <code>b</code> 是 0，作为判断的另一边的话，所以应当表示“错误的”，作为数值处理即 0，所以且的关系是<strong>同真才真，有假必假</strong>。所以最终<code>a &amp;&amp; b</code>表达式应当是“错误的”，最后的值是 0，所以 <code>c</code> 为 0。</p>
-<p><code>d</code> 用的是或，<strong>同假才假，有真必真</strong>。所以 6 是“正确的”数值，所以整体表达式为真。故赋值时，表达式用 1 表示正确的。所以 <code>d</code> 为 1。</p>
-<p><code>e</code> 是非 a，而 a 表示正确的，所以非 a 是错误的，故 <code>e</code> = 0。</p>
-<h3 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h3><p>逻辑运算符有一个特征，比如且的关系，如果有假就假，所以表达式符号 <code>&amp;&amp;</code> 的两边，如果左侧已经为假，意味着整个表达式一定为假，那么右侧的结果是不会测算的。如果带有计算式子，右侧结果不会被处理和计算。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> c, a = <span class="number">1</span>, b = <span class="number">0</span>;</span><br><span class="line">c = b &amp;&amp; (++a); <span class="comment">// c = 0 &amp;&amp; 1 = 0</span></span><br></pre></td></tr></table></figure>
-<p>注意，<code>++a</code> 此时不会运算，即 <code>a</code> 不会自增1，原因是 <code>b</code> 为 0，已经意味着整个表达式错误，后者不会被计算。</p>
-<p>同理，或 <code>||</code> 也是一样。</p>
-<p>最后这里作出一个总结：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">数据值充当条件时</th>
-<th style="text-align:left">处理结果</th>
-<th style="text-align:left">系统运算的数据</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">非0整数值</td>
-<td style="text-align:left">正确的</td>
-<td style="text-align:left">1</td>
-</tr>
-<tr>
-<td style="text-align:left">0</td>
-<td style="text-align:left">错误的</td>
-<td style="text-align:left">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="位运算符"><a href="#位运算符" class="headerlink" title="位运算符"></a>位运算符</h2><h3 id="计算位运算符"><a href="#计算位运算符" class="headerlink" title="计算位运算符"></a>计算位运算符</h3><p>位运算是将数据值变为 0 和 1 的二进制数处理的方式。一共提供了四种操作：</p>
-<p><code>&amp;</code>（且）、<code>|</code>（或）、<code>~</code>（非）、<code>^</code>（异或）</p>
-<p>它具有和逻辑运算差不多的性质，不过是对于二进制数位操作处理的。处理时，是对位处理。比如：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> c, d, e, f;</span><br><span class="line">c = a &amp; b; <span class="comment">// 3 &amp; 5 = 00000011 &amp; 00000101 = 00000001 = 1</span></span><br><span class="line">d = a | b; <span class="comment">// 3 | 5 = 00000011 | 00000101 = 00000111 = 7</span></span><br><span class="line">e = ~a; <span class="comment">// ~3 = ~(00000000 00000000 00000000 00000011) = -4（0 变 1，1 变 0，注意首位变负号表示负数）</span></span><br><span class="line">f = a ^ b; <span class="comment">// 3 ^ 5 = 00000011 ^ 00000101 = 00000110 = 6</span></span><br></pre></td></tr></table></figure>
-<p>另外，这里的异或需要提一下，异或表示“要么……要么……”，选其中任意一个才可以，都选和都不选都不行，换句话说，都选或都不选（1 ^ 1 = 0 ^ 0 = 0），任选其一都即可（0 ^ 1 = 1 ^ 0 = 1）。</p>
-<h3 id="移位运算符"><a href="#移位运算符" class="headerlink" title="移位运算符"></a>移位运算符</h3><p>移位运算符是将数值用二进制处理后，所有数值结果全往左或往右移动的结果。写法有这两种：</p>
-<p><code>&gt;&gt;</code>（右移）、<code>&lt;&lt;</code>（左移）</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = a &gt;&gt; <span class="number">2</span>; <span class="comment">// 00000001 &gt;&gt; 2 = 00000000 = 0</span></span><br><span class="line"><span class="keyword">int</span> c = a &lt;&lt; <span class="number">3</span>; <span class="comment">// 00000001 &lt;&lt; 3 = 00001000 = 8</span></span><br></pre></td></tr></table></figure>
-<p>结论：右移多少位表示将数据缩小 $\lfloor{2^n}\rfloor$ 倍，左移多少位表示将数据扩大 $\lfloor{2^n}\rfloor$ 倍。其中的 $\lfloor{x}\rfloor$ 表示取整操作，舍弃小数部分。</p>
-<p>最后，所有的位运算符号也具有复合赋值运算符。比如实际运用之中，有这样的用途：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a ^= b ^= a ^= b;</span><br></pre></td></tr></table></figure>
-<p>语句表示不借助其他变量交换变量存储的数据值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">2</span>;</span><br><span class="line">a ^= b ^= a ^= b;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"a = %d, b = %d"</span>, a, b);</span><br></pre></td></tr></table></figure>
-<p>输出结果是<code>a = 2, b = 3</code>。另，复合赋值运算符下，可以被拆解为多句话：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a ^= b;</span><br><span class="line">b ^= a;</span><br><span class="line">a ^= b;</span><br></pre></td></tr></table></figure>
-<p>或</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = a ^ b;</span><br><span class="line">b = b ^ a;</span><br><span class="line">a = a ^ b;</span><br></pre></td></tr></table></figure>
-<p>另外还有一种交换变量的方式是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = a + b;</span><br><span class="line">b = a - b;</span><br><span class="line">a = a - b;</span><br></pre></td></tr></table></figure>
-<p>也可以。甚至缩写：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a += b;</span><br><span class="line">b = a - b;</span><br><span class="line">a -= b;</span><br></pre></td></tr></table></figure>
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/page/6/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">下一页 ↓</a>
+    <a class="extend prev" rel="prev" href="/page/6/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/">下一页 ↓</a>
   </nav>
 
 </div>
@@ -997,7 +905,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>30</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>31</sup></a></li>
 			
 		
 			
@@ -1017,23 +925,23 @@
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>4</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
 			
 		
 			

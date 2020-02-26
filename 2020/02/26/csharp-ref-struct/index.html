@@ -1,0 +1,710 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C♯ 里的 ref struct | 向向的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="向向">
+    
+
+    
+    <meta name="description" content="什么是 ref 关键字要讲今天的 ref struct，就得提起 ref 关键字。ref 关键字是 C# 语言使用指针的灵魂语法，它表示一个引用，来做到我们用数值传递做不到的事情，例如值类型对象传递函数参数时，一般都不会要求传递的对象在函数执行过程之中同步改变内部的数据，但如果用到了呢？Java 出于无奈只有使用类变量（即全局的变量）来达到这一点。但有些时候，这样的操作并不是非常方便的。于是，C#">
+<meta name="keywords" content="C♯,C♯ 7,C♯ 8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C♯ 里的 ref struct">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2020&#x2F;02&#x2F;26&#x2F;csharp-ref-struct&#x2F;index.html">
+<meta property="og:site_name" content="向向的博客">
+<meta property="og:description" content="什么是 ref 关键字要讲今天的 ref struct，就得提起 ref 关键字。ref 关键字是 C# 语言使用指针的灵魂语法，它表示一个引用，来做到我们用数值传递做不到的事情，例如值类型对象传递函数参数时，一般都不会要求传递的对象在函数执行过程之中同步改变内部的数据，但如果用到了呢？Java 出于无奈只有使用类变量（即全局的变量）来达到这一点。但有些时候，这样的操作并不是非常方便的。于是，C#">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-02-26T13:01:35.476Z">
+<meta name="twitter:card" content="summary">
+
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="向向的博客" title="向向的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="向向的博客">向向的博客</a></h1>
+				<h2 class="blog-motto">Console.WriteLine(&#34;Hello, ^_^&#34;);</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">全部文档</a></li>
+					
+						<li><a href="/categories">分类</a></li>
+					
+						<li><a href="/tags">标签</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:Sunnie-Shine.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/02/26/csharp-ref-struct/" title="C♯ 里的 ref struct" itemprop="url">C♯ 里的 ref struct</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2020-02-26T11:59:30.000Z" itemprop="datePublished"> 发表于 2020-02-26</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-ref-关键字"><span class="toc-number">1.</span> <span class="toc-text">什么是 ref 关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#连续栈内存？"><span class="toc-number">2.</span> <span class="toc-text">连续栈内存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#那么，ref-struct-对象有哪些特性呢？"><span class="toc-number">3.</span> <span class="toc-text">那么，ref struct 对象有哪些特性呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#那么，它还有什么用？"><span class="toc-number">4.</span> <span class="toc-text">那么，它还有什么用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#说了这么多，我还是不习惯使用它？"><span class="toc-number">5.</span> <span class="toc-text">说了这么多，我还是不习惯使用它？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#可释放的-ref-struct"><span class="toc-number">6.</span> <span class="toc-text">可释放的 ref struct</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="什么是-ref-关键字"><a href="#什么是-ref-关键字" class="headerlink" title="什么是 ref 关键字"></a>什么是 <code>ref</code> 关键字</h2><p>要讲今天的 <code>ref struct</code>，就得提起 <code>ref</code> 关键字。<code>ref</code> 关键字是 C# 语言使用指针的灵魂语法，它表示一个引用，来做到我们用数值传递做不到的事情，例如值类型对象传递函数参数时，一般都不会要求传递的对象在函数执行过程之中同步改变内部的数据，但如果用到了呢？Java 出于无奈只有使用类变量（即全局的变量）来达到这一点。但有些时候，这样的操作并不是非常方便的。于是，C# 里提供了这个关键字来表达一个参数以应用传递，例如下面的代码。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> Swap&lt;T&gt;(<span class="keyword">ref</span> T left, <span class="keyword">ref</span> T right) <span class="keyword">where</span> T : <span class="keyword">struct</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> temp = left;</span><br><span class="line">    left = right;</span><br><span class="line">    right = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如上面的代码就达到了这一点。当值传递时，这个用于交换的函数只能交换函数传递过来的对象，而原本的对象并没有达到交换操作，所以必须加上 <code>ref</code> 关键字来表示这个对象和原本的对象是同一个对象，函数内交换也影响原本的对象。</p>
+<p>今天要说到的 <code>ref struct</code>，和 <code>ref</code> 的语义有所不同。</p>
+<h2 id="连续栈内存？"><a href="#连续栈内存？" class="headerlink" title="连续栈内存？"></a>连续栈内存？</h2><p>在之前的内容里，我们讲到了不少的指针的内容，而说得最多的就是 C 语言里令人吐槽的数组。数组在 C 语言统统都是栈内存分配，这使得你在函数内定义的数组都无法通过返回的方式“出”这个函数。如果迫不得已，我们只能使用堆内存声明方式，但有些复杂：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *arr = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>) * <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+<p>例如这个代码，声明了一个堆内存的数组变量 <code>arr</code>，存的都是 <code>int</code> 类型的元素，且占据 10 个元素的空间大小。</p>
+<p>不过，C# 的所有数组都是被封装为对象了，所以一个 <code>new</code> 关键字就搞定了内存分配，但分配在堆内存里。如果想在 C# 里声明栈内存的数组的话，将使用的是 <code>stackalloc</code> 关键字：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *arr = <span class="keyword">stackalloc</span> <span class="keyword">int</span>[<span class="number">10</span>];</span><br></pre></td></tr></table></figure>
+<p>例如上面这个代码，语义就和 C 语言的 <code>int arr[10] = { 0 };</code> 是一样的意思。不过，这样分配需要使用指针，而指针总是会容易出错，所以我们想要一种语法，不用到指针，也能实现类型安全。于是，<code>ref struct</code> 诞生了。</p>
+<p>如果标记一个结构表示一组自定义的连续内存，且只能在栈内存里分配的话，那么，在 C# 7 里就可以使用 <code>ref struct</code> 啦！只要你把你自定义的结构用上 <code>ref</code> 关键字修饰，那么这个对象声明出来就一定是一组连续分配的栈内存对象了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">ref</span> <span class="keyword">struct</span> A</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者原本带有 <code>readonly</code> 关键字时的 <code>ref readonly struct</code>：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">ref</span> <span class="keyword">readonly</span> <span class="keyword">struct</span> A</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前者没有 <code>readonly</code>，表示这组内存里的内容可变；后者有 <code>readonly</code>，表示这组内存里的内容不可变。</p>
+<h2 id="那么，ref-struct-对象有哪些特性呢？"><a href="#那么，ref-struct-对象有哪些特性呢？" class="headerlink" title="那么，ref struct 对象有哪些特性呢？"></a>那么，<code>ref struct</code> 对象有哪些特性呢？</h2><p>试想一下，既然这块内存被定义为栈内存分配，那么只能在栈内存里生存的东西有些什么样的特效呢？回忆一下，引用类型一定产生在堆内存里，而值类型也可以通过装箱进入引用类型存储到堆内存之中，例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> i = <span class="number">3</span>; <span class="comment">// Boxing.</span></span><br></pre></td></tr></table></figure>
+<p>可是，明明 <code>i</code> 存储的东西就只是一个单纯的 <code>int</code>，是一个值类型，那岂不是一个看起来像是 bug 一样的存在？是的。这里就要说明了，由于 <code>ref struct</code> 以栈内存分配，所以对象只可能存储在栈内存里，故它无法以任何形式存储到堆栈里。所以，<code>ref struct</code> 对象无法实现接口（因为接口会产生可能的装箱和拆箱操作）、无法赋值和隐式转换为引用类型。这是它的第一个特点。</p>
+<p>第二个特点。既然是栈内存对象，那么很明显，任何一个堆内存的对象也无法把它作为成员存储到堆内存之中。所以 <code>ref struct</code> 对象也无法作为一个不是 <code>ref struct</code> 类型对象的任何成员，例如字段和属性。这句话有点绕，说白了就是，如果我有一个类 <code>A</code>，那么它就不能在字段和属性里使用 <code>ref struct</code> 的对象；即使这个对象是结构类型（值类型），但它可能装箱，所以这个结构类型也不允许拥有任何字段或属性是 <code>ref struct</code> 类型的。当然，它也不能作为任何一个类型的泛型参数，比如，<code>List&lt;一个 ref struct 类型&gt;</code> 的写法是不允许的。</p>
+<p>第三个特点。带了隐藏状态机的函数体是无法使用 <code>ref struct</code> 的本地变量的。栈内存对象就无法使用迭代器了，因为迭代器使用其它的非 <code>ref struct</code> 的对象作为辅助输出，所以很显然，这样的做法是不可以的，所以，<code>ref struct</code> 对象也不能作为迭代器对象，更不能放在迭代器的执行语句之中（迭代器执行语句就是使用 <code>yield return</code> 和 <code>yield break</code> 语句的那个函数体）。同样地，使用了状态机的 <code>async</code> 方法里也不允许使用 <code>ref struct</code> 对象。</p>
+<p>第四个特点，也是比较隐讳的特点。如果 <code>ref struct</code> 对象放在特殊函数体里，比如 Lambda 表达式或本地函数里的时候，这样的对象就无法被捕获到。原因也很简单。在 Lambda 表达式转换为本地函数或普通函数时，捕获的变量将使用 <code>ref</code> 关键字修饰，来表示两个引用的位置是指向同一个内存的。如果你捕获了 <code>ref struct</code> 对象，它再被 <code>ref</code> 关键字修饰，就显得格外奇怪和不正常。这也是为什么，微软 C# 语言团队将这种对象名称定为 <code>ref struct</code> 的原因（因为它考虑到你不可能再为它加 <code>ref</code> 关键字修饰了）。</p>
+<p>所以，说了这么多，<code>ref struct</code> 禁止做的事情也算是非常多，这都仅仅因为它只放在栈内存里。这些条条款款也都是很严谨的。</p>
+<p>总结（拿出 MSDN 的原话）：</p>
+<blockquote>
+<p>保持 <code>ref struct</code> 类型作为堆栈分配的变量的目标引入了几条编译器针对所有 <code>ref struct</code> 类型强制执行的规则。</p>
+<ul>
+<li>不能对 <code>ref struct</code> 装箱。<br/>无法向属于 <code>object</code>、<code>dynamic</code> 或任何接口类型的变量分配 <code>ref struct</code> 类型。</li>
+<li><code>ref struct</code> 类型不能实现接口。</li>
+<li>不能将 <code>ref struct</code> 声明为类或常规结构的字段成员。<br/>这包括声明自动实现的属性，后者会创建一个由编译器生成的支持字段。</li>
+<li>不能声明异步方法中属于 <code>ref struct</code> 类型的本地变量。<br/>不能在返回类似 <a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.threading.tasks.task" target="_blank" rel="noopener"><code>Task</code></a>、<a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.threading.tasks.task-1" target="_blank" rel="noopener"><code>Task&lt;TResult&gt;</code></a> 或 <code>Task</code> 类型的同步方法中声明它们。</li>
+<li>无法在迭代器中声明 <code>ref struct</code> 本地变量。</li>
+<li>无法捕获 Lambda 表达式或本地函数中的 <code>ref struct</code> 变量。</li>
+</ul>
+<p>这些限制可确保不会以可提升至托管堆的方式意外地使用 <code>ref struct</code>。</p>
+</blockquote>
+<h2 id="那么，它还有什么用？"><a href="#那么，它还有什么用？" class="headerlink" title="那么，它还有什么用？"></a>那么，它还有什么用？</h2><p>既然限制这么多，那么 <code>ref struct</code> 就会很难用才对。实际上相反。考虑一下，字符串是堆内存对象（引用类型），但如果对字符串操作的话，显然是会比较慢的。那么，如果把一些不是很长的字符串放到堆内存里操作，那么它应当很快。是的，我们使用一个 <code>ref struct</code>，把字符串存储到里面，就可以安全快捷地操作它们了。实际上，微软提供的 API 已经带有一个默认的 <code>ref struct</code> 对象：<code>Span&lt;T&gt;</code> 和 <code>ReadOnlySpan&lt;T&gt;</code>。前者是可更改内部元素的 <code>ref struct</code>，而后者则是一组只读连续内存 <code>ref readonly struct</code>。</p>
+<p>我们可以使用 <code>Span&lt;T&gt;</code> 快捷地操作一系列字符串，而它们仅仅存储到栈内存之中：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> span = <span class="string">"Hello, world!"</span>.ToSpan();</span><br><span class="line">span[<span class="number">4</span>] = <span class="string">'!'</span>;</span><br><span class="line">span[<span class="number">5</span>] = <span class="string">' '</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">char</span> c <span class="keyword">in</span> span)</span><br><span class="line">&#123;</span><br><span class="line">    Console.Write(c);</span><br><span class="line">&#125;</span><br><span class="line">Console.WriteLine();</span><br></pre></td></tr></table></figure>
+<p>这样的话，<code>&quot;Hello, world!&quot;</code> 就被成功存储到栈内存里。然后第 4 个字符被替换为 <code>&#39;!&#39;</code>，第 5 个字符被替换为 <code>&#39; &#39;</code>，所以输出的结果是 <code>&quot;Hell!  world!&quot;</code>。</p>
+<p>你可以使用 <code>Span&lt;T&gt;</code> 做到很多意想不到的东西，而且效率也是非常高，但请你注意的是，<code>Span&lt;T&gt;</code> 类型自带的泛型参数 <code>T</code> 只能是我们常用的几大值类型数据类型；换而言之，你是无法使用 <code>Span&lt;string&gt;</code> 的。</p>
+<blockquote>
+<p>请注意对比。C++ 语言里可以对 <code>struct</code> 和 <code>class</code> 使用 <code>ref</code> 关键字。在 C++ 里，<code>struct</code> 和 <code>class</code> 没有语义区别，只有用法区别（<code>struct</code> 的默认访问优先级为 <code>public</code>，而 <code>class</code> 则是 <code>private</code>），所以，C++ 还允许 <code>ref class</code>。但是，C++ 里的 <code>ref struct</code> 和 <code>ref class</code> 表示这个对象被生存周期约束。当对象不再被引用时会被自动释放掉，它和 C# 的语义不同，所以需要你作出对比。</p>
+</blockquote>
+<h2 id="说了这么多，我还是不习惯使用它？"><a href="#说了这么多，我还是不习惯使用它？" class="headerlink" title="说了这么多，我还是不习惯使用它？"></a>说了这么多，我还是不习惯使用它？</h2><p>注意，<code>Span&lt;T&gt;</code> 类型非常常见。当你书写的代码想要加快运行速度，且同时保证类型安全的话，<code>Span&lt;T&gt;</code> 是一个非常好的选择。但由于各种类型约束，你可能只能在常见结构和类类型对象里的函数体内使用（比如函数内部的<strong>局部变量</strong>或是函数传参时，作为<strong>参数</strong>传递，因为它们就是最常见的栈内存变量）。</p>
+<h2 id="可释放的-ref-struct"><a href="#可释放的-ref-struct" class="headerlink" title="可释放的 ref struct"></a>可释放的 <code>ref struct</code></h2><p>在 C# 8 里，考虑到 <code>ref struct</code> 可能是一组较大的连续内存块，存储到栈内存里使得栈内存一直得不到释放，并最终爆栈，引起不可捕获的 <code>StackOverflowException</code>，所以 C# 8 里立马为 <code>ref struct</code> 加上了释放功能。这是一个语义语法，它不需要修改你的任何代码（例如关键字等），只需要加入原本就有的语法，写一个 <code>Dispose</code> 方法后，就可以释放了，这样就避免了你使用 <code>IDisposable</code> 接口（因为 <code>ref struct</code> 不允许实现接口）。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总结起来，<code>ref struct</code> 对象就是一组连续栈内存分配的值类型对象，这种类型对象由于一定是存储在栈内存里，所以无法以任何方式转换为引用类型存储到堆内存之中。所以上面说的一大堆操作都做不到。但是，它提供了快速和类型安全的执行效果，避免了显式使用指针。显式使用指针需要 <code>unsafe</code> 块标记不说，还要一大堆复杂的语法，而且还总可能产生意外的致命错误，所以，请尽快把 <code>ref struct</code> 用起来吧！</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-7/">C♯ 7</a><a href="/tags/C♯-8/">C♯ 8</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://sunnie-shine.github.io/2020/02/26/csharp-ref-struct/" data-title="C♯ 里的 ref struct | 向向的博客" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2020/01/24/lru-caching/"  title="LRU 缓存机制算法源代码（C#）">
+ <strong>下一篇：</strong><br/> 
+ <span>LRU 缓存机制算法源代码（C#）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+
+
+  
+  <h1 id="vheader">评论区 (~￣▽￣)~</h1>
+  <div class="comment" id="vcomment"></div>
+  <style>
+    #vheader {
+      padding: 5.44px 21.813px;
+      border: 0 0 0 5px;
+    }
+    #readingspan {
+      margin-left: 30px;
+    }
+    #vcomment {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: #2bcdd8;
+    }
+    .v .vnick {
+      color: #555 !important;
+    }
+    .v .vat{
+      color: #555 !important;
+    }
+    .v .vwrap {
+      background-color: #eee;
+      border-radius: 15px;
+    }
+    .v .info {
+      width: 100%;
+      margin: 0;
+    }
+  </style>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="./dist/Valine.min.js"></script>
+  <script>
+    var localeName = 'en', localeMode = {
+      head:{
+        nick:'[你的昵称 (随便写 ^_^)]',
+        mail:'[邮件地址 (可以不写)]',
+        link:'[你的主页 (可以不写)]',
+      },
+      tips:{
+        comments:'评论',
+        sofa:'还没评论',
+        busy:'提交君卡了，稍等下……',
+        again:'呃，貌似内部出错了，请稍后试一下……',
+        limit:'最多可以输入 %d 个字'
+      },
+      ctrl:{
+        reply:'回复',
+        ok:'OK',
+        sure:'好嘞',
+        cancel:'取消',
+        confirm:'确认',
+        continue:'继续',
+        more:'载入更多回复...',
+        try:'请你再试一下',
+        preview: '预览',
+        emoji: 'Emoji 表情'
+      },
+      error:{
+        99:'初始化失败，请检查初始化方法里的 `el` 元素。',
+        100:'初始化失败，请检查你的 `app_id` 和 `app_key` 值。',
+        401:'未经授权操作，请检查你的 `app_id` 和 `app_key` 值。',
+        403:'访问 API 时被拒绝。请检查你的安全设置项，并将其允许到白名单里。',
+      },
+      timeago:{
+        seconds:'秒以前',
+        minutes:'分钟以前',
+        hours:'小时以前',
+        days:'天以前',
+        now:'就在刚才'
+      }
+    };
+    
+    var valine = new Valine();
+    valine.installLocale(localeName, localeMode);
+    valine.init({
+      av: AV,
+      el: '.comment',
+      app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+      app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+      placeholder: '[畅所欲言哦！QwQ]',
+      visitor: true,
+      lang: localeName
+    });
+
+    // Elder configuration...
+    //new Valine({
+    //  av: AV,
+    //  el: '.comment',
+    //  app_id: 'dlNjgbBHGiNHYQ3NoR4cziTb-gzGzoHsz',
+    //  app_key: 'B2b55wI7IvjoNCf8FTi9vgtr',
+    //  placeholder: '[畅所欲言哦！QwQ]',
+    //  visitor: true
+    //});
+  </script>
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-ref-关键字"><span class="toc-number">1.</span> <span class="toc-text">什么是 ref 关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#连续栈内存？"><span class="toc-number">2.</span> <span class="toc-text">连续栈内存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#那么，ref-struct-对象有哪些特性呢？"><span class="toc-number">3.</span> <span class="toc-text">那么，ref struct 对象有哪些特性呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#那么，它还有什么用？"><span class="toc-number">4.</span> <span class="toc-text">那么，它还有什么用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#说了这么多，我还是不习惯使用它？"><span class="toc-number">5.</span> <span class="toc-text">说了这么多，我还是不习惯使用它？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#可释放的-ref-struct"><span class="toc-number">6.</span> <span class="toc-text">可释放的 ref struct</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="Sunnie-Shine" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>31</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C/" title="C">C<sup>24</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LINQ/" title="LINQ">LINQ<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/位运算/" title="位运算">位运算<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数独/" title="数独">数独<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/向向的每周数独/" title="向向的每周数独">向向的每周数独<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/安卓/" title="安卓">安卓<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-3/" title="C♯ 3">C♯ 3<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sunniesudoku.cn/" target="_blank" title="向向的数独文档库">向向的数独文档库</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://tieba.baidu.com/f?kw=%CA%FD%B6%C0" target="_blank" title="数独贴吧">数独贴吧</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://space.bilibili.com/23736703" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello, I&#39;m Sunnie. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/Sunnie-Shine" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/Sunnie-Shine" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Copyright © 2020 
+		
+		<a href="/about" target="_blank" title="向向">向向</a>
+		
+		<br />
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a>
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript"
+  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

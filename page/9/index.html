@@ -82,6 +82,83 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/11/08/diagonal-sudoku-6-da-rule/" title="6 宫对角线数独的潜规则" itemprop="url">6 宫对角线数独的潜规则</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-11-08T05:25:13.000Z" itemprop="datePublished"> 发表于 2019-11-08</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>六宫的对角线数独题目下存在两大潜规则。潜规则不同于技巧层面，它需要通过大量的题目证明得到结论，而其原理不同于技巧，原理不通过逻辑层面推理得到，而大多通过全部的答案盘枚举得到。</p>
+<p>六宫对角线数独一共存在 12 种不等价盘面，如图所示。</p>
+<p><img src="DiagonalSix_Global.png" alt=""></p>
+<p>它具有如下两个潜规则。</p>
+<h2 id="潜规则一：中心对称潜规则"><a href="#潜规则一：中心对称潜规则" class="headerlink" title="潜规则一：中心对称潜规则"></a>潜规则一：中心对称潜规则</h2><p>中心对称潜规则指的是：盘面下关于盘面中心，中心对称的两格，填数一定不同。</p>
+<p><img src="DiagonalSix_HiddenRule_1.png" alt=""></p>
+<p>例如这个图上给予了一个六宫对角线数独的题目盘面的答案，答案体现出，r1c2和r6c5的填数一定不同（实际上是一个2和一个3，确实是不同的）。其他的同理。</p>
+<p>本潜规则可以直接在题目上使用，对于任意一个唯一解的六宫对角线数独题均适用。</p>
+<h2 id="潜规则二：轴对称潜规则"><a href="#潜规则二：轴对称潜规则" class="headerlink" title="潜规则二：轴对称潜规则"></a>潜规则二：轴对称潜规则</h2><p>轴对称潜规则指的是：盘面上任取的四格，只要满足以下几个条件，则有结论：四格的填数至少有一个数会出现两次（四格填数不能完全不同）：</p>
+<ol>
+<li>四格都不在对角线上；</li>
+<li>将四格只存在于一行、一列之中，且一行一列之中各两格；</li>
+<li>同在一行的这两格关于盘面中轴（c34中间的格线）轴对称、且同在一列的这两格关于盘面中轴（r34中间的格线）轴对称；</li>
+<li>四格必须存在于对角线两侧，且两侧各两格；</li>
+<li>两侧的四格必须一一关于对角线对称。</li>
+</ol>
+<p>什么意思呢？如图所示，以下四格就满足上述给予的所有要求：</p>
+<p><img src="DiagonalSix_HiddenRule_2.png" alt=""></p>
+<p>比如r25c6和r6c25四格，都不在对角线上；分属一行一列（r6和c6），而且恰有两格；r25c6确实对于盘面的中轴线轴对称、r6c25也是如此；四格也恰存在于捺对角线两侧，两侧也恰好各两格；并且r2c6和r6c2关于捺对角线对称、r5c6和r6c5关于捺对角线对称。</p>
+<p>由于满足这样一系列要求，所以四格内的填数一定至少有一个数是至少出现两次的（比如这里的3，有两个）。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/">数独</a>►<a class="article-category-link" href="/categories/%E6%95%B0%E7%8B%AC/%E6%95%B0%E7%8B%AC-%E6%BD%9C%E8%A7%84%E5%88%99/">数独.潜规则</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/数独/">数独</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/11/08/android-permissions/" title="安卓权限设置" itemprop="url">安卓权限设置</a>
     
   </h1>
@@ -837,78 +914,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/06/hexo-hello-world/" title="Hexo 使用教程" itemprop="url">Hexo 使用教程</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-06T06:39:35.817Z" itemprop="datePublished"> 发表于 2019-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>欢迎使用 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>！这是第一篇介绍的文章。请查看 <a href="https://hexo.io/docs/" target="_blank" rel="noopener">该文档链接</a> 来获取更多信息。如果你在使用 Hexo 期间出现了任何的问题的话，你将可以在 <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">问题解决列表</a> 查找到对应的问题解决方案，或者是在我的 <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a> 上询问 Hexo 的作者本人哦！</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>请先使用 bash 命令行切换到指定的本地仓库文件夹下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> myblog</span><br></pre></td></tr></table></figure>
-<p>然后尝试如下的一些命令（操作集）。</p>
-<h3 id="生成你的第一篇文章"><a href="#生成你的第一篇文章" class="headerlink" title="生成你的第一篇文章"></a>生成你的第一篇文章</h3><p>你可以使用如下命令行来为你的本地仓库添加一篇新文章。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure></p>
-<p>更多内容请参考：<a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="服务器上运行"><a href="#服务器上运行" class="headerlink" title="服务器上运行"></a>服务器上运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>更多内容请参考：<a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="生成静态的页面（写博客文章）"><a href="#生成静态的页面（写博客文章）" class="headerlink" title="生成静态的页面（写博客文章）"></a>生成静态的页面（写博客文章）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate <span class="string">"My Blog post title"</span></span><br></pre></td></tr></table></figure>
-<p>更多内容请参考：<a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="将本地内容发布到-GitHub-的同步仓库上"><a href="#将本地内容发布到-GitHub-的同步仓库上" class="headerlink" title="将本地内容发布到 GitHub 的同步仓库上"></a>将本地内容发布到 GitHub 的同步仓库上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>更多内容请参考：<a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/Hexo/">Hexo</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/page/8/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span>
+    <a class="extend prev" rel="prev" href="/page/8/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/10/">下一页 ↓</a>
   </nav>
 
 </div>
@@ -933,7 +941,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>30</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>31</sup></a></li>
 			
 		
 			
@@ -953,23 +961,23 @@
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>4</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
 			
 		
 			

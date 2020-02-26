@@ -82,6 +82,95 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/12/13/csharp-local-function/" title="C# 的本地函数" itemprop="url">C# 的本地函数</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-13T11:12:26.000Z" itemprop="datePublished"> 发表于 2019-12-13</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="本地函数是什么"><a href="#本地函数是什么" class="headerlink" title="本地函数是什么"></a>本地函数是什么</h2><p>C# 有一点意思的地方是，函数和方法没有区别。非得要说区别的时候，术语词一般用的是函数，比如构造函数、析构函数，还有今天说的<strong>本地函数</strong>（Local function）。它们是术语词，所以一般不叫方法。当然有时候也可以叫方法，这只是习惯而已，但英文的术语词里都使用的是 function，即“函数”。</p>
+<p>要给本地函数做一个比喻的话，最适合不过的其实是 C 语言里的函数变量。函数变量在 C 语言里也称为函数的声明，需要在 <code>main</code> 之前遇到它，然后才能分辨函数的执行返回值类型和参数表列。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a &gt; b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"a is %s than b.\n"</span>, compare(<span class="number">3</span>, <span class="number">4</span>) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果函数部分写在 <code>main</code> 下，就必须使用声明语句，来表示函数的返回值类型和参数表列：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>; <span class="comment">// Statement of the function.</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"a is %s than b.\n"</span>, compare(<span class="number">3</span>, <span class="number">4</span>) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数的声明可以放在执行这个函数的前面的任意位置，所以写在函数里也可以。所以它更像是一个变量，一个函数变量。</p>
+<p>C# 提供了本地函数这个特性，使得函数可以嵌套使用在某一个函数的函数体（方法体）里：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Local function.</span></span><br><span class="line">    <span class="comment">// Same as a variable, but this variable is a function.</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">compare</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> a &gt; b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;a&#125;</span> is <span class="subst">&#123;(compare(a, b) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>)&#125;</span> than <span class="subst">&#123;b&#125;</span>."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样一来，我们就可以把一个函数写在方法体里了，来达到内联的效果。</p>
+<h2 id="看起来好像没啥，这有什么用？"><a href="#看起来好像没啥，这有什么用？" class="headerlink" title="看起来好像没啥，这有什么用？"></a>看起来好像没啥，这有什么用？</h2><p>本地函数似乎好像仅仅是嵌套在方法体里了，看起来没什么用。不过，它到底有什么用？</p>
+<p>首先，它的出现是为了解决 Lambda 表达式的问题。Lambda 表达式到目前已经基本上成熟了，比如上述代码可以写成 Lambda 执行的方式：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Lambda expression.</span></span><br><span class="line">    Func&lt;<span class="keyword">int</span>, <span class="keyword">int</span>, <span class="keyword">bool</span>&gt; compare = (a, b) =&gt; a &gt; b;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;a&#125;</span> is <span class="subst">&#123;(compare(a, b) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>)&#125;</span> than <span class="subst">&#123;b&#125;</span>."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Lambda 表达式看起来没有任何问题，执行起效，而且没有区别，所以很多程序员一般都会认为，这两种写法仅仅是个人偏好，所以随便自己怎么用。不过实际上它们是有区别的。</p>
+<p>第一，如果想要让函数执行递归，Lambda 表达式或匿名函数（使用 <code>delegate</code> 关键字）是无法做到的，因为没有办法使用函数名；</p>
+<p>第二，Lambda 表达式在实现具体函数机制的时候，使用的是委托特性。在声明的那一刻起，Lambda 表达式就会被转换为委托类型，但本地函数并不会。它真的跟一个函数很类似，若不是用到委托，它根本就不会被当成委托处理；</p>
+<p>第三，本地函数和 Lambda 表达式都可能或多或少产生捕获变量的情况，但 Lambda 表达式一般都不会去“在意”你是否捕获变量，捕获了哪些变量。编译器不会尝试去解析、分析这一点内容。但是，本地函数会进行处理。在 C# 8 里，当本地函数确实没有捕获变量时，编译器会提示警告，为其添加关键字 <code>static</code> 在本地函数前：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Local function.</span></span><br><span class="line">    <span class="comment">// Same as a variable, but this variable is a function.</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">compare</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> a &gt; b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">4</span>;</span><br><span class="line">    Console.WriteLine(</span><br><span class="line">        <span class="string">$"<span class="subst">&#123;a&#125;</span> is <span class="subst">&#123;(compare(a, b) ? <span class="string">"greater"</span> : <span class="string">"less or equal"</span>)&#125;</span> than <span class="subst">&#123;b&#125;</span>."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总的来说，本地函数实现了方法的内联，并且能够动态分析变量捕获情况，是一个好的特性。</p>
+<h2 id="嵌套本地函数"><a href="#嵌套本地函数" class="headerlink" title="嵌套本地函数"></a>嵌套本地函数</h2><p>本地函数是支持任何级别的嵌套的。也就是说，你可以尝试在本地函数里嵌套本地函数，然后再次在内部嵌套额外的本地函数。这些情况都是允许的。</p>
+<h2 id="使用本地函数的情况"><a href="#使用本地函数的情况" class="headerlink" title="使用本地函数的情况"></a>使用本地函数的情况</h2><p>在什么时候可以使用本地函数，比较高效而且有用呢？当这个执行语句可以被写作一个函数，但函数不需要大量的执行语句时，就可以使用本地函数。考虑得到两个数的较大值，并将其输出。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">PrintMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">GetMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> a &gt; b ? a : b;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Console.WriteLine(<span class="string">"%d"</span>, GetMax(<span class="number">3</span>, <span class="number">-3</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如上述示例，得到两个数的较大者是比较简单的操作，而它没有被得到封装（如果我们忽略 <code>Math.Max</code> 的话）。这个时候，为了效率，我们可以使用本地函数，把这个执行语句写在方法里，然后调用。这在一定程度上解决了 C++ 里的 <code>inline</code> 函数。</p>
+<h2 id="本地函数在不捕获变量时为什么用-static-关键字？"><a href="#本地函数在不捕获变量时为什么用-static-关键字？" class="headerlink" title="本地函数在不捕获变量时为什么用 static 关键字？"></a>本地函数在不捕获变量时为什么用 <code>static</code> 关键字？</h2><p>下面我们来思考一个问题。为什么本地函数不捕获变量的时候使用 <code>static</code> 关键字而不是其它呢？本地函数这一个特性实际上也是用的 <code>private</code> 方法实现的。所有级别的嵌套的本地函数都会被翻译和改为类和结构级别的方法。</p>
+<p>如果函数不捕获变量的话，这便意味着它不会使用到方法里的任何变量对象。既然都用不上它们，为什么这个类和结构级别的方法不定义为静态的呢？所以它们自然用的是 <code>static</code> 关键字。</p>
+<h2 id="本地函数和异常"><a href="#本地函数和异常" class="headerlink" title="本地函数和异常"></a>本地函数和异常</h2><p>考虑一个问题。本地函数写在函数体里，那么如果出现异常了，本地函数的行为是如何的呢？答案是，异常不会立马在本地函数里爆出，而是立刻终止函数调用，在调用层面（方法体级别）抛出这个异常。例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Try</span>(<span class="params"><span class="keyword">string</span> a</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(a.ToString());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Try(<span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>显然，将 <code>null</code> 调用 <code>ToString</code> 方法是不合法的，所以它会产生异常。不过，它推后在第 8 行产生异常，而不是在的 5 行。</p>
+<p>如果需要实现捕获异常，或者预判情况，请添加 <code>try-catch</code> 语句。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">Try</span>(<span class="params"><span class="keyword">string</span> a</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Console.WriteLine(a.ToString());</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        Try(<span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (NullReferenceException)</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="方法体本地函数"><a href="#方法体本地函数" class="headerlink" title="方法体本地函数"></a>方法体本地函数</h2><p>当然，这种写法依然有点麻烦，因为要写大括号。所以，本地函数可以直接简化为方法体形式。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">PrintMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">GetMax</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> =&gt; a &gt; b ? a : b;</span><br><span class="line">    </span><br><span class="line">    Console.WriteLine(<span class="string">"%d"</span>, GetMax(<span class="number">3</span>, <span class="number">-3</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样会简单一些。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E8%AF%AD%E6%B3%95/">C♯.语法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-7/">C♯ 7</a><a href="/tags/C♯-8/">C♯ 8</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/12/13/bitwise-operations-05-bitwise-exclusive-or/" title="位运算（5）：位异或运算" itemprop="url">位运算（5）：位异或运算</a>
     
   </h1>
@@ -888,121 +977,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/26/clang-23-preprocessor/" title="C 语言语法系列（23）：预处理指令" itemprop="url">C 语言语法系列（23）：预处理指令</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-26T07:21:46.000Z" itemprop="datePublished"> 发表于 2019-11-26</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>编译器指令，或者叫做<strong>预处理指令</strong>（Preprocessor），指的是在程序用编译器翻译为机器可以识别和执行的指令前，所做的指令操作。它可以控制程序在不同执行状态下执行不同的结果。为区分其他编程语句，我们使用井号 <code>#</code>进行开头。</p>
-<h2 id="include-指令"><a href="#include-指令" class="headerlink" title="#include 指令"></a><code>#include</code> 指令</h2><p>这个指令用于导入头文件。什么是头文件呢？在使用特定的编程函数，诸如 <code>printf</code>、<code>scanf</code> 等时，由于每一个编程函数都有不同的功能，所以为了方便管理，它们各自被放在不同的头文件下，在使用时，需要根据它本身属于哪个头文件，先要导入，才能使用。否则编译器找不到这个函数。</p>
-<p>它有两种导入方式：引号导入和尖括号导入。如果写成这样：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br></pre></td></tr></table></figure>
-<p>则表示它是一个系统自带的编程函数。它会先找系统自带的函数库，发现文件存在就可以打开。如果不存在，再找到你建立这个C语言程序代码下，文件夹下是否有这个头文件。</p>
-<p>反之，如果要先找当前文件夹下的头文件的话，我们使用引号导入。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"test.h"</span></span></span><br></pre></td></tr></table></figure>
-<p>注意，<strong>编译器指令都是不用分号结尾的</strong>。</p>
-<h2 id="define-指令"><a href="#define-指令" class="headerlink" title="#define 指令"></a><code>#define</code> 指令</h2><h3 id="真·常量定义"><a href="#真·常量定义" class="headerlink" title="真·常量定义"></a>真·常量定义</h3><p>它又被称为<strong>宏定义</strong>（Macro Defining），是将代码里所有代码的写法替换成宏定义过的写法。比如，在代码里写很多计算圆的公式，它会大量使用到圆周率的值（约 3.14159），可如果代码内直接写值的话，如果需要对代码作改动，就需要挨个改掉它们，就相对麻烦，这个时候我们可以使用 <code>#define</code> 指令替换它们，然后改值时，只需要改 <code>#define</code> 一处的值即可。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> pi 3.14159</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;i);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">float</span> area = pi * i * i;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%.2f"</span>, area);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>另外，一般而言，像是这样的指令写的东西（3.14159）是一个常数，所以我们一般将常数全部大写变量名，即 PI 的形式，不过这只是一般而言，也可以不大写。</p>
-<h3 id="骚操作"><a href="#骚操作" class="headerlink" title="骚操作"></a>骚操作</h3><p>不过，宏定义下的写法是直接替换的，也就是说，你这么写完全可以：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 定义一个整型变量 int</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 主函数 main</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 无参数 void</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 输入 scanf</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 定义一个单精度小数型变量 float</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 圆周率 3.14159</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 输出 printf</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 返回 return</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 。 ;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 值为 =</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 开始 &#123;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 结束 &#125;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> 取变量地址(a) &amp;a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 整体程序</span></span><br><span class="line">整型 主函数 (无参数)</span><br><span class="line">开始</span><br><span class="line">    定义一个整型变量 整型变量。</span><br><span class="line">    输入(<span class="string">"%d"</span>, 取变量地址(整型变量))。</span><br><span class="line">    </span><br><span class="line">    定义一个单精度小数型变量 面积 值为 圆周率 * 整型变量 * 整型变量。</span><br><span class="line">    输出(<span class="string">"%.2f"</span>, 面积)。</span><br><span class="line">    </span><br><span class="line">    返回 <span class="number">0</span>。</span><br><span class="line">结束</span><br><span class="line"><span class="comment">// 程序结束</span></span><br></pre></td></tr></table></figure>
-<p>只是，一部分 IDE，例如 DevCpp 的编译器不能执行中文字符的宏定义替换罢了。不过，<code>#define</code> 定义语句中间的空格是严格规定的，只能在 <code>#define</code> 后和定义名称后有空格，这样来控制替换，否则系统会无法判别。</p>
-<h3 id="宏定义有时候也会背锅"><a href="#宏定义有时候也会背锅" class="headerlink" title="宏定义有时候也会背锅"></a>宏定义有时候也会背锅</h3><p>另外，<code>#define</code> 有一处需要注意的替换。它甚至可以替换函数，但函数的替换方式可能有一些恶心：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> f(a,b) (a)*(b)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> g(a,b) a*b</span></span><br></pre></td></tr></table></figure>
-<p>它们是不同的。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> c, d;</span><br><span class="line">c = f(a + a, b + b); <span class="comment">// (2 + 2) * (3 + 3)</span></span><br><span class="line">d = g(a + a, b + b); <span class="comment">// 2 + 2 * 3 + 3</span></span><br></pre></td></tr></table></figure>
-<p>看懂了吗？上面的 <code>a</code> 和 <code>b</code> 都有括号，所以下面替换后，也带括号；上面没有括号，下面也没有括号。于是根据优先级的不同，计算结果分别是 4 * 6 = 24 和 2 + 6 + 3 = 11。</p>
-<h3 id="undef-指令"><a href="#undef-指令" class="headerlink" title="#undef 指令"></a><code>#undef</code> 指令</h3><p>甚至还可以使用 <code>#undef 定义名</code> 的方式来撤销结束定义。比如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> pi 3.14159</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> r = <span class="number">6</span>;</span><br><span class="line">    <span class="keyword">int</span> area = pi * r * r;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">undef</span> pi</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> c = <span class="number">2</span> * pi * r; <span class="comment">// Wrong.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="define-符号指令"><a href="#define-符号指令" class="headerlink" title="#define 符号指令"></a><code>#define</code> 符号指令</h3><p>我们也可以在定义符号的时候不为其赋值：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> clang</span></span><br></pre></td></tr></table></figure>
-<p>这样定义的符号在本文件里的任意位置都可以用，或你把它写进头文件里，然后对其使用了 <code>#include</code> 引入了这个头文件时可用。</p>
-<p>这种用法需要配合下面要说到的 <code>#if</code> 指令才能发挥作用。</p>
-<h2 id="if、-else、-elif-和-endif-指令"><a href="#if、-else、-elif-和-endif-指令" class="headerlink" title="#if、#else、#elif 和 #endif 指令"></a><code>#if</code>、<code>#else</code>、<code>#elif</code> 和 <code>#endif</code> 指令</h2><p>这四个指令单纯就是为了和 C++ 语言配合使用得比较多。在 C++ 里，有些常量的定义数值是和 C 不一致的，好在它提供了 <code>#define</code> 的宏指令指定了语言类别。</p>
-<p>在 C++ 里，系统定义了 <code>__cplusplus</code> 符号。如果我们查看 <code>__cplusplus</code> 符号是否存在，就可以判断当前使用的文件和语言是 C 语言还是 C++，进而去区分程序的执行代码。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>例如上面的 5 行指令，先查询当前代码环境是否是 C++。如果是 C++，则会执行第 2 行的 <code>#define</code> 定义语句，让 <code>NULL</code> 常量定义为 0（这是 C++ 里的定义方式。C++ 的空是用 0 表示而不是 <code>(void *)0</code> 表示的；否则，没有查到 <code>__cplusplus</code>，说明是 C 语言环境，那么 <code>NULL</code> 的定义方式就是<code>(void *)0</code> 了。</p>
-<p>另外，<code>#if defined</code> 可以简写为 <code>#ifdef</code> 指令：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>另外，你对条件取反，也是被允许的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> !__cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>你也可以使用 <code>#ifndef</code> 指令来表达：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>最后，你还可以使用嵌套的方式为其定义。实际上，<code>NULL</code> 常量在头文件里是这么定义的。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>由于头文件 <code>*.h</code> 是不区分 C 还是 C++ 语言的，所以保证程序允许正常，这些指令和赋值都是不可少的。<code>#elif</code> 指令类似于 <code>else if</code> 条件判断，这里就不讲了，因为用的机会很少。</p>
-<h2 id="pragma-杂注指令"><a href="#pragma-杂注指令" class="headerlink" title="#pragma 杂注指令"></a><code>#pragma</code> 杂注指令</h2><p>最后来说一下<strong>杂注</strong>（Pragma）。杂注是预处理指令里最复杂的一种，这是因为它的名字“杂注”就表示了所有乱七八糟的指令，不好取名或用得比较少的时候，就直接用 <code>#pragma</code> 指令来搞了，所以它的分支也非常多。我们这里来看一些常用的。至于不常用的，如果你碰到了，直接查询网上给出的文档即可。</p>
-<h3 id="pragma-warning-指令"><a href="#pragma-warning-指令" class="headerlink" title="#pragma warning 指令"></a><code>#pragma warning</code> 指令</h3><p><code>#pragma warning</code> 指令用于忽略、恢复和只提示一次警告信息。假如你的代码里出现了警告错误，例如下面代码</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br></pre></td></tr></table></figure>
-<p>这是最基础的使用 <code>scanf</code> 函数的方法了。不过编译器会提出警告 C6031，提示你忽略了 <code>scanf</code> 的返回值。<code>scanf</code> 的返回值表示正确输入到变量里的变量总个数。如果你输入了一个合适的数字，<code>a</code> 正常赋值，那么这个返回值就是 1。</p>
-<p>它提示这个信息，提示你最好不要忽略返回值的使用，而是这样用：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a) != <span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// May have bugs...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Successful.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>但是，显然我们没有必要这么去处理，因为我们输入一个整数数值是预期的，所以我们可以忽略烦人的警告信息，用法是这样的：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span> (disable : 6031)</span></span><br></pre></td></tr></table></figure>
-<p>这样的话，你就看不到后续使用的所有有关 <code>scanf</code> 上输入信息的返回值未使用的报错了。</p>
-<p>如果你把代码改为</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span> (restore: 6031)</span></span><br></pre></td></tr></table></figure>
-<p>表示从此处开始往下的代码，重新又开始对 C6031 忽略返回值的警告报错。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span> (once: 6031)</span></span><br></pre></td></tr></table></figure>
-<p>这样则是仅报告一次这样的警告信息，其它的都忽略。</p>
-<h3 id="pragma-region-和-pragma-endregion-指令"><a href="#pragma-region-和-pragma-endregion-指令" class="headerlink" title="#pragma region 和 #pragma endregion 指令"></a><code>#pragma region</code> 和 <code>#pragma endregion</code> 指令</h3><p>忘了这个了吗？这个就是最开始介绍的，用于分割语义的指令。这两个指令是配合使用的，用于分割代码段，这一段代码里的所有执行内容表示某个含义。另外，写了这样的指令后，IDE 就可以识别这一块代码是我们指定好的代码块，甚至可以允许我们手动折叠和展开它们。</p>
-<h3 id="pragma-once-指令"><a href="#pragma-once-指令" class="headerlink" title="#pragma once 指令"></a><code>#pragma once</code> 指令</h3><p>最后一个指令仅用于头文件里，表示这个头文件只会被编译一次。这是因为，很多时候，相同的指令会被分散放到不同的头文件里；而反之也可能存在多个相同名称的头文件。这样的话，如果我们使用 <code>#pragma once</code> 指令可以保证这个文件整体只会被编译一次，防止多次反复编译出现隐藏的 bug 和错误。</p>
-<p>当然，如果执行逻辑都不同的同名头文件最好还是不要用一样的头文件名，防止这些错误的出现。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C/">C</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/">C.语法</a>►<a class="article-category-link" href="/categories/C/C-%E8%AF%AD%E6%B3%95/C-%E8%AF%AD%E6%B3%95-%E6%95%99%E7%A8%8B/">C.语法.教程</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C/">C</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
+    <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
   </nav>
 
 </div>
@@ -1027,7 +1004,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>30</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>31</sup></a></li>
 			
 		
 			
@@ -1047,23 +1024,23 @@
 			
 		
 			
-				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/数学/" title="数学">数学<sup>4</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/C♯-编译器生成/" title="C♯.编译器生成">C♯.编译器生成<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>4</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/SQL/" title="SQL">SQL<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-7/" title="C♯ 7">C♯ 7<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C♯-8/" title="C♯ 8">C♯ 8<sup>3</sup></a></li>
 			
 		
 			
