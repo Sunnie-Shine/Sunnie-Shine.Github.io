@@ -82,6 +82,79 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2020/01/02/csharp-null-and-zero/" title="C# 里的 null 和 0" itemprop="url">C# 里的 null 和 0</a>
+    
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
+		
+  <p class="article-time">
+    <time datetime="2020-01-02T07:30:24.000Z" itemprop="datePublished"> 发表于 2020-01-02</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>很多小伙伴学过 C 语言，也明白 C 语言里一个复杂的机制：NULL 常量和 0 的转换。在 C99 里给出了 NULL 常量的精确定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br></pre></td></tr></table></figure>
+<p>它的书写结果是 <code>(void *)0</code>，似乎是直接把 0 直接强制转换为一个可以指向任意普通变量的一个指针对象。也就是说，这个 0 的意义从数值变为了指向第 0 号内存。</p>
+<p>显然，这个逻辑是特殊且具有里程碑式的意义的，但它也带来了很多不合适的缺点，不过这里我们不作讨论。</p>
+<h2 id="C-里的-null-关键字是否还是这么定义的呢？"><a href="#C-里的-null-关键字是否还是这么定义的呢？" class="headerlink" title="C# 里的 null 关键字是否还是这么定义的呢？"></a>C# 里的 <code>null</code> 关键字是否还是这么定义的呢？</h2><p>我们尝试打开 Visual Studio，然后书写如下代码：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Test</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">unsafe</span> <span class="keyword">void</span> Main</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine((<span class="keyword">void</span>*)<span class="number">0</span> == <span class="literal">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种写法是不可能报错的，虽然它看似使用了 <code>null</code>；其次，它直接和 <code>(void *)0</code> 作比较，所以不会出现异常。那么，它的结果是什么呢？</p>
+<p>你会在控制台里看到输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">true</span><br></pre></td></tr></table></figure>
+<p>所以，C# 里的 <code>(void*)0</code> 数值依然有效。不对，C# 和 C 语言里定义的 <code>NULL</code> 常量则是一样的。</p>
+<p>不过，它和 C++ 不同。在 C++ 里，<code>null</code> 被定义为 0，而不是一个指针；相反，如果你非要使用指针，请使用 <code>nullptr</code> 关键字来表示。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文其实很简短，但也带有非常多的内容。</p>
+<p>首先，在 C 语言里的 <code>NULL</code> 常量和 C# 里是一样的。当我们判断一个对象指针是否为空值时，我们可以使用安全的 <code>null</code> 关键字，也可以使用不安全的 <code>(void*)0</code> 来表示，它们是一样的。</p>
+<p>不过，C 语言里的 <code>NULL</code> 常量并不是语言提供的，而是头文件里的，所以你需要使用头文件 <code>stddef.h</code> 才有办法找到它；相反，C# 使用更频繁而简单，它不需要引入任何命名空间，而直接使用关键字即可。当然，因为 C 和 C++ 是两门不同的编程语言，但很多地方都具有相似之处，所以你会看到定义的代码并不是上面这么简单，而是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL 0</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// !NULL</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">ifndef</span> NULL</span></span><br><span class="line">        <span class="meta">#<span class="meta-keyword">define</span> NULL ((void *)0)</span></span><br><span class="line">    <span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// !NULL</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">//__cplusplus</span></span></span><br></pre></td></tr></table></figure>
+<p>在 C++ 里具有符号 <code>__cplusplus</code>，所以能够查找到这个符号也就意味着你当前使用的是 C++ 这门语言在写代码。如果是 C++ 的话，NULL 的定义应当为 0（当然前提是你没有定义 NULL）；如果不是 C++ 而是 C 语言，则定义结果是 <code>(void *)0</code> 了。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C♯/">C♯</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/12/13/csharp-local-function/" title="C# 的本地函数" itemprop="url">C# 的本地函数</a>
     
   </h1>
@@ -915,68 +988,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2019/11/27/csharp-complier-generating-yield/" title="yield 关键字生成的代码" itemprop="url">yield 关键字生成的代码</a>
-    
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
-		
-  <p class="article-time">
-    <time datetime="2019-11-27T13:14:17.000Z" itemprop="datePublished"> 发表于 2019-11-27</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>今天我不打算讲内容，直接看代码吧！</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestClass</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerable&lt;<span class="keyword">int</span>&gt; <span class="title">GetSeries</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>最终编译器将会生成这么多的代码：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.Security.Permissions;</span><br><span class="line"></span><br><span class="line">[<span class="meta">assembly: CompilationRelaxations(8)</span>]</span><br><span class="line">[<span class="meta">assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)</span>]</span><br><span class="line">[<span class="meta">assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)</span>]</span><br><span class="line">[<span class="meta">assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)</span>]</span><br><span class="line">[<span class="meta">assembly: AssemblyVersion(<span class="meta-string">"0.0.0.0"</span>)</span>]</span><br><span class="line">[<span class="meta">module: UnverifiableCode</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestClass</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">CompilerGenerated</span>]</span><br><span class="line">    private sealed class &lt;GetSeries&gt;d__0 : IEnumerable&lt;int&gt;, IEnumerable, IEnumerator&lt;int&gt;, IDisposable, IEnumerator</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> &lt;&gt;<span class="number">2</span>__current;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> &lt;&gt;l__initialThreadId;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> &lt;i&gt;<span class="number">5</span>__2;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> IEnumerator&lt;<span class="keyword">int</span>&gt;.Current</span><br><span class="line">        &#123;</span><br><span class="line">            [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">            <span class="keyword">get</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> &lt;&gt;<span class="number">2</span>__current;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">object</span> IEnumerator.Current</span><br><span class="line">        &#123;</span><br><span class="line">            [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">            <span class="keyword">get</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> &lt;&gt;<span class="number">2</span>__current;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        <span class="keyword">public</span> &lt;GetSeries&gt;d__0(<span class="keyword">int</span> &lt;&gt;<span class="number">1</span>__state)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">this</span>.&lt;&gt;<span class="number">1</span>__state = &lt;&gt;<span class="number">1</span>__state;</span><br><span class="line">            &lt;&gt;l__initialThreadId = Environment.CurrentManagedThreadId;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        <span class="keyword">void</span> IDisposable.Dispose()</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">MoveNext</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">switch</span> (&lt;&gt;<span class="number">1</span>__state)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                    &lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>;</span><br><span class="line">                    &lt;i&gt;<span class="number">5</span>__2 = <span class="number">0</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                    &lt;&gt;<span class="number">1</span>__state = <span class="number">-1</span>;</span><br><span class="line">                    &lt;i&gt;<span class="number">5</span>__2++;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (&lt;i&gt;<span class="number">5</span>__2 &lt; <span class="number">100</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                &lt;&gt;<span class="number">2</span>__current = &lt;i&gt;<span class="number">5</span>__2;</span><br><span class="line">                &lt;&gt;<span class="number">1</span>__state = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">bool</span> IEnumerator.MoveNext()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//ILSpy generated this explicit interface implementation from .override directive in MoveNext</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.MoveNext();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        <span class="keyword">void</span> IEnumerator.Reset()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NotSupportedException();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        IEnumerator&lt;<span class="keyword">int</span>&gt; IEnumerable&lt;<span class="keyword">int</span>&gt;.GetEnumerator()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (&lt;&gt;<span class="number">1</span>__state == <span class="number">-2</span> &amp;&amp; &lt;&gt;l__initialThreadId == Environment.CurrentManagedThreadId)</span><br><span class="line">            &#123;</span><br><span class="line">                &lt;&gt;<span class="number">1</span>__state = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> &lt;GetSeries&gt;d__0(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">DebuggerHidden</span>]</span><br><span class="line">        IEnumerator IEnumerable.GetEnumerator()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> System.Collections.Generic.IEnumerable&lt;System.Int32&gt;.GetEnumerator();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">IteratorStateMachine(typeof(&lt;GetSeries&gt;d__0))</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerable&lt;<span class="keyword">int</span>&gt; <span class="title">GetSeries</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> &lt;GetSeries&gt;d__0(<span class="number">-2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>好好加油理解吧！</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>►<a class="article-category-link" href="/categories/C%E2%99%AF/C%E2%99%AF-%E5%85%B3%E9%94%AE%E5%AD%97/">C♯.关键字</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C♯/">C♯</a><a href="/tags/C♯-编译器生成/">C♯.编译器生成</a><a href="/tags/C♯-2/">C♯ 2</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <a class="extend prev" rel="prev" href="/">上一页 ↑</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/">下一页 ↓</a>
@@ -1004,7 +1015,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/C♯/" title="C♯">C♯<sup>31</sup></a></li>
+				<li><a href="/tags/C♯/" title="C♯">C♯<sup>32</sup></a></li>
 			
 		
 			
@@ -1056,6 +1067,10 @@
 			
 		
 			
+				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Java/" title="Java">Java<sup>1</sup></a></li>
 			
 		
@@ -1064,11 +1079,11 @@
 			
 		
 			
-				<li><a href="/tags/ASP/" title="ASP">ASP<sup>1</sup></a></li>
+				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/诗词/" title="诗词">诗词<sup>1</sup></a></li>
+				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 			
@@ -1077,10 +1092,6 @@
 		
 			
 				<li><a href="/tags/C♯-6/" title="C♯ 6">C♯ 6<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/并发/" title="并发">并发<sup>1</sup></a></li>
 			
 		
 		</ul>

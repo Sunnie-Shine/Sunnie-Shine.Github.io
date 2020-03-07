@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Hexo 里关于 Mathjax 数学公式渲染问题的解决方案 | 向向的博客</title>
+    <title>使用反射获取某个特定的类的所有子类 | 向向的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="向向">
     
 
     
-    <meta name="description" content="为什么会出错？因为内部使用的是 marked 的渲染模式，但它给出的渲染方式有点问题，导致最终渲染出现毛病。比如一个矩阵的渲染：  \left(     \begin{matrix}         1 &amp; 2 &amp; 3\\         4 &amp; 5 &amp; 6     \end{matrix} \right)就很有可能被渲染成  \left(     \begin{matrix}         1">
-<meta name="keywords" content="数学,Hexo">
+    <meta name="description" content="废话不多说，直接上代码1234567891011121314151617181920212223242526272829303132using System;using System.Reflection;using System.Linq;public class Program&amp;#123;    public static void Main()    &amp;#123;        &#x2F;&#x2F; Get">
+<meta name="keywords" content="C♯">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案">
-<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2019&#x2F;11&#x2F;16&#x2F;hexo-mathjax-recovery&#x2F;index.html">
+<meta property="og:title" content="使用反射获取某个特定的类的所有子类">
+<meta property="og:url" content="https:&#x2F;&#x2F;sunnie-shine.github.io&#x2F;2020&#x2F;03&#x2F;07&#x2F;csharp-get-subclasses&#x2F;index.html">
 <meta property="og:site_name" content="向向的博客">
-<meta property="og:description" content="为什么会出错？因为内部使用的是 marked 的渲染模式，但它给出的渲染方式有点问题，导致最终渲染出现毛病。比如一个矩阵的渲染：  \left(     \begin{matrix}         1 &amp; 2 &amp; 3\\         4 &amp; 5 &amp; 6     \end{matrix} \right)就很有可能被渲染成  \left(     \begin{matrix}         1">
+<meta property="og:description" content="废话不多说，直接上代码1234567891011121314151617181920212223242526272829303132using System;using System.Reflection;using System.Linq;public class Program&amp;#123;    public static void Main()    &amp;#123;        &#x2F;&#x2F; Get">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-16T14:19:37.164Z">
+<meta property="og:updated_time" content="2020-03-07T13:34:06.018Z">
 <meta name="twitter:card" content="summary">
 
     
@@ -82,7 +82,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/11/16/hexo-mathjax-recovery/" title="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案" itemprop="url">Hexo 里关于 Mathjax 数学公式渲染问题的解决方案</a>
+      <a href="/2020/03/07/csharp-get-subclasses/" title="使用反射获取某个特定的类的所有子类" itemprop="url">使用反射获取某个特定的类的所有子类</a>
     
   </h1>
   <p class="article-author">By
@@ -90,7 +90,7 @@
 		<a href="/about" title="向向" target="_blank" itemprop="author">向向</a>
 		
   <p class="article-time">
-    <time datetime="2019-11-16T13:58:38.000Z" itemprop="datePublished"> 发表于 2019-11-16</time>
+    <time datetime="2020-03-07T13:31:12.000Z" itemprop="datePublished"> 发表于 2020-03-07</time>
     
   </p>
 </header>
@@ -99,44 +99,12 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么会出错？"><span class="toc-number">1.</span> <span class="toc-text">为什么会出错？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试修复"><span class="toc-number">2.</span> <span class="toc-text">尝试修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在最后"><span class="toc-number">3.</span> <span class="toc-text">写在最后</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#废话不多说，直接上代码"><span class="toc-number">1.</span> <span class="toc-text">废话不多说，直接上代码</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="为什么会出错？"><a href="#为什么会出错？" class="headerlink" title="为什么会出错？"></a>为什么会出错？</h2><p>因为内部使用的是 <code>marked</code> 的渲染模式，但它给出的渲染方式有点问题，导致最终渲染出现毛病。比如一个矩阵的渲染：</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-        1 & 2 & 3\\
-        4 & 5 & 6
-    \end{matrix}
-\right)</script><p>就很有可能被渲染成</p>
-<script type="math/tex; mode=display">
-\left(
-    \begin{matrix}
-        1 & 2 & 3 \ 4 & 5 & 6
-    \end{matrix}
-\right)</script><p>如果你发现两个渲染结果完全一样，那么你的渲染就有问题；但是如果第一个是正常显示，但第二个不正常的话，那么就需要你仔细对比一下两个渲染的原 LaTeX 代码了。仔细对比就可以发现，第一个渲染正确的代码里</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">\left(</span><br><span class="line">    \begin&#123;matrix&#125;</span><br><span class="line">        1 &amp; 2 &amp; 3\\</span><br><span class="line">        4 &amp; 5 &amp; 6</span><br><span class="line">    \end&#123;matrix&#125;</span><br><span class="line">\right)</span><br></pre></td></tr></table></figure>
-<p>的结尾处用的是双反斜杠 <code>\\</code>，表示换行；而下面错误渲染的公式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\left(</span><br><span class="line">    \begin&#123;matrix&#125;</span><br><span class="line">        1 &amp; 2 &amp; 3 \ 4 &amp; 5 &amp; 6</span><br><span class="line">    \end&#123;matrix&#125;</span><br><span class="line">\right)</span><br></pre></td></tr></table></figure>
-<p>却是一个反斜杠 <code>\</code>。这便是问题所在。在渲染的期间，不小心在使用正则表达式的时候替换错误了。现在我们来修复它。</p>
-<h2 id="尝试修复"><a href="#尝试修复" class="headerlink" title="尝试修复"></a>尝试修复</h2><p>首先，我们需要在博客的文件夹下输入指定的卸载和安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm uninstall hexo-renderer-marked --save</span><br><span class="line">$ npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
-<p>进行卸载 <code>marked</code> 渲染和安装 <code>kramed</code> 的渲染。</p>
-<blockquote>
-<p>可能是我孤陋寡闻，不过我是偶然发现的，<code>mark</code> 和 <code>kram</code> 是一对镜面单词，即 <code>mark</code> 每个字母倒着读就是 <code>kram</code>……我估计设计者也是考虑到这样故意才取这个名的。</p>
-</blockquote>
-<p>然后，打开 <code>node_modules\kramed\lib\rules\inline.js</code> 文件，找到 <code>escape</code> 元素的正则表达式，替换为如下内容：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">escape</span>: <span class="regexp">/^\\([`*\[\]()#$+\-.!_&gt;])/</span>,</span><br></pre></td></tr></table></figure>
-<p>然后顺带把 <code>em</code> 一项也改掉：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em: <span class="regexp">/^\*((?:\*\*|[\s\S])+?)\*(?!\*)/</span>,</span><br></pre></td></tr></table></figure>
-<p>然后保存，清除掉原本的数据库信息，然后重新部署和上传就可以了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean</span><br><span class="line">$ hexo generate</span><br><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>当然也可以写简称：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo cl</span><br><span class="line">$ hexo g</span><br><span class="line">$ hexo d</span><br></pre></td></tr></table></figure>
-<p>你也可以使用 <code>hexo s</code> 或 <code>hexo server</code> 全称来临时部署到本机上来查看效果。注意，记得在每一篇文章上添加 <code>mathjax: true</code> 元素表示启用 <code>mathjax</code> 渲染功能。</p>
-<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>不过，貌似复杂的公式依然无法渲染，因为需要导入 <code>package</code> 的功能，似乎一直都不行……所以这一点就算了吧，不过这样其实已经很好了，不是吗？</p>
+		<h2 id="废话不多说，直接上代码"><a href="#废话不多说，直接上代码" class="headerlink" title="废话不多说，直接上代码"></a>废话不多说，直接上代码</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// Get all subclasses of type Z.</span></span><br><span class="line">        <span class="keyword">var</span> bases = Assembly</span><br><span class="line">            .GetExecutingAssembly()</span><br><span class="line">            .GetTypes()</span><br><span class="line">            .Where(item =&gt; item.IsSubclassOf(<span class="keyword">typeof</span>(Z)))</span><br><span class="line">            .Select(type =&gt; (Z)Activator.CreateInstance(type))</span><br><span class="line">            .ToList();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (Z type <span class="keyword">in</span> bases)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(type.GetType());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Z</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span> : <span class="title">Z</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">B</span> : <span class="title">Z</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">C</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">D</span> : <span class="title">A</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">E</span> : <span class="title">A</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">F</span> : <span class="title">C</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">G</span> : <span class="title">F</span> &#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">H</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为 A、B、D、E，你答对了吗？</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -144,13 +112,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+  <a class="article-category-link" href="/categories/C%E2%99%AF/">C♯</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/数学/">数学</a><a href="/tags/Hexo/">Hexo</a>
+  <span></span> <a href="/tags/C♯/">C♯</a>
   </div>
 
 </div>
@@ -159,7 +127,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://sunnie-shine.github.io/2019/11/16/hexo-mathjax-recovery/" data-title="Hexo 里关于 Mathjax 数学公式渲染问题的解决方案 | 向向的博客" data-tsina="" class="share clearfix">
+	  <div data-url="https://sunnie-shine.github.io/2020/03/07/csharp-get-subclasses/" data-title="使用反射获取某个特定的类的所有子类 | 向向的博客" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -172,19 +140,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2019/11/17/clang-04-switch-statement/" title="C 语言语法系列（4）：switch 语句">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C 语言语法系列（4）：switch 语句</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2019/11/15/linear-algebra-operations/"  title="矩阵操作">
+<a href="/2020/02/26/csharp-ref-struct/"  title="C♯ 里的 ref struct">
  <strong>下一篇：</strong><br/> 
- <span>矩阵操作
+ <span>C♯ 里的 ref struct
 </span>
 </a>
 </div>
@@ -308,7 +268,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么会出错？"><span class="toc-number">1.</span> <span class="toc-text">为什么会出错？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试修复"><span class="toc-number">2.</span> <span class="toc-text">尝试修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在最后"><span class="toc-number">3.</span> <span class="toc-text">写在最后</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#废话不多说，直接上代码"><span class="toc-number">1.</span> <span class="toc-text">废话不多说，直接上代码</span></a></li></ol>
  
   </div>
 
